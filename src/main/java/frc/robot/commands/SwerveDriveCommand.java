@@ -4,6 +4,9 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.DriveTrain;
 import frc.robot.subsystems.SwerveDrivetrain;
@@ -16,19 +19,27 @@ public class SwerveDriveCommand extends CommandBase {
   private PIDController anglePid;
   private double angle_kp = 0.1;
   private double angle_ki = 0.0;
-  private double angle_kd = 0.1;
-  private Pose2d centerField = new Pose2d(27, 13.5, new Rotation2d());
+  private double angle_kd = 0.0;
+  //private Pose2d centerField = new Pose2d(27, 13.5, new Rotation2d()); //actual hub location?
+  private Pose2d centerField = new Pose2d(5,5, new Rotation2d()); //close point for testing to max rotation obvious
 
   // Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
   private final SlewRateLimiter xspeedLimiter = new SlewRateLimiter(3);
   private final SlewRateLimiter yspeedLimiter = new SlewRateLimiter(3);
   private final SlewRateLimiter rotLimiter = new SlewRateLimiter(3);
 
+  private NetworkTable table;
+  private NetworkTableEntry hubCentricTarget;
+  public final String NT_Name = "DT"; // expose data under DriveTrain table
+
   public SwerveDriveCommand(SwerveDrivetrain drivetrain, DriverControls dc) {
     this.drivetrain = drivetrain;
     addRequirements(drivetrain);
     this.dc = dc;
     anglePid = new PIDController(angle_kp, angle_ki, angle_kd);
+    
+    table = NetworkTableInstance.getDefault().getTable(NT_Name);
+    hubCentricTarget = table.getEntry("/hubCentricTarget");
   }
 
   @Override
@@ -36,15 +47,11 @@ public class SwerveDriveCommand extends CommandBase {
     // Get the x speed. We are inverting this because Xbox controllers return
     // negative values when we push forward.
     var xSpeed = xspeedLimiter.calculate(dc.getVelocityX()) * DriveTrain.kMaxSpeed;
-      //-xspeedLimiter.calculate(controller.getY(GenericHID.Hand.kLeft))
-      //  * DriveTrain.kMaxSpeed;
 
     // Get the y speed or sideways/strafe speed. We are inverting this because
     // we want a positive value when we pull to the left. Xbox controllers
     // return positive values when you pull to the right by default.
     var ySpeed = yspeedLimiter.calculate(dc.getVelocityY()) * DriveTrain.kMaxSpeed;
-    //  -yspeedLimiter.calculate(controller.getX(GenericHID.Hand.kLeft))
-    //    * DriveTrain.kMaxSpeed;
 
     //set goal of angle PID to be heading (in degrees) from current position to centerfield
     anglePid.setSetpoint(getHeading(drivetrain.getPose(), centerField));
@@ -54,16 +61,20 @@ public class SwerveDriveCommand extends CommandBase {
     // positive value when we pull to the left (remember, CCW is positive in
     // mathematics). Xbox controllers return positive values when you pull to
     // the right by default.
-    double rot;
-    if (!(drivetrain.getDriveMode() == 2)) {
-      rot = rotLimiter.calculate(dc.getXYRotation()) * DriveTrain.kMaxAngularSpeed;
-    } else {
-      rot = rotLimiter.calculate(anglePid.calculate(drivetrain.getPose().getRotation().getDegrees())) * DriveTrain.kMaxAngularSpeed;
+    double rot = 0;
+
+    switch(drivetrain.getDriveMode()){
+      case robotCentric:
+      case fieldCentric:
+        rot = rotLimiter.calculate(dc.getXYRotation()) * DriveTrain.kMaxAngularSpeed; //use joystick for rotation in robot and field centric modes
+        break;
+      case hubCentric:
+        rot = rotLimiter.calculate(anglePid.calculate(drivetrain.getPose().getRotation().getDegrees())) * DriveTrain.kMaxAngularSpeed; //use PID for rotation in hub centric
+        break;
     }
-      //-rotLimiter.calculate(controller.getX(GenericHID.Hand.kRight))
-      //  * DriveTrain.kMaxAngularSpeed;
-    
-    drivetrain.drive(xSpeed, ySpeed, rot); //for testing, bring up rot first
+   
+    drivetrain.drive(xSpeed, ySpeed, rot); 
+
   }
 
   //takes 2 positions, gives heading from point A to point B (in degrees)
@@ -74,7 +85,7 @@ public class SwerveDriveCommand extends CommandBase {
     
     //convert this to degrees in the range 0 to 360
     theta = ((theta + Math.PI) * 360) / (2 * Math.PI); 
-
+    hubCentricTarget.setValue(theta);
     return theta;
   }
 

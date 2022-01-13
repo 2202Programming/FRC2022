@@ -80,7 +80,8 @@ public class SwerveDrivetrain extends SubsystemBase {
   private int timer;
 
   private boolean fieldRelativeMode = false;
-  private int driveMode = 0;
+  private DriveModeTypes driveMode = DriveModeTypes.robotCentric;
+  public enum DriveModeTypes {robotCentric, fieldCentric, hubCentric}
 
   public SwerveDrivetrain() {
     sensors = RobotContainer.RC().sensors;
@@ -115,8 +116,6 @@ public class SwerveDrivetrain extends SubsystemBase {
     receiveErrorCount = table.getEntry("/CanReceiveErrorCount");
     transmitErrorCount = table.getEntry("/CanTransmitErrorCount");
     txFullCount = table.getEntry("/CanTxError");
-//    fieldMode = table.getEntry("/FieldRealitveMode");
-//    fieldMode.setBoolean(fieldRelativeMode);
     NTDriveMode = table.getEntry("/DriveMode");
     currentX = table.getEntry("/Current X");
     currentY = table.getEntry("/Current Y");
@@ -146,7 +145,7 @@ public class SwerveDrivetrain extends SubsystemBase {
    
       ChassisSpeeds chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, rot);
 
-        if(driveMode == 1) {
+        if(driveMode == DriveModeTypes.fieldCentric) {
           chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, gyro.getRotation2d());
         }
 
@@ -190,7 +189,7 @@ public class SwerveDrivetrain extends SubsystemBase {
       receiveErrorCount.setDouble(canStatus.receiveErrorCount);
       transmitErrorCount.setDouble(canStatus.transmitErrorCount);
       txFullCount.setDouble(canStatus.txFullCount);
-      NTDriveMode.setNumber(driveMode);
+      NTDriveMode.setValue(driveMode);
       currentX.setDouble(m_pose.getX());
       currentY.setDouble(m_pose.getY());
       currentHeading.setDouble(m_pose.getRotation().getDegrees());
@@ -220,24 +219,21 @@ public class SwerveDrivetrain extends SubsystemBase {
     return;
   }
 
-  // Drive mode 0 = robot centric
-  // Drive mode 1 = field centric
-  // Drive mode 2 = hub centric
   public void driveModeCycle() {
     switch(driveMode) {
-      case 0:
-        driveMode = 1;
+      case robotCentric:
+        driveMode = DriveModeTypes.fieldCentric;
         break;
-      case 1:
-        driveMode = 2;
+      case fieldCentric:
+        driveMode = DriveModeTypes.hubCentric;
         break;
-      case 2:
-        driveMode = 0;
+      case hubCentric:
+        driveMode = DriveModeTypes.robotCentric;
         break;
     }
   }
 
-  public int getDriveMode() {
+  public DriveModeTypes getDriveMode() {
     return driveMode;
   }
 
