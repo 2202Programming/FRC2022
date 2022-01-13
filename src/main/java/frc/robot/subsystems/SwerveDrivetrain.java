@@ -74,11 +74,13 @@ public class SwerveDrivetrain extends SubsystemBase {
   private NetworkTableEntry currentX;
   private NetworkTableEntry currentY;
   private NetworkTableEntry currentHeading;
+  private NetworkTableEntry NTDriveMode;
 
   public final String NT_Name = "DT"; // expose data under DriveTrain table
   private int timer;
 
   private boolean fieldRelativeMode = false;
+  private int driveMode = 0;
 
   public SwerveDrivetrain() {
     sensors = RobotContainer.RC().sensors;
@@ -113,8 +115,9 @@ public class SwerveDrivetrain extends SubsystemBase {
     receiveErrorCount = table.getEntry("/CanReceiveErrorCount");
     transmitErrorCount = table.getEntry("/CanTransmitErrorCount");
     txFullCount = table.getEntry("/CanTxError");
-    fieldMode = table.getEntry("/FieldRealitveMode");
-    fieldMode.setBoolean(fieldRelativeMode);
+//    fieldMode = table.getEntry("/FieldRealitveMode");
+//    fieldMode.setBoolean(fieldRelativeMode);
+    NTDriveMode = table.getEntry("/DriveMode");
     currentX = table.getEntry("/Current X");
     currentY = table.getEntry("/Current Y");
     currentHeading = table.getEntry("/Current Heading");
@@ -140,9 +143,14 @@ public class SwerveDrivetrain extends SubsystemBase {
     ySpeed = MathUtil.clamp(ySpeed, -Constants.DriveTrain.kMaxSpeed, Constants.DriveTrain.kMaxSpeed);
     rot = MathUtil.clamp(rot, -Constants.DriveTrain.kMaxAngularSpeed, Constants.DriveTrain.kMaxAngularSpeed);
     
-    states = kinematics.toSwerveModuleStates(
-        fieldRelativeMode ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, gyro.getRotation2d())
-            : new ChassisSpeeds(xSpeed, ySpeed, rot));
+   
+      ChassisSpeeds chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, rot);
+
+        if(driveMode == 1) {
+          chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, gyro.getRotation2d());
+        }
+
+      states = kinematics.toSwerveModuleStates(chassisSpeeds);
 
     // fix speeds if kinematics exceed what the robot can actually do [lenght/s]
     //SwerveDriveKinematics.normalizeWheelSpeeds(states, DriveTrain.kMaxSpeed);
@@ -182,6 +190,7 @@ public class SwerveDrivetrain extends SubsystemBase {
       receiveErrorCount.setDouble(canStatus.receiveErrorCount);
       transmitErrorCount.setDouble(canStatus.transmitErrorCount);
       txFullCount.setDouble(canStatus.txFullCount);
+      NTDriveMode.setNumber(driveMode);
       currentX.setDouble(m_pose.getX());
       currentY.setDouble(m_pose.getY());
       currentHeading.setDouble(m_pose.getRotation().getDegrees());
@@ -209,6 +218,27 @@ public class SwerveDrivetrain extends SubsystemBase {
     else fieldRelativeMode = true;
     fieldMode.setBoolean(fieldRelativeMode); 
     return;
+  }
+
+  // Drive mode 0 = robot centric
+  // Drive mode 1 = field centric
+  // Drive mode 2 = hub centric
+  public void driveModeCycle() {
+    switch(driveMode) {
+      case 0:
+        driveMode = 1;
+        break;
+      case 1:
+        driveMode = 2;
+        break;
+      case 2:
+        driveMode = 0;
+        break;
+    }
+  }
+
+  public int getDriveMode() {
+    return driveMode;
   }
 
   //sets X,Y, and sets current angle (will apply gyro correction)
