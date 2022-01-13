@@ -68,7 +68,7 @@ public class RobotContainer {
   /**
   * Driver xbox controller button bindings
   * <ul>
-  * <li> B - Toggle field relative </li>
+  * <li> B - Toggle drive mode </li>
   * <li> A - Trajectory Follow Test </li>
   * <li> Y - Reset Pose to Zero </li>
   * <li> X - Follow path off chooser </li>
@@ -76,8 +76,8 @@ public class RobotContainer {
   */
   void setDriverButtons(){
 
-    //B - Toggle field relative
-    driverControls.bind(Id.Driver, XboxButton.B).whenPressed(new InstantCommand( drivetrain::toggleFieldRealitiveMode ));
+    //B - Toggle drive mode
+    driverControls.bind(Id.Driver, XboxButton.B).whenPressed(new InstantCommand( drivetrain::driveModeCycle ));
   
     //A - Trajectory Test
     driverControls.bind(Id.Driver, XboxButton.A).whenPressed(getTrajectoryFollowTestCommand());
