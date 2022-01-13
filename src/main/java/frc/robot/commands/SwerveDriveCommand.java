@@ -68,10 +68,13 @@ public class SwerveDriveCommand extends CommandBase {
 
   //takes 2 positions, gives heading from point A to point B (in degrees)
   private double getHeading(Pose2d a, Pose2d b) {
+
+    //from -PI to +PI
     double theta = Math.atan2(b.getX()-a.getX(), b.getY()-a.getY());
-    if(theta < 0){
-        theta += 2*Math.PI;
-    }
+    
+    //convert this to degrees in the range 0 to 360
+    theta = ((theta + Math.PI) * 360) / (2 * Math.PI); 
+
     return theta;
   }
 
