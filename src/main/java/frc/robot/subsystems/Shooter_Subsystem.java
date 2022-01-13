@@ -15,17 +15,20 @@ public class Shooter_Subsystem extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  public void setMotorSpeed(double speed){
-    //sets motor speed to go speed ft/s
+  //ball should come out at this speed
+  public void setSpeed(double speed){
+    //turns this into a motor speed
+    //spin motor at rpms
   }
 
   //takes angle class (has vertical and horizontal)
+  //ball comes out at requested angle
   public void setAngle(Angle angle){
     //sets angles to angles designated by Angle class 
   }
 
   //Could return a Motor speed object
-  public double getMotorSpeed(){
+  private double getMotorSpeed(){
     //return speed of a motor in ft/s
   }
 
@@ -33,9 +36,21 @@ public class Shooter_Subsystem extends SubsystemBase {
     //returns an angle class with the angle of the shooter 
   }
 
+  public double setTolerance(double tolerance){
+    //tolerance of error
+  }
+
   public void shoot(){
     //shoots the ball
   }
+
+  public boolean readyToShoot(){
+    //returns wether the motors and angles are ready as set 
+  }
+
+  /*
+  * Might want to make "grand setter command" that sets all relevant values
+  */
 
   public class Angle(){
     double verticalAngle;
