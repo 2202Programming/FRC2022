@@ -14,9 +14,9 @@ public class SwerveDriveCommand extends CommandBase {
   private final SwerveDrivetrain drivetrain;
   private final DriverControls dc;
   private PIDController anglePid;
-  private double angle_kp = 1.0;
+  private double angle_kp = 0.1;
   private double angle_ki = 0.0;
-  private double angle_kd = 0.0;
+  private double angle_kd = 0.1;
   private Pose2d centerField = new Pose2d(27, 13.5, new Rotation2d());
 
   // Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
