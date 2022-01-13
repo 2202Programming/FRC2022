@@ -33,10 +33,6 @@ public class Shooter_Subsystem extends SubsystemBase {
     //returns an angle class with the angle of the shooter 
   }
 
-  public boolean readyToShoot(){
-    //returns wether or not the robot is in position to shoot (correct angle, etc.)
-  }
-
   public void shoot(){
     //shoots the ball
   }
@@ -50,7 +46,19 @@ public class Shooter_Subsystem extends SubsystemBase {
     }
 
     public double getVerticalAngle(){
-      
+      //gets vertical angle of shooter in degrees
+    }
+
+    public double getHorizontalAngle(){
+      //gets horizontal angle of shooter in degrees
+    }
+
+    public void setVerticalAngle(double angle){
+      //sets vertical angle to angle 
+    }
+
+    public void setHorizontalAngle(double angle){
+      //sets horizontal angle to angle
     }
 
 
