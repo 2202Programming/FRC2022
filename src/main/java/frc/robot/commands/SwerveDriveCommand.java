@@ -30,6 +30,9 @@ public class SwerveDriveCommand extends CommandBase {
 
   private NetworkTable table;
   private NetworkTableEntry hubCentricTarget;
+  private NetworkTableEntry xVelTarget;
+  private NetworkTableEntry yVelTarget;
+  private NetworkTableEntry rotVelTarget;
   public final String NT_Name = "DT"; // expose data under DriveTrain table
 
   public SwerveDriveCommand(SwerveDrivetrain drivetrain, DriverControls dc) {
@@ -40,6 +43,9 @@ public class SwerveDriveCommand extends CommandBase {
     
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
     hubCentricTarget = table.getEntry("/hubCentricTarget");
+    xVelTarget = table.getEntry("/xVelTarget");
+    yVelTarget = table.getEntry("/yVelTarget");
+    rotVelTarget = table.getEntry("/rotVelTarget");
   }
 
   @Override
@@ -74,7 +80,9 @@ public class SwerveDriveCommand extends CommandBase {
     }
    
     drivetrain.drive(xSpeed, ySpeed, rot); 
-
+    xVelTarget.setValue(xSpeed);
+    yVelTarget.setValue(ySpeed);
+    rotVelTarget.setValue(rot);
   }
 
   //takes 2 positions, gives heading from point A to point B (in degrees)
