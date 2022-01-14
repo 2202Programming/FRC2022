@@ -59,8 +59,6 @@ public class SwerveDriveCommand extends CommandBase {
     // return positive values when you pull to the right by default.
     var ySpeed = yspeedLimiter.calculate(dc.getVelocityY()) * DriveTrain.kMaxSpeed;
 
-    //set goal of angle PID to be heading (in degrees) from current position to centerfield
-    anglePid.setSetpoint(getHeading(drivetrain.getPose(), centerField));
 
 
     // Get the rate of angular rotation. We are inverting this because we want a
@@ -75,7 +73,19 @@ public class SwerveDriveCommand extends CommandBase {
         rot = rotLimiter.calculate(dc.getXYRotation()) * DriveTrain.kMaxAngularSpeed; //use joystick for rotation in robot and field centric modes
         break;
       case hubCentric:
-        rot = rotLimiter.calculate(anglePid.calculate(drivetrain.getPose().getRotation().getDegrees())) * DriveTrain.kMaxAngularSpeed; //use PID for rotation in hub centric
+        //set goal of angle PID to be heading (in degrees) from current position to centerfield
+        double targetAngle = getHeading(drivetrain.getPose(), centerField);
+        double currentAngle = drivetrain.getPose().getRotation().getDegrees();
+        double angleError = targetAngle - currentAngle;
+        //deal with continuity issue across 0
+        if(angleError < -180) {
+          targetAngle += 360;
+        }
+        if(angleError > 180) {
+          targetAngle -= 360;
+        }
+        anglePid.setSetpoint(targetAngle);
+        rot = rotLimiter.calculate(anglePid.calculate(currentAngle)) * DriveTrain.kMaxAngularSpeed; //use PID for rotation in hub centric
         break;
     }
    
