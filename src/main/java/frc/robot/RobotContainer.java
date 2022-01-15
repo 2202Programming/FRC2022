@@ -21,6 +21,7 @@ import frc.robot.Constants.DriverPrefs;
 import frc.robot.commands.SwerveDriveCommand;
 import frc.robot.commands.auto.auto_drivePath_cmd;
 import frc.robot.subsystems.Sensors_Subsystem;
+import frc.robot.subsystems.Shooter_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.hid.HID_Xbox_Subsystem;
 import frc.robot.subsystems.hid.XboxButton;
@@ -37,28 +38,29 @@ public class RobotContainer {
   static RobotContainer  rc;
   public static RobotContainer   RC() {return rc;}
 
-  public final HID_Xbox_Subsystem driverControls;
-  public final Sensors_Subsystem sensors;
-  private final SwerveDrivetrain drivetrain;
-  public final Dashboard dashboard;
+  // public final HID_Xbox_Subsystem driverControls;
+  // public final Sensors_Subsystem sensors;
+  // private final SwerveDrivetrain drivetrain;
+  // public final Dashboard dashboard;
+  public final Shooter_Subsystem m_shooter = new Shooter_Subsystem();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     RobotContainer.rc = this;
 
-    //create our subsystems
-    sensors = new Sensors_Subsystem();
-    driverControls = new HID_Xbox_Subsystem(DriverPrefs.VelExpo, DriverPrefs.RotationExpo, DriverPrefs.StickDeadzone); 
-    drivetrain = new SwerveDrivetrain();
+    // //create our subsystems
+    // sensors = new Sensors_Subsystem();
+    // driverControls = new HID_Xbox_Subsystem(DriverPrefs.VelExpo, DriverPrefs.RotationExpo, DriverPrefs.StickDeadzone); 
+    // drivetrain = new SwerveDrivetrain();
 
-    // set default commands
-    drivetrain.setDefaultCommand(new SwerveDriveCommand(drivetrain, driverControls));
+    // // set default commands
+    // drivetrain.setDefaultCommand(new SwerveDriveCommand(drivetrain, driverControls));
 
-    //setup the dashboard programatically, creates any choosers, screens
-    dashboard = new Dashboard(this);
+    // //setup the dashboard programatically, creates any choosers, screens
+    // dashboard = new Dashboard(this);
 
-    setDriverButtons();
-    setAssistantButtons();
+    // setDriverButtons();
+    // setAssistantButtons();
 
 
 
@@ -74,81 +76,81 @@ public class RobotContainer {
   * <li> X - Follow path off chooser </li>
   * </ul>
   */
-  void setDriverButtons(){
+  // void setDriverButtons(){
 
-    //B - Toggle drive mode
-    driverControls.bind(Id.Driver, XboxButton.B).whenPressed(new InstantCommand( drivetrain::driveModeCycle ));
+  //   //B - Toggle drive mode
+  //   driverControls.bind(Id.Driver, XboxButton.B).whenPressed(new InstantCommand( drivetrain::driveModeCycle ));
   
-    //A - Trajectory Test
-    driverControls.bind(Id.Driver, XboxButton.A).whenPressed(getTrajectoryFollowTestCommand());
+  //   //A - Trajectory Test
+  //   driverControls.bind(Id.Driver, XboxButton.A).whenPressed(getTrajectoryFollowTestCommand());
   
-    //Y - reset Pose
-    driverControls.bind(Id.Driver, XboxButton.Y).whenPressed(new InstantCommand( drivetrain::resetPose ));
+  //   //Y - reset Pose
+  //   driverControls.bind(Id.Driver, XboxButton.Y).whenPressed(new InstantCommand( drivetrain::resetPose ));
 
-    //X - follow path off chooser
-    driverControls.bind(Id.Driver, XboxButton.X).whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
-  }
+  //   //X - follow path off chooser
+  //   driverControls.bind(Id.Driver, XboxButton.X).whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
+  // }
 
-    /**
-  * Assistant xbox controller button bindings
-  * <ul>
-  * <li> TBD </li>
-  * </ul>
-  */
-  void setAssistantButtons(){
+  //   /**
+  // * Assistant xbox controller button bindings
+  // * <ul>
+  // * <li> TBD </li>
+  // * </ul>
+  // */
+  // void setAssistantButtons(){
 
-  }
+  // }
 
-  // testing 
-  void test_controls() {
-    // var cmd = new MK3_AngleSpeed(driverControls, drivetrain, 0);  // FL, FR, BL, BR (0..3)
-    //drivetrain.setDefaultCommand(cmd);
+  // // testing 
+  // void test_controls() {
+  //   // var cmd = new MK3_AngleSpeed(driverControls, drivetrain, 0);  // FL, FR, BL, BR (0..3)
+  //   //drivetrain.setDefaultCommand(cmd);
 
-    //testing commands, speed in feet per sec, angle in degrees
-    //driverControls.bind(Id.Driver, XboxPOV.POV_UP).whenHeld(new SwerveDriveTest(drivetrain, 1, 0));
-    //driverControls.bind(Id.Driver, XboxPOV.POV_RIGHT).whenHeld(new SwerveDriveTest(drivetrain, 1, 90));
-    //driverControls.bind(Id.Driver, XboxPOV.POV_DOWN).whenHeld(new SwerveDriveTest(drivetrain, 1, 180));
-    //driverControls.bind(Id.Driver, XboxPOV.POV_LEFT).whenHeld(new SwerveDriveTest(drivetrain, 1, -90));
-  }
+  //   //testing commands, speed in feet per sec, angle in degrees
+  //   //driverControls.bind(Id.Driver, XboxPOV.POV_UP).whenHeld(new SwerveDriveTest(drivetrain, 1, 0));
+  //   //driverControls.bind(Id.Driver, XboxPOV.POV_RIGHT).whenHeld(new SwerveDriveTest(drivetrain, 1, 90));
+  //   //driverControls.bind(Id.Driver, XboxPOV.POV_DOWN).whenHeld(new SwerveDriveTest(drivetrain, 1, 180));
+  //   //driverControls.bind(Id.Driver, XboxPOV.POV_LEFT).whenHeld(new SwerveDriveTest(drivetrain, 1, -90));
+  // }
 
-  public Command getTrajectoryFollowTestCommand (){
-    // An example trajectory to follow.  All units in feet.
-    Rotation2d current_angle = new Rotation2d(sensors.getYaw());
-    Trajectory exampleTrajectory =
-      TrajectoryGenerator.generateTrajectory(
+  // public Command getTrajectoryFollowTestCommand (){
+  //   // An example trajectory to follow.  All units in feet.
+  //   Rotation2d current_angle = new Rotation2d(sensors.getYaw());
+  //   Trajectory exampleTrajectory =
+  //     TrajectoryGenerator.generateTrajectory(
         
-        new Pose2d(0.0, 0.0, current_angle),
-        List.of(
-          // new Translation2d(0.0, 0.25),
-          // new Translation2d(0.0, 0.5),
-          // new Translation2d(0.0, 0.75)
-        ),
-        new Pose2d(0, 3.0, current_angle),
-        new TrajectoryConfig(2.0, 0.5) //max velocity, max accel
-        //new TrajectoryConfig(Constants.DriveTrain.kMaxSpeed, Constants.DriveTrain.kMaxAngularSpeed) //way too fast
+  //       new Pose2d(0.0, 0.0, current_angle),
+  //       List.of(
+  //         // new Translation2d(0.0, 0.25),
+  //         // new Translation2d(0.0, 0.5),
+  //         // new Translation2d(0.0, 0.75)
+  //       ),
+  //       new Pose2d(0, 3.0, current_angle),
+  //       new TrajectoryConfig(2.0, 0.5) //max velocity, max accel
+  //       //new TrajectoryConfig(Constants.DriveTrain.kMaxSpeed, Constants.DriveTrain.kMaxAngularSpeed) //way too fast
         
-      );
+  //     );
       
-      SwerveControllerCommand swerveControllerCommand =
-      new SwerveControllerCommand(
-          exampleTrajectory,
-          drivetrain::getPose, // Functional interface to feed supplier
-          drivetrain.getKinematics(),
-          // Position controllers 
-          new PIDController(4.0, 0.0, 0.0),
-          new PIDController(4.0, 0.0, 0.0),
-          new ProfiledPIDController(4, 0, 0, new TrapezoidProfile.Constraints(.3, .3)),
-            // Here, our rotation profile constraints were a max velocity
-            // of 1 rotation per second and a max acceleration of 180 degrees
-            // per second squared
-          drivetrain::setModuleStates,
-          drivetrain);
+  //     SwerveControllerCommand swerveControllerCommand =
+  //     new SwerveControllerCommand(
+  //         exampleTrajectory,
+  //         drivetrain::getPose, // Functional interface to feed supplier
+  //         drivetrain.getKinematics(),
+  //         // Position controllers 
+  //         new PIDController(4.0, 0.0, 0.0),
+  //         new PIDController(4.0, 0.0, 0.0),
+  //         new ProfiledPIDController(4, 0, 0, new TrapezoidProfile.Constraints(.3, .3)),
+  //           // Here, our rotation profile constraints were a max velocity
+  //           // of 1 rotation per second and a max acceleration of 180 degrees
+  //           // per second squared
+  //         drivetrain::setModuleStates,
+  //         drivetrain);
 
-        // Reset odometry to the starting pose of the trajectory.
-    drivetrain.setPose(exampleTrajectory.getInitialPose());
+  //       // Reset odometry to the starting pose of the trajectory.
+  //   drivetrain.setPose(exampleTrajectory.getInitialPose());
 
-    // Run path following command, then stop at the end.
-    return swerveControllerCommand.andThen(() -> drivetrain.drive(0, 0, 0)).withTimeout(10);
+  //   // Run path following command, then stop at the end.
+  //   return swerveControllerCommand.andThen(() -> drivetrain.drive(0, 0, 0)).withTimeout(10);
 
-  }
+  // }
 }

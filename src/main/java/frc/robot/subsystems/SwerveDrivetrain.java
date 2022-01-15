@@ -97,8 +97,8 @@ public class SwerveDrivetrain extends SubsystemBase {
   }
 
   public SwerveDrivetrain() {
-    sensors = RobotContainer.RC().sensors;
-    gyro = sensors;
+    sensors = null; //RobotContainer.RC().sensors;
+    gyro = null;
 
     var MT = CANSparkMax.MotorType.kBrushless;
     modules = new SwerveModuleMK3[] {

@@ -59,7 +59,8 @@ public final class Constants {
         // Whether to burn flash or not
         public static final boolean BURN_FLASH = false;
 
-        public static final int FLYWHEEL = 0; //random number
+        public static final int FLYWHEEL = 10; //random number
+        public static final int FLYWHEEL1 = 11; //random number
 
 
     }
@@ -118,7 +119,7 @@ public final class Constants {
         public static final double FlyWheelGearRatio = 1.11;     //use camelcase
         public static final int CountsPerRev = 42;
         
-        public static final PIDFController FlyWheelPID = 
+        public static PIDFController FlyWheelPID = 
           new PIDFController(0.1, 0.0, 0.0, 0.0);
 
     }
