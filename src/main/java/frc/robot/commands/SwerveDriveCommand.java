@@ -61,8 +61,6 @@ public class SwerveDriveCommand extends CommandBase {
     // return positive values when you pull to the right by default.
     var ySpeed = yspeedLimiter.calculate(dc.getVelocityY()) * DriveTrain.kMaxSpeed;
 
-
-
     // Get the rate of angular rotation. We are inverting this because we want a
     // positive value when we pull to the left (remember, CCW is positive in
     // mathematics). Xbox controllers return positive values when you pull to
@@ -85,6 +83,8 @@ public class SwerveDriveCommand extends CommandBase {
 
     switch(drivetrain.getDriveMode()){
       case robotCentric:
+        rot = rotLimiter.calculate(dc.getXYRotation()) * DriveTrain.kMaxAngularSpeed; //use joystick for rotation in robot and field centric modes
+        break;
       case fieldCentric:
         rot = rotLimiter.calculate(dc.getXYRotation()) * DriveTrain.kMaxAngularSpeed; //use joystick for rotation in robot and field centric modes
         break;
