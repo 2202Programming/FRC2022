@@ -81,7 +81,20 @@ public class SwerveDrivetrain extends SubsystemBase {
 
   private boolean fieldRelativeMode = false;
   private DriveModeTypes driveMode = DriveModeTypes.robotCentric;
-  public enum DriveModeTypes {robotCentric, fieldCentric, hubCentric}
+
+  public enum DriveModeTypes {
+    robotCentric("Robot Centric"), fieldCentric("Field Centric"), hubCentric("Hub Centric");
+
+    private String name;
+
+    private DriveModeTypes(String name) {
+      this.name = name;
+    }
+
+    public String toString() {
+      return name;
+    }
+  }
 
   public SwerveDrivetrain() {
     sensors = RobotContainer.RC().sensors;
@@ -136,30 +149,29 @@ public class SwerveDrivetrain extends SubsystemBase {
    * @param fieldRelative Whether the provided x and y speeds are relative to the
    *                      field.
    */
-  public void drive(double xSpeed, double ySpeed, double rot) { //should be ft/s, rad/s
-    //Clamp speeds
+  public void drive(double xSpeed, double ySpeed, double rot) { // should be ft/s, rad/s
+    // Clamp speeds
     xSpeed = MathUtil.clamp(xSpeed, -Constants.DriveTrain.kMaxSpeed, Constants.DriveTrain.kMaxSpeed);
     ySpeed = MathUtil.clamp(ySpeed, -Constants.DriveTrain.kMaxSpeed, Constants.DriveTrain.kMaxSpeed);
     rot = MathUtil.clamp(rot, -Constants.DriveTrain.kMaxAngularSpeed, Constants.DriveTrain.kMaxAngularSpeed);
-    
-   
-      ChassisSpeeds chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, rot);
 
-        if(driveMode != DriveModeTypes.robotCentric) {
-          chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, gyro.getRotation2d());
-        }
+    ChassisSpeeds chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, rot);
 
-      states = kinematics.toSwerveModuleStates(chassisSpeeds);
+    if (driveMode != DriveModeTypes.robotCentric) {
+      chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, gyro.getRotation2d());
+    }
+
+    states = kinematics.toSwerveModuleStates(chassisSpeeds);
 
     // fix speeds if kinematics exceed what the robot can actually do [lenght/s]
-    //SwerveDriveKinematics.normalizeWheelSpeeds(states, DriveTrain.kMaxSpeed);
+    // SwerveDriveKinematics.normalizeWheelSpeeds(states, DriveTrain.kMaxSpeed);
 
     // output the angle and velocity for each module
     // Maybe should just call setModuleStates?
     for (int i = 0; i < states.length; i++) {
       modules[i].setDesiredState(states[i]);
     }
-    
+
   }
 
   // used for testing
@@ -177,7 +189,7 @@ public class SwerveDrivetrain extends SubsystemBase {
       modules[i].periodic();
     }
 
-    //update pose
+    // update pose
     m_pose = m_odometry.update(gyro.getRotation2d(), states);
 
     // updates CAN status data every 4 cycles
@@ -189,7 +201,7 @@ public class SwerveDrivetrain extends SubsystemBase {
       receiveErrorCount.setDouble(canStatus.receiveErrorCount);
       transmitErrorCount.setDouble(canStatus.transmitErrorCount);
       txFullCount.setDouble(canStatus.txFullCount);
-      //NTDriveMode.setValue(driveMode);
+      // NTDriveMode.setValue(driveMode);
       currentX.setDouble(m_pose.getX());
       currentY.setDouble(m_pose.getY());
       currentHeading.setDouble(m_pose.getRotation().getDegrees());
@@ -211,16 +223,17 @@ public class SwerveDrivetrain extends SubsystemBase {
     return modules[modID];
   }
 
-  public void toggleFieldRealitiveMode(){
-    if(fieldRelativeMode)
+  public void toggleFieldRealitiveMode() {
+    if (fieldRelativeMode)
       fieldRelativeMode = false;
-    else fieldRelativeMode = true;
-    fieldMode.setBoolean(fieldRelativeMode); 
+    else
+      fieldRelativeMode = true;
+    fieldMode.setBoolean(fieldRelativeMode);
     return;
   }
 
   public void driveModeCycle() {
-    switch(driveMode) {
+    switch (driveMode) {
       case robotCentric:
         driveMode = DriveModeTypes.fieldCentric;
         break;
@@ -237,34 +250,33 @@ public class SwerveDrivetrain extends SubsystemBase {
     return driveMode;
   }
 
-  //sets X,Y, and sets current angle (will apply gyro correction)
+  // sets X,Y, and sets current angle (will apply gyro correction)
   public void setPose(Pose2d new_pose) {
     m_pose = new_pose;
     m_odometry.resetPosition(m_pose, gyro.getRotation2d());
   }
 
-  //resets X,Y, and set current angle to be 0
+  // resets X,Y, and set current angle to be 0
   public void resetPose() {
-    m_pose = new Pose2d(0,0,new Rotation2d(0));
+    m_pose = new Pose2d(0, 0, new Rotation2d(0));
     m_odometry.resetPosition(m_pose, gyro.getRotation2d());
   }
 
-  public Pose2d getPose(){
+  public Pose2d getPose() {
     return m_pose;
   }
 
-  public SwerveDriveKinematics getKinematics(){
+  public SwerveDriveKinematics getKinematics() {
     return kinematics;
   }
 
-  //Sets module states and writes to modules
-  public void setModuleStates(SwerveModuleState[] newStates)
-  {
-    states = newStates; //update drivetrain version of current states; used for odometery
+  // Sets module states and writes to modules
+  public void setModuleStates(SwerveModuleState[] newStates) {
+    states = newStates; // update drivetrain version of current states; used for odometery
 
     // output the angle and velocity for each module
     for (int i = 0; i < states.length; i++) {
-      modules[i].setDesiredState(states[i]); //updates the desired state at the module level
+      modules[i].setDesiredState(states[i]); // updates the desired state at the module level
     }
   }
 }
