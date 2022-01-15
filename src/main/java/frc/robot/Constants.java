@@ -133,8 +133,8 @@ public final class Constants {
         public static final double wheelDiameter = 0.3333333;   //[ft]  4" wheels
 
         // Constraints on speeds enforeced in DriveTrain
-        public static final double kMaxSpeed = 6.0; // [ft/s]
-        public static final double kMaxAngularSpeed = Math.PI; // [rad/s] 1/2 rotation per second
+        public static final double kMaxSpeed = 12.0; // [ft/s]
+        public static final double kMaxAngularSpeed = 2*Math.PI; // [rad/s] 
         //Max neo free speed is 12.1 ft/s per specs
 
         /****
