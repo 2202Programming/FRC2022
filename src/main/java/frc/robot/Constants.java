@@ -64,10 +64,11 @@ public final class Constants {
 
     // PWM assignments on the Rio
     public static final class PWM {
-      /*
-      public static final int INTAKE = 0;
-      public static final int MAGAZINE = 9; 
-      */
+      public static final int mech_FL = 1;
+      public static final int mech_FR = 2;
+      public static final int mech_BL = 3;
+      public static final int mech_BR = 4;
+      
     }
     
     // Digital IO on the RIO
