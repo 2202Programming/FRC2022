@@ -145,7 +145,7 @@ public class SwerveDrivetrain extends SubsystemBase {
    
       ChassisSpeeds chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, rot);
 
-        if(driveMode == DriveModeTypes.fieldCentric) {
+        if(driveMode != DriveModeTypes.robotCentric) {
           chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, gyro.getRotation2d());
         }
 
@@ -189,7 +189,7 @@ public class SwerveDrivetrain extends SubsystemBase {
       receiveErrorCount.setDouble(canStatus.receiveErrorCount);
       transmitErrorCount.setDouble(canStatus.transmitErrorCount);
       txFullCount.setDouble(canStatus.txFullCount);
-      NTDriveMode.setValue(driveMode);
+      //NTDriveMode.setValue(driveMode);
       currentX.setDouble(m_pose.getX());
       currentY.setDouble(m_pose.getY());
       currentHeading.setDouble(m_pose.getRotation().getDegrees());

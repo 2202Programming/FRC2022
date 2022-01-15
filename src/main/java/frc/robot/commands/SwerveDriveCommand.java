@@ -17,7 +17,7 @@ public class SwerveDriveCommand extends CommandBase {
   private final SwerveDrivetrain drivetrain;
   private final DriverControls dc;
   private PIDController anglePid;
-  private double angle_kp = 0.1;
+  private double angle_kp = 0.03;
   private double angle_ki = 0.0;
   private double angle_kd = 0.0;
   //private Pose2d centerField = new Pose2d(27, 13.5, new Rotation2d()); //actual hub location?
@@ -33,6 +33,7 @@ public class SwerveDriveCommand extends CommandBase {
   private NetworkTableEntry xVelTarget;
   private NetworkTableEntry yVelTarget;
   private NetworkTableEntry rotVelTarget;
+  private NetworkTableEntry NTangleError;
   public final String NT_Name = "DT"; // expose data under DriveTrain table
 
   public SwerveDriveCommand(SwerveDrivetrain drivetrain, DriverControls dc) {
@@ -46,6 +47,7 @@ public class SwerveDriveCommand extends CommandBase {
     xVelTarget = table.getEntry("/xVelTarget");
     yVelTarget = table.getEntry("/yVelTarget");
     rotVelTarget = table.getEntry("/rotVelTarget");
+    NTangleError = table.getEntry("/angleError");
   }
 
   @Override
@@ -67,12 +69,6 @@ public class SwerveDriveCommand extends CommandBase {
     // the right by default.
     double rot = 0;
 
-    switch(drivetrain.getDriveMode()){
-      case robotCentric:
-      case fieldCentric:
-        rot = rotLimiter.calculate(dc.getXYRotation()) * DriveTrain.kMaxAngularSpeed; //use joystick for rotation in robot and field centric modes
-        break;
-      case hubCentric:
         //set goal of angle PID to be heading (in degrees) from current position to centerfield
         double targetAngle = getHeading(drivetrain.getPose(), centerField);
         double currentAngle = drivetrain.getPose().getRotation().getDegrees(); //from -180 to 180
@@ -84,6 +80,15 @@ public class SwerveDriveCommand extends CommandBase {
         if(angleError > 180) {
           targetAngle -= 360;
         }
+        hubCentricTarget.setValue(targetAngle);
+        NTangleError.setDouble(angleError);
+
+    switch(drivetrain.getDriveMode()){
+      case robotCentric:
+      case fieldCentric:
+        rot = rotLimiter.calculate(dc.getXYRotation()) * DriveTrain.kMaxAngularSpeed; //use joystick for rotation in robot and field centric modes
+        break;
+      case hubCentric:
         anglePid.setSetpoint(targetAngle);
         rot = rotLimiter.calculate(anglePid.calculate(currentAngle)) * DriveTrain.kMaxAngularSpeed; //use PID for rotation in hub centric
         break;
@@ -99,11 +104,11 @@ public class SwerveDriveCommand extends CommandBase {
   private double getHeading(Pose2d a, Pose2d b) {
 
     //from -PI to +PI
-    double theta = Math.atan2(b.getX()-a.getX(), b.getY()-a.getY());
+    double theta = Math.atan2(b.getY()-a.getY(), b.getX()-a.getX());
     
     //convert this to degrees in the range -180 to 180
-    theta = (((theta + Math.PI) * 360) / (2 * Math.PI)) - 180; 
-    hubCentricTarget.setValue(theta);
+    theta = Math.toDegrees(theta);
+
     return theta;
   }
 
