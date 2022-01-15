@@ -75,7 +75,7 @@ public class SwerveDriveCommand extends CommandBase {
       case hubCentric:
         //set goal of angle PID to be heading (in degrees) from current position to centerfield
         double targetAngle = getHeading(drivetrain.getPose(), centerField);
-        double currentAngle = drivetrain.getPose().getRotation().getDegrees();
+        double currentAngle = drivetrain.getPose().getRotation().getDegrees(); //from -180 to 180
         double angleError = targetAngle - currentAngle;
         //deal with continuity issue across 0
         if(angleError < -180) {
@@ -101,8 +101,8 @@ public class SwerveDriveCommand extends CommandBase {
     //from -PI to +PI
     double theta = Math.atan2(b.getX()-a.getX(), b.getY()-a.getY());
     
-    //convert this to degrees in the range 0 to 360
-    theta = ((theta + Math.PI) * 360) / (2 * Math.PI); 
+    //convert this to degrees in the range -180 to 180
+    theta = (((theta + Math.PI) * 360) / (2 * Math.PI)) - 180; 
     hubCentricTarget.setValue(theta);
     return theta;
   }
