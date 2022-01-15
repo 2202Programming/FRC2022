@@ -2,6 +2,9 @@
   "DT": {
     "open": true
   },
+  "LiveWindow": {
+    "open": true
+  },
   "NetworkTables Settings": {
     "mode": "Client"
   }
