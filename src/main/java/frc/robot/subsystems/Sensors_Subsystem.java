@@ -13,7 +13,6 @@ import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 //import com.kauailabs.navx.AHRSProtocol.AHRSUpdate;
 import com.kauailabs.navx.frc.AHRS;
 
-import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.hal.can.CANJNI;
 import edu.wpi.first.hal.can.CANStatus;
 import edu.wpi.first.networktables.NetworkTable;

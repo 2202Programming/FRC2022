@@ -11,29 +11,33 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.Constants.CAN;
+import frc.robot.Constants.Shooter;
 
 public class Shooter_Subsystem extends SubsystemBase {
   /** Creates a new Shooter_Subsystem. */
+  static final int SLOT = 0;
+
+  State  currentState = new State();
   CANSparkMax flywheel = new CANSparkMax(CAN.FLYWHEEL, MotorType.kBrushless);
   RelativeEncoder flywheelEncoder = flywheel.getEncoder();
   SparkMaxPIDController flywheelPID = flywheel.getPIDController();
   double speedGoal; 
-  double kP = 0.0;
-  double kI = 0.0;
-  double kD = 0.0;
+ 
 
   public Shooter_Subsystem() {
-    flywheelPID.setP(kP);
-    flywheelPID.setI(kI);
-    flywheelPID.setD(kD);
-    flywheelEncoder.setVelocityConversionFactor(1 / Constants.NEO_COUNTS_PER_REVOLUTION);
+   
+    flywheelEncoder.setVelocityConversionFactor(1 / Shooter.CountsPerRev);
+    //copy our pid values to the hardware 
+    Shooter.FlyWheelPID.copyTo(flywheelPID, SLOT);
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+
+    // TODO 1/15/2022 DPL - DON'T set every frame, this is a can bus message
+    // so you don't want more traffic.  Figure out a better way.  :)
     flywheelPID.setReference(speedGoal, ControlType.kVelocity);
   }
 
@@ -47,49 +51,62 @@ public class Shooter_Subsystem extends SubsystemBase {
 
   //takes angle class (has vertical and horizontal)
   //ball comes out at requested angle
-  public void setAngle(Angle angle){
+  public void setState(State cmdState){
     //sets angles to angles designated by Angle class 
   }
 
   //Could return a Motor speed object
   private double getMotorSpeed(){
     //return speed of a motor in ft/s
+    return 0.0;
   }
 
-  public Angle getAngle(){
+  public State getState() {
     //returns an angle class with the angle of the shooter 
+    return this.currentState;
   }
 
-  public double setTolerance(double tolerance){
+  public void setTolerance(double tolerance){
     //tolerance of error
+
   }
 
   public void shoot(){
     //shoots the ball
   }
 
-  public boolean readyToShoot(){
+  public boolean isReadyToShoot(){
+
+    // TODO - some sort of test on speed and commanded
+    getMotorSpeed();
     //returns wether the motors and angles are ready as set 
+    return false;
   }
 
   /*
   * Might want to make "grand setter command" that sets all relevant values
+   * TODO DPL - changed name to State because it may hold more than Angle
+   * 
   */
 
-  public class Angle(){
+  public class State {
     double verticalAngle;
     double horizontalAngle; 
+    double angleTolerance ;   //TODO - more possible examples of state 
+    double speedTolerance ;
 
-    public Angle(){
+    public State(){
 
     }
 
     public double getVerticalAngle(){
       //gets vertical angle of shooter in degrees
+      return 0.0;
     }
 
     public double getHorizontalAngle(){
       //gets horizontal angle of shooter in degrees
+      return 0.0;
     }
 
     public void setVerticalAngle(double angle){

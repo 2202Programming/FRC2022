@@ -24,8 +24,6 @@ public final class Constants {
     public static final double DT = 0.02; // 20ms framerate 50Hz
     public static final double Tperiod = 0.02; // framerate period 20ms, 50Hz
 
-    public static final double FLYWHEEL_GEAR_RATIO = 1; //random number
-    public static final int NEO_COUNTS_PER_REVOLUTION = 42;
     /**
      * CAN bus IDs
      * 
@@ -116,6 +114,16 @@ public final class Constants {
      * 
      *    <subsys>.data  convention 
      */
+      public static final class Shooter {
+        public static final double FlyWheelGearRatio = 1.11;     //use camelcase
+        public static final int CountsPerRev = 42;
+        
+        public static final PIDFController FlyWheelPID = 
+          new PIDFController(0.1, 0.0, 0.0, 0.0);
+
+    }
+
+
     // public static final class LIDAR {
     //     public static final double SAMPLE_mS = 20; // in ms
        
