@@ -7,13 +7,16 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.ifx.MechanumDrive;
-import frc.robot.Constants;
 import frc.robot.Constants.PWM;
 
 
 public class Mechanum extends SubsystemBase implements MechanumDrive{
 
   Spark FL = new Spark(PWM.mech_FL);
+  Spark FR = new Spark(PWM.mech_FR);
+  Spark BL = new Spark(PWM.mech_BL);
+  Spark BR = new Spark(PWM.mech_BR);
+  
   /** Creates a new Mechanum. */
   public Mechanum() {}
 
