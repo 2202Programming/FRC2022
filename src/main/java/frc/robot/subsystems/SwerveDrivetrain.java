@@ -155,16 +155,18 @@ public class SwerveDrivetrain extends SubsystemBase {
     ySpeed = MathUtil.clamp(ySpeed, -Constants.DriveTrain.kMaxSpeed, Constants.DriveTrain.kMaxSpeed);
     rot = MathUtil.clamp(rot, -Constants.DriveTrain.kMaxAngularSpeed, Constants.DriveTrain.kMaxAngularSpeed);
 
-    ChassisSpeeds chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, rot);
 
-    if (driveMode != DriveModeTypes.robotCentric) {
-      chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, gyro.getRotation2d());
+    switch(driveMode) {
+      case robotCentric:
+        states = kinematics.toSwerveModuleStates(new ChassisSpeeds(xSpeed, ySpeed, rot));
+        break;
+      case fieldCentric:
+        states = kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, gyro.getRotation2d()));
+        break;
+      case hubCentric:
+        states = kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, gyro.getRotation2d()));
+        break;
     }
-
-    states = kinematics.toSwerveModuleStates(chassisSpeeds);
-
-    // fix speeds if kinematics exceed what the robot can actually do [lenght/s]
-    // SwerveDriveKinematics.normalizeWheelSpeeds(states, DriveTrain.kMaxSpeed);
 
     // output the angle and velocity for each module
     // Maybe should just call setModuleStates?
@@ -201,7 +203,7 @@ public class SwerveDrivetrain extends SubsystemBase {
       receiveErrorCount.setDouble(canStatus.receiveErrorCount);
       transmitErrorCount.setDouble(canStatus.transmitErrorCount);
       txFullCount.setDouble(canStatus.txFullCount);
-      // NTDriveMode.setValue(driveMode);
+      NTDriveMode.setString(driveMode.toString());
       currentX.setDouble(m_pose.getX());
       currentY.setDouble(m_pose.getY());
       currentHeading.setDouble(m_pose.getRotation().getDegrees());
