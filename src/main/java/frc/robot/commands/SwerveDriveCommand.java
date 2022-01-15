@@ -34,6 +34,8 @@ public class SwerveDriveCommand extends CommandBase {
   private NetworkTableEntry yVelTarget;
   private NetworkTableEntry rotVelTarget;
   private NetworkTableEntry NTangleError;
+  private NetworkTableEntry xJoystick;
+  private NetworkTableEntry yJoystick;
   public final String NT_Name = "DT"; // expose data under DriveTrain table
 
   public SwerveDriveCommand(SwerveDrivetrain drivetrain, DriverControls dc) {
@@ -48,6 +50,9 @@ public class SwerveDriveCommand extends CommandBase {
     yVelTarget = table.getEntry("/yVelTarget");
     rotVelTarget = table.getEntry("/rotVelTarget");
     NTangleError = table.getEntry("/angleError");
+    xJoystick = table.getEntry("/xJoystick");
+    yJoystick = table.getEntry("/yJoystick");
+
   }
 
   @Override
@@ -60,6 +65,10 @@ public class SwerveDriveCommand extends CommandBase {
     // we want a positive value when we pull to the left. Xbox controllers
     // return positive values when you pull to the right by default.
     var ySpeed = yspeedLimiter.calculate(dc.getVelocityY()) * DriveTrain.kMaxSpeed;
+
+    xJoystick.setDouble(dc.getVelocityX());
+    xJoystick.setDouble(dc.getVelocityY());
+
 
     // Get the rate of angular rotation. We are inverting this because we want a
     // positive value when we pull to the left (remember, CCW is positive in
