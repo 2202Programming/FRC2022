@@ -117,6 +117,12 @@ public final class Constants {
        
     // }
 
+
+      public static final class Intake {
+        // TODO put your constants here.
+
+      }
+
     public static final class DriverPrefs {
         public static final double VelExpo = 0.3;        // non-dim [0.0 - 1.0]
         public static final double RotationExpo = 0.9;   // non-dim [0.0 - 1.0]
