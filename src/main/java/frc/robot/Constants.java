@@ -117,6 +117,13 @@ public final class Constants {
        
     // }
 
+      public static final class Climber {
+        //TODO example pid init, climber may have a few - DPL  1/15/22
+        PIDFController armPID = new PIDFController(1, 0, 0, 0); 
+
+      }
+      
+
     public static final class DriverPrefs {
         public static final double VelExpo = 0.3;        // non-dim [0.0 - 1.0]
         public static final double RotationExpo = 0.9;   // non-dim [0.0 - 1.0]
