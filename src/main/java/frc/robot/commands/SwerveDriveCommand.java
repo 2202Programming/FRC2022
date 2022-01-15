@@ -17,7 +17,7 @@ public class SwerveDriveCommand extends CommandBase {
   private final SwerveDrivetrain drivetrain;
   private final DriverControls dc;
   private PIDController anglePid;
-  private double angle_kp = 0.04;
+  private double angle_kp = 0.07;
   private double angle_ki = 0.0;
   private double angle_kd = 0.0;
   //private Pose2d centerField = new Pose2d(27, 13.5, new Rotation2d()); //actual hub location?
@@ -67,7 +67,7 @@ public class SwerveDriveCommand extends CommandBase {
     var ySpeed = yspeedLimiter.calculate(dc.getVelocityY()) * DriveTrain.kMaxSpeed;
 
     xJoystick.setDouble(dc.getVelocityX());
-    xJoystick.setDouble(dc.getVelocityY());
+    yJoystick.setDouble(dc.getVelocityY());
 
 
     // Get the rate of angular rotation. We are inverting this because we want a
