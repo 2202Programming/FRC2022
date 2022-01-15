@@ -4,21 +4,45 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.Constants.CAN;
 
 public class Shooter_Subsystem extends SubsystemBase {
   /** Creates a new Shooter_Subsystem. */
-  public Shooter_Subsystem() {}
+  CANSparkMax flywheel = new CANSparkMax(CAN.FLYWHEEL, MotorType.kBrushless);
+  RelativeEncoder flywheelEncoder = flywheel.getEncoder();
+  SparkMaxPIDController flywheelPID = flywheel.getPIDController();
+  double speedGoal; 
+  double kP = 0.0;
+  double kI = 0.0;
+  double kD = 0.0;
+
+  public Shooter_Subsystem() {
+    flywheelPID.setP(kP);
+    flywheelPID.setI(kI);
+    flywheelPID.setD(kD);
+    flywheelEncoder.setVelocityConversionFactor(1 / Constants.NEO_COUNTS_PER_REVOLUTION);
+  }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    flywheelPID.setReference(speedGoal, ControlType.kVelocity);
   }
 
   //ball should come out at this speed
-  public void setSpeed(double speed){
+  public void setSpeed(double speed /*in rpm*/){
     //turns this into a motor speed
-    //spin motor at rpms
+    //spin motor at rpm
+    speed = speed / 60; //convert rpm to rps 
+    speedGoal = speed; 
   }
 
   //takes angle class (has vertical and horizontal)

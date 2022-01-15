@@ -24,6 +24,8 @@ public final class Constants {
     public static final double DT = 0.02; // 20ms framerate 50Hz
     public static final double Tperiod = 0.02; // framerate period 20ms, 50Hz
 
+    public static final double FLYWHEEL_GEAR_RATIO = 1; //random number
+    public static final int NEO_COUNTS_PER_REVOLUTION = 42;
     /**
      * CAN bus IDs
      * 
@@ -58,6 +60,8 @@ public final class Constants {
 
         // Whether to burn flash or not
         public static final boolean BURN_FLASH = false;
+
+        public static final int FLYWHEEL = 0; //random number
 
 
     }
