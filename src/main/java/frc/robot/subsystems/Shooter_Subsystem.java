@@ -54,14 +54,17 @@ public class Shooter_Subsystem extends SubsystemBase {
   //Could return a Motor speed object
   private double getMotorSpeed(){
     //return speed of a motor in ft/s
+    return 0;
   }
 
   public Angle getAngle(){
     //returns an angle class with the angle of the shooter 
+    return new Angle();
   }
 
   public double setTolerance(double tolerance){
     //tolerance of error
+    return 0;
   }
 
   public void shoot(){
@@ -70,13 +73,14 @@ public class Shooter_Subsystem extends SubsystemBase {
 
   public boolean readyToShoot(){
     //returns wether the motors and angles are ready as set 
+    return false;
   }
 
   /*
   * Might want to make "grand setter command" that sets all relevant values
   */
 
-  public class Angle(){
+  public class Angle {
     double verticalAngle;
     double horizontalAngle; 
 
@@ -86,10 +90,12 @@ public class Shooter_Subsystem extends SubsystemBase {
 
     public double getVerticalAngle(){
       //gets vertical angle of shooter in degrees
+      return 0;
     }
 
     public double getHorizontalAngle(){
       //gets horizontal angle of shooter in degrees
+      return 0;
     }
 
     public void setVerticalAngle(double angle){
