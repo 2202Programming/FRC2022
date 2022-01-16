@@ -1,0 +1,32 @@
+// .devcontainer/devcontainer.json
+{
+    // Name of the environment
+    "name":"General FRC Development",
+    // "image": "ghcr.io/2202Programming/frc-devcontainer:2022",
+    // Set any default VSCode settings here
+    "settings": {
+        "terminal.integrated.shell.linux":"/bin/bash"
+    },
+
+    // Tell VSCode where to find the workspace directory
+    "workspaceMount": "source=${localWorkspaceFolder},target=/root/workspace,type=bind,consistency=cached",
+    "workspaceFolder": "/root/workspace",
+
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+
+    // Allow the host and container docker daemons to communicate
+    "mounts": [ "source=/var/run/docker.sock,target=/var/run/docker-host.sock,type=bind" ],
+
+    // Any extensions you want can go here
+    "extensions": [
+        // Needed extensions for using WPILib
+        "redhat.java",
+        "ms-vscode.cpptools",
+        "vscjava.vscode-java-pack",
+
+        // The WPILib extension itself
+        "wpilibsuite.vscode-wpilib"
+    ]
+}
