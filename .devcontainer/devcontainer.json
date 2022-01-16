@@ -11,10 +11,7 @@
     // Tell VSCode where to find the workspace directory
     "workspaceMount": "source=${localWorkspaceFolder},target=/root/workspace,type=bind,consistency=cached",
     "workspaceFolder": "/root/workspace",
-
-    "build": {
-        "dockerfile": "Dockerfile"
-    },
+    "image": "wpilib/roborio-cross-ubuntu:2022-18.04",
 
     // Allow the host and container docker daemons to communicate
     "mounts": [ "source=/var/run/docker.sock,target=/var/run/docker-host.sock,type=bind" ],
