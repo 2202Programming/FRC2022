@@ -1,5 +1,7 @@
 package frc.robot.subsystems.ifx;
 
-public interface MechanumDrive {
-    void drive_normalized (double x, double y, double rotation)
+import edu.wpi.first.wpilibj2.command.Subsystem;
+
+public interface MechanumDrive extends Subsystem {
+    void drive_normalized (double x, double y, double rotation);
 }
