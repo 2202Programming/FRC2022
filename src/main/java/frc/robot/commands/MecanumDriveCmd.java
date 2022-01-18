@@ -6,15 +6,15 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ifx.DriverControls;
-import frc.robot.subsystems.ifx.MechanumDrive;
+import frc.robot.subsystems.ifx.MecanumDriveIfx;
 
-public class MechanumDriveCmd extends CommandBase {
+public class MecanumDriveCmd extends CommandBase {
 
   DriverControls dc;
-  MechanumDrive drive;
+  MecanumDriveIfx drive;
 
   /** Creates a new MechanumDrive. */
-  public MechanumDriveCmd(MechanumDrive drive, DriverControls dc) {
+  public MecanumDriveCmd(MecanumDriveIfx drive, DriverControls dc) {
     this.dc = dc;
     this.drive = drive;
     addRequirements(drive);

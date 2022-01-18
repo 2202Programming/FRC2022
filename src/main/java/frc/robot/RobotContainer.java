@@ -18,12 +18,15 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants.DriverPrefs;
+import frc.robot.commands.MecanumDriveCmd;
 import frc.robot.commands.SwerveDriveCommand;
 import frc.robot.commands.auto.auto_drivePath_cmd;
+import frc.robot.subsystems.MecanumDrivetrain;
 import frc.robot.subsystems.Sensors_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.hid.HID_Xbox_Subsystem;
 import frc.robot.subsystems.hid.XboxButton;
+import frc.robot.subsystems.ifx.MecanumDriveIfx;
 import frc.robot.subsystems.ifx.DriverControls.Id;
 import frc.robot.ux.Dashboard;
 
@@ -39,7 +42,7 @@ public class RobotContainer {
 
   public final HID_Xbox_Subsystem driverControls;
   public final Sensors_Subsystem sensors;
-  private final SwerveDrivetrain drivetrain;
+  private final MecanumDriveIfx drivetrain;
   public final Dashboard dashboard;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -49,10 +52,10 @@ public class RobotContainer {
     //create our subsystems
     sensors = new Sensors_Subsystem();
     driverControls = new HID_Xbox_Subsystem(DriverPrefs.VelExpo, DriverPrefs.RotationExpo, DriverPrefs.StickDeadzone); 
-    drivetrain = new SwerveDrivetrain();
+    drivetrain = new MecanumDrivetrain();
 
     // set default commands
-    drivetrain.setDefaultCommand(new SwerveDriveCommand(drivetrain, driverControls));
+    drivetrain.setDefaultCommand(new MecanumDriveCmd(drivetrain, driverControls));
 
     //setup the dashboard programatically, creates any choosers, screens
     dashboard = new Dashboard(this);
@@ -77,16 +80,16 @@ public class RobotContainer {
   void setDriverButtons(){
 
     //B - Toggle drive mode
-    driverControls.bind(Id.Driver, XboxButton.B).whenPressed(new InstantCommand( drivetrain::driveModeCycle ));
+    //driverControls.bind(Id.Driver, XboxButton.B).whenPressed(new InstantCommand( drivetrain::driveModeCycle ));
   
     //A - Trajectory Test
-    driverControls.bind(Id.Driver, XboxButton.A).whenPressed(getTrajectoryFollowTestCommand());
+    //driverControls.bind(Id.Driver, XboxButton.A).whenPressed(getTrajectoryFollowTestCommand());
   
     //Y - reset Pose
-    driverControls.bind(Id.Driver, XboxButton.Y).whenPressed(new InstantCommand( drivetrain::resetPose ));
+    //driverControls.bind(Id.Driver, XboxButton.Y).whenPressed(new InstantCommand( drivetrain::resetPose ));
 
     //X - follow path off chooser
-    driverControls.bind(Id.Driver, XboxButton.X).whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
+    //driverControls.bind(Id.Driver, XboxButton.X).whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
   }
 
     /**
@@ -111,44 +114,5 @@ public class RobotContainer {
     //driverControls.bind(Id.Driver, XboxPOV.POV_LEFT).whenHeld(new SwerveDriveTest(drivetrain, 1, -90));
   }
 
-  public Command getTrajectoryFollowTestCommand (){
-    // An example trajectory to follow.  All units in feet.
-    Rotation2d current_angle = new Rotation2d(sensors.getYaw());
-    Trajectory exampleTrajectory =
-      TrajectoryGenerator.generateTrajectory(
-        
-        new Pose2d(0.0, 0.0, current_angle),
-        List.of(
-          // new Translation2d(0.0, 0.25),
-          // new Translation2d(0.0, 0.5),
-          // new Translation2d(0.0, 0.75)
-        ),
-        new Pose2d(0, 3.0, current_angle),
-        new TrajectoryConfig(2.0, 0.5) //max velocity, max accel
-        //new TrajectoryConfig(Constants.DriveTrain.kMaxSpeed, Constants.DriveTrain.kMaxAngularSpeed) //way too fast
-        
-      );
-      
-      SwerveControllerCommand swerveControllerCommand =
-      new SwerveControllerCommand(
-          exampleTrajectory,
-          drivetrain::getPose, // Functional interface to feed supplier
-          drivetrain.getKinematics(),
-          // Position controllers 
-          new PIDController(4.0, 0.0, 0.0),
-          new PIDController(4.0, 0.0, 0.0),
-          new ProfiledPIDController(4, 0, 0, new TrapezoidProfile.Constraints(.3, .3)),
-            // Here, our rotation profile constraints were a max velocity
-            // of 1 rotation per second and a max acceleration of 180 degrees
-            // per second squared
-          drivetrain::setModuleStates,
-          drivetrain);
-
-        // Reset odometry to the starting pose of the trajectory.
-    drivetrain.setPose(exampleTrajectory.getInitialPose());
-
-    // Run path following command, then stop at the end.
-    return swerveControllerCommand.andThen(() -> drivetrain.drive(0, 0, 0)).withTimeout(10);
-
-  }
+  
 }

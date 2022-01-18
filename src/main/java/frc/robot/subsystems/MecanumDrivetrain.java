@@ -6,28 +6,29 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.ifx.MechanumDrive;
+import frc.robot.subsystems.ifx.MecanumDriveIfx;
 import frc.robot.Constants.PWM;
+import edu.wpi.first.wpilibj.drive.MecanumDrive;
 
 
-public class Mechanum extends SubsystemBase implements MechanumDrive{
+public class MecanumDrivetrain extends SubsystemBase implements MecanumDriveIfx{
 
+  // Create controllers
   Spark FL = new Spark(PWM.mech_FL);
   Spark FR = new Spark(PWM.mech_FR);
   Spark BL = new Spark(PWM.mech_BL);
   Spark BR = new Spark(PWM.mech_BR);
-  
-  /** Creates a new Mechanum. */
-  public Mechanum() {}
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
+  MecanumDrive drive;
+
+    /** Creates a new Mechanum. */
+  public MecanumDrivetrain() {
+    drive = new MecanumDrive(FL,BL,FR,BR);
   }
 
   @Override
-  public void drive_normalized(double x, double y, double rotation) {
-    // TODO Auto-generated method stub
+  public void drive_normalized(double xSpeed, double ySpeed, double rotation) {
+    drive.driveCartesian(ySpeed, xSpeed, rotation);
     
   }
 }
