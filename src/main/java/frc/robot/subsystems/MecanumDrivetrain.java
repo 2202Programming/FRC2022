@@ -28,7 +28,7 @@ public class MecanumDrivetrain extends SubsystemBase implements MecanumDriveIfx{
 
   @Override
   public void drive_normalized(double xSpeed, double ySpeed, double rotation) {
-    drive.driveCartesian(ySpeed, xSpeed, rotation);
+    drive.driveCartesian(xSpeed, ySpeed, rotation);
     
   }
 }
