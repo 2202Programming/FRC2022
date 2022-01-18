@@ -18,6 +18,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.Shooter;
+import frc.robot.subsystems.shooter.FlywheelConfig;
+import frc.robot.subsystems.shooter.TalonFlywheel;
 import frc.robot.util.PIDFController;
 
 public class Shooter_Subsystem extends SubsystemBase {
@@ -25,13 +27,15 @@ public class Shooter_Subsystem extends SubsystemBase {
   static final int SLOT = 0;
 
   State  currentState = new State();
-  TalonSRX flywheel = new TalonSRX(CAN.FLYWHEEL);
-  TalonSRX flywheel1 = new TalonSRX(CAN.FLYWHEEL1);
+ // TalonSRX flywheel = new TalonSRX(CAN.FLYWHEEL);
+  //TalonSRX flywheel1 = new TalonSRX(CAN.FLYWHEEL1);
   // RelativeEncoder flywheelEncoder = flywheel.getEncoder();
   // RelativeEncoder flywheelEncoder1 = flywheel1.getEncoder();
   // SparkMaxPIDController flywheelPID = flywheel.GetPid getPIDController();
   double speedGoal; 
- 
+ TalonFlywheel upperflywheel;
+ TalonFlywheel lowerflywheel;
+
 
   public Shooter_Subsystem() {
    
@@ -47,8 +51,21 @@ public class Shooter_Subsystem extends SubsystemBase {
     SmartDashboard.putNumber("Set Point 2", 0);
 
     // flywheelEncoder.setVelocityConversionFactor(1 / Constants.NEO_COUNTS_PER_REVOLUTION);
+    upperflywheel = createFlywheel(CAN.FLYWHEEL, false);
+    lowerflywheel = createFlywheel(CAN.FLYWHEEL1, true);
   }
 
+  private TalonFlywheel createFlywheel (int CANid, boolean inverted) {
+    var config = new FlywheelConfig();
+    config.gearRatio = 1;
+    config.maxOpenLoopRPM = 3074;
+    config.sensorPhase = false;
+    config.pid = Shooter.FlyWheelPID;
+    config.flywheelRadius = 2/12;
+    config.FWrpe2MU = 1;
+    config.inverted = inverted;
+    return new TalonFlywheel(CANid, config);
+  }
   public void display() {
     SmartDashboard.putNumber("P Gain", Shooter.FlyWheelPID.getP());
     SmartDashboard.putNumber("I Gain", Shooter.FlyWheelPID.getI());
@@ -59,8 +76,8 @@ public class Shooter_Subsystem extends SubsystemBase {
   public double clamp(String name) { 
 
     double setPoint = SmartDashboard.getNumber(name, 0);
-    if(setPoint > 1) { setPoint = 1; }
-    if(setPoint < -1) { setPoint = -1;}
+    // if(setPoint > 1) { setPoint = 1; }
+    // if(setPoint < -1) { setPoint = -1;}
 
     return setPoint;
   }
@@ -84,11 +101,13 @@ public class Shooter_Subsystem extends SubsystemBase {
     // }
 
     // flywheelPID.setReference(setPoint, ControlType.kVelocity);
-    flywheel.set(ControlMode.PercentOutput, clamp("Set Point 1"));
-    flywheel1.set(ControlMode.PercentOutput, -1 * clamp("Set Point 2"));
-
-    SmartDashboard.putNumber("Encoder Velocity", flywheel.getSelectedSensorVelocity());// .getVelocity());
-    SmartDashboard.putNumber("Encoder Velocity1", flywheel1.getSelectedSensorVelocity());
+    // flywheel.set(ControlMode.PercentOutput, clamp("Set Point 1"));
+    // flywheel1.set(ControlMode.PercentOutput, -1 * clamp("Set Point 2"));
+    upperflywheel.setRPM(clamp("Set Point 1"));
+    lowerflywheel.setRPM(clamp("Set Point 2"));
+    
+    SmartDashboard.putNumber("Encoder Velocity", upperflywheel.getRPM());
+    SmartDashboard.putNumber("Encoder Velocity1", lowerflywheel.getRPM());
   }
 
   //ball should come out at this speed
