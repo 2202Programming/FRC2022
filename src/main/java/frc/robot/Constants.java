@@ -41,7 +41,11 @@ public final class Constants {
         public static final int DT_BR_CANCODER = 6; 
         public static final int DT_FR_CANCODER = 7;
         public static final int DT_FL_CANCODER = 8;
-        
+
+        //shooter testing 
+        public static final int FLYWHEEL = 10; 
+        public static final int FLYWHEEL1 = 11; 
+
         // drive train drive / angle motors - sparkmax neo
         public static final int DT_FL_DRIVE = 20;
         public static final int DT_FL_ANGLE = 21;
@@ -55,14 +59,8 @@ public final class Constants {
         public static final int DT_FR_DRIVE = 26; 
         public static final int DT_FR_ANGLE = 27;
 
-
         // Whether to burn flash or not
         public static final boolean BURN_FLASH = false;
-
-        public static final int FLYWHEEL = 10; //random number
-        public static final int FLYWHEEL1 = 11; //random number
-
-
     }
 
     // PWM assignments on the Rio
