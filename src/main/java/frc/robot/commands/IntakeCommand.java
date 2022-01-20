@@ -5,12 +5,16 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants.Intake;
 import frc.robot.subsystems.ifx.IntakeIfx;
 
 public class IntakeCommand extends CommandBase {
-
+  IntakeIfx Intake;
   //Constructor
-  public IntakeCommand() {}
+  public IntakeCommand(IntakeIfx Intake) {
+      this.Intake = Intake;
+      addRequirements(Intake);
+  }
 
   // Called when the command is initially scheduled.
   @Override
