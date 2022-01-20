@@ -59,7 +59,7 @@ public final class Constants {
         // Whether to burn flash or not
         public static final boolean BURN_FLASH = false;
 
-
+        public static final int move1 = 11; //fake number
     }
 
     // PWM assignments on the Rio
