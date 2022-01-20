@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake_Subsystem extends SubsystemBase {
 
+    // TODO example API - if too complex or has timing, create commands 
+
     //Instantiations
     final Spark intake_spark = new Spark(PWM.INTAKE);
     final DoubleSolenoid intake_solenoid = new DoubleSolenoid(Intake.INTAKE_PCM_CAN_ID, PneumaticsModuleType.CTREPCM, Intake.INTAKE_UP_SOLENOID_PCM, Intake.INTAKE_DOWN_SOLENOID_PCM);
@@ -16,16 +18,22 @@ public class Intake_Subsystem extends SubsystemBase {
     //Constructor
     public Intake_Subsystem(){}
 
-    // TODO example API - if too complex or has timing, create commands 
-    // and use a more detailed api in command.
+    //Turn Intake Motor On by sending a double value
+    public void intakeOn(double motorStrength) {
+        intake_spark.set(motorStrength);
+    }
 
+    //Turn Intake Motor Off by sending a doulbe value
+    public void intakeOff() {
+        intake_spark.set(0);
+    }
 
-    //Deploy arm mechanism using a double solenoids
+    //Deploy arm mechanism using a Double Solenoids
     public void deploy() {
         intake_solenoid.set(DoubleSolenoid.Value.kReverse);
     }
 
-    //Retract arm mechanism using a double solenoids
+    //Retract arm mechanism using a Double Solenoids
     public void retract() {
         intake_solenoid.set(DoubleSolenoid.Value.kForward);
     }
