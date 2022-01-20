@@ -19,12 +19,12 @@ public class Intake_Subsystem extends SubsystemBase {
     public Intake_Subsystem(){}
 
     //Turn Intake Motor On by sending a double value
-    public void intakeOn(double motorStrength) {
+    public void on(double motorStrength) {
         intake_spark.set(motorStrength);
     }
 
     //Turn Intake Motor Off by sending a doulbe value
-    public void intakeOff() {
+    public void off() {
         intake_spark.set(0);
     }
 
