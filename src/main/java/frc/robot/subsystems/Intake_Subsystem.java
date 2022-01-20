@@ -4,12 +4,14 @@ import frc.robot.Constants.Intake;
 import static frc.robot.Constants.PWM;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake_Subsystem extends SubsystemBase {
-
-    // TODO example API - if too complex or has timing, create commands 
+    // what valve value does what action
+    static final Value DEPLOY  = Value.kReverse;
+    static final Value RETRACT = Value.kForward;
 
     //Instantiations
     final Spark intake_spark = new Spark(PWM.INTAKE);
@@ -30,12 +32,15 @@ public class Intake_Subsystem extends SubsystemBase {
 
     //Deploy arm mechanism using a Double Solenoids
     public void deploy() {
-        intake_solenoid.set(DoubleSolenoid.Value.kReverse);
+        intake_solenoid.set(DEPLOY);
     }
 
     //Retract arm mechanism using a Double Solenoids
     public void retract() {
-        intake_solenoid.set(DoubleSolenoid.Value.kForward);
+        intake_solenoid.set(RETRACT);
     }
     
+    public boolean isDeployed() {
+      return ( intake_solenoid.get() == DEPLOY); 
+    }
 }

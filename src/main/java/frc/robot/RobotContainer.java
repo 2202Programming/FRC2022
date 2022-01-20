@@ -18,6 +18,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants.DriverPrefs;
+import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.IntakeDeployToggle;
 import frc.robot.commands.SwerveDriveCommand;
 import frc.robot.commands.auto.auto_drivePath_cmd;
 import frc.robot.subsystems.Sensors_Subsystem;
@@ -62,9 +64,6 @@ public class RobotContainer {
 
     setDriverButtons();
     setAssistantButtons();
-
-
-
     
   }
 
@@ -99,6 +98,13 @@ public class RobotContainer {
   * </ul>
   */
   void setAssistantButtons(){
+
+    //Y -toggle intake deploy
+    // B - spin intake while held
+    //
+    driverControls.bind(Id.Assistant, XboxButton.Y).whenPressed(new IntakeDeployToggle());
+    // IntakeCommand takes a DoubleSupplier f() which could be tied to our UX instead of const f() given here.
+    driverControls.bind(Id.Assistant, XboxButton.B).whileHeld(new IntakeCommand(  ()-> 0.50 ) );
 
   }
 
