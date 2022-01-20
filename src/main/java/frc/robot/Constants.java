@@ -41,6 +41,15 @@ public final class Constants {
         public static final int DT_BR_CANCODER = 6; 
         public static final int DT_FR_CANCODER = 7;
         public static final int DT_FL_CANCODER = 8;
+
+        // Climber Arms - L/R left/right I/O inner/outer
+        public static final int CMB_L_Rotate = 10;
+        public static final int CMB_R_Rotate = 11;
+        public static final int CMB_LI_Extend = 12;
+        public static final int CMB_RI_Extend = 13;
+        public static final int CMB_LO_Extend = 14;
+        public static final int CMB_RO_Extend = 15;
+        
         
         // drive train drive / angle motors - sparkmax neo
         public static final int DT_FL_DRIVE = 20;
@@ -118,11 +127,13 @@ public final class Constants {
        
     // }
 
-      public static final class Climber {
+    public static final class ClimbSettings {
         //TODO example pid init, climber may have a few - DPL  1/15/22
-        PIDFController armPID = new PIDFController(1, 0, 0, 0); 
+        public static PIDFController armPID = new PIDFController(1, 0, 0, 0);
+        public static PIDFController innerPID = new PIDFController(1, 0, 0, 0);
+        public static PIDFController outerPID = new PIDFController(1, 0, 0, 0);
 
-      }
+    }
       
 
     public static final class DriverPrefs {
@@ -182,4 +193,5 @@ public final class Constants {
         public static final double kSteeringGR = 12.8;   // [mo-turns to 1 angle wheel turn]
         public static final double kDriveGR = 8.16;      // [mo-turn to 1 drive wheel turn]
     }  
+
 }
