@@ -25,6 +25,7 @@ import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.hid.HID_Xbox_Subsystem;
 import frc.robot.subsystems.hid.XboxButton;
 import frc.robot.subsystems.ifx.DriverControls.Id;
+import frc.robot.subsystems.Intake_Subsystem; // New
 import frc.robot.ux.Dashboard;
 
 /**
@@ -39,6 +40,7 @@ public class RobotContainer {
 
   public final HID_Xbox_Subsystem driverControls;
   public final Sensors_Subsystem sensors;
+  public final Intake_Subsystem intake; //New
   private final SwerveDrivetrain drivetrain;
   public final Dashboard dashboard;
 
@@ -48,6 +50,7 @@ public class RobotContainer {
 
     //create our subsystems
     sensors = new Sensors_Subsystem();
+    intake = new Intake_Subsystem(); //New
     driverControls = new HID_Xbox_Subsystem(DriverPrefs.VelExpo, DriverPrefs.RotationExpo, DriverPrefs.StickDeadzone); 
     drivetrain = new SwerveDrivetrain();
 

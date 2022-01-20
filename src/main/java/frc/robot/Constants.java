@@ -68,10 +68,9 @@ public final class Constants {
 
     // PWM assignments on the Rio
     public static final class PWM {
-      /*
       public static final int INTAKE = 0;
-      public static final int MAGAZINE = 9; 
-      */
+      // public static final int MAGAZINE = 9; 
+      
     }
     
     // Digital IO on the RIO
@@ -121,10 +120,12 @@ public final class Constants {
        
     // }
 
-
+      //Intake Constants
       public static final class Intake {
-        // TODO put your constants here.
-
+        // public static final PneumaticsModuleType MODULETYPE = CTREPCM; //DELETE LATER
+        public static final int INTAKE_PCM_CAN_ID = CAN.PCM1; // test value
+        public static final int INTAKE_UP_SOLENOID_PCM = 4; // test value
+        public static final int INTAKE_DOWN_SOLENOID_PCM = 5; // test value
       }
 
     public static final class DriverPrefs {
