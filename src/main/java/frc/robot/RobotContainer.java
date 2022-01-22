@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants.DriverPrefs;
 import frc.robot.commands.SwerveDriveCommand;
 import frc.robot.commands.auto.auto_drivePath_cmd;
+import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.Sensors_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.hid.HID_Xbox_Subsystem;
@@ -41,6 +42,7 @@ public class RobotContainer {
   public final Sensors_Subsystem sensors;
   private final SwerveDrivetrain drivetrain;
   public final Dashboard dashboard;
+  public final Limelight_Subsystem limelight;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -50,6 +52,8 @@ public class RobotContainer {
     sensors = new Sensors_Subsystem();
     driverControls = new HID_Xbox_Subsystem(DriverPrefs.VelExpo, DriverPrefs.RotationExpo, DriverPrefs.StickDeadzone); 
     drivetrain = new SwerveDrivetrain();
+    limelight = new Limelight_Subsystem();
+
 
     // set default commands
     drivetrain.setDefaultCommand(new SwerveDriveCommand(drivetrain, driverControls));
@@ -87,6 +91,9 @@ public class RobotContainer {
 
     //X - follow path off chooser
     driverControls.bind(Id.Driver, XboxButton.X).whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
+
+    driverControls.bind(Id.Driver, XboxButton.RB).whenPressed(new InstantCommand( limelight::toggleLED ));
+
   }
 
     /**
