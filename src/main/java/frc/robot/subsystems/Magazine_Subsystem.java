@@ -6,7 +6,7 @@ package frc.robot.subsystems;
 
 import static frc.robot.Constants.CAN;
 import static frc.robot.Constants.MagazineSettings;
-
+import static frc.robot.Constants.DigitalIO;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
