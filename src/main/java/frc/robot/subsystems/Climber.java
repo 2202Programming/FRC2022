@@ -23,17 +23,13 @@ public class Climber {
 
   
     public Climber() {
-        // TODO Set the control type and PID settings - most likely position control
-        
-        //Copy the PID setting down to the hardware
-        // Rotation PIDS
-        ClimbSettings.armPID.copyTo(l_rotator.getPIDController(), slot);
-        ClimbSettings.armPID.copyTo(r_rotator.getPIDController(), slot);
-        // Arm extension PIDS
-        ClimbSettings.innerPID.copyTo(li_extender.getPIDController(), slot);
-        ClimbSettings.innerPID.copyTo(ri_extender.getPIDController(), slot);
-        ClimbSettings.outerPID.copyTo(lo_extender.getPIDController(), slot);
-        ClimbSettings.outerPID.copyTo(ro_extender.getPIDController(), slot);
+        raise1 = new CANSparkMax(Constants.CAN.RAISE1, MotorType.kBrushless);
+        lower1 = new CANSparkMax(Constants.CAN.LOWER1, MotorType.kBrushless);
+        raise2 = new CANSparkMax(Constants.CAN.RAISE2, MotorType.kBrushless);
+        lower2 = new CANSparkMax(Constants.CAN.LOWER2, MotorType.kBrushless);
+
+        angle1 = new CANSparkMax(Constants.CAN.ANGLE1, MotorType.kBrushless);
+        angle2 = new CANSparkMax(Constants.CAN.ANGLE2, MotorType.kBrushless);
 
     }
 

@@ -68,6 +68,13 @@ public final class Constants {
         // Whether to burn flash or not
         public static final boolean BURN_FLASH = false;
 
+        public static final int RAISE1 = 0; //fake
+        public static final int LOWER1 = 0; //fake
+        public static final int RAISE2 = 0; //fake
+        public static final int LOWER2 = 0; //fake
+        public static final int ANGLE1 = 0; //fake
+        public static final int ANGLE2 = 0; //fake
+
 
     }
 
