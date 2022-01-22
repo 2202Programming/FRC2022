@@ -24,7 +24,7 @@ public class SwerveDriveCommand extends CommandBase {
   private double angle_ki = 0.0;
   private double angle_kd = 0.0;
 
-  private double limelight_kp = 0.02;
+  private double limelight_kp = 0.05;
   private double limelight_ki = 0.0;
   private double limelight_kd = 0.0;
   //private Pose2d centerField = new Pose2d(27, 13.5, new Rotation2d()); //actual hub location?
