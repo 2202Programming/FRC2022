@@ -158,11 +158,11 @@ public final class Constants {
         // public static final double CC_BL_OFFSET = 90.351;
         // public static final double CC_FR_OFFSET = -173.84;
         // public static final double CC_BR_OFFSET = -27.24;
-
-        public static final double CC_FL_OFFSET = -99.667;
-        public static final double CC_BL_OFFSET = 90.43;
-        public static final double CC_FR_OFFSET = -175.25;
-        public static final double CC_BR_OFFSET = -28.38;
+      
+        public static final double CC_FL_OFFSET =   -99.842; //  -99.667;
+        public static final double CC_BL_OFFSET =    91.83;  //   90.43;
+        public static final double CC_FR_OFFSET =  -174.635; // -175.25;
+        public static final double CC_BR_OFFSET =   -28.415; //  -28.38;
 
         // public static final double CC_FL_OFFSET = 0;
         // public static final double CC_BL_OFFSET = 0;

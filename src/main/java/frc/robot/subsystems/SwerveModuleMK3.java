@@ -202,7 +202,11 @@ public class SwerveModuleMK3 {
   void calibrate() {
     // read absEncoder position, set internal angleEncoder to that value adjust for
     // cmd inversion.
+    // Average a couple of samples of the absolute encoder
     double pos_deg = absEncoder.getAbsolutePosition();
+    sleep(10);
+    pos_deg = (pos_deg + absEncoder.getAbsolutePosition())/2.0;
+    
     angleEncoder.setPosition(angleCmdInvert * pos_deg);
     sleep(100); // sparkmax gremlins
     double temp = angleEncoder.getPosition();
