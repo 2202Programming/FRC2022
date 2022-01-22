@@ -19,9 +19,14 @@ public class SwerveDriveCommand extends CommandBase {
   private final SwerveDrivetrain drivetrain;
   private final DriverControls dc;
   private PIDController anglePid;
+  private PIDController limelightPid;
   private double angle_kp = 0.07;
   private double angle_ki = 0.0;
   private double angle_kd = 0.0;
+
+  private double limelight_kp = 0.02;
+  private double limelight_ki = 0.0;
+  private double limelight_kd = 0.0;
   //private Pose2d centerField = new Pose2d(27, 13.5, new Rotation2d()); //actual hub location?
   private Pose2d centerField = new Pose2d(10,0, new Rotation2d()); //close point for testing to max rotation obvious
 
@@ -46,6 +51,7 @@ public class SwerveDriveCommand extends CommandBase {
     addRequirements(drivetrain);
     this.dc = dc;
     anglePid = new PIDController(angle_kp, angle_ki, angle_kd);
+    limelightPid = new PIDController(limelight_kp, limelight_ki, limelight_kd);
     this.limelight = limelight;
     
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
@@ -99,8 +105,8 @@ public class SwerveDriveCommand extends CommandBase {
         hubCentricTarget.setValue(targetAngle);
         NTangleError.setDouble(angleError);
      
-
-        if(limelight.getTarget())
+        boolean hasTarget = limelight.getTarget();
+        if(hasTarget)
         {
           targetAngle = 0;
           currentAngle = limelight.getX();
@@ -115,7 +121,13 @@ public class SwerveDriveCommand extends CommandBase {
         break;
       case hubCentric:
         anglePid.setSetpoint(targetAngle);
-        rot = rotLimiter.calculate(anglePid.calculate(currentAngle)); //use PID for rotation in hub centric
+        limelightPid.setSetpoint(targetAngle);
+        if(hasTarget){
+          rot = rotLimiter.calculate(limelightPid.calculate(currentAngle)); //use PID for rotation in hub centric
+        }
+        else{
+          rot = rotLimiter.calculate(anglePid.calculate(currentAngle)); //use PID for rotation in hub centric
+        }
         break;
     }
    
