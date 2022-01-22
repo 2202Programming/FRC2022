@@ -41,6 +41,7 @@ public class SwerveDrivetrain extends SubsystemBase {
   boolean kDriveMotorInvert_Left = false;
   boolean kAngleMotorInvert_Left = false;
   boolean kAngleCmdInvert_Left = false;
+  String driveCommand = "NONE";
   /**
    *
    * Modules are in the order of - Front Left Front Right Back Left Back Right
@@ -75,6 +76,8 @@ public class SwerveDrivetrain extends SubsystemBase {
   private NetworkTableEntry currentY;
   private NetworkTableEntry currentHeading;
   private NetworkTableEntry NTDriveMode;
+  private NetworkTableEntry driveCmd;
+
 
   public final String NT_Name = "DT"; // expose data under DriveTrain table
   private int timer;
@@ -133,6 +136,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     currentX = table.getEntry("/Current X");
     currentY = table.getEntry("/Current Y");
     currentHeading = table.getEntry("/Current Heading");
+    driveCmd = table.getEntry("/Drive Command");
 
   }
 
@@ -209,6 +213,7 @@ public class SwerveDrivetrain extends SubsystemBase {
       currentX.setDouble(m_pose.getX());
       currentY.setDouble(m_pose.getY());
       currentHeading.setDouble(m_pose.getRotation().getDegrees());
+      driveCmd.setString(driveCommand);
       timer = 0;
     }
   }
@@ -282,5 +287,13 @@ public class SwerveDrivetrain extends SubsystemBase {
     for (int i = 0; i < states.length; i++) {
       modules[i].setDesiredState(states[i]); // updates the desired state at the module level
     }
+  }
+
+  public String getDriveCommand(){
+    return driveCommand;
+  }
+
+  public void setDriveCommand(String currentCommand){
+    this.driveCommand = currentCommand;
   }
 }

@@ -56,6 +56,11 @@ public class SwerveDriveCommand extends CommandBase {
   }
 
   @Override
+  public void initialize(){
+    drivetrain.setDriveCommand("Swerve Drive Command");
+  }
+
+  @Override
   public void execute() {
     // Get the x speed. We are inverting this because Xbox controllers return
     // negative values when we push forward.
@@ -119,6 +124,12 @@ public class SwerveDriveCommand extends CommandBase {
     theta = Math.toDegrees(theta);
 
     return theta;
+  }
+
+  @Override
+  public void end(boolean interrupted){
+    drivetrain.setDriveCommand("NONE");
+    drivetrain.drive(0,0,0);
   }
 
 }
