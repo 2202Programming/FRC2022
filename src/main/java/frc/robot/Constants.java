@@ -75,6 +75,7 @@ public final class Constants {
     
     // Digital IO on the RIO
     public static final class DigitalIO {
+      public static final int INTAKE_GATE = 3;
       /*
       public static final int LEFT_CHASSIS_ENCODER_A = 0;
       public static final int LEFT_CHASSIS_ENCODER_B = 1;

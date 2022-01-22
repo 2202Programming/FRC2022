@@ -11,9 +11,7 @@ import frc.robot.subsystems.Intake_Subsystem;
 
 public class IntakeCommand extends CommandBase {
   /**
-   * IntakeCommand is used to handle the Intake Motors, deply intake arms on Initialization
-   * Constructor - public IntakeCommand(DoubleSupplier intakeSpeedFunction) 
-   *    Uses the DoubleSupplier to get a "speed" value for the motor
+   * IntakeCommand is used to handle the Intake Motors (either intaking or expelling), deploy intake arms on Initialization
    */
 
   //Defintions
@@ -21,7 +19,11 @@ public class IntakeCommand extends CommandBase {
   DoubleSupplier speedFunction;
   int intakeMode;
 
-  //Constructor - Variable DoubleSupplier intakeSpeedFunction, a PWM "speed" for the intake Spark Motor
+  /**
+   * Constructor
+   * @param intakeSpeedFunction - a PWM "speed" for the intake Spark Motor
+   * @param intakeMode - determines if we are intaking or expelling cargo
+   */
   public IntakeCommand(DoubleSupplier intakeSpeedFunction, int intakeMode) {
       this.intake = RobotContainer.RC().intake;
       this.intakeMode  = intakeMode;

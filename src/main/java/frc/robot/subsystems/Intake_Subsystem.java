@@ -2,11 +2,14 @@ package frc.robot.subsystems;
 
 import frc.robot.Constants.Intake;
 import static frc.robot.Constants.PWM;
+import static frc.robot.Constants.DigitalIO;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.DigitalInput;
+
 
 public class Intake_Subsystem extends SubsystemBase {
     /**
@@ -21,6 +24,7 @@ public class Intake_Subsystem extends SubsystemBase {
     //Instantiations
     final Spark intake_spark = new Spark(PWM.INTAKE);
     final DoubleSolenoid intake_solenoid = new DoubleSolenoid(Intake.INTAKE_PCM_CAN_ID, PneumaticsModuleType.CTREPCM, Intake.INTAKE_UP_SOLENOID_PCM, Intake.INTAKE_DOWN_SOLENOID_PCM);
+    final DigitalInput intake_lightGate = new DigitalInput(DigitalIO.INTAKE_GATE);
 
     //Constructor
     public Intake_Subsystem(){}
@@ -53,8 +57,8 @@ public class Intake_Subsystem extends SubsystemBase {
     }
     
     //Indicates if Cargo is inside the intake
-    public boolean isCargoDetected(){
-        return true;
+    public boolean isCargoDetected() {
+        return intake_lightGate.get();
     }
 
     //Returns the state of the Intake Arm
