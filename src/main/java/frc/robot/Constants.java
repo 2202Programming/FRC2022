@@ -127,12 +127,19 @@ public final class Constants {
         public static final int INTAKE_UP_SOLENOID_PCM = 4; // test value
         public static final int INTAKE_DOWN_SOLENOID_PCM = 5; // test value
       }
+      
+      //Intake Mode
+      public static final class IntakeMode{
+        public static final int INTAKE_BALL = 0;
+        public static final int EXPELL_BALL = 1;
+      }
 
-    public static final class DriverPrefs {
-        public static final double VelExpo = 0.3;        // non-dim [0.0 - 1.0]
-        public static final double RotationExpo = 0.9;   // non-dim [0.0 - 1.0]
-        public static final double StickDeadzone = 0.05; // non-dim [0.0 - 1.0]
-    }
+      //Driver Preferences
+      public static final class DriverPrefs {
+          public static final double VelExpo = 0.3;        // non-dim [0.0 - 1.0]
+          public static final double RotationExpo = 0.9;   // non-dim [0.0 - 1.0]
+          public static final double StickDeadzone = 0.05; // non-dim [0.0 - 1.0]
+      }
 
     public static final class DriveTrain {
         // motor constraints

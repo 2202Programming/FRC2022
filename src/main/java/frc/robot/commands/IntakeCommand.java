@@ -5,19 +5,27 @@
 package frc.robot.commands;
 
 import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Intake_Subsystem;
 
 public class IntakeCommand extends CommandBase {
-  Intake_Subsystem intake;
-  DoubleSupplier speedFunct;
+  /**
+   * IntakeCommand is used to handle the Intake Motors, deply intake arms on Initialization
+   * Constructor - public IntakeCommand(DoubleSupplier intakeSpeedFunction) 
+   *    Uses the DoubleSupplier to get a "speed" value for the motor
+   */
 
-  //Constructor
-  public IntakeCommand(DoubleSupplier intakeSpeedFunct) {
+  //Defintions
+  Intake_Subsystem intake;
+  DoubleSupplier speedFunction;
+  int intakeMode;
+
+  //Constructor - Variable DoubleSupplier intakeSpeedFunction, a PWM "speed" for the intake Spark Motor
+  public IntakeCommand(DoubleSupplier intakeSpeedFunction, int intakeMode) {
       this.intake = RobotContainer.RC().intake;
-      this.speedFunct = intakeSpeedFunct;
+      this.intakeMode  = intakeMode;
+      this.speedFunction = intakeSpeedFunction;
 
       addRequirements(intake);
   }
@@ -33,8 +41,12 @@ public class IntakeCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    //call the double supplier function to get a new speed.
-    intake.on(speedFunct.getAsDouble());
+    //Call the double supplier function to get a new speed.
+    if (intakeMode == 0){
+      intake.on(speedFunction.getAsDouble());
+    } else if(intakeMode == 1){
+      intake.expell(speedFunction.getAsDouble());
+    }
 
     //Possible TODO - check light gate and count cargo
   }
@@ -49,6 +61,7 @@ public class IntakeCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+
     //Possible TODO - may want to finish or reset on Cargo COUNT
     return false;  // never finishes, this can be a default command
   }
