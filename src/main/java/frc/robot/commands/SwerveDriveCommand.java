@@ -8,7 +8,9 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.DriveTrain;
+import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.ifx.DriverControls;
 
@@ -17,11 +19,16 @@ public class SwerveDriveCommand extends CommandBase {
   private final SwerveDrivetrain drivetrain;
   private final DriverControls dc;
   private PIDController anglePid;
+  private PIDController limelightPid;
   private double angle_kp = 0.07;
   private double angle_ki = 0.0;
   private double angle_kd = 0.0;
+
+  private double limelight_kp = 0.05;
+  private double limelight_ki = 0.0;
+  private double limelight_kd = 0.0;
   //private Pose2d centerField = new Pose2d(27, 13.5, new Rotation2d()); //actual hub location?
-  private Pose2d centerField = new Pose2d(5,5, new Rotation2d()); //close point for testing to max rotation obvious
+  private Pose2d centerField = new Pose2d(10,0, new Rotation2d()); //close point for testing to max rotation obvious
 
   // Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
   private final SlewRateLimiter xspeedLimiter = new SlewRateLimiter(3);
@@ -37,12 +44,15 @@ public class SwerveDriveCommand extends CommandBase {
   private NetworkTableEntry xJoystick;
   private NetworkTableEntry yJoystick;
   public final String NT_Name = "DT"; // expose data under DriveTrain table
+  private Limelight_Subsystem limelight;
 
-  public SwerveDriveCommand(SwerveDrivetrain drivetrain, DriverControls dc) {
+  public SwerveDriveCommand(SwerveDrivetrain drivetrain, DriverControls dc, Limelight_Subsystem limelight) {
     this.drivetrain = drivetrain;
     addRequirements(drivetrain);
     this.dc = dc;
     anglePid = new PIDController(angle_kp, angle_ki, angle_kd);
+    limelightPid = new PIDController(limelight_kp, limelight_ki, limelight_kd);
+    this.limelight = limelight;
     
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
     hubCentricTarget = table.getEntry("/hubCentricTarget");
@@ -94,7 +104,14 @@ public class SwerveDriveCommand extends CommandBase {
         }
         hubCentricTarget.setValue(targetAngle);
         NTangleError.setDouble(angleError);
-
+     
+        boolean hasTarget = limelight.getTarget();
+        if(hasTarget)
+        {
+          targetAngle = 0;
+          currentAngle = limelight.getX();
+        }
+        
     switch(drivetrain.getDriveMode()){
       case robotCentric:
         rot = rotLimiter.calculate(dc.getXYRotation()) * DriveTrain.kMaxAngularSpeed; //use joystick for rotation in robot and field centric modes
@@ -104,7 +121,13 @@ public class SwerveDriveCommand extends CommandBase {
         break;
       case hubCentric:
         anglePid.setSetpoint(targetAngle);
-        rot = rotLimiter.calculate(anglePid.calculate(currentAngle)); //use PID for rotation in hub centric
+        limelightPid.setSetpoint(targetAngle);
+        if(hasTarget){
+          rot = rotLimiter.calculate(limelightPid.calculate(currentAngle)); //use PID for rotation in hub centric
+        }
+        else{
+          rot = rotLimiter.calculate(anglePid.calculate(currentAngle)); //use PID for rotation in hub centric
+        }
         break;
     }
    

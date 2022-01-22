@@ -26,6 +26,7 @@ public final class Constants {
 
     public static final double FLYWHEEL_GEAR_RATIO = 1; //random number
     public static final int NEO_COUNTS_PER_REVOLUTION = 42;
+    
     /**
      * CAN bus IDs
      * 
