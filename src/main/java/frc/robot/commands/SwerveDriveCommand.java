@@ -104,14 +104,7 @@ public class SwerveDriveCommand extends CommandBase {
         }
         hubCentricTarget.setValue(targetAngle);
         NTangleError.setDouble(angleError);
-     
-        boolean hasTarget = limelight.getTarget();
-        if(hasTarget)
-        {
-          targetAngle = 0;
-          currentAngle = limelight.getX();
-        }
-        
+             
     switch(drivetrain.getDriveMode()){
       case robotCentric:
         rot = rotLimiter.calculate(dc.getXYRotation()) * DriveTrain.kMaxAngularSpeed; //use joystick for rotation in robot and field centric modes
@@ -120,13 +113,19 @@ public class SwerveDriveCommand extends CommandBase {
         rot = rotLimiter.calculate(dc.getXYRotation()) * DriveTrain.kMaxAngularSpeed; //use joystick for rotation in robot and field centric modes
         break;
       case hubCentric:
+
+        //feed both PIDs even if not being used.
         anglePid.setSetpoint(targetAngle);
-        limelightPid.setSetpoint(targetAngle);
-        if(hasTarget){
-          rot = rotLimiter.calculate(limelightPid.calculate(currentAngle)); //use PID for rotation in hub centric
+        double anglePidOutput = anglePid.calculate(currentAngle);
+        limelightPid.setSetpoint(0);
+        double limelightPidOutput = limelightPid.calculate(limelight.getX());
+
+        //choose which PID to use based on limelight availability (target aquired and LEDs ON)
+        if(limelight.getTarget() && limelight.getLEDStatus()){
+          rot = rotLimiter.calculate(limelightPidOutput); //use Limelight PID for rotation in hub centric
         }
         else{
-          rot = rotLimiter.calculate(anglePid.calculate(currentAngle)); //use PID for rotation in hub centric
+          rot = rotLimiter.calculate(anglePidOutput); //use Odometery PID for rotation in hub centric
         }
         break;
     }
