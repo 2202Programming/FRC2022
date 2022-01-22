@@ -8,7 +8,9 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.DriveTrain;
+import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.ifx.DriverControls;
 
@@ -37,12 +39,14 @@ public class SwerveDriveCommand extends CommandBase {
   private NetworkTableEntry xJoystick;
   private NetworkTableEntry yJoystick;
   public final String NT_Name = "DT"; // expose data under DriveTrain table
+  private Limelight_Subsystem limelight;
 
-  public SwerveDriveCommand(SwerveDrivetrain drivetrain, DriverControls dc) {
+  public SwerveDriveCommand(SwerveDrivetrain drivetrain, DriverControls dc, Limelight_Subsystem limelight) {
     this.drivetrain = drivetrain;
     addRequirements(drivetrain);
     this.dc = dc;
     anglePid = new PIDController(angle_kp, angle_ki, angle_kd);
+    this.limelight = limelight;
     
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
     hubCentricTarget = table.getEntry("/hubCentricTarget");
@@ -94,7 +98,14 @@ public class SwerveDriveCommand extends CommandBase {
         }
         hubCentricTarget.setValue(targetAngle);
         NTangleError.setDouble(angleError);
+     
 
+        if(limelight.getTarget())
+        {
+          targetAngle = 0;
+          currentAngle = limelight.getX();
+        }
+        
     switch(drivetrain.getDriveMode()){
       case robotCentric:
         rot = rotLimiter.calculate(dc.getXYRotation()) * DriveTrain.kMaxAngularSpeed; //use joystick for rotation in robot and field centric modes
