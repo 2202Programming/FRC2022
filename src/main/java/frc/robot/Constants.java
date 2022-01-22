@@ -74,6 +74,12 @@ public final class Constants {
       */
     }
     
+    //Magazine constants
+    public static final class Magazine{
+      public static final int MAGAZINE_GATE = 15; //random value for now
+
+    }
+
     // Digital IO on the RIO
     public static final class DigitalIO {
       /*
