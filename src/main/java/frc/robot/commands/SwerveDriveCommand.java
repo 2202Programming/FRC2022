@@ -23,7 +23,7 @@ public class SwerveDriveCommand extends CommandBase {
   private double angle_ki = 0.0;
   private double angle_kd = 0.0;
   //private Pose2d centerField = new Pose2d(27, 13.5, new Rotation2d()); //actual hub location?
-  private Pose2d centerField = new Pose2d(5,5, new Rotation2d()); //close point for testing to max rotation obvious
+  private Pose2d centerField = new Pose2d(10,0, new Rotation2d()); //close point for testing to max rotation obvious
 
   // Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
   private final SlewRateLimiter xspeedLimiter = new SlewRateLimiter(3);
