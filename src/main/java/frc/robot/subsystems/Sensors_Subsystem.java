@@ -171,7 +171,13 @@ public class Sensors_Subsystem extends MonitoredSubsystemBase implements Gyro {
   @Override
   public void monitored_periodic() {
     // This method will be called once per scheduler run
-    m_yaw_navx = m_ahrs.getYaw();
+
+    if(m_ahrs.isMagnetometerCalibrated()){ // We will only get valid fused headings if the magnetometer is calibrated
+      m_yaw_navx = m_ahrs.getFusedHeading(); //returns 0-360 deg
+      m_yaw_navx -= 180; //convert to -180 to 180
+    } else {
+      m_yaw_navx = m_ahrs.getYaw(); //gryo only, returns -180 to 180
+    }
     m_yaw_navx_d = m_ahrs.getRate();
 
     m_yaw_xrs450 = m_gyro450.getAngle();

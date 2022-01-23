@@ -151,7 +151,8 @@ public final class Constants {
         // SmartMax PID values [kp, ki, kd, kff] - these get sent to hardware controller
         // DEBUG - SET FF first for drive, then add KP
         public static final PIDFController drivePIDF = new PIDFController(0.09, 0.0, 0.0, 0.08076);  
-        public static final PIDFController anglePIDF = new PIDFController(0.01, 0.0, 0.0, 0.0); 
+        public static final PIDFController anglePIDF = new PIDFController(0.01, 0.0, 0.0, 0.0); //maybe 1.0,0.0,0.1 from SDS sample code?
+        
         
         // CANCoder offsets for absolure calibration - stored in the magnet offset of the CC. [degrees]
         // public static final double CC_FL_OFFSET = -99.58;
