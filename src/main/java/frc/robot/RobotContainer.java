@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants.DriverPrefs;
 import frc.robot.commands.SwerveDriveCommand;
 import frc.robot.commands.auto.auto_drivePath_cmd;
+import frc.robot.subsystems.Magazine_Subsystem;
 import frc.robot.subsystems.Sensors_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.hid.HID_Xbox_Subsystem;
@@ -40,6 +41,7 @@ public class RobotContainer {
   public final HID_Xbox_Subsystem driverControls;
   public final Sensors_Subsystem sensors;
   private final SwerveDrivetrain drivetrain;
+  public final Magazine_Subsystem magazine;
   public final Dashboard dashboard;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -50,7 +52,8 @@ public class RobotContainer {
     sensors = new Sensors_Subsystem();
     driverControls = new HID_Xbox_Subsystem(DriverPrefs.VelExpo, DriverPrefs.RotationExpo, DriverPrefs.StickDeadzone); 
     drivetrain = new SwerveDrivetrain();
-
+    magazine = new Magazine_Subsystem();
+    
     // set default commands
     drivetrain.setDefaultCommand(new SwerveDriveCommand(drivetrain, driverControls));
 
