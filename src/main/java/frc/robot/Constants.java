@@ -129,11 +129,6 @@ public final class Constants {
         public static final int INTAKE_DOWN_SOLENOID_PCM = 5; // test value
       }
       
-      //Intake Mode
-      public static final class IntakeMode{
-        public static final int INTAKE_BALL = 0;
-        public static final int EXPELL_BALL = 1;
-      }
 
       //Driver Preferences
       public static final class DriverPrefs {

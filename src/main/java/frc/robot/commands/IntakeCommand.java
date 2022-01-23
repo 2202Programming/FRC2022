@@ -17,16 +17,21 @@ public class IntakeCommand extends CommandBase {
   //Defintions
   Intake_Subsystem intake;
   DoubleSupplier speedFunction;
-  int intakeMode;
+
+  //TODO prefer enums over untyped ints 
+  public enum IntakeMode {
+    LoadCargo, ExpellCargo
+  }
+  IntakeMode mode;
 
   /**
    * Constructor
    * @param intakeSpeedFunction - a PWM "speed" for the intake Spark Motor
    * @param intakeMode - determines if we are intaking or expelling cargo
    */
-  public IntakeCommand(DoubleSupplier intakeSpeedFunction, int intakeMode) {
+  public IntakeCommand(DoubleSupplier intakeSpeedFunction, IntakeMode mode) {
       this.intake = RobotContainer.RC().intake;
-      this.intakeMode  = intakeMode;
+      this.mode  = mode;
       this.speedFunction = intakeSpeedFunction;
 
       addRequirements(intake);
@@ -44,9 +49,9 @@ public class IntakeCommand extends CommandBase {
   @Override
   public void execute() {
     //Call the double supplier function to get a new speed.
-    if (intakeMode == 0){
+    if (mode == IntakeMode.LoadCargo){
       intake.on(speedFunction.getAsDouble());
-    } else if(intakeMode == 1){
+    } else if (mode == IntakeMode.ExpellCargo) {
       intake.expell(speedFunction.getAsDouble());
     }
 

@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants.DriverPrefs;
-import frc.robot.Constants.IntakeMode;
+import frc.robot.commands.IntakeCommand.IntakeMode;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.IntakeDeployToggle;
 import frc.robot.commands.SwerveDriveCommand;
@@ -28,7 +28,7 @@ import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.hid.HID_Xbox_Subsystem;
 import frc.robot.subsystems.hid.XboxButton;
 import frc.robot.subsystems.ifx.DriverControls.Id;
-import frc.robot.subsystems.Intake_Subsystem; // New
+import frc.robot.subsystems.Intake_Subsystem; 
 import frc.robot.ux.Dashboard;
 
 /**
@@ -106,9 +106,9 @@ public class RobotContainer {
 
     driverControls.bind(Id.Assistant, XboxButton.Y).whenPressed(new IntakeDeployToggle());
     // IntakeCommand takes a DoubleSupplier f() which could be tied to our UX instead of const f() given here.
-    driverControls.bind(Id.Assistant, XboxButton.B).whileHeld(new IntakeCommand((()-> 0.50), IntakeMode.INTAKE_BALL ) );
+    driverControls.bind(Id.Assistant, XboxButton.B).whileHeld(new IntakeCommand((()-> 0.50), IntakeMode.LoadCargo) );
     // IntakeCommand motor direction
-    driverControls.bind(Id.Assistant, XboxButton.A).whileHeld(new IntakeCommand((()-> 0.50), IntakeMode.EXPELL_BALL  ) );
+    driverControls.bind(Id.Assistant, XboxButton.A).whileHeld(new IntakeCommand((()-> 0.50), IntakeMode.ExpellCargo) );
 
   }
 
