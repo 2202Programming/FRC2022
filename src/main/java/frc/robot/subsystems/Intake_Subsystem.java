@@ -1,7 +1,8 @@
 package frc.robot.subsystems;
 
-import frc.robot.Constants.Intake;
+import frc.robot.Constants.CAN;
 import static frc.robot.Constants.PWM;
+import static frc.robot.Constants.PCM1;
 import static frc.robot.Constants.DigitalIO;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -23,7 +24,10 @@ public class Intake_Subsystem extends SubsystemBase {
 
     //Instantiations
     final Spark intake_spark = new Spark(PWM.INTAKE);
-    final DoubleSolenoid intake_solenoid = new DoubleSolenoid(Intake.INTAKE_PCM_CAN_ID, PneumaticsModuleType.CTREPCM, Intake.INTAKE_UP_SOLENOID_PCM, Intake.INTAKE_DOWN_SOLENOID_PCM);
+    final DoubleSolenoid intake_solenoid = new DoubleSolenoid(CAN.PCM1,
+                PneumaticsModuleType.CTREPCM, 
+                PCM1.INTAKE_UP_SOLENOID_PCM, 
+                PCM1.INTAKE_DOWN_SOLENOID_PCM);
     final DigitalInput intake_lightGate = new DigitalInput(DigitalIO.INTAKE_GATE);
 
     //Constructor

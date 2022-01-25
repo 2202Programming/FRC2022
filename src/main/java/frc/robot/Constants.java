@@ -44,6 +44,10 @@ public final class Constants {
         public static final int DT_BR_CANCODER = 6; 
         public static final int DT_FR_CANCODER = 7;
         public static final int DT_FL_CANCODER = 8;
+
+        public static final int MAG_h_belt = 10;
+        public static final int MAG_v_belt = 11;
+
         
         // drive train drive / angle motors - sparkmax neo
         public static final int DT_FL_DRIVE = 20;
@@ -78,8 +82,10 @@ public final class Constants {
 
     // Digital IO on the RIO
     public static final class DigitalIO {
-      /*
-      public static final int LEFT_CHASSIS_ENCODER_A = 0;
+      public static final int INTAKE_GATE = 0;
+      public static final int MAGAZINE_GATE = 1;
+
+      /* 
       public static final int LEFT_CHASSIS_ENCODER_B = 1;
       public static final int MAGAZINE_GATE_PWR = 4;  
       public static final int RIGHT_CHASSIS_ENCODER_A = 5;
@@ -94,9 +100,11 @@ public final class Constants {
     }
 
     //Pnumatics control 2 -
-    public static final class PCM2 {
-      //public static final int MAG_LOCK = 0;
-      //public static final int MAG_UNLOCK = 1;
+    public static final class PCM1 {
+      // Double Solenoid
+      public static final int INTAKE_UP_SOLENOID_PCM = 4; // test value
+      public static final int INTAKE_DOWN_SOLENOID_PCM = 5; // test value
+      
     }
 
  
@@ -149,9 +157,7 @@ public final class Constants {
       //Intake Constants
       public static final class Intake {
         // public static final PneumaticsModuleType MODULETYPE = CTREPCM; //DELETE LATER
-        public static final int INTAKE_PCM_CAN_ID = CAN.PCM1; // test value
-        public static final int INTAKE_UP_SOLENOID_PCM = 4; // test value
-        public static final int INTAKE_DOWN_SOLENOID_PCM = 5; // test value
+        
       }
       
 
