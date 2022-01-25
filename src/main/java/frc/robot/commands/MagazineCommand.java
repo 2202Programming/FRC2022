@@ -16,7 +16,11 @@ public class MagazineCommand extends CommandBase {
     }
     // TODO: think about what if anything is needed for the commands life-cycle
     
-    //public void initialize() { }
-    //public void execute() {}
-    //public boolean isFinished() {return false;}
+    public void initialize() { 
+        //TODO do something really useful here please.
+        dc.getRotation(); 
+        magazine.beltOff();
+    }
+    public void execute() {}
+    public boolean isFinished() {return false;}
 }

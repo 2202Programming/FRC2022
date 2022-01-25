@@ -48,7 +48,11 @@ public final class Constants {
         public static final int MAG_h_belt = 10;
         public static final int MAG_v_belt = 11;
 
-        
+        // Shooter CAN devices
+        public static final int FLYWHEEL1 = 12;
+        public static final int FLYWHEEL2 = 13;
+
+
         // drive train drive / angle motors - sparkmax neo
         public static final int DT_FL_DRIVE = 20;
         public static final int DT_FL_ANGLE = 21;
