@@ -23,6 +23,7 @@ import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.IntakeDeployToggle;
 import frc.robot.commands.SwerveDriveCommand;
 import frc.robot.commands.auto.auto_drivePath_cmd;
+import frc.robot.subsystems.Magazine_Subsystem;
 import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.Sensors_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
@@ -46,6 +47,7 @@ public class RobotContainer {
   public final Sensors_Subsystem sensors;
   public final Intake_Subsystem intake; //New
   private final SwerveDrivetrain drivetrain;
+  public final Magazine_Subsystem magazine;
   public final Dashboard dashboard;
   public final Limelight_Subsystem limelight;
 
@@ -58,8 +60,6 @@ public class RobotContainer {
     intake = new Intake_Subsystem(); //New
     driverControls = new HID_Xbox_Subsystem(DriverPrefs.VelExpo, DriverPrefs.RotationExpo, DriverPrefs.StickDeadzone); 
     drivetrain = new SwerveDrivetrain();
-    limelight = new Limelight_Subsystem();
-
 
     // set default commands
     drivetrain.setDefaultCommand(new SwerveDriveCommand(drivetrain, driverControls, limelight));

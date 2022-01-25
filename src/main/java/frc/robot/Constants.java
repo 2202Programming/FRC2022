@@ -45,6 +45,10 @@ public final class Constants {
         public static final int DT_FR_CANCODER = 7;
         public static final int DT_FL_CANCODER = 8;
         
+        // Magazine
+        public static final int MAG_h_belt = 17;
+        public static final int MAG_v_belt = 18;
+        
         // drive train drive / angle motors - sparkmax neo
         public static final int DT_FL_DRIVE = 20;
         public static final int DT_FL_ANGLE = 21;
@@ -62,6 +66,7 @@ public final class Constants {
         // Whether to burn flash or not
         public static final boolean BURN_FLASH = false;
 
+        public static final int move1 = 11; //fake number
         public static final int FLYWHEEL = 0; //random number
 
 
@@ -74,13 +79,14 @@ public final class Constants {
       
     }
     
+    //Magazine constants
+    public static final class Magazine{}
+
     // Digital IO on the RIO
     public static final class DigitalIO {
-      public static final int INTAKE_GATE = 3;
       /*
       public static final int LEFT_CHASSIS_ENCODER_A = 0;
       public static final int LEFT_CHASSIS_ENCODER_B = 1;
-      public static final int MAGAZINE_GATE = 2;  
       public static final int MAGAZINE_GATE_PWR = 4;  
       public static final int RIGHT_CHASSIS_ENCODER_A = 5;
       public static final int RIGHT_CHASSIS_ENCODER_B = 6;
@@ -189,5 +195,14 @@ public final class Constants {
         // Gear ratios - confirmed https://www.swervedrivespecialties.com/products/mk3-swerve-module?variant=39420433203313
         public static final double kSteeringGR = 12.8;   // [mo-turns to 1 angle wheel turn]
         public static final double kDriveGR = 8.16;      // [mo-turn to 1 drive wheel turn]
-    }  
+    } 
+    
+    public final static class MagazineSettings {
+      // PID values
+      public static PIDFController h_beltPIDF = new PIDFController(1.0, 0.0, 0.0, 0.0);  
+      public static PIDFController v_beltPIDF = new PIDFController(1.0, 0.0, 0.0, 0.0); 
+
+    }
+
+
 }
