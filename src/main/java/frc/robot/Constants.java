@@ -45,10 +45,6 @@ public final class Constants {
         public static final int DT_FR_CANCODER = 7;
         public static final int DT_FL_CANCODER = 8;
         
-        // Magazine
-        public static final int MAG_h_belt = 17;
-        public static final int MAG_v_belt = 18;
-        
         // drive train drive / angle motors - sparkmax neo
         public static final int DT_FL_DRIVE = 20;
         public static final int DT_FL_ANGLE = 21;
@@ -62,11 +58,9 @@ public final class Constants {
         public static final int DT_FR_DRIVE = 26; 
         public static final int DT_FR_ANGLE = 27;
 
-
         // Whether to burn flash or not
         public static final boolean BURN_FLASH = false;
 
-        public static final int move1 = 11; //fake number
         public static final int FLYWHEEL = 0; //random number
 
 
@@ -123,6 +117,30 @@ public final class Constants {
      * 
      *    <subsys>.data  convention 
      */
+      public static final class Shooter {
+        public static final double FlyWheelGearRatio = 1.11;     //use camelcase
+        public static final int CountsPerRev = 42;
+
+              // Power Cell info
+      public static final double PowerCellMass = 3.0 / 16.0; // lbs
+      public static final double PCNominalRadius = 7.0 / 2.0 / 12.0; // feet - power cell
+      public static final double PCEffectiveRadius = 4.75 / 2.0 / 12.0; // feet - compressed radius
+
+      /**
+       * Convert Target RPM to [motor-units/100ms] 4096 Units/Rev * Target RPM * 600 =
+       * velocity setpoint is in units/100ms
+       */
+      public static final double kRPM2Counts = 4096.0/600.0; // MU-100 (no gearing)
+      public static final double kMaxMO = 1023;  // max Motor output
+        
+        public static PIDFController FlyWheelPID = 
+          new PIDFController(0.1, 0.0, 0.0, 0.0);
+
+    }
+
+
+
+
     // public static final class LIDAR {
     //     public static final double SAMPLE_mS = 20; // in ms
        

@@ -84,6 +84,10 @@ public class PIDFController extends PIDController {
         builder.addDoubleProperty("setpoint", this::getSetpoint, this::setSetpoint);*/
     }
 
+    public boolean equals(PIDFController other) {
+        return getP() == other.getP() && getI() == other.getI() && getD() == other.getD() && getF() == other.getF();
+    }
+
     /**
      * 
      * copyTo()  copies this pid's values down to a hardward PID implementation
