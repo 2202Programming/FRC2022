@@ -69,14 +69,14 @@ public final class Constants {
 
     // PWM assignments on the Rio
     public static final class PWM {
-      /*
       public static final int INTAKE = 0;
-      public static final int MAGAZINE = 9; 
-      */
+      // public static final int MAGAZINE = 9; 
+      
     }
     
     // Digital IO on the RIO
     public static final class DigitalIO {
+      public static final int INTAKE_GATE = 3;
       /*
       public static final int LEFT_CHASSIS_ENCODER_A = 0;
       public static final int LEFT_CHASSIS_ENCODER_B = 1;
@@ -122,11 +122,21 @@ public final class Constants {
        
     // }
 
-    public static final class DriverPrefs {
-        public static final double VelExpo = 0.3;        // non-dim [0.0 - 1.0]
-        public static final double RotationExpo = 0.9;   // non-dim [0.0 - 1.0]
-        public static final double StickDeadzone = 0.05; // non-dim [0.0 - 1.0]
-    }
+      //Intake Constants
+      public static final class Intake {
+        // public static final PneumaticsModuleType MODULETYPE = CTREPCM; //DELETE LATER
+        public static final int INTAKE_PCM_CAN_ID = CAN.PCM1; // test value
+        public static final int INTAKE_UP_SOLENOID_PCM = 4; // test value
+        public static final int INTAKE_DOWN_SOLENOID_PCM = 5; // test value
+      }
+      
+
+      //Driver Preferences
+      public static final class DriverPrefs {
+          public static final double VelExpo = 0.3;        // non-dim [0.0 - 1.0]
+          public static final double RotationExpo = 0.9;   // non-dim [0.0 - 1.0]
+          public static final double StickDeadzone = 0.05; // non-dim [0.0 - 1.0]
+      }
 
     public static final class DriveTrain {
         // motor constraints

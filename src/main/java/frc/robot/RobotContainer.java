@@ -18,6 +18,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants.DriverPrefs;
+import frc.robot.commands.IntakeCommand.IntakeMode;
+import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.IntakeDeployToggle;
 import frc.robot.commands.SwerveDriveCommand;
 import frc.robot.commands.auto.auto_drivePath_cmd;
 import frc.robot.subsystems.Limelight_Subsystem;
@@ -26,6 +29,7 @@ import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.hid.HID_Xbox_Subsystem;
 import frc.robot.subsystems.hid.XboxButton;
 import frc.robot.subsystems.ifx.DriverControls.Id;
+import frc.robot.subsystems.Intake_Subsystem; 
 import frc.robot.ux.Dashboard;
 
 /**
@@ -40,6 +44,7 @@ public class RobotContainer {
 
   public final HID_Xbox_Subsystem driverControls;
   public final Sensors_Subsystem sensors;
+  public final Intake_Subsystem intake; //New
   private final SwerveDrivetrain drivetrain;
   public final Dashboard dashboard;
   public final Limelight_Subsystem limelight;
@@ -50,6 +55,7 @@ public class RobotContainer {
 
     //create our subsystems
     sensors = new Sensors_Subsystem();
+    intake = new Intake_Subsystem(); //New
     driverControls = new HID_Xbox_Subsystem(DriverPrefs.VelExpo, DriverPrefs.RotationExpo, DriverPrefs.StickDeadzone); 
     drivetrain = new SwerveDrivetrain();
     limelight = new Limelight_Subsystem();
@@ -63,9 +69,6 @@ public class RobotContainer {
 
     setDriverButtons();
     setAssistantButtons();
-
-
-
     
   }
 
@@ -103,6 +106,16 @@ public class RobotContainer {
   * </ul>
   */
   void setAssistantButtons(){
+
+    // Y -toggle intake deploy
+    // B - spin intake while held (to intake the ball)
+    // A - spin intake while held (in reverse to expell the ball)
+
+    driverControls.bind(Id.Assistant, XboxButton.Y).whenPressed(new IntakeDeployToggle());
+    // IntakeCommand takes a DoubleSupplier f() which could be tied to our UX instead of const f() given here.
+    driverControls.bind(Id.Assistant, XboxButton.B).whileHeld(new IntakeCommand((()-> 0.50), IntakeMode.LoadCargo) );
+    // IntakeCommand motor direction
+    driverControls.bind(Id.Assistant, XboxButton.A).whileHeld(new IntakeCommand((()-> 0.50), IntakeMode.ExpellCargo) );
 
   }
 
