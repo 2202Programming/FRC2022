@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -25,6 +26,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.DriveTrain;
 import frc.robot.subsystems.Sensors_Subsystem.EncoderID;
+import frc.robot.util.PIDFController;
 
 public class SwerveDrivetrain extends SubsystemBase {
   /**
@@ -77,6 +79,15 @@ public class SwerveDrivetrain extends SubsystemBase {
   private NetworkTableEntry NTDriveMode;
   private NetworkTableEntry driveCmd;
 
+  double drive_kP = DriveTrain.drivePIDF.getP();
+  double drive_kI = DriveTrain.drivePIDF.getI();
+  double drive_kD = DriveTrain.drivePIDF.getD();
+  double drive_kFF = DriveTrain.drivePIDF.getF();
+
+  double angle_kP = DriveTrain.anglePIDF.getP();
+  double angle_kI = DriveTrain.anglePIDF.getI();
+  double angle_kD = DriveTrain.anglePIDF.getD();
+  double angle_kFF = DriveTrain.anglePIDF.getF();
 
   public final String NT_Name = "DT"; // expose data under DriveTrain table
   private int timer;
@@ -136,6 +147,17 @@ public class SwerveDrivetrain extends SubsystemBase {
     currentY = table.getEntry("/Current Y");
     currentHeading = table.getEntry("/Current Heading");
     driveCmd = table.getEntry("/Drive Command");
+
+    // display PID coefficients on SmartDashboard
+    SmartDashboard.putNumber("Drive P", drive_kP);
+    SmartDashboard.putNumber("Drive I", drive_kI);
+    SmartDashboard.putNumber("Drive D", drive_kD);
+    SmartDashboard.putNumber("Drive Feed Forward", drive_kFF);
+
+    SmartDashboard.putNumber("Angle P", drive_kP);
+    SmartDashboard.putNumber("Angle I", drive_kI);
+    SmartDashboard.putNumber("Angle D", drive_kD);
+    SmartDashboard.putNumber("Angle Feed Forward", drive_kFF);
 
   }
 
@@ -214,6 +236,40 @@ public class SwerveDrivetrain extends SubsystemBase {
       currentHeading.setDouble(m_pose.getRotation().getDegrees());
       driveCmd.setString(driveCommand);
       timer = 0;
+
+    // read PID coefficients from SmartDashboard
+    double drive_p = SmartDashboard.getNumber("Drive P Gain", DriveTrain.drivePIDF.getP());
+    double drive_i = SmartDashboard.getNumber("Drive I Gain", DriveTrain.drivePIDF.getI());
+    double drive_d = SmartDashboard.getNumber("Drive D Gain", DriveTrain.drivePIDF.getD());
+    double drive_ff = SmartDashboard.getNumber("Drive Feed Forward", DriveTrain.drivePIDF.getF());
+    double angle_p = SmartDashboard.getNumber("Angle P Gain", DriveTrain.anglePIDF.getP());
+    double angle_i = SmartDashboard.getNumber("Angle I Gain", DriveTrain.anglePIDF.getI());
+    double angle_d = SmartDashboard.getNumber("Angle D Gain", DriveTrain.anglePIDF.getD());
+    double angle_ff = SmartDashboard.getNumber("Angle Feed Forward", DriveTrain.anglePIDF.getF());
+
+    //if anything changes in drive PID, update all the modules with a new drive PID
+    if ((drive_p != drive_kP) || (drive_i != drive_kI) || (drive_d != drive_kD) || (drive_ff != drive_kFF)){
+      drive_kP = drive_p;
+      drive_kI = drive_i;
+      drive_kD = drive_d;
+      drive_kFF = drive_ff;
+      for (SwerveModuleMK3 i : modules){
+        i.setDrivePID(new PIDFController(drive_kP, drive_kI, drive_kD, drive_kFF));
+      }
+    }
+
+    //if anything changes in angle PID, update all the modules with a new angle PID 
+    if ((angle_p != angle_kP) || (angle_i != angle_kI) || (angle_d != angle_kD) || (angle_ff != angle_kFF)){
+      angle_kP = angle_p;
+      angle_kI = angle_i;
+      angle_kD = angle_d;
+      angle_kFF = angle_ff;
+      for (SwerveModuleMK3 i : modules){
+        i.setAnglePID(new PIDFController(angle_kP, angle_kI, angle_kD, angle_kFF));
+      }
+    }
+
+
     }
   }
 
