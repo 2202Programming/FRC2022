@@ -14,6 +14,7 @@ public class MagazineCommand extends CommandBase {
 
         //TODO:  What is this command going to do?  It's name should be a VERB - commands do...
     }
+    
     // TODO: think about what if anything is needed for the commands life-cycle
     
     public void initialize() { 
