@@ -22,6 +22,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.MathUtil;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.DriveTrain;
 import frc.robot.subsystems.Sensors_Subsystem.EncoderID;
@@ -61,7 +62,6 @@ public class SwerveDrivetrain extends SubsystemBase {
 
   // sensors and our mk3 modules
   private final Sensors_Subsystem sensors;
-  private final Gyro gyro;
   private final SwerveModuleMK3[] modules;
 
   private NetworkTable table;
@@ -99,8 +99,7 @@ public class SwerveDrivetrain extends SubsystemBase {
   }
 
   public SwerveDrivetrain() {
-    sensors = null; //RobotContainer.RC().sensors;
-    gyro = null;
+    sensors = RobotContainer.RC().sensors;
 
     var MT = CANSparkMax.MotorType.kBrushless;
     modules = new SwerveModuleMK3[] {
@@ -121,7 +120,7 @@ public class SwerveDrivetrain extends SubsystemBase {
             DriveTrain.CC_BR_OFFSET, sensors.getCANCoder(EncoderID.BackRight), kAngleMotorInvert_Right,
             kAngleCmdInvert_Right, kDriveMotorInvert_Right, "BR") };
 
-    m_odometry = new SwerveDriveOdometry(kinematics, gyro.getRotation2d());
+    m_odometry = new SwerveDriveOdometry(kinematics, sensors.getRotation2d());
     states = kinematics.toSwerveModuleStates(new ChassisSpeeds(0, 0, 0));
 
     // for updating CAN status in periodic
@@ -197,7 +196,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     }
 
     // update pose
-    m_pose = m_odometry.update(gyro.getRotation2d(), states);
+    m_pose = m_odometry.update(sensors.getRotation2d(), states);
 
     // updates CAN status data every 4 cycles
     timer++;
@@ -258,16 +257,16 @@ public class SwerveDrivetrain extends SubsystemBase {
     return driveMode;
   }
 
-  // sets X,Y, and sets current angle (will apply gyro correction)
+  // sets X,Y, and sets current angle (will apply sensors correction)
   public void setPose(Pose2d new_pose) {
     m_pose = new_pose;
-    m_odometry.resetPosition(m_pose, gyro.getRotation2d());
+    m_odometry.resetPosition(m_pose, sensors.getRotation2d());
   }
 
   // resets X,Y, and set current angle to be 0
   public void resetPose() {
     m_pose = new Pose2d(0, 0, new Rotation2d(0));
-    m_odometry.resetPosition(m_pose, gyro.getRotation2d());
+    m_odometry.resetPosition(m_pose, sensors.getRotation2d());
   }
 
   public Pose2d getPose() {
