@@ -12,11 +12,13 @@ import com.revrobotics.CANSparkMax.ControlType;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveTrain;
 import frc.robot.util.ModMath;
+import frc.robot.util.PIDFController;
 
 public class SwerveModuleMK3 {
   public final String NT_Name = "DT"; // expose data under DriveTrain table
@@ -85,7 +87,7 @@ public class SwerveModuleMK3 {
    * Batteries will need changing before then.
    * 
    */
-  String myprefix;
+  public String myprefix;
 
   public SwerveModuleMK3(CANSparkMax driveMtr, CANSparkMax angleMtr, double offsetDegrees, CANCoder absEnc,
       boolean invertAngleMtr, boolean invertAngleCmd, boolean invertDrive, String prefix) {
@@ -172,6 +174,17 @@ public class SwerveModuleMK3 {
     NTConfig();
 
     calibrate();
+
+  }
+
+  void setDrivePID(PIDFController temp)
+  {
+    temp.copyTo(driveMotorPID, kSlot); 
+  }
+
+  void setAnglePID(PIDFController temp)
+  {
+    temp.copyTo(angleMotorPID, kSlot); 
   }
 
   /**
@@ -417,5 +430,14 @@ public class SwerveModuleMK3 {
     } catch (Exception e) {
     }
   }
+
+  SparkMaxPIDController getDrivePID(){
+    return driveMotorPID;
+  }
+
+  SparkMaxPIDController getAnglePID(){
+    return angleMotorPID;
+  }
+
 
 }
