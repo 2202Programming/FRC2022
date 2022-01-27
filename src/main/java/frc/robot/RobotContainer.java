@@ -95,6 +95,9 @@ public class RobotContainer {
     // X - follow path off chooser
     driverControls.bind(Id.Driver, XboxButton.X)
         .whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
+
+    //RB limelight toggle
+    driverControls.bind(Id.Driver, XboxButton.RB).whenPressed(new InstantCommand( limelight::toggleLED ));
   }
 
   // /**
