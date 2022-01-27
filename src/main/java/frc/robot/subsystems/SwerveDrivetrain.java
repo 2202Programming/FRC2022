@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -153,10 +152,10 @@ public class SwerveDrivetrain extends SubsystemBase {
     SmartDashboard.putNumber("Drive D", drive_kD);
     SmartDashboard.putNumber("Drive Feed Forward", drive_kFF);
 
-    SmartDashboard.putNumber("Angle P", drive_kP);
-    SmartDashboard.putNumber("Angle I", drive_kI);
-    SmartDashboard.putNumber("Angle D", drive_kD);
-    SmartDashboard.putNumber("Angle Feed Forward", drive_kFF);
+    SmartDashboard.putNumber("Angle P", angle_kP);
+    SmartDashboard.putNumber("Angle I", angle_kI);
+    SmartDashboard.putNumber("Angle D", angle_kD);
+    SmartDashboard.putNumber("Angle Feed Forward", angle_kFF);
 
   }
 
