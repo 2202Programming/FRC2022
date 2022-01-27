@@ -17,6 +17,11 @@ import frc.robot.subsystems.hid.HID_Xbox_Subsystem;
 import frc.robot.subsystems.hid.XboxButton;
 import frc.robot.subsystems.ifx.DriverControls.Id;
 import frc.robot.subsystems.Intake_Subsystem;
+import frc.robot.commands.IntakeCommand.IntakeMode;
+import frc.robot.commands.MagazineCommand.MagazineMode;
+import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.IntakeDeployToggle;
+import frc.robot.commands.MagazineCommand;
 import frc.robot.ux.Dashboard;
 //test commands
 import frc.robot.commands.test.getTrajectoryFollowTest;
@@ -104,6 +109,18 @@ public class RobotContainer {
   // * </ul>
   // */
   void setAssistantButtons() {
+
+     // Y -toggle intake deploy
+    // B - spin intake while held (to intake the ball)
+    // A - spin intake while held (in reverse to expell the ball)
+
+    driverControls.bind(Id.Assistant, XboxButton.LB).whenPressed(new IntakeDeployToggle());
+    // IntakeCommand takes a DoubleSupplier f() which could be tied to our UX instead of const f() given here.
+    driverControls.bind(Id.Assistant, XboxButton.B).whileHeld(new IntakeCommand((()-> 0.50), IntakeMode.LoadCargo) );
+    // IntakeCommand motor direction
+    driverControls.bind(Id.Assistant, XboxButton.A).whileHeld(new IntakeCommand((()-> 0.50), IntakeMode.ExpellCargo) );
+    //MagazineCommand to intake or expell ball
+    driverControls.bind(Id.Assistant, XboxButton.L3).whileHeld(new MagazineCommand((()-> 0.50), MagazineMode.ExpellCargo) );
 
   }
 

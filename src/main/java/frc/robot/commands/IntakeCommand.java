@@ -18,7 +18,7 @@ public class IntakeCommand extends CommandBase {
   Intake_Subsystem intake;
   DoubleSupplier speedFunction;
 
-  //TODO prefer enums over untyped ints 
+  //Intake Mode
   public enum IntakeMode {
     LoadCargo, ExpellCargo
   }

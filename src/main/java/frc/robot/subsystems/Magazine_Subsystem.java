@@ -22,18 +22,22 @@ public class Magazine_Subsystem extends SubsystemBase {
   private CANSparkMax h_belt = new CANSparkMax(CAN.MAG_h_belt, MotorType.kBrushless);
   private CANSparkMax v_belt = new CANSparkMax(CAN.MAG_v_belt, MotorType.kBrushless);
   
+  /*Definitions*/
+  final DigitalInput lightGate = new DigitalInput(DigitalIO.MAGAZINE_GATE);
+
+
+  //Constructor
   public Magazine_Subsystem() {
     // copy the PID settings to the hardware
     MagazineSettings.h_beltPIDF.copyTo(h_belt.getPIDController(), slot);
     MagazineSettings.v_beltPIDF.copyTo(v_belt.getPIDController(), slot);
-
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    
   }
+
   //sets the belts to a speed
   public void beltOn(double speed){
     h_belt.set(speed);
@@ -50,8 +54,7 @@ public class Magazine_Subsystem extends SubsystemBase {
     v_belt.set(-speed);
   }
   
-  final DigitalInput lightGate = new DigitalInput(DigitalIO.MAGAZINE_GATE);
-
+  //lets us know if cargo is detected
   public boolean isGateBlocked() {
     return lightGate.get();
   }
