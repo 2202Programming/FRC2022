@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 import frc.robot.Constants.DriveTrain;
@@ -24,9 +25,9 @@ public class SwerveDriveCommand extends CommandBase {
   private double angle_ki = 0.0;
   private double angle_kd = 0.0;
 
-  private double limelight_kp = 0.05;
-  private double limelight_ki = 0.0;
-  private double limelight_kd = 0.0;
+  private double limelight_kP = 0.05;
+  private double limelight_kI = 0.0;
+  private double limelight_kD = 0.0;
   //private Pose2d centerField = new Pose2d(27, 13.5, new Rotation2d()); //actual hub location?
   private Pose2d centerField = new Pose2d(10,0, new Rotation2d()); //close point for testing to max rotation obvious
 
@@ -51,7 +52,7 @@ public class SwerveDriveCommand extends CommandBase {
     addRequirements(drivetrain);
     this.dc = dc;
     anglePid = new PIDController(angle_kp, angle_ki, angle_kd);
-    limelightPid = new PIDController(limelight_kp, limelight_ki, limelight_kd);
+    limelightPid = new PIDController(limelight_kP, limelight_kI, limelight_kD);
     this.limelight = limelight;
     
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
@@ -63,6 +64,11 @@ public class SwerveDriveCommand extends CommandBase {
     xJoystick = table.getEntry("/xJoystick");
     yJoystick = table.getEntry("/yJoystick");
 
+    // display PID coefficients on SmartDashboard
+    SmartDashboard.putNumber("Limelight P Gain", limelight_kP);
+    SmartDashboard.putNumber("Limelight I Gain", limelight_kI);
+    SmartDashboard.putNumber("Limelight D Gain", limelight_kD);
+
   }
 
   @Override
@@ -72,6 +78,19 @@ public class SwerveDriveCommand extends CommandBase {
 
   @Override
   public void execute() {
+
+    double limelight_p = SmartDashboard.getNumber("Limelight P Gain", 0);
+    double limelight_i = SmartDashboard.getNumber("Limelight I Gain", 0);
+    double limelight_d = SmartDashboard.getNumber("Limelight D Gain", 0);
+//if anything changes in drive PID, update all the modules with a new drive PID
+if ((limelight_p != limelight_kP) || (limelight_i != limelight_kI) || (limelight_d != limelight_kD)){
+  limelight_kP = limelight_p;
+  limelight_kI = limelight_i;
+  limelight_kD = limelight_d;
+  limelightPid.setP(limelight_kP);
+  limelightPid.setI(limelight_kI);
+  limelightPid.setD(limelight_kD);
+}
     // Get the x speed. We are inverting this because Xbox controllers return
     // negative values when we push forward.
     var xSpeed = xspeedLimiter.calculate(dc.getVelocityX()) * DriveTrain.kMaxSpeed;
