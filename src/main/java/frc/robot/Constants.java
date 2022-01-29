@@ -50,8 +50,8 @@ public final class Constants {
         public static final int MAG_v_belt = 11;
 
         // Shooter CAN devices
-        public static final int SHOOTER_UPPER_TALON = 12;
-        public static final int SHOOTER_LOWER_TALON = 13;
+        public static final int SHOOTER_UPPER_TALON = 11;
+        public static final int SHOOTER_LOWER_TALON = 21;
 
 
         // drive train drive / angle motors - sparkmax neo

@@ -171,6 +171,7 @@ public class Shooter_Subsystem extends SubsystemBase  {
     //measure flywheel rpm and calculate our error 
     actual.set(upper_shooter.getRPM(), lower_shooter.getRPM());
     error.minus(target, actual);
+    log();
 
     // monitor if the  shooter rpm and angle is ready to shoot
     isAtGoal();
@@ -380,4 +381,8 @@ public class Shooter_Subsystem extends SubsystemBase  {
     */
   }
 
+  public void setMotors(double upper, double lower){
+    upper_shooter.setRPM(upper);
+    lower_shooter.setRPM(lower);
+  }
 }

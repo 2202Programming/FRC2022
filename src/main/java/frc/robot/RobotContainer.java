@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.DriverPrefs;
 import frc.robot.commands.SwerveDriveCommand;
+import frc.robot.commands.TestShoot;
 import frc.robot.commands.auto.auto_drivePath_cmd;
 import frc.robot.subsystems.Magazine_Subsystem;
 import frc.robot.subsystems.Limelight_Subsystem;
@@ -63,6 +64,7 @@ public class RobotContainer {
 
     // set default commands
     drivetrain.setDefaultCommand(new SwerveDriveCommand(drivetrain, driverControls, limelight));
+    shooter.setDefaultCommand(new TestShoot(shooter));
 
     // //setup the dashboard programatically, creates any choosers, screens
     // dashboard = new Dashboard(this);
