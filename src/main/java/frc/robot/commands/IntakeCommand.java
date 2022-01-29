@@ -56,6 +56,7 @@ public class IntakeCommand extends CommandBase {
     }
 
     //Possible TODO - check light gate and count cargo
+    
   }
 
   // Called once the command ends or is interrupted.

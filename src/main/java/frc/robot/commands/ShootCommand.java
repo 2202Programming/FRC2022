@@ -1,14 +1,14 @@
 package frc.robot.commands;
 
-import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
+import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.subsystems.Magazine_Subsystem;
 import frc.robot.subsystems.Shooter_Subsystem;
 
 public class ShootCommand extends CommandBase{
     final Magazine_Subsystem magazine;
-    final Magazine_Subsystem intake;
+    final Intake_Subsystem intake;
     final Shooter_Subsystem shooter;
     int count;
 
@@ -21,6 +21,8 @@ public class ShootCommand extends CommandBase{
     }Stage stage;
     public ShootCommand(){
         this.intake = RobotContainer.RC().intake;
+        this.shooter = RobotContainer.RC().shooter;
+        this.magazine = RobotContainer.RC().magazine;
     }
 
     @Override
@@ -64,7 +66,7 @@ public class ShootCommand extends CommandBase{
     }
     @Override
     public void end(boolean interrupted){
-        
+        magazine.beltOff();
     }
     @Override
     public boolean isFinished(){

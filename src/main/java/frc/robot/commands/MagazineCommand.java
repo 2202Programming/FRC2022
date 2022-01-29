@@ -4,7 +4,9 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.Magazine_Subsystem; 
+import frc.robot.commands.ShootCommand.Stage;
+import frc.robot.subsystems.Magazine_Subsystem;
+import frc.robot.subsystems.Intake_Subsystem;
 
         //TODO
         //Driver input to shoot ball, we want to ready ball for shooting
@@ -16,16 +18,18 @@ public class MagazineCommand extends CommandBase {
     private final Magazine_Subsystem magazine;
     DoubleSupplier magazineSpeed;
 
-
+    final Intake_Subsystem intake;
     //MagazineMode to either Load or Expell cargo on driver input
     public enum MagazineMode {
         LoadCargo, ExpellCargo
     }
+    Stage stage;
     MagazineMode mode;
 
     //Constructor
     public MagazineCommand(DoubleSupplier magazineSpeedFunction, MagazineMode mode){
         this.magazine = RobotContainer.RC().magazine;   // just get the magazine from RC
+        this.intake = RobotContainer.RC().intake;
         this.mode = mode;
         this.magazineSpeed = magazineSpeedFunction;
 
@@ -34,9 +38,11 @@ public class MagazineCommand extends CommandBase {
     
     // TODO: think about what if anything is needed for the commands life-cycle
     
-    public void initialize() { 
+    public void initialize() {
+        stage = Stage.DoNothing; 
         //TODO do something really useful here please.
         magazine.beltOff();
+        intake.intakeOff();
     }
 
     public void execute() {
