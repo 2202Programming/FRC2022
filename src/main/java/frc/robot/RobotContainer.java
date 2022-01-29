@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.DriverPrefs;
 import frc.robot.commands.SwerveDriveCommand;
@@ -40,11 +41,11 @@ public class RobotContainer {
   public final Dashboard dashboard;
   public final Shooter_Subsystem shooter;
   public final HID_Xbox_Subsystem driverControls;
-  public final Sensors_Subsystem sensors;
+  // public final Sensors_Subsystem sensors;
   //public final Intake_Subsystem intake; 
   //private final SwerveDrivetrain drivetrain;
   //public final Magazine_Subsystem magazine;
-  public final Limelight_Subsystem limelight;
+  // public final Limelight_Subsystem limelight;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -53,10 +54,13 @@ public class RobotContainer {
     RobotContainer.rc = this;
 
     // create our subsystems
-    sensors = new Sensors_Subsystem();
+    // sensors = new Sensors_Subsystem();
     driverControls = new HID_Xbox_Subsystem(DriverPrefs.VelExpo, DriverPrefs.RotationExpo, DriverPrefs.StickDeadzone);
     //drivetrain = new SwerveDrivetrain();
-    limelight = new Limelight_Subsystem();
+    // limelight = new Limelight_Subsystem();
+    // sensors = null;
+    // driverControls = null;
+    // limelight = null;
     shooter = new Shooter_Subsystem();
     //magazine = new Magazine_Subsystem();
     //intake = new Intake_Subsystem();
@@ -71,7 +75,6 @@ public class RobotContainer {
 
     setDriverButtons();
     setAssistantButtons();
-
   }
 
   /**
@@ -99,7 +102,7 @@ public class RobotContainer {
     //    .whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
 
     //RB limelight toggle
-    driverControls.bind(Id.Driver, XboxButton.RB).whenPressed(new InstantCommand( limelight::toggleLED ));
+    // driverControls.bind(Id.Driver, XboxButton.RB).whenPressed(new InstantCommand( limelight::toggleLED ));
   }
 
   // /**

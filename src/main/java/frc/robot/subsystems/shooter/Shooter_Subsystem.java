@@ -51,6 +51,8 @@ public class Shooter_Subsystem extends SubsystemBase  {
   private NetworkTable table;
   private NetworkTableEntry nt_upperRPM;
   private NetworkTableEntry nt_lowerRPM;
+  private NetworkTableEntry nt_upperRPMErr;
+  private NetworkTableEntry nt_lowerRPMErr;
   private NetworkTableEntry nt_autoShooterMode;
   
   // Flywheels 
@@ -154,6 +156,8 @@ public class Shooter_Subsystem extends SubsystemBase  {
     table = NetworkTableInstance.getDefault().getTable("Shooter");
     nt_upperRPM = table.getEntry("UpperRPM/value");
     nt_lowerRPM = table.getEntry("LowerRPM/value");
+    nt_upperRPMErr = table.getEntry("UpperRPM/err");
+    nt_lowerRPMErr = table.getEntry("LowerRPM/err");
     nt_autoShooterMode = table.getEntry("ShootingAutoMode");
     
     // build out matrix to calculate FW RPM from [omega , Vel] for power cell
@@ -362,6 +366,8 @@ public class Shooter_Subsystem extends SubsystemBase  {
     // Put any useful log message here, called about 10x per second
     nt_lowerRPM.setDouble(actual.upper);
     nt_upperRPM.setDouble(actual.lower);
+    nt_lowerRPMErr.setDouble(error.lower);
+    nt_upperRPMErr.setDouble(error.upper);
     nt_autoShooterMode.setBoolean(autoShootingModeOn);  
   }
 
