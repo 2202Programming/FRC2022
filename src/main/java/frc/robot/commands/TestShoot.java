@@ -36,15 +36,15 @@ public class TestShoot extends CommandBase {
     shooter.setMotors(upper, lower);
   }
 
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-    shooter.setMotors(0,0);
-  }
-
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     return false;
+  }
+
+  // Called once the command ends or is interrupted.
+  @Override
+  public void end(boolean interrupted) {
+    shooter.setMotors(0,0);
   }
 }
