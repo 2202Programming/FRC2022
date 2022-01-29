@@ -41,9 +41,9 @@ public class RobotContainer {
   public final Shooter_Subsystem shooter;
   public final HID_Xbox_Subsystem driverControls;
   public final Sensors_Subsystem sensors;
-  public final Intake_Subsystem intake; 
-  private final SwerveDrivetrain drivetrain;
-  public final Magazine_Subsystem magazine;
+  //public final Intake_Subsystem intake; 
+  //private final SwerveDrivetrain drivetrain;
+  //public final Magazine_Subsystem magazine;
   public final Limelight_Subsystem limelight;
 
   /**
@@ -55,15 +55,15 @@ public class RobotContainer {
     // create our subsystems
     sensors = new Sensors_Subsystem();
     driverControls = new HID_Xbox_Subsystem(DriverPrefs.VelExpo, DriverPrefs.RotationExpo, DriverPrefs.StickDeadzone);
-    drivetrain = new SwerveDrivetrain();
+    //drivetrain = new SwerveDrivetrain();
     limelight = new Limelight_Subsystem();
     shooter = new Shooter_Subsystem();
-    magazine = new Magazine_Subsystem();
-    intake = new Intake_Subsystem();
+    //magazine = new Magazine_Subsystem();
+    //intake = new Intake_Subsystem();
     dashboard = new Dashboard(rc);
 
     // set default commands
-    drivetrain.setDefaultCommand(new SwerveDriveCommand(drivetrain, driverControls, limelight));
+    //drivetrain.setDefaultCommand(new SwerveDriveCommand(drivetrain, driverControls, limelight));
     shooter.setDefaultCommand(new TestShoot(shooter));
 
     // //setup the dashboard programatically, creates any choosers, screens
@@ -86,17 +86,17 @@ public class RobotContainer {
   void setDriverButtons() {
 
     // B - Toggle drive mode
-    driverControls.bind(Id.Driver, XboxButton.B).whenPressed(new InstantCommand(drivetrain::driveModeCycle));
+    //driverControls.bind(Id.Driver, XboxButton.B).whenPressed(new InstantCommand(drivetrain::driveModeCycle));
 
     // A - Trajectory Test
-    driverControls.bind(Id.Driver, XboxButton.A).whenPressed(new getTrajectoryFollowTest(drivetrain));
+    //driverControls.bind(Id.Driver, XboxButton.A).whenPressed(new getTrajectoryFollowTest(drivetrain));
 
     // Y - reset Pose
-    driverControls.bind(Id.Driver, XboxButton.Y).whenPressed(new InstantCommand(drivetrain::resetPose));
+    //driverControls.bind(Id.Driver, XboxButton.Y).whenPressed(new InstantCommand(drivetrain::resetPose));
 
     // X - follow path off chooser
-    driverControls.bind(Id.Driver, XboxButton.X)
-        .whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
+    //driverControls.bind(Id.Driver, XboxButton.X)
+    //    .whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
 
     //RB limelight toggle
     driverControls.bind(Id.Driver, XboxButton.RB).whenPressed(new InstantCommand( limelight::toggleLED ));

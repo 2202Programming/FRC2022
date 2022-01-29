@@ -16,12 +16,15 @@ public class TestShoot extends CommandBase {
   /** Creates a new TestShoot. */
   public TestShoot(Shooter_Subsystem shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(shooter);
     this.shooter = shooter;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    SmartDashboard.putNumber("Upper RPMS", 0);
+    SmartDashboard.putNumber("Lower RPMS", 0);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
