@@ -11,7 +11,7 @@ import frc.robot.commands.auto.auto_drivePath_cmd;
 import frc.robot.subsystems.Magazine_Subsystem;
 import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.Sensors_Subsystem;
-import frc.robot.subsystems.Shooter_Subsystem;
+import frc.robot.subsystems.shooter.Shooter_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.hid.HID_Xbox_Subsystem;
 import frc.robot.subsystems.hid.XboxButton;
