@@ -20,6 +20,7 @@ import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.ux.Dashboard;
 //test commands
 import frc.robot.commands.test.getTrajectoryFollowTest;
+
 /**
  * This class is where the bulk of the robot should be declared. Since
  * Command-based is a
@@ -41,7 +42,7 @@ public class RobotContainer {
   public final HID_Xbox_Subsystem driverControls;
   public final Sensors_Subsystem sensors;
   public Intake_Subsystem intake = null; 
-  private final SwerveDrivetrain drivetrain;
+  private SwerveDrivetrain drivetrain = null;
   public Magazine_Subsystem magazine = null;
   public final Limelight_Subsystem limelight;
 
@@ -52,17 +53,22 @@ public class RobotContainer {
     RobotContainer.rc = this;
 
     // create our subsystems
+    
+    //these can get created on any hardware setup
     sensors = new Sensors_Subsystem();
-    driverControls = new HID_Xbox_Subsystem(DriverPrefs.VelExpo, DriverPrefs.RotationExpo, DriverPrefs.StickDeadzone);
-    drivetrain = new SwerveDrivetrain();
+    dashboard = new Dashboard(rc);
     limelight = new Limelight_Subsystem();
+    driverControls = new HID_Xbox_Subsystem(DriverPrefs.VelExpo, DriverPrefs.RotationExpo, DriverPrefs.StickDeadzone);
+
+    //These are hardware specific
+    if (Constants.HAS_DRIVETRAIN) drivetrain = new SwerveDrivetrain();
     if (Constants.HAS_SHOOTER) shooter = new Shooter_Subsystem();
     if (Constants.HAS_MAGAZINE) magazine = new Magazine_Subsystem();
     if (Constants.HAS_INTAKE) intake = new Intake_Subsystem();
-    dashboard = new Dashboard(rc);
+
 
     // set default commands
-    drivetrain.setDefaultCommand(new SwerveDriveCommand(drivetrain, driverControls, limelight));
+    if (Constants.HAS_DRIVETRAIN) drivetrain.setDefaultCommand(new SwerveDriveCommand(drivetrain, driverControls, limelight));
 
     // //setup the dashboard programatically, creates any choosers, screens
     // dashboard = new Dashboard(this);
@@ -84,17 +90,19 @@ public class RobotContainer {
   void setDriverButtons() {
 
     // B - Toggle drive mode
-    driverControls.bind(Id.Driver, XboxButton.B).whenPressed(new InstantCommand(drivetrain::driveModeCycle));
+    if (Constants.HAS_DRIVETRAIN) driverControls.bind(Id.Driver, XboxButton.B).whenPressed(new InstantCommand(drivetrain::driveModeCycle));
 
     // A - Trajectory Test
-    driverControls.bind(Id.Driver, XboxButton.A).whenPressed(new getTrajectoryFollowTest(drivetrain));
+    if (Constants.HAS_DRIVETRAIN) driverControls.bind(Id.Driver, XboxButton.A).whenPressed(new getTrajectoryFollowTest(drivetrain));
 
     // Y - reset Pose
-    driverControls.bind(Id.Driver, XboxButton.Y).whenPressed(new InstantCommand(drivetrain::resetPose));
+    if (Constants.HAS_DRIVETRAIN) driverControls.bind(Id.Driver, XboxButton.Y).whenPressed(new InstantCommand(drivetrain::resetPose));
 
     // X - follow path off chooser
-    driverControls.bind(Id.Driver, XboxButton.X)
-        .whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
+    if (Constants.HAS_DRIVETRAIN) {
+      driverControls.bind(Id.Driver, XboxButton.X)
+          .whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
+    }
 
     //RB limelight toggle
     driverControls.bind(Id.Driver, XboxButton.RB).whenPressed(new InstantCommand( limelight::toggleLED ));
