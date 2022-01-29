@@ -21,6 +21,11 @@ import frc.robot.util.PIDFController;
  */
 public final class Constants {
 
+    public static final boolean HAS_INTAKE = false;
+    public static final boolean HAS_SHOOTER = false;
+    public static final boolean HAS_MAGAZINE = false;
+
+
     public static final double DT = 0.02; // 20ms framerate 50Hz
     public static final double Tperiod = 0.02; // framerate period 20ms, 50Hz
 

@@ -37,12 +37,12 @@ public class RobotContainer {
   }
 
   public final Dashboard dashboard;
-  public final Shooter_Subsystem shooter;
+  public Shooter_Subsystem shooter = null;
   public final HID_Xbox_Subsystem driverControls;
   public final Sensors_Subsystem sensors;
-  public final Intake_Subsystem intake; 
+  public Intake_Subsystem intake = null; 
   private final SwerveDrivetrain drivetrain;
-  public final Magazine_Subsystem magazine;
+  public Magazine_Subsystem magazine = null;
   public final Limelight_Subsystem limelight;
 
   /**
@@ -56,9 +56,9 @@ public class RobotContainer {
     driverControls = new HID_Xbox_Subsystem(DriverPrefs.VelExpo, DriverPrefs.RotationExpo, DriverPrefs.StickDeadzone);
     drivetrain = new SwerveDrivetrain();
     limelight = new Limelight_Subsystem();
-    shooter = new Shooter_Subsystem();
-    magazine = new Magazine_Subsystem();
-    intake = new Intake_Subsystem();
+    if (Constants.HAS_SHOOTER) shooter = new Shooter_Subsystem();
+    if (Constants.HAS_MAGAZINE) magazine = new Magazine_Subsystem();
+    if (Constants.HAS_INTAKE) intake = new Intake_Subsystem();
     dashboard = new Dashboard(rc);
 
     // set default commands
