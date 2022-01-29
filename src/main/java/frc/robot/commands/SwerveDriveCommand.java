@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 import frc.robot.Constants.DriveTrain;
@@ -63,15 +64,35 @@ public class SwerveDriveCommand extends CommandBase {
     xJoystick = table.getEntry("/xJoystick");
     yJoystick = table.getEntry("/yJoystick");
 
+    // display PID coefficients on SmartDashboard
+    SmartDashboard.putNumber("Limelight P Gain", limelight_kp);
+    SmartDashboard.putNumber("Limelight I Gain", limelight_ki);
+    SmartDashboard.putNumber("Limelight D Gain", limelight_kd);
+
   }
 
   @Override
   public void initialize(){
     drivetrain.setDriveCommand("Swerve Drive Command");
+    limelightPid.setSetpoint(0);
   }
 
   @Override
   public void execute() {
+
+    double limelight_p = SmartDashboard.getNumber("Limelight P Gain", limelight_kp);
+    double limelight_i = SmartDashboard.getNumber("Limelight I Gain", limelight_ki);
+    double limelight_d = SmartDashboard.getNumber("Limelight D Gain", limelight_kd);
+    //Check smartdashboard for updated limelight PIDs, an update if needed.
+    if ((limelight_p != limelight_kp) || (limelight_i != limelight_ki) || (limelight_d != limelight_kd)){
+      limelight_kp = limelight_p;
+      limelight_ki = limelight_i;
+      limelight_kd = limelight_d;
+      limelightPid.setP(limelight_kp);
+      limelightPid.setI(limelight_ki);
+      limelightPid.setD(limelight_kd);
+    }
+
     // Get the x speed. We are inverting this because Xbox controllers return
     // negative values when we push forward.
     var xSpeed = xspeedLimiter.calculate(dc.getVelocityX()) * DriveTrain.kMaxSpeed;
@@ -116,8 +137,7 @@ public class SwerveDriveCommand extends CommandBase {
 
         //feed both PIDs even if not being used.
         anglePid.setSetpoint(targetAngle);
-        double anglePidOutput = anglePid.calculate(currentAngle);
-        limelightPid.setSetpoint(0);
+        double anglePidOutput = anglePid.calculate(currentAngle);      
         double limelightPidOutput = limelightPid.calculate(limelight.getX());
 
         //choose which PID to use based on limelight availability (target aquired and LEDs ON)
