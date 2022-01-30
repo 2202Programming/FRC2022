@@ -70,6 +70,10 @@ public class Intake_Subsystem extends SubsystemBase {
       return ( intake_solenoid.get() == DEPLOY); 
     }
 
+    //TODO - how is this different than off()  above? ALSO, prefer shorter off/on 
+    // to avoid intake.intakeOff()    intake.off()   reads better
+    //TODO  is intakeIsOn variable needed, could you create a functions
+    // that looks at the motor state?
     public void intakeOff() {
         intakeIsOn = false;
         intake_spark.set(0);
