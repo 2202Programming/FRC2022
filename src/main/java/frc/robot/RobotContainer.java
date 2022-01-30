@@ -8,7 +8,6 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.DriverPrefs;
 import frc.robot.commands.SwerveDriveCommand;
-import frc.robot.commands.TestShoot;
 import frc.robot.commands.auto.auto_drivePath_cmd;
 import frc.robot.subsystems.Magazine_Subsystem;
 import frc.robot.subsystems.Limelight_Subsystem;
@@ -20,6 +19,7 @@ import frc.robot.subsystems.hid.XboxButton;
 import frc.robot.subsystems.ifx.DriverControls.Id;
 import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.ux.Dashboard;
+import frc.robot.commands.test.TestShoot;
 //test commands
 import frc.robot.commands.test.getTrajectoryFollowTest;
 /**

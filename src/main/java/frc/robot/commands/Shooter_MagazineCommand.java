@@ -4,7 +4,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants.Shooter;
+//import frc.robot.Constants.Shooter;
 import frc.robot.subsystems.shooter.Shooter_Subsystem;
 import frc.robot.subsystems.Magazine_Subsystem;
 
@@ -44,9 +44,11 @@ enum Stage{
             break;
 
             case Loading:
-                double upper = SmartDashboard.getNumber("Upper RPM", 0);
-                double lower = SmartDashboard.getNumber("Lower RPM", 0);
-                shooter.setMotors(upper, lower);
+            //TODO - use CARGO Vel and Rotations, not RPM
+            //  SHOOTER will take desired speeds and convert to RPM
+            //    double upper = SmartDashboard.getNumber("Upper RPM", 0);
+            //    double lower = SmartDashboard.getNumber("Lower RPM", 0);
+             //TODO - not a good api, removed   shooter.setMotors(upper, lower);
                 stage = Stage.WaitingForFlywheel;
             break;
 
@@ -75,7 +77,8 @@ enum Stage{
     }
     @Override
     public void end(boolean interrupted) {
-       shooter.setMotors(0, 0);
+      //TODO  Use higher level api shooter.off() instead of  shooter.setMotors(0, 0);
+      shooter.off();
        magazine.beltOff();
     }
 }
