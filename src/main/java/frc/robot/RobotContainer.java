@@ -6,16 +6,16 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.DriverPrefs;
-import frc.robot.commands.SwerveDriveCommand;
+import frc.robot.commands.swerve.DriveCmd;
 import frc.robot.commands.auto.auto_drivePath_cmd;
-import frc.robot.subsystems.Magazine_Subsystem;
+//import frc.robot.subsystems.Magazine_Subsystem;
 import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.Sensors_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.hid.HID_Xbox_Subsystem;
 import frc.robot.subsystems.hid.XboxButton;
 import frc.robot.subsystems.ifx.DriverControls.Id;
-import frc.robot.subsystems.Intake_Subsystem;
+//import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.ux.Dashboard;
 //test commands
 import frc.robot.commands.test.getTrajectoryFollowTest;
@@ -41,6 +41,9 @@ public class RobotContainer {
   private final SwerveDrivetrain drivetrain;
   public final Limelight_Subsystem limelight;
 
+  //modifiable commands
+  DriveCmd swd;
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -55,8 +58,9 @@ public class RobotContainer {
     dashboard = new Dashboard(rc);
 
     // set default commands
-    drivetrain.setDefaultCommand(new SwerveDriveCommand(drivetrain, driverControls, limelight));
-
+    swd = new DriveCmd(drivetrain, driverControls);
+    drivetrain.setDefaultCommand(swd);
+    
     // //setup the dashboard programatically, creates any choosers, screens
     // dashboard = new Dashboard(this);
 
@@ -75,9 +79,8 @@ public class RobotContainer {
    * </ul>
    */
   void setDriverButtons() {
-
     // B - Toggle drive mode
-    driverControls.bind(Id.Driver, XboxButton.B).whenPressed(new InstantCommand(drivetrain::driveModeCycle));
+    driverControls.bind(Id.Driver, XboxButton.B).whenPressed(new InstantCommand(swd::cycleDriveMode));
 
     // A - Trajectory Test
     driverControls.bind(Id.Driver, XboxButton.A).whenPressed(new getTrajectoryFollowTest(drivetrain));
