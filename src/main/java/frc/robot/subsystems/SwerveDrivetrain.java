@@ -20,8 +20,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.math.MathUtil;
-import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.DriveTrain;
@@ -159,46 +157,12 @@ public class SwerveDrivetrain extends SubsystemBase {
 
   }
 
-  /**
-   * Method to drive the robot using joystick info.
-   * 
-   * Length can be meter or ft, just be consistent in field and robot wheel units.
-   *
-   * @param xSpeed        Speed of the robot in the x direction (forward).
-   *                      [length/s]
-   * @param ySpeed        Speed of the robot in the y direction (sideways).
-   *                      [length/s]
-   * @param rot           Angular rate of the robot. [rad/s]
-   * @param fieldRelative Whether the provided x and y speeds are relative to the
-   *                      field.
-   */
-  public void drive(double xSpeed, double ySpeed, double rot) { // should be ft/s, rad/s
-    // Clamp speeds
-    xSpeed = MathUtil.clamp(xSpeed, -Constants.DriveTrain.kMaxSpeed, Constants.DriveTrain.kMaxSpeed);
-    ySpeed = MathUtil.clamp(ySpeed, -Constants.DriveTrain.kMaxSpeed, Constants.DriveTrain.kMaxSpeed);
-    rot = MathUtil.clamp(rot, -Constants.DriveTrain.kMaxAngularSpeed, Constants.DriveTrain.kMaxAngularSpeed);
 
-    //before, was using gyro.getRotation2d() for this, but that wouldn't allow for reset of heading with resetPose.
-    Rotation2d currrentHeading = m_pose.getRotation(); 
-
-    switch(driveMode) {
-      case robotCentric:
-        states = kinematics.toSwerveModuleStates(new ChassisSpeeds(xSpeed, ySpeed, rot));
-        break;
-      case fieldCentric:
-        states = kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, currrentHeading));
-        break;
-      case hubCentric:
-        states = kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, currrentHeading));
-        break;
-    }
-
+  public void drive(SwerveModuleState[] states) { 
     // output the angle and velocity for each module
-    // Maybe should just call setModuleStates?
     for (int i = 0; i < states.length; i++) {
       modules[i].setDesiredState(states[i]);
     }
-
   }
 
   // used for testing
@@ -330,16 +294,6 @@ public class SwerveDrivetrain extends SubsystemBase {
 
   public SwerveDriveKinematics getKinematics() {
     return kinematics;
-  }
-
-  // Sets module states and writes to modules
-  public void setModuleStates(SwerveModuleState[] newStates) {
-    states = newStates; // update drivetrain version of current states; used for odometery
-
-    // output the angle and velocity for each module
-    for (int i = 0; i < states.length; i++) {
-      modules[i].setDesiredState(states[i]); // updates the desired state at the module level
-    }
   }
 
   public String getDriveCommand(){
