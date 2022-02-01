@@ -49,6 +49,8 @@ public final class Constants {
         public static final int CMB_RI_Extend = 13;
         public static final int CMB_LO_Extend = 14;
         public static final int CMB_RO_Extend = 15;
+        public static final int CMB_RIGHT_Extend = 0;
+        public static final int CMB_LEFT_Extend = 0;
         
         
         // drive train drive / angle motors - sparkmax neo
