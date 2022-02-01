@@ -42,7 +42,7 @@ public class MagazineCommand extends CommandBase {
         stage = Stage.DoNothing; 
         //TODO do something really useful here please.
         magazine.beltOff();
-        intake.intakeOff();
+        intake.off();
     }
 
     public void execute() {

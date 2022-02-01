@@ -66,6 +66,7 @@ public class ShootCommand extends CommandBase{
     }
     @Override
     public void end(boolean interrupted){
+        stage = Stage.DoNothing;
         magazine.beltOff();
     }
     @Override

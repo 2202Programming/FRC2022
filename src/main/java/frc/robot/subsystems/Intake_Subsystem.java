@@ -21,7 +21,6 @@ public class Intake_Subsystem extends SubsystemBase {
     //Localized Constants - what valve value does what action
     static final Value DEPLOY  = Value.kReverse;
     static final Value RETRACT = Value.kForward;
-    private boolean intakeIsOn = false;
     //Instantiations
     final Spark intake_spark = new Spark(PWM.INTAKE);
     final DoubleSolenoid intake_solenoid = new DoubleSolenoid(CAN.PCM1,
@@ -74,8 +73,4 @@ public class Intake_Subsystem extends SubsystemBase {
     // to avoid intake.intakeOff()    intake.off()   reads better
     //TODO  is intakeIsOn variable needed, could you create a functions
     // that looks at the motor state?
-    public void intakeOff() {
-        intakeIsOn = false;
-        intake_spark.set(0);
-    }
 }
