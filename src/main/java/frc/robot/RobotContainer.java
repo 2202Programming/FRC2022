@@ -10,6 +10,7 @@ import frc.robot.Constants.DriverPrefs;
 import frc.robot.commands.SwerveDriveCommand;
 import frc.robot.commands.auto.auto_drivePath_cmd;
 import frc.robot.subsystems.Magazine_Subsystem;
+import frc.robot.subsystems.PrototypeMagazine;
 import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.Sensors_Subsystem;
 import frc.robot.subsystems.shooter.Shooter_Subsystem;
@@ -17,8 +18,11 @@ import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.hid.HID_Xbox_Subsystem;
 import frc.robot.subsystems.hid.XboxButton;
 import frc.robot.subsystems.ifx.DriverControls.Id;
+import frc.robot.subsystems.interfaces.SetsPercentOutput;
+import frc.robot.subsystems.interfaces.SimpleIntake;
 import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.ux.Dashboard;
+import frc.robot.commands.test.TestMotorCommand;
 import frc.robot.commands.test.TestShoot;
 //test commands
 import frc.robot.commands.test.getTrajectoryFollowTest;
@@ -42,10 +46,12 @@ public class RobotContainer {
   public final Shooter_Subsystem shooter;
   public final HID_Xbox_Subsystem driverControls;
   // public final Sensors_Subsystem sensors;
-  //public final Intake_Subsystem intake; 
+  // public final Intake_Subsystem intake; 
   //private final SwerveDrivetrain drivetrain;
-  //public final Magazine_Subsystem magazine;
+  // public final Magazine_Subsystem magazine;
   // public final Limelight_Subsystem limelight;
+  // public final SimpleIntake intake;
+  public final SetsPercentOutput magazine; 
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -62,13 +68,16 @@ public class RobotContainer {
     // driverControls = null;
     // limelight = null;
     shooter = new Shooter_Subsystem();
-    //magazine = new Magazine_Subsystem();
-    //intake = new Intake_Subsystem();
+    magazine = new PrototypeMagazine(0);
+    // magazine = new Magazine_Subsystem();
+    // intake = new Intake_Subsystem();
     dashboard = new Dashboard(rc);
+    
 
     // set default commands
     //drivetrain.setDefaultCommand(new SwerveDriveCommand(drivetrain, driverControls, limelight));
     shooter.setDefaultCommand(new TestShoot(shooter));
+    magazine.setDefaultCommand(new TestMotorCommand("magazine", magazine));
 
     // //setup the dashboard programatically, creates any choosers, screens
     // dashboard = new Dashboard(this);
