@@ -49,9 +49,9 @@ public class DriveCmd extends CommandBase {
 
   // PID for heading to a target
   private PIDController anglePid;
-  private double angle_kp = 0.07;
-  private double angle_ki = 0.0;
-  private double angle_kd = 0.0;
+  private double angle_kp = 0.075;
+  private double angle_ki = 0.004;
+  private double angle_kd = 0.005;
 
   // private Pose2d centerField = new Pose2d(27, 13.5, new Rotation2d()); //actual
   // hub location?
@@ -138,14 +138,13 @@ public class DriveCmd extends CommandBase {
 
         // set goal of angle PID to be heading (in degrees) from current position to
         // centerfield
-        double targetAngle = getHeading2Target(drivetrain.getPose(), centerField);
+         double targetAngle = getHeading2Target(drivetrain.getPose(), centerField);
         double currentAngle = drivetrain.getPose().getRotation().getDegrees(); // from -180 to 180
         double angleError = targetAngle - currentAngle;
         // feed both PIDs even if not being used.
         anglePid.setSetpoint(targetAngle);
-        double anglePidOutput = anglePid.calculate(currentAngle);
-        rot = rotLimiter.calculate(anglePidOutput); // use Odometery PID for rotation in hub centric
-
+        rot = anglePid.calculate(currentAngle);
+        
         // deal with continuity issue across 0
         if (angleError < -180) {
           targetAngle += 360;
