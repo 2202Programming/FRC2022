@@ -5,6 +5,8 @@
 package frc.robot.commands.auto;
 
 import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -23,7 +25,7 @@ public class auto_pathPlanner_cmd extends CommandBase {
 
   // Since a PathPlannerTrajectory extends the WPILib Trajectory, it can be referenced as one
   // This will load the file "Example Path.path" and generate it with a max velocity of 8 m/s and a max acceleration of 5 m/s^2
-  Trajectory path = PathPlanner.loadPath("New Path", 3, 3);
+  PathPlannerTrajectory path = PathPlanner.loadPath("New Path", 3, 3);
 
   public auto_pathPlanner_cmd(SwerveDrivetrain drive) {
     m_robotDrive = drive;
@@ -55,8 +57,8 @@ public class auto_pathPlanner_cmd extends CommandBase {
       return new InstantCommand();  // no path selected
     }
       
-      SwerveControllerCommand swerveControllerCommand =
-      new SwerveControllerCommand(
+      PPSwerveControllerCommand swerveControllerCommand =
+      new PPSwerveControllerCommand(
           path,
           m_robotDrive::getPose, // Functional interface to feed supplier
           m_robotDrive.getKinematics(),
@@ -67,7 +69,7 @@ public class auto_pathPlanner_cmd extends CommandBase {
             // Here, our rotation profile constraints were a max velocity
             // of 1 rotation per second and a max acceleration of 180 degrees
             // per second squared
-            m_robotDrive::drive,
+            m_robotDrive::setModuleStates,
             m_robotDrive
             );
 

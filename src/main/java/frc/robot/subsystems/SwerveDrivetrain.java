@@ -156,6 +156,10 @@ public class SwerveDrivetrain extends SubsystemBase {
     }
   }
 
+  public SwerveModuleMK3[] getModules(){
+    return modules;
+  }
+
   // used for testing
   public void testDrive(double speed, double angle) {
     // output the angle and speed (meters per sec) for each module
@@ -272,6 +276,16 @@ public class SwerveDrivetrain extends SubsystemBase {
     for (int i = 0; i < modules.length; i++) {
       state.angle = Rotation2d.fromDegrees(modules[i].getAngle());
       modules[i].setDesiredState(state);
+    }
+  }
+
+  // Sets module states and writes to modules
+  public void setModuleStates(SwerveModuleState[] newStates) {
+    cur_states = newStates; // update drivetrain version of current states; used for odometry
+
+    // output the angle and velocity for each module
+    for (int i = 0; i < cur_states.length; i++) {
+      modules[i].setDesiredState(cur_states[i]); // updates the desired state at the module level
     }
   }
 }
