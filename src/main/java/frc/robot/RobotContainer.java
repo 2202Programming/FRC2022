@@ -63,8 +63,7 @@ public class RobotContainer {
     dashboard = new Dashboard(rc);
     limelight = new Limelight_Subsystem();
     driverControls = new HID_Xbox_Subsystem(DriverPrefs.VelExpo, DriverPrefs.RotationExpo, DriverPrefs.StickDeadzone);
-    drivetrain = new SwerveDrivetrain();
-
+   
     //These are hardware specific
     if (Constants.HAS_DRIVETRAIN) drivetrain = new SwerveDrivetrain();
     //if (Constants.HAS_SHOOTER) shooter = new Shooter_Subsystem();
