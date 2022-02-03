@@ -401,6 +401,8 @@ public class SwerveModuleMK3 {
   private NetworkTableEntry nte_velocity;
   private NetworkTableEntry nte_angle_target;
   private NetworkTableEntry nte_vel_target;
+  private NetworkTableEntry nte_motor_current;
+  private NetworkTableEntry nte_applied_output;
 
   void NTConfig() {
     // direct networktables logging
@@ -410,7 +412,8 @@ public class SwerveModuleMK3 {
     nte_velocity = table.getEntry(NTPrefix + "/velocity");
     nte_angle_target = table.getEntry(NTPrefix + "/angle_target");
     nte_vel_target = table.getEntry(NTPrefix + "/velocity_target");
-
+    nte_motor_current = table.getEntry(NTPrefix + "/motor_current");
+    nte_applied_output = table.getEntry(NTPrefix + "/applied_output");
   }
 
   void NTUpdate() {
@@ -421,6 +424,8 @@ public class SwerveModuleMK3 {
     nte_velocity.setDouble(m_velocity);
     nte_angle_target.setDouble(m_angle_target);
     nte_vel_target.setDouble(m_vel_target);
+    nte_motor_current.setDouble(driveMotor.getOutputCurrent());
+    nte_applied_output.setDouble(driveMotor.getAppliedOutput());
   }
 
   void sleep(long ms) {

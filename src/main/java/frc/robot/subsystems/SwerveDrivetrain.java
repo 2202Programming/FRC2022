@@ -73,6 +73,12 @@ public class SwerveDrivetrain extends SubsystemBase {
   private NetworkTableEntry currentY;
   private NetworkTableEntry currentHeading;
 
+  private NetworkTableEntry velocityFL;
+  private NetworkTableEntry velocityFR;
+  private NetworkTableEntry velocityBL;
+  private NetworkTableEntry velocityBR;
+
+
   double drive_kP = DriveTrain.drivePIDF.getP();
   double drive_kI = DriveTrain.drivePIDF.getI();
   double drive_kD = DriveTrain.drivePIDF.getD();
@@ -122,6 +128,11 @@ public class SwerveDrivetrain extends SubsystemBase {
     currentX = table.getEntry("/Current X");
     currentY = table.getEntry("/Current Y");
     currentHeading = table.getEntry("/Current Heading");
+    velocityFL = table.getEntry("/Velocity Front Left");
+    velocityFR = table.getEntry("/Velocity Front Right");
+    velocityBL = table.getEntry("/Velocity Back Left");
+    velocityBR = table.getEntry("/Velocity Back Right");
+
 
     // display PID coefficients on SmartDashboard
     SmartDashboard.putNumber("Drive P", drive_kP);
@@ -176,6 +187,10 @@ public class SwerveDrivetrain extends SubsystemBase {
       currentX.setDouble(m_pose.getX());
       currentY.setDouble(m_pose.getY());
       currentHeading.setDouble(m_pose.getRotation().getDegrees());
+      velocityFL.setDouble(modules[0].getVelocity());
+      velocityFR.setDouble(modules[1].getVelocity());
+      velocityBL.setDouble(modules[2].getVelocity());
+      velocityBR.setDouble(modules[3].getVelocity());
       timer = 0;
 
       // read PID coefficients from SmartDashboard

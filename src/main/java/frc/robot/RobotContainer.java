@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.DriverPrefs;
 import frc.robot.commands.swerve.DriveCmd;
 import frc.robot.commands.auto.auto_drivePath_cmd;
+import frc.robot.commands.auto.auto_pathPlanner_cmd;
 import frc.robot.subsystems.Intake_Subsystem;
 //import frc.robot.subsystems.Magazine_Subsystem;
 import frc.robot.subsystems.Limelight_Subsystem;
@@ -19,6 +20,7 @@ import frc.robot.subsystems.hid.XboxButton;
 import frc.robot.subsystems.ifx.DriverControls.Id;
 //import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.ux.Dashboard;
+import frc.robot.commands.test.SwerveDriveTest;
 //test commands
 import frc.robot.commands.test.getTrajectoryFollowTest;
 
@@ -100,7 +102,10 @@ public class RobotContainer {
       driverControls.bind(Id.Driver, XboxButton.B).whenPressed(new InstantCommand(swd::cycleDriveMode));
     }
     // A - Trajectory Test
-    if (Constants.HAS_DRIVETRAIN) driverControls.bind(Id.Driver, XboxButton.A).whenPressed(new getTrajectoryFollowTest(drivetrain));
+    if (Constants.HAS_DRIVETRAIN) 
+      driverControls.bind(Id.Driver, XboxButton.A)
+        .whenPressed(new getTrajectoryFollowTest(drivetrain));
+        //.whenPressed(new SwerveDriveTest(drivetrain, 1, 0).withTimeout(8));
 
     // Y - reset Pose
     if (Constants.HAS_DRIVETRAIN) driverControls.bind(Id.Driver, XboxButton.Y).whenPressed(new InstantCommand(drivetrain::resetPose));
@@ -108,7 +113,9 @@ public class RobotContainer {
     // X - follow path off chooser
     if (Constants.HAS_DRIVETRAIN) {
       driverControls.bind(Id.Driver, XboxButton.X)
-          .whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
+          //.whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
+          .whenPressed(new auto_pathPlanner_cmd(drivetrain));
+
     }
 
     //RB limelight toggle
