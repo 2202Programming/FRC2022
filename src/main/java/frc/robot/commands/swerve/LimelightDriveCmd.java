@@ -19,7 +19,9 @@ public class LimelightDriveCmd extends DriveCmd {
 
   public LimelightDriveCmd(SwerveDrivetrain drivetrain, DriverControls dc, Limelight_Subsystem limelight) {
     super(drivetrain, dc);
-
+    this.limelight = limelight;
+    limelightPid = new PIDController(limelight_kP, limelight_kI, limelight_kD);
+    
     // display PID coefficients on SmartDashboard
     SmartDashboard.putNumber("Limelight P Gain", limelight_kP);
     SmartDashboard.putNumber("Limelight I Gain", limelight_kI);

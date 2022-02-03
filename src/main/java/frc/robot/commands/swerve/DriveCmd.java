@@ -76,10 +76,10 @@ public class DriveCmd extends CommandBase {
 
   public final String NT_Name = "DT"; // expose data under DriveTrain table
 
-  public DriveCmd(SwerveDrivetrain drivetrain, DriverControls dc) {
+  public DriveCmd(SwerveDrivetrain drivetrain, DriverControls dc2) {
     this.drivetrain = drivetrain;
     addRequirements(drivetrain);
-    this.dc = dc;
+    this.dc = dc2;
     this.kinematics = drivetrain.getKinematics();
 
     anglePid = new PIDController(angle_kp, angle_ki, angle_kd);
