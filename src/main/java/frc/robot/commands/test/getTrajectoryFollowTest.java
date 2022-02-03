@@ -65,14 +65,14 @@ public class getTrajectoryFollowTest implements Command {
         // Here, our rotation profile constraints were a max velocity
         // of 1 rotation per second and a max acceleration of 180 degrees
         // per second squared
-        drivetrain::setModuleStates,
+        drivetrain::drive,
         drivetrain);
 
     // Reset odometry to the starting pose of the trajectory.
     drivetrain.setPose(exampleTrajectory.getInitialPose());
 
     // Run path following command, then stop at the end.
-    work = swerveControllerCommand.andThen(() -> drivetrain.drive(0, 0, 0)).withTimeout(10);
+    work = swerveControllerCommand.andThen(() -> drivetrain.stop()).withTimeout(10);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

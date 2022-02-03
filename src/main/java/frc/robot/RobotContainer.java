@@ -6,17 +6,18 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.DriverPrefs;
-import frc.robot.commands.SwerveDriveCommand;
+import frc.robot.commands.swerve.DriveCmd;
 import frc.robot.commands.auto.auto_drivePath_cmd;
-import frc.robot.subsystems.Magazine_Subsystem;
+import frc.robot.subsystems.Intake_Subsystem;
+//import frc.robot.subsystems.Magazine_Subsystem;
 import frc.robot.subsystems.Limelight_Subsystem;
+import frc.robot.subsystems.Magazine_Subsystem;
 import frc.robot.subsystems.Sensors_Subsystem;
-import frc.robot.subsystems.Shooter_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.hid.HID_Xbox_Subsystem;
 import frc.robot.subsystems.hid.XboxButton;
 import frc.robot.subsystems.ifx.DriverControls.Id;
-import frc.robot.subsystems.Intake_Subsystem;
+//import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.ux.Dashboard;
 //test commands
 import frc.robot.commands.test.getTrajectoryFollowTest;
@@ -38,13 +39,16 @@ public class RobotContainer {
   }
 
   public final Dashboard dashboard;
-  public Shooter_Subsystem shooter = null;
+  //public Shooter_Subsystem shooter = null;
   public final HID_Xbox_Subsystem driverControls;
   public final Sensors_Subsystem sensors;
   public Intake_Subsystem intake = null; 
   private SwerveDrivetrain drivetrain = null;
   public Magazine_Subsystem magazine = null;
   public final Limelight_Subsystem limelight;
+
+  //modifiable commands
+  DriveCmd swd;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -59,17 +63,20 @@ public class RobotContainer {
     dashboard = new Dashboard(rc);
     limelight = new Limelight_Subsystem();
     driverControls = new HID_Xbox_Subsystem(DriverPrefs.VelExpo, DriverPrefs.RotationExpo, DriverPrefs.StickDeadzone);
-
+   
     //These are hardware specific
     if (Constants.HAS_DRIVETRAIN) drivetrain = new SwerveDrivetrain();
-    if (Constants.HAS_SHOOTER) shooter = new Shooter_Subsystem();
+    //if (Constants.HAS_SHOOTER) shooter = new Shooter_Subsystem();
     if (Constants.HAS_MAGAZINE) magazine = new Magazine_Subsystem();
     if (Constants.HAS_INTAKE) intake = new Intake_Subsystem();
 
 
     // set default commands
-    if (Constants.HAS_DRIVETRAIN) drivetrain.setDefaultCommand(new SwerveDriveCommand(drivetrain, driverControls, limelight));
-
+    if (Constants.HAS_DRIVETRAIN) {
+      swd = new DriveCmd(drivetrain, driverControls);
+      drivetrain.setDefaultCommand(swd);
+    }
+    
     // //setup the dashboard programatically, creates any choosers, screens
     // dashboard = new Dashboard(this);
 
@@ -88,10 +95,10 @@ public class RobotContainer {
    * </ul>
    */
   void setDriverButtons() {
-
     // B - Toggle drive mode
-    if (Constants.HAS_DRIVETRAIN) driverControls.bind(Id.Driver, XboxButton.B).whenPressed(new InstantCommand(drivetrain::driveModeCycle));
-
+    if (Constants.HAS_DRIVETRAIN) {
+      driverControls.bind(Id.Driver, XboxButton.B).whenPressed(new InstantCommand(swd::cycleDriveMode));
+    }
     // A - Trajectory Test
     if (Constants.HAS_DRIVETRAIN) driverControls.bind(Id.Driver, XboxButton.A).whenPressed(new getTrajectoryFollowTest(drivetrain));
 

@@ -66,7 +66,7 @@ public class auto_drivePath_cmd extends CommandBase {
             // Here, our rotation profile constraints were a max velocity
             // of 1 rotation per second and a max acceleration of 180 degrees
             // per second squared
-            m_robotDrive::setModuleStates,
+            m_robotDrive::drive,
             m_robotDrive
             );
 
@@ -74,7 +74,7 @@ public class auto_drivePath_cmd extends CommandBase {
         m_robotDrive.setPose(path.getInitialPose());
 
     // Run path following command, then stop at the end.
-    return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0)).withTimeout(20);
+    return swerveControllerCommand.andThen(() -> m_robotDrive.stop()).withTimeout(20);
 
   }
   // Called once the command ends or is interrupted.
