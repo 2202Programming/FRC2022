@@ -69,7 +69,7 @@ public class auto_pathPlanner_cmd extends CommandBase {
             // Here, our rotation profile constraints were a max velocity
             // of 1 rotation per second and a max acceleration of 180 degrees
             // per second squared
-            m_robotDrive::setModuleStates,
+            m_robotDrive::drive,
             m_robotDrive
             );
 
