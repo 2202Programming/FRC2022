@@ -34,7 +34,7 @@ public class ShootCommand extends CommandBase{
     public void execute(){
         switch(stage){
             case DoNothing:
-                magazine.beltOn(0.001);
+                magazine.beltOn(0.001); //filler constant
                 stage = Stage.BackingMagazine;
             break;
             case BackingMagazine:

@@ -59,6 +59,9 @@ public class Magazine_Subsystem extends SubsystemBase {
     return lightGate.get();
   }
 
+  
+//snowblower motor
+
   //TODO Think about the API to expose for writing commands
   // TODO - Postion or velocity control?
 
