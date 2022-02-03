@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.DriverPrefs;
 import frc.robot.commands.swerve.DriveCmd;
+import frc.robot.commands.swerve.LimelightDriveCmd;
 import frc.robot.commands.auto.auto_drivePath_cmd;
 import frc.robot.commands.auto.auto_pathPlanner_cmd;
 import frc.robot.subsystems.Intake_Subsystem;
@@ -50,8 +51,8 @@ public class RobotContainer {
   public final Limelight_Subsystem limelight;
 
   //modifiable commands
-  DriveCmd swd;
-
+  //DriveCmd swd;
+  LimelightDriveCmd swd;
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -75,7 +76,8 @@ public class RobotContainer {
 
     // set default commands
     if (Constants.HAS_DRIVETRAIN) {
-      swd = new DriveCmd(drivetrain, driverControls);
+      //swd = new DriveCmd(drivetrain, driverControls);
+      swd = new LimelightDriveCmd(drivetrain, driverControls, limelight);
       drivetrain.setDefaultCommand(swd);
     }
     

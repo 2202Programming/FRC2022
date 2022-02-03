@@ -1,10 +1,12 @@
 package frc.robot.commands.swerve;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import frc.robot.subsystems.ifx.DriverControls;
 
 public class LimelightDriveCmd extends DriveCmd {
@@ -16,9 +18,12 @@ public class LimelightDriveCmd extends DriveCmd {
   double limelightPidOutput = 0.0;
 
   Limelight_Subsystem limelight;
+  SlewRateLimiter llLimiter = new SlewRateLimiter(3);
 
   public LimelightDriveCmd(SwerveDrivetrain drivetrain, DriverControls dc, Limelight_Subsystem limelight) {
     super(drivetrain, dc);
+    this.limelight = limelight;
+    limelightPid = new PIDController(limelight_kP, limelight_kI, limelight_kD);
 
     // display PID coefficients on SmartDashboard
     SmartDashboard.putNumber("Limelight P Gain", limelight_kP);
@@ -35,16 +40,17 @@ public class LimelightDriveCmd extends DriveCmd {
   public void execute() {
     calculate(); // parent does most the work, sets output_states
     updateLimelightPID();
-
+    
     if (driveMode == DriveModeTypes.hubCentric &&
         limelight.getTarget() &&
         limelight.getLEDStatus()) {
-      // we only use limelight in hubCentrick mode
-
+      // we only use limelight in hubCentric mode
+      
       limelightPid.setSetpoint(0); // always go towards the light.
       limelightPidOutput = limelightPid.calculate(limelight.getX());
       // update rotation and calulate new output-states
-      rot = rotLimiter.calculate(limelightPidOutput);
+      rot = llLimiter.calculate(limelightPidOutput);
+      //rot = limelightPidOutput;
       output_states = kinematics
           .toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, currrentHeading));
     }
