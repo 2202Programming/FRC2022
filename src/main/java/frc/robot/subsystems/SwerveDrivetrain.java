@@ -134,7 +134,8 @@ public class SwerveDrivetrain extends SubsystemBase {
     velocityBR = table.getEntry("/Velocity Back Right");
 
 
-    // display PID coefficients on SmartDashboard
+    // display PID coefficients on SmartDashboard if tuning drivetrain
+    /*
     SmartDashboard.putNumber("Drive P", drive_kP);
     SmartDashboard.putNumber("Drive I", drive_kI);
     SmartDashboard.putNumber("Drive D", drive_kD);
@@ -144,7 +145,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     SmartDashboard.putNumber("Angle I", angle_kI);
     SmartDashboard.putNumber("Angle D", angle_kD);
     SmartDashboard.putNumber("Angle Feed Forward", angle_kFF);
-
+    */
   }
 
   public void drive(SwerveModuleState[] states) {
@@ -193,38 +194,8 @@ public class SwerveDrivetrain extends SubsystemBase {
       velocityBR.setDouble(modules[3].getVelocity());
       timer = 0;
 
-      // read PID coefficients from SmartDashboard
-      double drive_p = SmartDashboard.getNumber("Drive P Gain", DriveTrain.drivePIDF.getP());
-      double drive_i = SmartDashboard.getNumber("Drive I Gain", DriveTrain.drivePIDF.getI());
-      double drive_d = SmartDashboard.getNumber("Drive D Gain", DriveTrain.drivePIDF.getD());
-      double drive_ff = SmartDashboard.getNumber("Drive Feed Forward", DriveTrain.drivePIDF.getF());
-      double angle_p = SmartDashboard.getNumber("Angle P Gain", DriveTrain.anglePIDF.getP());
-      double angle_i = SmartDashboard.getNumber("Angle I Gain", DriveTrain.anglePIDF.getI());
-      double angle_d = SmartDashboard.getNumber("Angle D Gain", DriveTrain.anglePIDF.getD());
-      double angle_ff = SmartDashboard.getNumber("Angle Feed Forward", DriveTrain.anglePIDF.getF());
-
-      // if anything changes in drive PID, update all the modules with a new drive PID
-      if ((drive_p != drive_kP) || (drive_i != drive_kI) || (drive_d != drive_kD) || (drive_ff != drive_kFF)) {
-        drive_kP = drive_p;
-        drive_kI = drive_i;
-        drive_kD = drive_d;
-        drive_kFF = drive_ff;
-        for (SwerveModuleMK3 i : modules) {
-          i.setDrivePID(new PIDFController(drive_kP, drive_kI, drive_kD, drive_kFF));
-        }
-      }
-
-      // if anything changes in angle PID, update all the modules with a new angle PID
-      if ((angle_p != angle_kP) || (angle_i != angle_kI) || (angle_d != angle_kD) || (angle_ff != angle_kFF)) {
-        angle_kP = angle_p;
-        angle_kI = angle_i;
-        angle_kD = angle_d;
-        angle_kFF = angle_ff;
-        for (SwerveModuleMK3 i : modules) {
-          i.setAnglePID(new PIDFController(angle_kP, angle_kI, angle_kD, angle_kFF));
-        }
-
-      }
+      //if Drivetrain tuning
+      //pidTuning();
     }
   }
 
@@ -272,6 +243,41 @@ public class SwerveDrivetrain extends SubsystemBase {
     for (int i = 0; i < modules.length; i++) {
       state.angle = Rotation2d.fromDegrees(modules[i].getAngle());
       modules[i].setDesiredState(state);
+    }
+  }
+
+  private void pidTuning() { //if drivetrain tuning
+
+    // read PID coefficients from SmartDashboard if tuning drivetrain
+    double drive_p = SmartDashboard.getNumber("Drive P Gain", DriveTrain.drivePIDF.getP());
+    double drive_i = SmartDashboard.getNumber("Drive I Gain", DriveTrain.drivePIDF.getI());
+    double drive_d = SmartDashboard.getNumber("Drive D Gain", DriveTrain.drivePIDF.getD());
+    double drive_ff = SmartDashboard.getNumber("Drive Feed Forward", DriveTrain.drivePIDF.getF());
+    double angle_p = SmartDashboard.getNumber("Angle P Gain", DriveTrain.anglePIDF.getP());
+    double angle_i = SmartDashboard.getNumber("Angle I Gain", DriveTrain.anglePIDF.getI());
+    double angle_d = SmartDashboard.getNumber("Angle D Gain", DriveTrain.anglePIDF.getD());
+    double angle_ff = SmartDashboard.getNumber("Angle Feed Forward", DriveTrain.anglePIDF.getF());
+
+    // if anything changes in drive PID, update all the modules with a new drive PID
+    if ((drive_p != drive_kP) || (drive_i != drive_kI) || (drive_d != drive_kD) || (drive_ff != drive_kFF)) {
+      drive_kP = drive_p;
+      drive_kI = drive_i;
+      drive_kD = drive_d;
+      drive_kFF = drive_ff;
+      for (SwerveModuleMK3 i : modules) {
+        i.setDrivePID(new PIDFController(drive_kP, drive_kI, drive_kD, drive_kFF));
+      }
+    }
+
+    // if anything changes in angle PID, update all the modules with a new angle PID
+    if ((angle_p != angle_kP) || (angle_i != angle_kI) || (angle_d != angle_kD) || (angle_ff != angle_kFF)) {
+      angle_kP = angle_p;
+      angle_kI = angle_i;
+      angle_kD = angle_d;
+      angle_kFF = angle_ff;
+      for (SwerveModuleMK3 i : modules) {
+        i.setAnglePID(new PIDFController(angle_kP, angle_kI, angle_kD, angle_kFF));
+      }
     }
   }
 

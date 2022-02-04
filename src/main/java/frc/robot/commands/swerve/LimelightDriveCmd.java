@@ -6,7 +6,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import frc.robot.subsystems.ifx.DriverControls;
 
 public class LimelightDriveCmd extends DriveCmd {
@@ -60,9 +59,9 @@ public class LimelightDriveCmd extends DriveCmd {
   }
 
   void updateLimelightPID() {
-    double limelight_p = SmartDashboard.getNumber("Limelight P Gain", 0);
-    double limelight_i = SmartDashboard.getNumber("Limelight I Gain", 0);
-    double limelight_d = SmartDashboard.getNumber("Limelight D Gain", 0);
+    double limelight_p = SmartDashboard.getNumber("Limelight P Gain", limelight_kP);
+    double limelight_i = SmartDashboard.getNumber("Limelight I Gain", limelight_kI);
+    double limelight_d = SmartDashboard.getNumber("Limelight D Gain", limelight_kD);
 
     // if anything changes in limeLight PID, update it
     if ((limelight_p != limelight_kP) || (limelight_i != limelight_kI) || (limelight_d != limelight_kD)) {
