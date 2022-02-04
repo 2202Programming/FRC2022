@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.DriverPrefs;
 import frc.robot.commands.swerve.DriveCmd;
@@ -15,12 +16,14 @@ import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.Magazine_Subsystem;
 import frc.robot.subsystems.Sensors_Subsystem;
+import frc.robot.subsystems.shooter.Shooter_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.hid.HID_Xbox_Subsystem;
 import frc.robot.subsystems.hid.XboxButton;
 import frc.robot.subsystems.ifx.DriverControls.Id;
 //import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.ux.Dashboard;
+import frc.robot.commands.test.TestShoot;
 import frc.robot.commands.test.SwerveDriveTest;
 //test commands
 import frc.robot.commands.test.getTrajectoryFollowTest;
@@ -75,6 +78,9 @@ public class RobotContainer {
 
 
     // set default commands
+    //drivetrain.setDefaultCommand(new SwerveDriveCommand(drivetrain, driverControls, limelight));
+    shooter.setDefaultCommand(new TestShoot(shooter));
+
     if (Constants.HAS_DRIVETRAIN) {
       //swd = new DriveCmd(drivetrain, driverControls);
       swd = new LimelightDriveCmd(drivetrain, driverControls, limelight);
@@ -86,7 +92,6 @@ public class RobotContainer {
 
     setDriverButtons();
     setAssistantButtons();
-
   }
 
   /**
@@ -121,7 +126,7 @@ public class RobotContainer {
     }
 
     //RB limelight toggle
-    driverControls.bind(Id.Driver, XboxButton.RB).whenPressed(new InstantCommand( limelight::toggleLED ));
+    // driverControls.bind(Id.Driver, XboxButton.RB).whenPressed(new InstantCommand( limelight::toggleLED ));
   }
 
   // /**

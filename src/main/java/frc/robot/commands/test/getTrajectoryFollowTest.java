@@ -19,8 +19,6 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.Command;
-
-import frc.robot.RobotContainer;
 import frc.robot.subsystems.Sensors_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
 
@@ -32,8 +30,8 @@ public class getTrajectoryFollowTest implements Command {
 
   /** Creates a new getTrajectoryFollowTest. 
    * @return */
-  public  getTrajectoryFollowTest(SwerveDrivetrain drivetrain) {
-    sensors = RobotContainer.RC().sensors;
+  public  getTrajectoryFollowTest(Sensors_Subsystem ns, SwerveDrivetrain drivetrain) {
+    sensors = ns;
     this.drivetrain = drivetrain;
     requirements = new  HashSet<Subsystem>();
     requirements.add(drivetrain);
