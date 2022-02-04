@@ -45,7 +45,7 @@ public class RobotContainer {
   }
 
   public final Dashboard dashboard;
-  //public Shooter_Subsystem shooter = null;
+  public Shooter_Subsystem shooter = null;
   public final HID_Xbox_Subsystem driverControls;
   public final Sensors_Subsystem sensors;
   public Intake_Subsystem intake = null; 
@@ -111,7 +111,7 @@ public class RobotContainer {
     // A - Trajectory Test
     if (Constants.HAS_DRIVETRAIN) 
       driverControls.bind(Id.Driver, XboxButton.A)
-        .whenPressed(new getTrajectoryFollowTest(drivetrain));
+        .whenPressed(new getTrajectoryFollowTest(sensors, drivetrain));
         //.whenPressed(new SwerveDriveTest(drivetrain, 1, 0).withTimeout(8));
 
     // Y - reset Pose
