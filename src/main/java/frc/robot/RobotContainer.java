@@ -82,8 +82,8 @@ public class RobotContainer {
 
     // set default commands
     //drivetrain.setDefaultCommand(new SwerveDriveCommand(drivetrain, driverControls, limelight));
-    if (Constants.HAS_SHOOTER) shooter.setDefaultCommand(new dumbshooter(shooter, magazine));
-
+    if (Constants.HAS_SHOOTER) shooter.setDefaultCommand(new TestShoot(shooter));
+    
     if (Constants.HAS_DRIVETRAIN) {
       //swd = new DriveCmd(drivetrain, driverControls);
       swd = new LimelightDriveCmd(drivetrain, driverControls, limelight);
