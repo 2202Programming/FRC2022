@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.subsystems.Magazine_Subsystem;
-import frc.robot.subsystems.Shooter_Subsystem;
+import frc.robot.subsystems.shooter.Shooter_Subsystem;
 
 public class ShootCommand extends CommandBase{
     final Magazine_Subsystem magazine;
@@ -45,7 +45,7 @@ public class ShootCommand extends CommandBase{
                 count++;
             break;
             case WaitingForSolution:
-                shooter.setSpeed(1.0);
+                // TODO make sure shooterSettings get issued to shooter.
                 stage = Stage.WaitingForFlyWheel;
             break;
             case WaitingForFlyWheel:

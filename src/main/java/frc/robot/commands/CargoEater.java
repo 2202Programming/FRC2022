@@ -4,13 +4,11 @@ import frc.robot.RobotContainer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Magazine_Subsystem;
 import frc.robot.subsystems.Intake_Subsystem;
-import frc.robot.subsystems.Shooter_Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class CargoEater extends CommandBase{
     private final Magazine_Subsystem magazine;
     final Intake_Subsystem intake;
-    final Shooter_Subsystem shooter;
     int count;
     boolean Gate1value;
     boolean Gate2value;
@@ -29,7 +27,6 @@ enum  MStates{
 MStates stage;
 public CargoEater(){
     this.intake = RobotContainer.RC().intake;
-    this.shooter = RobotContainer.RC().shooter;
     this.magazine = RobotContainer.RC().magazine;
 }
 @Override

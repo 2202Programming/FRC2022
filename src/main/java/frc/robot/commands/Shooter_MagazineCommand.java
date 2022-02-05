@@ -69,7 +69,7 @@ enum Stage{
     }
     @Override
     public boolean isFinished() {
-        if (magazine.isGateBlocked()) {
+        if (magazine.isGate1Blocked()) {
             return false;
         } else {
             return true;
