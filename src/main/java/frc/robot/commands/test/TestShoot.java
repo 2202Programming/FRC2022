@@ -61,7 +61,7 @@ public class TestShoot extends CommandBase {
     ShooterSettings currentSS = shooter.getShooterSettings();
 
     //any difference? tell the shoother to spinup to new cmd settings
-    if (cmdSS.equals(currentSS)) {
+    if (!cmdSS.equals(currentSS)) {
       shooter.spinup(cmdSS);
     }
 
