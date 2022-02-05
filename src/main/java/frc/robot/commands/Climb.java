@@ -29,7 +29,7 @@ public class Climb extends CommandBase {
     private Stage stage;
 
 
-    
+
     public Climb(Climber climber) {
         this.climber = climber;
     }
@@ -52,6 +52,11 @@ public class Climb extends CommandBase {
     }
 
     @Override
+    /*
+    * TODO: Split into separate commajds
+    * TODO: State diagram
+    * TODO: Fully integrate (i.e. extend then pull back)
+    */
     public void execute() {
         if (isFinished == true) {
             currentCount = (climber.getLeftEncoder().getPosition() + climber.getRightEncoder().getPosition()) / 2;
