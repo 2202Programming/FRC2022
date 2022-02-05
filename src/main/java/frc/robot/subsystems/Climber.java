@@ -5,10 +5,18 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
+
 import static frc.robot.Constants.CAN;
 import static frc.robot.Constants.ClimbSettings;
 
 public class Climber {
+    // NTs
+    private NetworkTable table;
+    private NetworkTableEntry left_extender_speed, right_extender_speed, left_extender_position, right_extender_position;
+
     // PIDSlot used
     int slot = 0;
 
@@ -36,6 +44,12 @@ public class Climber {
         ClimbSettings.innerPID.copyTo(left_extender.getPIDController(), slot);
         ClimbSettings.innerPID.copyTo(right_extender.getPIDController(), slot);
 
+        // NT stuff
+        table = NetworkTableInstance.getDefault().getTable("Climber");
+        left_extender_speed = table.getEntry("Left Extender Speed");
+        right_extender_speed = table.getEntry("Right Extender Speed");
+        left_extender_position = table.getEntry("Left Extender Position");
+        right_extender_position = table.getEntry("Right Extender Position");
 
     }
 
@@ -73,11 +87,10 @@ public class Climber {
         }
 
 
-        // TODO command left_extender and right_extender to move to specified encoder counts
+        // command left_extender and right_extender to move to specified encoder counts
         left_extender.setSoftLimit(direction, count);
-        left_extender.set(speed);
         right_extender.setSoftLimit(direction, count);
-        right_extender.set(speed);
+        setSpeed(speed, speed);
     }
     /**
      * Left and Right arms are controlled in pairs
@@ -115,4 +128,21 @@ public class Climber {
 
     }
 
+    public void stop() {
+        left_extender.set(0);
+        right_extender.set(0);
+    }
+
+    public void setSpeed(double left, double right) {
+        left_extender.set(left);
+        right_extender.set(right);
+    }
+
+    public void periodic() {
+        // NT updates
+        left_extender_speed.setDouble(left_extender.getEncoder().getVelocity());
+        right_extender_speed.setDouble(right_extender.getEncoder().getVelocity());
+        left_extender_position.setDouble(left_extender.getEncoder().getPosition());
+        right_extender_position.setDouble(right_extender.getEncoder().getPosition());
+    }
 }
