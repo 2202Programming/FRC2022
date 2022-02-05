@@ -30,8 +30,9 @@ import frc.robot.commands.IntakeDeployToggle;
 import frc.robot.commands.MagazineCommand;
 import frc.robot.ux.Dashboard;
 import frc.robot.commands.test.TestShoot;
-import frc.robot.commands.test.dumbshooter;
-import frc.robot.commands.test.SwerveDriveTest;
+
+//import frc.robot.commands.test.dumbshooter;
+//import frc.robot.commands.test.SwerveDriveTest;
 //test commands
 import frc.robot.commands.test.getTrajectoryFollowTest;
 
