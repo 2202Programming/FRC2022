@@ -66,6 +66,7 @@ public class RobotContainer {
     
     //these can get created on any hardware setup
     sensors = new Sensors_Subsystem();
+    shooter = new Shooter_Subsystem();
     dashboard = new Dashboard(rc);
     limelight = new Limelight_Subsystem();
     driverControls = new HID_Xbox_Subsystem(DriverPrefs.VelExpo, DriverPrefs.RotationExpo, DriverPrefs.StickDeadzone);
@@ -110,8 +111,7 @@ public class RobotContainer {
     }
     // A - Trajectory Test
     if (Constants.HAS_DRIVETRAIN) 
-      driverControls.bind(Id.Driver, XboxButton.A)
-        .whenPressed(new getTrajectoryFollowTest(sensors, drivetrain));
+      driverControls.bind(Id.Driver, XboxButton.A).whenPressed(new getTrajectoryFollowTest(sensors,drivetrain));
         //.whenPressed(new SwerveDriveTest(drivetrain, 1, 0).withTimeout(8));
 
     // Y - reset Pose
