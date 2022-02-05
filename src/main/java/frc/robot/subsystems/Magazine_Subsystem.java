@@ -12,14 +12,14 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import static frc.robot.Constants.CAN;
 
 public class Magazine_Subsystem extends SubsystemBase {
   //slot to use on controllers
   int slot = 0;
   
   /** Creates a new Magazine2. */
-  private TalonSRX h_belt;
+  private TalonSRX top_wheel;
   //private CANSparkMax v_belt = new CANSparkMax(CAN.MAG_v_belt, MotorType.kBrushless);
   
   /*Definitions*/
@@ -30,10 +30,8 @@ public class Magazine_Subsystem extends SubsystemBase {
   //Constructor
   public Magazine_Subsystem() {
     // copy the PID settings to the hardware
-    h_belt = new TalonSRX(Constants.CAN.MAG_h_belt);
-    //MagazineSettings.h_beltPIDF.copyTo(h_belt.getPIDController(), slot);
-    //MagazineSettings.v_beltPIDF.copyTo(v_belt.getPIDController(), slot);
-
+    top_wheel = new TalonSRX(CAN.MAG_TOP_WHEEL);
+    
   }
 
   @Override
@@ -43,17 +41,17 @@ public class Magazine_Subsystem extends SubsystemBase {
 
   //sets the belts to a speed
   public void beltOn(double speed){
-    h_belt.set(TalonSRXControlMode.PercentOutput, speed);
+    top_wheel.set(TalonSRXControlMode.PercentOutput, speed);
     //v_belt.set(speed);
   }
   //turns belts off
   public void beltOff(){
-    h_belt.set(TalonSRXControlMode.PercentOutput, 0);
+    top_wheel.set(TalonSRXControlMode.PercentOutput, 0);
     //v_belt.set(speed);
   }
   //reverses direction of rotation to expell cargo
   public void expellCargo(double speed){
-    h_belt.set(TalonSRXControlMode.PercentOutput, -speed);
+    top_wheel.set(TalonSRXControlMode.PercentOutput, -speed);
         //v_belt.set(-speed);
   }
   

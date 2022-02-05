@@ -1,13 +1,12 @@
 package frc.robot.subsystems;
 
-import frc.robot.Constants.CAN;
-import static frc.robot.Constants.PWM;
+import static frc.robot.Constants.CAN;
 import static frc.robot.Constants.PCM1;
 import static frc.robot.Constants.DigitalIO;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.DigitalInput;
 
@@ -22,7 +21,7 @@ public class Intake_Subsystem extends SubsystemBase {
     static final Value DEPLOY  = Value.kReverse;
     static final Value RETRACT = Value.kForward;
     //Instantiations
-    final Spark intake_spark = new Spark(PWM.INTAKE);
+    final Talon intake_spark = new Talon(CAN.INTAKE_TALON);
     final DoubleSolenoid intake_solenoid = new DoubleSolenoid(CAN.PCM1,
                 PneumaticsModuleType.CTREPCM, 
                 PCM1.INTAKE_UP_SOLENOID_PCM, 

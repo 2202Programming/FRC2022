@@ -50,14 +50,16 @@ public final class Constants {
         public static final int DT_FR_CANCODER = 7;
         public static final int DT_FL_CANCODER = 8;
 
-        public static final int MAG_h_belt = 18;
-        public static final int MAG_v_belt = 13;
-
         // Shooter CAN devices
         public static final int SHOOTER_UPPER_TALON = 10;
         public static final int SHOOTER_LOWER_TALON = 11;
 
+        //Intake CAN
+        public static final int INTAKE_TALON = 14;
 
+        // Magazine motors
+        public static final int MAG_TOP_WHEEL = 18;
+        
         // drive train drive / angle motors - sparkmax neo
         public static final int DT_FL_DRIVE = 20;
         public static final int DT_FL_ANGLE = 21;
@@ -75,8 +77,6 @@ public final class Constants {
         public static final boolean BURN_FLASH = false;
 
         public static final int FLYWHEEL = 0; //random number
-
-
     }
 
     // PWM assignments on the Rio
@@ -112,7 +112,7 @@ public final class Constants {
     //Pnumatics control 2 -
     public static final class PCM1 {
       // Double Solenoid
-      public static final int INTAKE_UP_SOLENOID_PCM = 4; // test value
+      public static final int INTAKE_UP_SOLENOID_PCM = 4;   // test value
       public static final int INTAKE_DOWN_SOLENOID_PCM = 5; // test value
       
     }
