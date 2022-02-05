@@ -23,9 +23,9 @@ import frc.robot.subsystems.shooter.FlyWheel.FlyWheelConfig;
 public final class Constants {
 
     public static final boolean HAS_INTAKE = false;
-    public static final boolean HAS_SHOOTER = false;
-    public static final boolean HAS_MAGAZINE = false;
-    public static final boolean HAS_DRIVETRAIN = true;
+    public static final boolean HAS_SHOOTER = true;
+    public static final boolean HAS_MAGAZINE = true;
+    public static final boolean HAS_DRIVETRAIN = false;
 
 
     public static final double DT = 0.02; // 20ms framerate 50Hz
@@ -52,12 +52,12 @@ public final class Constants {
         public static final int DT_FR_CANCODER = 7;
         public static final int DT_FL_CANCODER = 8;
 
-        public static final int MAG_h_belt = 12;
+        public static final int MAG_h_belt = 18;
         public static final int MAG_v_belt = 13;
 
         // Shooter CAN devices
-        public static final int SHOOTER_UPPER_TALON = 11;
-        public static final int SHOOTER_LOWER_TALON = 10;
+        public static final int SHOOTER_UPPER_TALON = 10;
+        public static final int SHOOTER_LOWER_TALON = 11;
 
 
         // drive train drive / angle motors - sparkmax neo

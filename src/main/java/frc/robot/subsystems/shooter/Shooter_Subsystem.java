@@ -247,7 +247,7 @@ public class Shooter_Subsystem extends SubsystemBase  {
   /**
    * Shouldn't use this api, debugging only.
    */
-  void onPercent(double upperPct, double lowerPct) {
+  public void onPercent(double upperPct, double lowerPct) {
     shooterIsOn = true;
       upper_shooter.setPercent(upperPct); 
       lower_shooter.setPercent(lowerPct); 
