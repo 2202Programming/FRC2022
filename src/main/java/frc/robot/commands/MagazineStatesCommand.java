@@ -16,10 +16,10 @@ public class MagazineStatesCommand extends CommandBase{
 enum  MStates{
     DoNothing,
     WaitBall1,
-    MoveBall1,
+    MoveMag1,
     BallPos1,
     WaitBall2,
-    MoveBall2,
+    MoveMag2,
     FullMag,
     WaitShoot,
 }
@@ -40,18 +40,21 @@ public MagazineStatesCommand(){
             case DoNothing:
                 if(intake.isCargoDetected()){
                     stage = MStates.WaitBall1;
+                    magazine.beltOn(0.001);
                 }
             break;
 
             case WaitBall1:
                 if(magazine.isGate1Blocked()){
-                    stage = MStates.MoveBall1;
+                    magazine.beltOn(0.5);
+                    stage = MStates.MoveMag1;
                 }
             break;
 
-            case MoveBall1:
+            case MoveMag1:
                 if(magazine.isGate2Blocked()){
                     stage = MStates.BallPos1;
+                    magazine.beltOff();
                 }
             break;
 
@@ -60,11 +63,15 @@ public MagazineStatesCommand(){
             break;
 
             case WaitBall2:
-                stage = MStates.MoveBall2;
+                if (magazine.isGate1Blocked()){
+                    magazine.beltOn(0.5);
+                    stage = MStates.MoveMag2;
+                }
             break;
 
-            case MoveBall2:
+            case MoveMag2:
                 if(magazine.isGate1Blocked()){
+                    magazine.beltOff();
                     stage = MStates.FullMag;
                 }
             break;
@@ -74,7 +81,7 @@ public MagazineStatesCommand(){
                     stage = MStates.WaitShoot;
                 }
             break;
-            
+
             case WaitShoot:
             break;
         }
