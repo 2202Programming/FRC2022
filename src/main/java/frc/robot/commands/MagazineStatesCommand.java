@@ -38,19 +38,43 @@ public MagazineStatesCommand(){
     public void execute(){
         switch(stage){
             case DoNothing:
+                if(intake.isCargoDetected()){
+                    stage = MStates.WaitBall1;
+                }
             break;
+
             case WaitBall1:
+                if(magazine.isGate1Blocked()){
+                    stage = MStates.MoveBall1;
+                }
             break;
+
             case MoveBall1:
+                if(magazine.isGate2Blocked()){
+                    stage = MStates.BallPos1;
+                }
             break;
+
             case BallPos1:
+                stage = MStates.WaitBall2;
             break;
+
             case WaitBall2:
+                stage = MStates.MoveBall2;
             break;
+
             case MoveBall2:
+                if(magazine.isGate1Blocked()){
+                    stage = MStates.FullMag;
+                }
             break;
+
             case FullMag:
+                if(magazine.isGate3Blocked()){
+                    stage = MStates.WaitShoot;
+                }
             break;
+            
             case WaitShoot:
             break;
         }

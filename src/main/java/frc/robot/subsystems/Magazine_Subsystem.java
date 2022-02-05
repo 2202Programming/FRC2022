@@ -23,8 +23,9 @@ public class Magazine_Subsystem extends SubsystemBase {
   private CANSparkMax v_belt = new CANSparkMax(CAN.MAG_v_belt, MotorType.kBrushless);
   
   /*Definitions*/
-  final DigitalInput lightGate = new DigitalInput(DigitalIO.MAGAZINE_GATE);
-
+  final DigitalInput lightGate1 = new DigitalInput(DigitalIO.MAGAZINE_GATE1);
+  final DigitalInput lightGate2 = new DigitalInput(DigitalIO.MAGAZINE_GATE2);
+  final DigitalInput lightGate3 = new DigitalInput(DigitalIO.MAGAZINE_GATE3);
 
   //Constructor
   public Magazine_Subsystem() {
@@ -55,8 +56,14 @@ public class Magazine_Subsystem extends SubsystemBase {
   }
   
   //lets us know if cargo is detected
-  public boolean isGateBlocked() {
-    return lightGate.get();
+  public boolean isGate1Blocked() {
+    return lightGate1.get();
+  }
+  public boolean isGate2Blocked(){
+    return lightGate2.get();
+  }
+  public boolean isGate3Blocked(){
+    return lightGate3.get();
   }
   //TODO Think about the API to expose for writing commands
   // TODO - Postion or velocity control?
