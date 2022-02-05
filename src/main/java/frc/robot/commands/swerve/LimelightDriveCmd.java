@@ -46,7 +46,7 @@ public class LimelightDriveCmd extends DriveCmd {
       // we only use limelight in hubCentric mode
       
       limelightPid.setSetpoint(0); // always go towards the light.
-      limelightPidOutput = limelightPid.calculate(limelight.getX());
+      limelightPidOutput = limelightPid.calculate(limelight.getFilteredX());
       // update rotation and calulate new output-states
       rot = llLimiter.calculate(limelightPidOutput);
       //rot = limelightPidOutput;
