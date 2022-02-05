@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -144,5 +145,13 @@ public class Climber {
         right_extender_speed.setDouble(right_extender.getEncoder().getVelocity());
         left_extender_position.setDouble(left_extender.getEncoder().getPosition());
         right_extender_position.setDouble(right_extender.getEncoder().getPosition());
+    }
+
+    public RelativeEncoder getLeftEncoder() {
+        return left_extender.getEncoder();
+    }
+
+    public RelativeEncoder getRightEncoder() {
+        return right_extender.getEncoder();
     }
 }
