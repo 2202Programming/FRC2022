@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.DriverPrefs;
 import frc.robot.commands.swerve.DriveCmd;
 import frc.robot.commands.swerve.LimelightDriveCmd;
+import frc.robot.commands.Shooter_MagazineCommand;
 import frc.robot.commands.auto.auto_drivePath_cmd;
 import frc.robot.commands.auto.auto_pathPlanner_cmd;
 import frc.robot.subsystems.Intake_Subsystem;
@@ -24,6 +25,7 @@ import frc.robot.subsystems.ifx.DriverControls.Id;
 //import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.ux.Dashboard;
 import frc.robot.commands.test.TestShoot;
+import frc.robot.commands.test.dumbshooter;
 import frc.robot.commands.test.SwerveDriveTest;
 //test commands
 import frc.robot.commands.test.getTrajectoryFollowTest;
@@ -47,7 +49,7 @@ public class RobotContainer {
   public final Dashboard dashboard;
   public Shooter_Subsystem shooter = null;
   public final HID_Xbox_Subsystem driverControls;
-  public final Sensors_Subsystem sensors;
+  public final Sensors_Subsystem sensors = null;
   public Intake_Subsystem intake = null; 
   private SwerveDrivetrain drivetrain = null;
   public Magazine_Subsystem magazine = null;
@@ -65,7 +67,7 @@ public class RobotContainer {
     // create our subsystems
     
     //these can get created on any hardware setup
-    sensors = new Sensors_Subsystem();
+    //sensors = new Sensors_Subsystem();
     shooter = new Shooter_Subsystem();
     dashboard = new Dashboard(rc);
     limelight = new Limelight_Subsystem();
@@ -80,7 +82,7 @@ public class RobotContainer {
 
     // set default commands
     //drivetrain.setDefaultCommand(new SwerveDriveCommand(drivetrain, driverControls, limelight));
-    if (Constants.HAS_SHOOTER) shooter.setDefaultCommand(new TestShoot(shooter));
+    if (Constants.HAS_SHOOTER) shooter.setDefaultCommand(new dumbshooter(shooter, magazine));
 
     if (Constants.HAS_DRIVETRAIN) {
       //swd = new DriveCmd(drivetrain, driverControls);

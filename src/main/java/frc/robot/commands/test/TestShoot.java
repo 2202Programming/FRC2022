@@ -64,6 +64,8 @@ public class TestShoot extends CommandBase {
     if (cmdSS.equals(currentSS)) {
       shooter.spinup(cmdSS);
     }
+
+    //shooter.onPercent(20, 20);
   }
 
   // Returns true when the command should end.
