@@ -72,14 +72,14 @@ public class RobotContainer {
    
     //These are hardware specific
     if (Constants.HAS_DRIVETRAIN) drivetrain = new SwerveDrivetrain();
-    //if (Constants.HAS_SHOOTER) shooter = new Shooter_Subsystem();
+    if (Constants.HAS_SHOOTER) shooter = new Shooter_Subsystem();
     if (Constants.HAS_MAGAZINE) magazine = new Magazine_Subsystem();
     if (Constants.HAS_INTAKE) intake = new Intake_Subsystem();
 
 
     // set default commands
     //drivetrain.setDefaultCommand(new SwerveDriveCommand(drivetrain, driverControls, limelight));
-    shooter.setDefaultCommand(new TestShoot(shooter));
+    if (Constants.HAS_SHOOTER) shooter.setDefaultCommand(new TestShoot(shooter));
 
     if (Constants.HAS_DRIVETRAIN) {
       //swd = new DriveCmd(drivetrain, driverControls);
@@ -126,7 +126,7 @@ public class RobotContainer {
     }
 
     //RB limelight toggle
-    // driverControls.bind(Id.Driver, XboxButton.RB).whenPressed(new InstantCommand( limelight::toggleLED ));
+    driverControls.bind(Id.Driver, XboxButton.RB).whenPressed(new InstantCommand( limelight::toggleLED ));
   }
 
   // /**
