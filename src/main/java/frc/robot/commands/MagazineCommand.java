@@ -41,7 +41,7 @@ public class MagazineCommand extends CommandBase {
     public void initialize() {
         stage = Stage.DoNothing; 
         //TODO do something really useful here please.
-        magazine.beltOff();
+        magazine.driveWheelOff();
         intake.off();
     }
 
@@ -49,14 +49,19 @@ public class MagazineCommand extends CommandBase {
         //TODO more variables to consider
         if(mode == MagazineMode.LoadCargo){
             //We will take cargo from the intake
-            magazine.beltOn(magazineSpeed.getAsDouble());
+            magazine.driveWheelOn(magazineSpeed.getAsDouble());
         }else if(mode == MagazineMode.ExpellCargo){
             //We will expell cargo from the magazine
-            magazine.expellCargo(magazineSpeed.getAsDouble());
+            magazine.driveWheelOn(-magazineSpeed.getAsDouble());
         }
     }
 
     public boolean isFinished() {
         return false;
     }
+    @Override
+    public void end(boolean interrupted) {
+        magazine.driveWheelOff();
+    }
+
 }

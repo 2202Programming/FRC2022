@@ -24,8 +24,9 @@ public class TestShoot extends CommandBase {
   NetworkTableEntry ntBallVel;    // ball physics (input) 
   NetworkTableEntry ntBallRPS;
   
-  ShooterSettings  cmdSS;         // settings to drive shooter with
-  
+  ShooterSettings  cmdSS;         // instance the shooter sees
+  ShooterSettings  prevSS;        // instance for prev State
+
   /** Creates a new TestShoot. */
   public TestShoot(Shooter_Subsystem shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -43,12 +44,13 @@ public class TestShoot extends CommandBase {
     ntBallVel.setDouble(0);
     ntBallRPS.setDouble(0);
     cmdSS = new ShooterSettings(ntBallVel.getDouble(0.0), ntBallRPS.getDouble(0.0), TESTANGLE, TESTTOL);
+    prevSS = new ShooterSettings(cmdSS);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-   
+    shooter.spinup(cmdSS);
   }
 
 
@@ -58,14 +60,12 @@ public class TestShoot extends CommandBase {
     //read network for new cmd values
     cmdSS.vel = ntBallVel.getDouble(cmdSS.vel);
     cmdSS.rps = ntBallRPS.getDouble(cmdSS.rps);
-    ShooterSettings currentSS = shooter.getShooterSettings();
-
-    //any difference? tell the shoother to spinup to new cmd settings
-    if (!cmdSS.equals(currentSS)) {
+    
+    if (!cmdSS.equals(prevSS)) {
       shooter.spinup(cmdSS);
+      prevSS.vel = cmdSS.vel;
+      prevSS.rps = cmdSS.rps;
     }
-
-    //shooter.onPercent(20, 20);
   }
 
   // Returns true when the command should end.

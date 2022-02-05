@@ -36,6 +36,6 @@ public class EmptyMag extends CommandBase{
     
     @Override
     public void end(boolean interrupted){
-        magazine.beltOff();
+        magazine.driveWheelOff();
     }
 }

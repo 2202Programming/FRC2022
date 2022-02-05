@@ -34,12 +34,12 @@ public class ShootCommand extends CommandBase{
     public void execute(){
         switch(stage){
             case DoNothing:
-                magazine.beltOn(0.001);
+                magazine.driveWheelOn(0.001);
                 stage = Stage.BackingMagazine;
             break;
             case BackingMagazine:
                 if(count >= 2){
-                    magazine.beltOff();
+                    magazine.driveWheelOff();
                     stage = Stage.WaitingForSolution;
                 }
                 count++;
@@ -50,13 +50,13 @@ public class ShootCommand extends CommandBase{
             break;
             case WaitingForFlyWheel:
                 if(shooter.isReadyToShoot()){
-                    magazine.beltOn(0.1);
+                    magazine.driveWheelOn(0.1);
                     stage = Stage.Shooting;
                 }
             break;
             case Shooting:
                 if(!shooter.isReadyToShoot()){
-                    magazine.beltOff();
+                    magazine.driveWheelOff();
                     stage = Stage.WaitingForFlyWheel;
                     count--;
                 }
@@ -68,7 +68,7 @@ public class ShootCommand extends CommandBase{
     @Override
     public void end(boolean interrupted){
         stage = Stage.DoNothing;
-        magazine.beltOff();
+        magazine.driveWheelOff();
     }
     @Override
     public boolean isFinished(){

@@ -50,13 +50,13 @@ public CargoEater(){
             case DoNothing:
                 if(intakevalue){
                     stage = MStates.WaitBall1;
-                    magazine.beltOn(0.001);
+                    magazine.driveWheelOn(0.001);
                 }
             break;
                 
             case WaitBall1:
                 if(Gate1value){
-                    magazine.beltOn(0.5);
+                    magazine.driveWheelOn(0.5);
                     stage = MStates.MoveMag1;
                 }
             break;
@@ -64,7 +64,7 @@ public CargoEater(){
             case MoveMag1:
                 if(Gate2value){
                     stage = MStates.BallPos1;
-                    magazine.beltOff();
+                    magazine.driveWheelOff();
                 }
             break;
 
@@ -74,14 +74,14 @@ public CargoEater(){
 
             case WaitBall2:
                 if (Gate1value){
-                    magazine.beltOn(0.5);
+                    magazine.driveWheelOn(0.5);
                     stage = MStates.MoveMag2;
                 }
             break;
 
             case MoveMag2:
                 if(Gate1value){
-                    magazine.beltOff();
+                    magazine.driveWheelOff();
                     stage = MStates.FullMag;
                 }
             break;
@@ -101,7 +101,7 @@ public CargoEater(){
     @Override
     public void end(boolean interrupted){
         stage = MStates.DoNothing;
-        magazine.beltOff();
+        magazine.driveWheelOff();
     }
     @Override
     public boolean isFinished(){

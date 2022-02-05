@@ -52,7 +52,7 @@ public class IntakeCommand extends CommandBase {
     if (mode == IntakeMode.LoadCargo){
       intake.on(speedFunction.getAsDouble());
     } else if (mode == IntakeMode.ExpellCargo) {
-      intake.expell(speedFunction.getAsDouble());
+      intake.on( -speedFunction.getAsDouble());
     }
 
     //Possible TODO - check light gate and count cargo

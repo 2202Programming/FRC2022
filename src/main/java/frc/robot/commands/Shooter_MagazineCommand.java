@@ -39,7 +39,7 @@ enum Stage{
         switch(stage) {
             case DoNothing:
                 double beltSpeed = SmartDashboard.getNumber("Belt Speed", 0);
-                magazine.beltOn(beltSpeed);
+                magazine.driveWheelOn(beltSpeed);
                 stage = Stage.Loading;
             break;
 
@@ -79,6 +79,6 @@ enum Stage{
     public void end(boolean interrupted) {
       //TODO  Use higher level api shooter.off() instead of  shooter.setMotors(0, 0);
       shooter.off();
-       magazine.beltOff();
+       magazine.driveWheelOff();
     }
 }

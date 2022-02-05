@@ -40,12 +40,12 @@ public class Magazine_Subsystem extends SubsystemBase {
   }
 
   //sets the belts to a speed
-  public void beltOn(double speed){
+  public void driveWheelOn(double speed){
     top_wheel.set(TalonSRXControlMode.PercentOutput, speed);
     //v_belt.set(speed);
   }
-  //turns belts off
-  public void beltOff(){
+
+  public void driveWheelOff(){
     top_wheel.set(TalonSRXControlMode.PercentOutput, 0);
     //v_belt.set(speed);
   }
