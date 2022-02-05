@@ -49,7 +49,7 @@ public class RobotContainer {
   public final Dashboard dashboard;
   public Shooter_Subsystem shooter = null;
   public final HID_Xbox_Subsystem driverControls;
-  public final Sensors_Subsystem sensors = null;
+  public Sensors_Subsystem sensors = null;
   public Intake_Subsystem intake = null; 
   private SwerveDrivetrain drivetrain = null;
   public Magazine_Subsystem magazine = null;
@@ -67,7 +67,7 @@ public class RobotContainer {
     // create our subsystems
     
     //these can get created on any hardware setup
-    //sensors = new Sensors_Subsystem();
+    sensors = new Sensors_Subsystem();
     shooter = new Shooter_Subsystem();
     dashboard = new Dashboard(rc);
     limelight = new Limelight_Subsystem();
@@ -123,7 +123,7 @@ public class RobotContainer {
     if (Constants.HAS_DRIVETRAIN) {
       driverControls.bind(Id.Driver, XboxButton.X)
           //.whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
-          .whenPressed(new auto_pathPlanner_cmd(drivetrain, "StraightY5"));
+          .whenPressed(new auto_pathPlanner_cmd(drivetrain, "CenterFace"));
       driverControls.bind(Id.Driver, XboxButton.LB)
           //.whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
           .whenPressed(new auto_pathPlanner_cmd(drivetrain, "Straight5"));

@@ -66,7 +66,7 @@ public class auto_pathPlanner_cmd extends CommandBase {
           // Position controllers 
           new PIDController(4.0, 0.0, 0.0),
           new PIDController(4.0, 0.0, 0.0),
-          new ProfiledPIDController(4, 0, 0, new TrapezoidProfile.Constraints(.3, .3)),
+          new ProfiledPIDController(4, 0, 0, new TrapezoidProfile.Constraints(3, 3)),
             // Here, our rotation profile constraints were a max velocity
             // of 1 rotation per second and a max acceleration of 180 degrees
             // per second squared
