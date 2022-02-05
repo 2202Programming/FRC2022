@@ -160,7 +160,7 @@ public final class Constants {
     public static final class DriveTrain {
         // motor constraints
         public static final double motorMaxRPM = 5600;    // motor limit
-        public static final double wheelDiameter = 0.3333333;   //[ft]  4" wheels
+        
 
         // Constraints on speeds enforeced in DriveTrain
         public static final double kMaxSpeed = 12.0; // [ft/s]
@@ -202,8 +202,11 @@ public final class Constants {
 
         // Kinematics model - wheel offsets from center of robot (0, 0)
         // Left Front given below, symmetry used for others (in feet)
-        public static final double XwheelOffset = 10.5/12;     
-        public static final double YwheelOffset = 10.5/12;
+        // Robot is 21.25 left-right and 24.25 front-back
+        public static final double XwheelOffset = (21.25/12)/2;     
+        public static final double YwheelOffset = (24.25/12)/2;
+        public static final double wheelCorrectionFactor = 0.9395; //measured on swervebot
+        public static final double wheelDiameter = 0.3333333 * wheelCorrectionFactor;   //[ft]  4" wheels
 
         // Gear ratios - confirmed https://www.swervedrivespecialties.com/products/mk3-swerve-module?variant=39420433203313
         public static final double kSteeringGR = 12.8;   // [mo-turns to 1 angle wheel turn]

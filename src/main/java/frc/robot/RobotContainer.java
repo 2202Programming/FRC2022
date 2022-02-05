@@ -121,7 +121,10 @@ public class RobotContainer {
     if (Constants.HAS_DRIVETRAIN) {
       driverControls.bind(Id.Driver, XboxButton.X)
           //.whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
-          .whenPressed(new auto_pathPlanner_cmd(drivetrain));
+          .whenPressed(new auto_pathPlanner_cmd(drivetrain, "StraightY5"));
+      driverControls.bind(Id.Driver, XboxButton.LB)
+          //.whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
+          .whenPressed(new auto_pathPlanner_cmd(drivetrain, "Straight5"));
 
     }
 
