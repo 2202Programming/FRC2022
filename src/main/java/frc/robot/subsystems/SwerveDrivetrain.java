@@ -14,17 +14,17 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.interfaces.Gyro;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.math.MathUtil;
-import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.DriveTrain;
 import frc.robot.subsystems.Sensors_Subsystem.EncoderID;
+import frc.robot.util.PIDFController;
 
 public class SwerveDrivetrain extends SubsystemBase {
   /**
@@ -40,7 +40,7 @@ public class SwerveDrivetrain extends SubsystemBase {
   boolean kDriveMotorInvert_Left = false;
   boolean kAngleMotorInvert_Left = false;
   boolean kAngleCmdInvert_Left = false;
-  String driveCommand = "NONE";
+
   /**
    *
    * Modules are in the order of - Front Left Front Right Back Left Back Right
@@ -57,11 +57,10 @@ public class SwerveDrivetrain extends SubsystemBase {
   );
   private SwerveDriveOdometry m_odometry;
   private Pose2d m_pose;
-  private SwerveModuleState[] states;
+  private SwerveModuleState[] cur_states;
 
   // sensors and our mk3 modules
   private final Sensors_Subsystem sensors;
-  private final Gyro gyro;
   private final SwerveModuleMK3[] modules;
 
   private NetworkTable table;
@@ -70,37 +69,31 @@ public class SwerveDrivetrain extends SubsystemBase {
   private NetworkTableEntry receiveErrorCount;
   private NetworkTableEntry transmitErrorCount;
   private NetworkTableEntry txFullCount;
-  private NetworkTableEntry fieldMode;
   private NetworkTableEntry currentX;
   private NetworkTableEntry currentY;
   private NetworkTableEntry currentHeading;
-  private NetworkTableEntry NTDriveMode;
-  private NetworkTableEntry driveCmd;
 
+  private NetworkTableEntry velocityFL;
+  private NetworkTableEntry velocityFR;
+  private NetworkTableEntry velocityBL;
+  private NetworkTableEntry velocityBR;
+
+
+  double drive_kP = DriveTrain.drivePIDF.getP();
+  double drive_kI = DriveTrain.drivePIDF.getI();
+  double drive_kD = DriveTrain.drivePIDF.getD();
+  double drive_kFF = DriveTrain.drivePIDF.getF();
+
+  double angle_kP = DriveTrain.anglePIDF.getP();
+  double angle_kI = DriveTrain.anglePIDF.getI();
+  double angle_kD = DriveTrain.anglePIDF.getD();
+  double angle_kFF = DriveTrain.anglePIDF.getF();
 
   public final String NT_Name = "DT"; // expose data under DriveTrain table
   private int timer;
 
-  private boolean fieldRelativeMode = false;
-  private DriveModeTypes driveMode = DriveModeTypes.robotCentric;
-
-  public enum DriveModeTypes {
-    robotCentric("Robot Centric"), fieldCentric("Field Centric"), hubCentric("Hub Centric");
-
-    private String name;
-
-    private DriveModeTypes(String name) {
-      this.name = name;
-    }
-
-    public String toString() {
-      return name;
-    }
-  }
-
   public SwerveDrivetrain() {
-    sensors = null; //RobotContainer.RC().sensors;
-    gyro = null;
+    sensors = RobotContainer.RC().sensors;
 
     var MT = CANSparkMax.MotorType.kBrushless;
     modules = new SwerveModuleMK3[] {
@@ -121,8 +114,8 @@ public class SwerveDrivetrain extends SubsystemBase {
             DriveTrain.CC_BR_OFFSET, sensors.getCANCoder(EncoderID.BackRight), kAngleMotorInvert_Right,
             kAngleCmdInvert_Right, kDriveMotorInvert_Right, "BR") };
 
-    m_odometry = new SwerveDriveOdometry(kinematics, gyro.getRotation2d());
-    states = kinematics.toSwerveModuleStates(new ChassisSpeeds(0, 0, 0));
+    m_odometry = new SwerveDriveOdometry(kinematics, sensors.getRotation2d());
+    cur_states = kinematics.toSwerveModuleStates(new ChassisSpeeds(0, 0, 0));
 
     // for updating CAN status in periodic
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
@@ -131,54 +124,37 @@ public class SwerveDrivetrain extends SubsystemBase {
     receiveErrorCount = table.getEntry("/CanReceiveErrorCount");
     transmitErrorCount = table.getEntry("/CanTransmitErrorCount");
     txFullCount = table.getEntry("/CanTxError");
-    NTDriveMode = table.getEntry("/DriveMode");
+
     currentX = table.getEntry("/Current X");
     currentY = table.getEntry("/Current Y");
     currentHeading = table.getEntry("/Current Heading");
-    driveCmd = table.getEntry("/Drive Command");
+    velocityFL = table.getEntry("/Velocity Front Left");
+    velocityFR = table.getEntry("/Velocity Front Right");
+    velocityBL = table.getEntry("/Velocity Back Left");
+    velocityBR = table.getEntry("/Velocity Back Right");
 
+
+    // display PID coefficients on SmartDashboard if tuning drivetrain
+    /*
+    SmartDashboard.putNumber("Drive P", drive_kP);
+    SmartDashboard.putNumber("Drive I", drive_kI);
+    SmartDashboard.putNumber("Drive D", drive_kD);
+    SmartDashboard.putNumber("Drive Feed Forward", drive_kFF);
+
+    SmartDashboard.putNumber("Angle P", angle_kP);
+    SmartDashboard.putNumber("Angle I", angle_kI);
+    SmartDashboard.putNumber("Angle D", angle_kD);
+    SmartDashboard.putNumber("Angle Feed Forward", angle_kFF);
+    */
   }
 
-  /**
-   * Method to drive the robot using joystick info.
-   * 
-   * Length can be meter or ft, just be consistent in field and robot wheel units.
-   *
-   * @param xSpeed        Speed of the robot in the x direction (forward).
-   *                      [length/s]
-   * @param ySpeed        Speed of the robot in the y direction (sideways).
-   *                      [length/s]
-   * @param rot           Angular rate of the robot. [rad/s]
-   * @param fieldRelative Whether the provided x and y speeds are relative to the
-   *                      field.
-   */
-  public void drive(double xSpeed, double ySpeed, double rot) { // should be ft/s, rad/s
-    // Clamp speeds
-    xSpeed = MathUtil.clamp(xSpeed, -Constants.DriveTrain.kMaxSpeed, Constants.DriveTrain.kMaxSpeed);
-    ySpeed = MathUtil.clamp(ySpeed, -Constants.DriveTrain.kMaxSpeed, Constants.DriveTrain.kMaxSpeed);
-    rot = MathUtil.clamp(rot, -Constants.DriveTrain.kMaxAngularSpeed, Constants.DriveTrain.kMaxAngularSpeed);
-
-    //before, was using gyro.getRotation2d() for this, but that wouldn't allow for reset of heading with resetPose.
-    Rotation2d currrentHeading = m_pose.getRotation(); 
-
-    switch(driveMode) {
-      case robotCentric:
-        states = kinematics.toSwerveModuleStates(new ChassisSpeeds(xSpeed, ySpeed, rot));
-        break;
-      case fieldCentric:
-        states = kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, currrentHeading));
-        break;
-      case hubCentric:
-        states = kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, currrentHeading));
-        break;
-    }
-
+  public void drive(SwerveModuleState[] states) {
+    this.cur_states = states;
     // output the angle and velocity for each module
-    // Maybe should just call setModuleStates?
     for (int i = 0; i < states.length; i++) {
+      //keep copy of commanded states so we can stop() withs 
       modules[i].setDesiredState(states[i]);
     }
-
   }
 
   // used for testing
@@ -197,7 +173,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     }
 
     // update pose
-    m_pose = m_odometry.update(gyro.getRotation2d(), states);
+    m_pose = m_odometry.update(sensors.getRotation2d(), cur_states);
 
     // updates CAN status data every 4 cycles
     timer++;
@@ -208,12 +184,18 @@ public class SwerveDrivetrain extends SubsystemBase {
       receiveErrorCount.setDouble(canStatus.receiveErrorCount);
       transmitErrorCount.setDouble(canStatus.transmitErrorCount);
       txFullCount.setDouble(canStatus.txFullCount);
-      NTDriveMode.setString(driveMode.toString());
+
       currentX.setDouble(m_pose.getX());
       currentY.setDouble(m_pose.getY());
       currentHeading.setDouble(m_pose.getRotation().getDegrees());
-      driveCmd.setString(driveCommand);
+      velocityFL.setDouble(modules[0].getVelocity());
+      velocityFR.setDouble(modules[1].getVelocity());
+      velocityBL.setDouble(modules[2].getVelocity());
+      velocityBR.setDouble(modules[3].getVelocity());
       timer = 0;
+
+      //if Drivetrain tuning
+      //pidTuning();
     }
   }
 
@@ -231,43 +213,16 @@ public class SwerveDrivetrain extends SubsystemBase {
     return modules[modID];
   }
 
-  public void toggleFieldRealitiveMode() {
-    if (fieldRelativeMode)
-      fieldRelativeMode = false;
-    else
-      fieldRelativeMode = true;
-    fieldMode.setBoolean(fieldRelativeMode);
-    return;
-  }
-
-  public void driveModeCycle() {
-    switch (driveMode) {
-      case robotCentric:
-        driveMode = DriveModeTypes.fieldCentric;
-        break;
-      case fieldCentric:
-        driveMode = DriveModeTypes.hubCentric;
-        break;
-      case hubCentric:
-        driveMode = DriveModeTypes.robotCentric;
-        break;
-    }
-  }
-
-  public DriveModeTypes getDriveMode() {
-    return driveMode;
-  }
-
-  // sets X,Y, and sets current angle (will apply gyro correction)
+  // sets X,Y, and sets current angle (will apply sensors correction)
   public void setPose(Pose2d new_pose) {
     m_pose = new_pose;
-    m_odometry.resetPosition(m_pose, gyro.getRotation2d());
+    m_odometry.resetPosition(m_pose, sensors.getRotation2d());
   }
 
   // resets X,Y, and set current angle to be 0
   public void resetPose() {
     m_pose = new Pose2d(0, 0, new Rotation2d(0));
-    m_odometry.resetPosition(m_pose, gyro.getRotation2d());
+    m_odometry.resetPosition(m_pose, sensors.getRotation2d());
   }
 
   public Pose2d getPose() {
@@ -278,21 +233,52 @@ public class SwerveDrivetrain extends SubsystemBase {
     return kinematics;
   }
 
-  // Sets module states and writes to modules
-  public void setModuleStates(SwerveModuleState[] newStates) {
-    states = newStates; // update drivetrain version of current states; used for odometery
-
+  /**
+   * stop() - zero the current state's velocity component and leave angles as they are
+   */
+  public void stop() {
+    SwerveModuleState state = new SwerveModuleState();
+    state.speedMetersPerSecond =0.0;
     // output the angle and velocity for each module
-    for (int i = 0; i < states.length; i++) {
-      modules[i].setDesiredState(states[i]); // updates the desired state at the module level
+    for (int i = 0; i < modules.length; i++) {
+      state.angle = Rotation2d.fromDegrees(modules[i].getAngle());
+      modules[i].setDesiredState(state);
     }
   }
 
-  public String getDriveCommand(){
-    return driveCommand;
+  private void pidTuning() { //if drivetrain tuning
+
+    // read PID coefficients from SmartDashboard if tuning drivetrain
+    double drive_p = SmartDashboard.getNumber("Drive P Gain", DriveTrain.drivePIDF.getP());
+    double drive_i = SmartDashboard.getNumber("Drive I Gain", DriveTrain.drivePIDF.getI());
+    double drive_d = SmartDashboard.getNumber("Drive D Gain", DriveTrain.drivePIDF.getD());
+    double drive_ff = SmartDashboard.getNumber("Drive Feed Forward", DriveTrain.drivePIDF.getF());
+    double angle_p = SmartDashboard.getNumber("Angle P Gain", DriveTrain.anglePIDF.getP());
+    double angle_i = SmartDashboard.getNumber("Angle I Gain", DriveTrain.anglePIDF.getI());
+    double angle_d = SmartDashboard.getNumber("Angle D Gain", DriveTrain.anglePIDF.getD());
+    double angle_ff = SmartDashboard.getNumber("Angle Feed Forward", DriveTrain.anglePIDF.getF());
+
+    // if anything changes in drive PID, update all the modules with a new drive PID
+    if ((drive_p != drive_kP) || (drive_i != drive_kI) || (drive_d != drive_kD) || (drive_ff != drive_kFF)) {
+      drive_kP = drive_p;
+      drive_kI = drive_i;
+      drive_kD = drive_d;
+      drive_kFF = drive_ff;
+      for (SwerveModuleMK3 i : modules) {
+        i.setDrivePID(new PIDFController(drive_kP, drive_kI, drive_kD, drive_kFF));
+      }
+    }
+
+    // if anything changes in angle PID, update all the modules with a new angle PID
+    if ((angle_p != angle_kP) || (angle_i != angle_kI) || (angle_d != angle_kD) || (angle_ff != angle_kFF)) {
+      angle_kP = angle_p;
+      angle_kI = angle_i;
+      angle_kD = angle_d;
+      angle_kFF = angle_ff;
+      for (SwerveModuleMK3 i : modules) {
+        i.setAnglePID(new PIDFController(angle_kP, angle_kI, angle_kD, angle_kFF));
+      }
+    }
   }
 
-  public void setDriveCommand(String currentCommand){
-    this.driveCommand = currentCommand;
-  }
 }

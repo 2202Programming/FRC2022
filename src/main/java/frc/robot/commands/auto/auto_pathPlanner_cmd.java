@@ -4,40 +4,44 @@
 
 package frc.robot.commands.auto;
 
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.subsystems.SwerveDrivetrain;
 
-public class auto_drivePath_cmd extends CommandBase {
-  /** Creates a new auto_drivePath_cmd. */
+public class auto_pathPlanner_cmd extends CommandBase {
+  /** Creates a new auto_pathPlanner_cmd. */
 
   private final SwerveDrivetrain m_robotDrive;
-  SendableChooser<Trajectory> chooser;
-  Trajectory path;
 
-  public auto_drivePath_cmd(SwerveDrivetrain drive, SendableChooser<Trajectory> chooser) {
+  // Since a PathPlannerTrajectory extends the WPILib Trajectory, it can be referenced as one
+  // This will load the file "Example Path.path" and generate it with a max velocity of 8 m/s and a max acceleration of 5 m/s^2
+  PathPlannerTrajectory path;
+  String pathname;
+
+  public auto_pathPlanner_cmd(SwerveDrivetrain drive, String pathname) {
     m_robotDrive = drive;
-    this.chooser = chooser;
-
-    // Use addRequirements() here to declare subsystem dependencies.
+    this.pathname = pathname;
+        // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(drive);
 
+    path = PathPlanner.loadPath(pathname, 3, 3);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     // grab the trajectory determined by the AutoPath
-    path = chooser.getSelected();
     if (path != null) {
       // Reset odometry to the starting pose of the trajectory.
+      //IMPORTANT: Pathplanner heading of first point is the assumed starting heading of your bot
+      //If first point has a non-zero heading, the gryo will get offset with this setPose
       m_robotDrive.setPose(path.getInitialPose());
     }
   }
@@ -54,15 +58,15 @@ public class auto_drivePath_cmd extends CommandBase {
       return new InstantCommand();  // no path selected
     }
       
-      SwerveControllerCommand swerveControllerCommand =
-      new SwerveControllerCommand(
+      PPSwerveControllerCommand swerveControllerCommand =
+      new PPSwerveControllerCommand(
           path,
           m_robotDrive::getPose, // Functional interface to feed supplier
           m_robotDrive.getKinematics(),
           // Position controllers 
           new PIDController(4.0, 0.0, 0.0),
           new PIDController(4.0, 0.0, 0.0),
-          new ProfiledPIDController(4, 0, 0, new TrapezoidProfile.Constraints(.3, .3)),
+          new ProfiledPIDController(4, 0, 0, new TrapezoidProfile.Constraints(3, 3)),
             // Here, our rotation profile constraints were a max velocity
             // of 1 rotation per second and a max acceleration of 180 degrees
             // per second squared

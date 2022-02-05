@@ -17,6 +17,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveTrain;
 import frc.robot.util.ModMath;
+import frc.robot.util.PIDFController;
 
 public class SwerveModuleMK3 {
   public final String NT_Name = "DT"; // expose data under DriveTrain table
@@ -85,7 +86,7 @@ public class SwerveModuleMK3 {
    * Batteries will need changing before then.
    * 
    */
-  String myprefix;
+  public String myprefix;
 
   public SwerveModuleMK3(CANSparkMax driveMtr, CANSparkMax angleMtr, double offsetDegrees, CANCoder absEnc,
       boolean invertAngleMtr, boolean invertAngleCmd, boolean invertDrive, String prefix) {
@@ -172,6 +173,17 @@ public class SwerveModuleMK3 {
     NTConfig();
 
     calibrate();
+
+  }
+
+  void setDrivePID(PIDFController temp)
+  {
+    temp.copyTo(driveMotorPID, kSlot); 
+  }
+
+  void setAnglePID(PIDFController temp)
+  {
+    temp.copyTo(angleMotorPID, kSlot); 
   }
 
   /**
@@ -389,6 +401,8 @@ public class SwerveModuleMK3 {
   private NetworkTableEntry nte_velocity;
   private NetworkTableEntry nte_angle_target;
   private NetworkTableEntry nte_vel_target;
+  private NetworkTableEntry nte_motor_current;
+  private NetworkTableEntry nte_applied_output;
 
   void NTConfig() {
     // direct networktables logging
@@ -398,7 +412,8 @@ public class SwerveModuleMK3 {
     nte_velocity = table.getEntry(NTPrefix + "/velocity");
     nte_angle_target = table.getEntry(NTPrefix + "/angle_target");
     nte_vel_target = table.getEntry(NTPrefix + "/velocity_target");
-
+    nte_motor_current = table.getEntry(NTPrefix + "/motor_current");
+    nte_applied_output = table.getEntry(NTPrefix + "/applied_output");
   }
 
   void NTUpdate() {
@@ -409,6 +424,8 @@ public class SwerveModuleMK3 {
     nte_velocity.setDouble(m_velocity);
     nte_angle_target.setDouble(m_angle_target);
     nte_vel_target.setDouble(m_vel_target);
+    nte_motor_current.setDouble(driveMotor.getOutputCurrent());
+    nte_applied_output.setDouble(driveMotor.getAppliedOutput());
   }
 
   void sleep(long ms) {
@@ -417,5 +434,14 @@ public class SwerveModuleMK3 {
     } catch (Exception e) {
     }
   }
+
+  SparkMaxPIDController getDrivePID(){
+    return driveMotorPID;
+  }
+
+  SparkMaxPIDController getAnglePID(){
+    return angleMotorPID;
+  }
+
 
 }

@@ -19,8 +19,6 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.Command;
-
-import frc.robot.RobotContainer;
 import frc.robot.subsystems.Sensors_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
 
@@ -32,8 +30,8 @@ public class getTrajectoryFollowTest implements Command {
 
   /** Creates a new getTrajectoryFollowTest. 
    * @return */
-  public  getTrajectoryFollowTest(SwerveDrivetrain drivetrain) {
-    sensors = RobotContainer.RC().sensors;
+  public  getTrajectoryFollowTest(Sensors_Subsystem ns, SwerveDrivetrain drivetrain) {
+    sensors = ns;
     this.drivetrain = drivetrain;
     requirements = new  HashSet<Subsystem>();
     requirements.add(drivetrain);
@@ -65,14 +63,14 @@ public class getTrajectoryFollowTest implements Command {
         // Here, our rotation profile constraints were a max velocity
         // of 1 rotation per second and a max acceleration of 180 degrees
         // per second squared
-        drivetrain::setModuleStates,
+        drivetrain::drive,
         drivetrain);
 
     // Reset odometry to the starting pose of the trajectory.
     drivetrain.setPose(exampleTrajectory.getInitialPose());
 
     // Run path following command, then stop at the end.
-    work = swerveControllerCommand.andThen(() -> drivetrain.drive(0, 0, 0)).withTimeout(10);
+    work = swerveControllerCommand.andThen(() -> drivetrain.stop()).withTimeout(10);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

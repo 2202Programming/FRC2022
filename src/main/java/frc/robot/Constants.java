@@ -8,6 +8,7 @@
 package frc.robot;
 
 import frc.robot.util.PIDFController;
+import frc.robot.subsystems.shooter.FlyWheel.FlyWheelConfig;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -20,6 +21,12 @@ import frc.robot.util.PIDFController;
  * wherever the constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
+    public static final boolean HAS_INTAKE = false;
+    public static final boolean HAS_SHOOTER = false;
+    public static final boolean HAS_MAGAZINE = false;
+    public static final boolean HAS_DRIVETRAIN = true;
+
 
     public static final double DT = 0.02; // 20ms framerate 50Hz
     public static final double Tperiod = 0.02; // framerate period 20ms, 50Hz
@@ -45,12 +52,12 @@ public final class Constants {
         public static final int DT_FR_CANCODER = 7;
         public static final int DT_FL_CANCODER = 8;
 
-        public static final int MAG_h_belt = 10;
-        public static final int MAG_v_belt = 11;
+        public static final int MAG_h_belt = 18;
+        public static final int MAG_v_belt = 13;
 
         // Shooter CAN devices
-        public static final int FLYWHEEL1 = 12;
-        public static final int FLYWHEEL2 = 13;
+        public static final int SHOOTER_UPPER_TALON = 10;
+        public static final int SHOOTER_LOWER_TALON = 11;
 
 
         // drive train drive / angle motors - sparkmax neo
@@ -130,28 +137,6 @@ public final class Constants {
      * 
      *    <subsys>.data  convention 
      */
-      public static final class Shooter {
-        public static final double FlyWheelGearRatio = 1.11;     //use camelcase
-        public static final int CountsPerRev = 42;
-
-              // Power Cell info
-      public static final double PowerCellMass = 3.0 / 16.0; // lbs
-      public static final double PCNominalRadius = 7.0 / 2.0 / 12.0; // feet - power cell
-      public static final double PCEffectiveRadius = 4.75 / 2.0 / 12.0; // feet - compressed radius
-
-      /**
-       * Convert Target RPM to [motor-units/100ms] 4096 Units/Rev * Target RPM * 600 =
-       * velocity setpoint is in units/100ms
-       */
-      public static final double kRPM2Counts = 4096.0/600.0; // MU-100 (no gearing)
-      public static final double kMaxMO = 1023;  // max Motor output
-        
-        public static PIDFController FlyWheelPID = 
-          new PIDFController(0.1, 0.0, 0.0, 0.0);
-
-    }
-
-
 
 
     // public static final class LIDAR {
@@ -176,7 +161,7 @@ public final class Constants {
     public static final class DriveTrain {
         // motor constraints
         public static final double motorMaxRPM = 5600;    // motor limit
-        public static final double wheelDiameter = 0.3333333;   //[ft]  4" wheels
+        
 
         // Constraints on speeds enforeced in DriveTrain
         public static final double kMaxSpeed = 12.0; // [ft/s]
@@ -205,10 +190,10 @@ public final class Constants {
         // public static final double CC_FR_OFFSET = -173.84;
         // public static final double CC_BR_OFFSET = -27.24;
       
-        public static final double CC_FL_OFFSET =   -99.842; //  -99.667;
-        public static final double CC_BL_OFFSET =    91.83;  //   90.43;
-        public static final double CC_FR_OFFSET =  -174.635; // -175.25;
-        public static final double CC_BR_OFFSET =   -28.415; //  -28.38;
+        public static final double CC_FL_OFFSET =   -100.142; //-99.842; //  -99.667;
+        public static final double CC_BL_OFFSET =    91.33; //91.83;  //   90.43;
+        public static final double CC_FR_OFFSET =   -175.135; //-174.635; // -175.25;
+        public static final double CC_BR_OFFSET =   -28.215; //-28.415; //  -28.38;
 
         // public static final double CC_FL_OFFSET = 0;
         // public static final double CC_BL_OFFSET = 0;
@@ -218,8 +203,11 @@ public final class Constants {
 
         // Kinematics model - wheel offsets from center of robot (0, 0)
         // Left Front given below, symmetry used for others (in feet)
-        public static final double XwheelOffset = 10.5/12;     
-        public static final double YwheelOffset = 10.5/12;
+        // Robot is 21.25 left-right and 24.25 front-back
+        public static final double XwheelOffset = (21.25/12)/2;     
+        public static final double YwheelOffset = (24.25/12)/2;
+        public static final double wheelCorrectionFactor = 0.9395; //measured on swervebot
+        public static final double wheelDiameter = 0.3333333 * wheelCorrectionFactor;   //[ft]  4" wheels
 
         // Gear ratios - confirmed https://www.swervedrivespecialties.com/products/mk3-swerve-module?variant=39420433203313
         public static final double kSteeringGR = 12.8;   // [mo-turns to 1 angle wheel turn]
@@ -232,6 +220,47 @@ public final class Constants {
       public static PIDFController v_beltPIDF = new PIDFController(1.0, 0.0, 0.0, 0.0); 
 
     }
+
+    public static final class Shooter {
+      // Power Cell info
+      // public static final double PowerCellMass = 3.0 / 16.0; // lbs
+      public static final double PCNominalRadius = 10 / 2.0 / 12.0; // feet - power cell
+      public static final double PCEffectiveRadius = 8 / 2.0 / 12.0; // feet - compressed radius
+
+      /**
+       * Convert Target RPM to [motor-units/100ms] 4096 Units/Rev * Target RPM * 600 =
+       * velocity setpoint is in units/100ms
+       */
+      public static final double kRPM2Counts = 4096.0/600.0; // MU-100 (no gearing)
+      public static final double kMaxMO = 1023;  // max Motor output
+
+      // Flywheel info
+      // Flywheel maxOpenLoopRPM and gear ratio are used to calculate kFF in shooter
+      public static FlyWheelConfig upperFWConfig = new FlyWheelConfig();
+      static {
+        upperFWConfig.maxOpenLoopRPM = 2500;  // estimated from 2000 RPM test
+        upperFWConfig.gearRatio = 3.0;        // upper is 5:1 (motor:fw)
+        upperFWConfig.sensorPhase = false;
+        upperFWConfig.inverted = false;
+        upperFWConfig.flywheelRadius = 2.0 / 12.0; // feet
+        upperFWConfig.pid = new PIDFController(0.08, 0.00015, 4.0, 0); // kP kI kD kFF
+        upperFWConfig.pid.setIzone(1800);
+      }
+
+      public static FlyWheelConfig lowerFWConfig = new FlyWheelConfig();
+      static {
+        lowerFWConfig.maxOpenLoopRPM = 2500;
+        lowerFWConfig.gearRatio = 3.0;         // lower fw gear 3:1  (motor:flywheel)
+        lowerFWConfig.sensorPhase = false;
+        lowerFWConfig.inverted = true; 
+        lowerFWConfig.flywheelRadius = 2.0 / 12.0;   //feet 
+        lowerFWConfig.pid = new PIDFController(0.08, 0.00015, 4.0, 0);   // kP kI kD kF 
+        lowerFWConfig.pid.setIzone(1800);
+      }
+
+    }
+
+
 
 
 }
