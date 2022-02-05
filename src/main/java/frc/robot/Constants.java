@@ -22,16 +22,14 @@ import frc.robot.subsystems.shooter.FlyWheel.FlyWheelConfig;
  */
 public final class Constants {
 
-    public static final boolean HAS_INTAKE = false;
-    public static final boolean HAS_SHOOTER = false;
-    public static final boolean HAS_MAGAZINE = false;
-    public static final boolean HAS_DRIVETRAIN = true;
+    public static final boolean HAS_INTAKE  = true;
+    public static final boolean HAS_SHOOTER = true;
+    public static final boolean HAS_MAGAZINE = true;
+    public static final boolean HAS_DRIVETRAIN = false;
 
 
     public static final double DT = 0.02; // 20ms framerate 50Hz
     public static final double Tperiod = 0.02; // framerate period 20ms, 50Hz
-
-    public static final double FLYWHEEL_GEAR_RATIO = 1; //random number
     public static final int NEO_COUNTS_PER_REVOLUTION = 42;
     
     /**
@@ -226,6 +224,7 @@ public final class Constants {
       // public static final double PowerCellMass = 3.0 / 16.0; // lbs
       public static final double PCNominalRadius = 10 / 2.0 / 12.0; // feet - power cell
       public static final double PCEffectiveRadius = 8 / 2.0 / 12.0; // feet - compressed radius
+      public static final double FlyWheelGearRatio = 1;
 
       /**
        * Convert Target RPM to [motor-units/100ms] 4096 Units/Rev * Target RPM * 600 =
