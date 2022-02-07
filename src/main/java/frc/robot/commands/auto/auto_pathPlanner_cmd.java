@@ -58,21 +58,23 @@ public class auto_pathPlanner_cmd extends CommandBase {
       return new InstantCommand();  // no path selected
     }
       
+      PIDController xController = new PIDController(4.0, 0.0, 0.0);
+      PIDController yController = new PIDController(4.0, 0.0, 0.0);
+      ProfiledPIDController thetaController = new ProfiledPIDController(4, 0, 0, new TrapezoidProfile.Constraints(3, 3));
+      thetaController.enableContinuousInput(-Math.PI, Math.PI); //prevent piroutte paths over continuity
+
       PPSwerveControllerCommand swerveControllerCommand =
       new PPSwerveControllerCommand(
           path,
           m_robotDrive::getPose, // Functional interface to feed supplier
           m_robotDrive.getKinematics(),
           // Position controllers 
-          new PIDController(4.0, 0.0, 0.0),
-          new PIDController(4.0, 0.0, 0.0),
-          new ProfiledPIDController(4, 0, 0, new TrapezoidProfile.Constraints(3, 3)),
-            // Here, our rotation profile constraints were a max velocity
-            // of 1 rotation per second and a max acceleration of 180 degrees
-            // per second squared
-            m_robotDrive::drive,
-            m_robotDrive
-            );
+          xController,
+          yController,
+          thetaController,
+          m_robotDrive::drive,
+          m_robotDrive
+      );
 
         // Reset odometry to the starting pose of the trajectory.
         m_robotDrive.setPose(path.getInitialPose());
