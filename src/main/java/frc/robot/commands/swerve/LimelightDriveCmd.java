@@ -44,7 +44,7 @@ public class LimelightDriveCmd extends DriveCmd {
         limelight.getTarget() &&
         limelight.getLEDStatus()) {
       // we only use limelight in hubCentric mode
-      
+      drivetrain.setDriveModeString("Limelight Guided Hub Centric");
       limelightPid.setSetpoint(0); // always go towards the light.
       limelightPidOutput = limelightPid.calculate(limelight.getFilteredX());
       // update rotation and calulate new output-states

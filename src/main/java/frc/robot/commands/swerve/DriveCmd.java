@@ -64,7 +64,6 @@ public class DriveCmd extends CommandBase {
 
   NetworkTable table;
   private NetworkTableEntry driveCmd;
-  private NetworkTableEntry NTDriveMode;
   private NetworkTableEntry fieldMode;
   private NetworkTableEntry hubCentricTarget;
   private NetworkTableEntry xVelTarget;
@@ -73,8 +72,9 @@ public class DriveCmd extends CommandBase {
   private NetworkTableEntry NTangleError;
   private NetworkTableEntry xJoystick;
   private NetworkTableEntry yJoystick;
-
   public final String NT_Name = "DT"; // expose data under DriveTrain table
+
+  double log_counter = 0;
 
   public DriveCmd(SwerveDrivetrain drivetrain, DriverControls dc2) {
     this.drivetrain = drivetrain;
@@ -85,8 +85,7 @@ public class DriveCmd extends CommandBase {
     anglePid = new PIDController(angle_kp, angle_ki, angle_kd);
 
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
-    hubCentricTarget = table.getEntry("/hubCentricTarget");
-    NTDriveMode = table.getEntry("/DriveMode");
+    hubCentricTarget = table.getEntry("/hubCentricTarget");;
     fieldMode = table.getEntry("/FieldMode");
 
     xVelTarget = table.getEntry("/xVelTarget");
@@ -95,7 +94,6 @@ public class DriveCmd extends CommandBase {
     NTangleError = table.getEntry("/angleError");
     xJoystick = table.getEntry("/xJoystick");
     yJoystick = table.getEntry("/yJoystick");
-    driveCmd = table.getEntry("/Drive Command");
   }
 
   public DriveCmd(SwerveDrivetrain drivetrain, DriverControls dc, boolean fieldRelativeMode) {
@@ -125,17 +123,19 @@ public class DriveCmd extends CommandBase {
     // Now workout drive mode behavior
     switch (driveMode) {
       case robotCentric:
+        drivetrain.setDriveModeString("Robot Centric Drive");
         output_states = kinematics.toSwerveModuleStates(new ChassisSpeeds(xSpeed, ySpeed, rot));
         break;
 
       case fieldCentric:
+        drivetrain.setDriveModeString("Field Centric Drive");
         output_states = kinematics
             .toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, currrentHeading));
         break;
 
       case hubCentric:
         rot = 0;
-
+        drivetrain.setDriveModeString("Hub Centric Drive");
         // set goal of angle PID to be heading (in degrees) from current position to
         // centerfield
          double targetAngle = getHeading2Target(drivetrain.getPose(), centerField);
@@ -170,6 +170,7 @@ public class DriveCmd extends CommandBase {
 
   @Override
   public void end(boolean interrupted) {
+    drivetrain.setDriveModeString("None");
     drivetrain.stop();
   }
 
@@ -196,15 +197,17 @@ public class DriveCmd extends CommandBase {
     switch (driveMode) {
       case robotCentric:
         driveMode = DriveModeTypes.fieldCentric;
+        drivetrain.setDriveModeString("Robot Centric Drive");
         break;
       case fieldCentric:
         driveMode = DriveModeTypes.hubCentric;
+        drivetrain.setDriveModeString("Field Centric Drive");
         break;
       case hubCentric:
         driveMode = DriveModeTypes.robotCentric;
+        drivetrain.setDriveModeString("Hub Centric Drive");
         break;
     }
-    NTDriveMode.setString(driveMode.toString());
   }
 
   public DriveModeTypes getDriveMode() {
@@ -212,6 +215,8 @@ public class DriveCmd extends CommandBase {
   }
 
   void updateNT() {
+    log_counter++;
+    if ((log_counter%20)==0) {
     // update network tables
     xJoystick.setDouble(dc.getVelocityX());
     yJoystick.setDouble(dc.getVelocityY());
@@ -219,8 +224,8 @@ public class DriveCmd extends CommandBase {
     yVelTarget.setValue(ySpeed);
     rotVelTarget.setValue(rot);
     fieldMode.setBoolean(fieldRelativeMode);
-    NTDriveMode.setString(driveMode.toString());
     driveCmd.setString("DriveCmd");
+    }
   }
 
 }
