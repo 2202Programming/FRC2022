@@ -3,14 +3,14 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Climber;
 
-public class MidClimbRetract extends CommandBase {
+public class HigherClimbRetract extends CommandBase {
     private final Climber climber;
 
     // tolerances --> TODO: Move to Constants and change to appropriate values
     private final double TOLERANCE_LENGTH = 0;
     private final double TOLERANCE_ROTATION = 0;
 
-    public MidClimbRetract(Climber climber) {
+    public HigherClimbRetract(Climber climber) {
         this.climber = climber;
     }
 

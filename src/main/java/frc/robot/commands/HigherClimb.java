@@ -3,14 +3,14 @@ package frc.robot.commands;
 import frc.robot.subsystems.Climber;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
-public class MidClimb extends SequentialCommandGroup {
+public class HigherClimb extends SequentialCommandGroup {
     
     // dirve.toClimbStart
     // climbMid
     // stabilize etc.
 
-    public MidClimb(Climber climber) {
-        super(new MidClimbExtend(climber), new MidClimbRetract(climber));
+    public HigherClimb(Climber climber) {
+        super(new HigherClimbExtend(climber), new HigherClimbRetract(climber));
     }
 
 }

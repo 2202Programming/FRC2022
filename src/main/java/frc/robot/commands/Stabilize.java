@@ -3,7 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Climber;
 
-public class MidClimbStabilize extends CommandBase {
+public class Stabilize extends CommandBase {
     
     private final Climber climber;
 
@@ -11,10 +11,11 @@ public class MidClimbStabilize extends CommandBase {
     private long startTime;
 
     // How long to sleep for to allow stabilization
-    private final double MS_TO_WAIT = 3000;
+    private final double MS_TO_WAIT;
 
-    public MidClimbStabilize(Climber climber) {
+    public Stabilize(Climber climber, long msToWait) {
         this.climber = climber;
+        this.MS_TO_WAIT = msToWait;
     }
 
     @Override
