@@ -10,7 +10,8 @@ public class MidClimb extends SequentialCommandGroup {
     // stabilize etc.
 
     public MidClimb(Climber climber) {
-        super(new MidClimbExtend(climber), new MidClimbRetract(climber));
+        super();
+        this.addCommands(new MidClimbExtend(climber), new MidClimbRetract(climber));
     }
 
 }

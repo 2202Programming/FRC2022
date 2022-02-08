@@ -10,7 +10,8 @@ public class HigherClimb extends SequentialCommandGroup {
     // stabilize etc.
 
     public HigherClimb(Climber climber) {
-        super(new HigherClimbExtend(climber), new HigherClimbRetract(climber));
+        super();
+        this.addCommands(new HigherClimbExtend(climber), new HigherClimbRetract(climber));
     }
 
 }

@@ -19,12 +19,12 @@ public class Climb extends SequentialCommandGroup {
         super();
         // Use the following subcommands to climb climbMID climbHIGH stabilize
         // TODO: Implement all these commands
-        this.addCommands(new driveToClimbStart(),
-                         new climbMid(climber, drivetrain), 
-                         new stabilize(mid_stabilize_seconds * 1000), //stabilize expects delay in milliseconds
-                         new climbHigher(climber, drivetrain), 
-                         new stabilize(high_stabilize_seconds * 1000), //stabilize expects delay in milliseconds
-                         new climbHigher(climber, drivetrain));
+        this.addCommands(new MidClimbDrive(drivetrain),
+                         new MidClimb(climber), 
+                         new Stabilize(climber, mid_stabilize_seconds * 1000), //stabilize expects delay in milliseconds
+                         new HigherClimb(climber), 
+                         new Stabilize(climber, high_stabilize_seconds * 1000), //stabilize expects delay in milliseconds
+                         new HigherClimb(climber));
 
         this.addRequirements(climber, drivetrain);
     }
