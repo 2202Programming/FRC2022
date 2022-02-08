@@ -9,11 +9,12 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import static frc.robot.Constants.CAN;
 import static frc.robot.Constants.ClimbSettings;
 
-public class Climber {
+public class Climber extends SubsystemBase{
     // NTs
     private NetworkTable table;
     private NetworkTableEntry left_extender_speed, right_extender_speed, left_extender_position, right_extender_position;

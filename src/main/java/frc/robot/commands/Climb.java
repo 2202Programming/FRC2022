@@ -4,108 +4,28 @@ import org.opencv.highgui.HighGui;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
+import frc.robot.Constants.DriveTrain;
 import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.SwerveDrivetrain;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
-public class Climb extends CommandBase {
-    private final Climber climber;
+public class Climb extends SequentialCommandGroup {
+    // define amount of time to wait for robot to stop swinging between steps - edit to tune
+    private final int mid_stabilize_seconds = 3;
+    private final int high_stabilize_seconds = 5;
 
-    // distances and stuff
-    private final double MID_HEIGHT = 60.25;
-    private final double MID_HIGH_DISTANCE = 24;
-    private final double HIGH_HEIGHT = 75.625;
-    private final double HIGH_TRAVERSE_DISTANCE = 24;
-    private final double TRAVERSE_HEIGHT = 91;
+    public Climb(Climber climber, SwerveDrivetrain drivetrain) {
 
+        super();
+        // Use the following subcommands to climb climbMID climbHIGH stabilize
+        // TODO: Implement all these commands
+        this.addCommands(new driveToClimbStart(),
+                         new climbMid(climber, drivetrain), 
+                         new stabilize(mid_stabilize_seconds * 1000), //stabilize expects delay in milliseconds
+                         new climbHigher(climber, drivetrain), 
+                         new stabilize(high_stabilize_seconds * 1000), //stabilize expects delay in milliseconds
+                         new climbHigher(climber, drivetrain));
 
-    // variables used in execution
-    private boolean isFinished = false;
-    private boolean finishedClimbing = false;
-    double currentCount = 0;
-
-    private enum Stage {
-        MID, HIGH, TRAVERSE
+        this.addRequirements(climber, drivetrain);
     }
-
-    private Stage stage;
-
-
-
-    public Climb(Climber climber) {
-        this.climber = climber;
-    }
-
-    @Override
-    public void initialize() {
-        // Set velocity to 0
-        while ((climber.getLeftEncoder().getVelocity() != 0) && (climber.getRightEncoder().getVelocity() != 0)) {
-            climber.stop();
-        }
-        // Reset to default positions (no extension, flat vertical)
-        while ((climber.getLeftEncoder().getPosition() != 0) && climber.getRightEncoder().getPosition() != 0) {
-            climber.setExtension(0);
-        }
-        // TODO: Add while loop to check rotation
-        climber.setRotation(0);
-
-        stage = Stage.MID;
-        currentCount = (climber.getLeftEncoder().getPosition() + climber.getRightEncoder().getPosition()) / 2;
-    }
-
-    @Override
-    /*
-    * TODO: Split into separate commajds
-    * TODO: State diagram
-    * TODO: Fully integrate (i.e. extend then pull back)
-    */
-    public void execute() {
-        if (isFinished == true) {
-            currentCount = (climber.getLeftEncoder().getPosition() + climber.getRightEncoder().getPosition()) / 2;
-            isFinished = false;
-            switch (stage) {
-                case MID:
-                    stage = Stage.HIGH;
-                case HIGH:
-                    stage = Stage.TRAVERSE;
-                case TRAVERSE:
-                    finishedClimbing = true;
-            }
-        }
-        if (stage == Stage.MID) {
-            while (currentCount < currentCount + MID_HEIGHT) {
-                climber.setExtension(MID_HEIGHT);
-            }
-            isFinished = true;
-        } else if (stage == Stage.HIGH) {
-            // Get to high
-            // TODO: Add while loop to check for current / targeted rotation
-            climber.setRotation(90 - Math.atan((HIGH_HEIGHT - MID_HEIGHT) / MID_HIGH_DISTANCE));
-            while (currentCount < currentCount
-                    + Math.sqrt(Math.pow(HIGH_HEIGHT - MID_HEIGHT, 2) + Math.pow(MID_HIGH_DISTANCE, 2))) {
-                climber.setExtension(Math.sqrt(Math.pow(HIGH_HEIGHT - MID_HEIGHT, 2) + Math.pow(MID_HIGH_DISTANCE, 2)));
-            }
-            isFinished = true;
-        } else if (stage == Stage.TRAVERSE) {
-            // Get to traverse
-            currentCount = (climber.getLeftEncoder().getPosition() + climber.getRightEncoder().getPosition()) / 2;
-            // TODO: Add while loop to check for current / targeted rotation
-            climber.setRotation(90 - Math.atan((TRAVERSE_HEIGHT - HIGH_HEIGHT) / HIGH_TRAVERSE_DISTANCE));
-            while (currentCount < currentCount
-                    + Math.sqrt(Math.pow(TRAVERSE_HEIGHT - HIGH_HEIGHT, 2) + Math.pow(HIGH_TRAVERSE_DISTANCE, 2))) {
-                climber.setExtension(
-                        Math.sqrt(Math.pow(TRAVERSE_HEIGHT - HIGH_HEIGHT, 2) + Math.pow(HIGH_TRAVERSE_DISTANCE, 2)));
-            }
-            isFinished = true;
-        }
-    }
-
-    @Override
-    public void end(boolean interrupted) {
-        climber.stop();
-    }
-
-    @Override
-    public boolean isFinished() {
-        return finishedClimbing;
-    }
-
 }
