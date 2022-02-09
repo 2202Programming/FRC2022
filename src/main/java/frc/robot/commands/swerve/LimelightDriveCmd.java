@@ -40,7 +40,7 @@ public class LimelightDriveCmd extends DriveCmd {
     calculate(); // parent does most the work, sets output_states
     updateLimelightPID();
     
-    if (driveMode == DriveModeTypes.hubCentric &&
+    if (((driveMode == DriveModeTypes.hubCentric) || (driveMode == DriveModeTypes.shootingCentric)) &&
         limelight.getTarget() &&
         limelight.getLEDStatus()) {
       // we only use limelight in hubCentric mode

@@ -57,6 +57,7 @@ public class SwerveDrivetrain extends SubsystemBase {
   );
   private SwerveDriveOdometry m_odometry;
   private Pose2d m_pose;
+  private Pose2d old_pose;
   private SwerveModuleState[] cur_states;
 
   // sensors and our mk3 modules
@@ -67,6 +68,7 @@ public class SwerveDrivetrain extends SubsystemBase {
   private NetworkTableEntry currentX;
   private NetworkTableEntry currentY;
   private NetworkTableEntry currentHeading;
+  private NetworkTableEntry nt_currentBearing;
 
   private NetworkTableEntry velocityFL;
   private NetworkTableEntry velocityFR;
@@ -87,6 +89,8 @@ public class SwerveDrivetrain extends SubsystemBase {
   public final String NT_Name = "DT"; // expose data under DriveTrain table
   private int timer;
   private String driveModeString;
+  private double currentBearing;
+  private boolean shootingModeOn = false;
 
   public SwerveDrivetrain() {
     sensors = RobotContainer.RC().sensors;
@@ -118,6 +122,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     currentX = table.getEntry("/Current X");
     currentY = table.getEntry("/Current Y");
     currentHeading = table.getEntry("/Current Heading");
+    nt_currentBearing = table.getEntry("/Current Bearing");
     velocityFL = table.getEntry("/Velocity Front Left");
     velocityFR = table.getEntry("/Velocity Front Right");
     velocityBL = table.getEntry("/Velocity Back Left");
@@ -163,7 +168,13 @@ public class SwerveDrivetrain extends SubsystemBase {
     }
 
     // update pose
+    old_pose = m_pose;
     m_pose = m_odometry.update(sensors.getRotation2d(), cur_states);
+
+    // from -PI to +PI
+    currentBearing = Math.atan2(m_pose.getY() - old_pose.getY(), m_pose.getX() - old_pose.getX());
+    // convert this to degrees in the range -180 to 180
+    currentBearing = Math.toDegrees(currentBearing);
 
     // updates CAN status data every 4 cycles
     timer++;
@@ -171,6 +182,7 @@ public class SwerveDrivetrain extends SubsystemBase {
       currentX.setDouble(m_pose.getX());
       currentY.setDouble(m_pose.getY());
       currentHeading.setDouble(m_pose.getRotation().getDegrees());
+      nt_currentBearing.setDouble(currentBearing);
       velocityFL.setDouble(modules[0].getVelocity());
       velocityFR.setDouble(modules[1].getVelocity());
       velocityBL.setDouble(modules[2].getVelocity());
@@ -211,6 +223,10 @@ public class SwerveDrivetrain extends SubsystemBase {
 
   public Pose2d getPose() {
     return m_pose;
+  }
+
+  public double getBearing(){
+    return currentBearing;
   }
 
   public SwerveDriveKinematics getKinematics() {
@@ -271,5 +287,17 @@ public class SwerveDrivetrain extends SubsystemBase {
 
   public void setDriveModeString(String temp){
     driveModeString = temp;
+  }
+
+  public boolean getShootingMode(){
+    return shootingModeOn;
+  }
+
+  public void setShootingMode(boolean temp) {
+    shootingModeOn = temp;
+  }
+
+  public void toggleShootingMode(){
+    shootingModeOn = !shootingModeOn;
   }
 }

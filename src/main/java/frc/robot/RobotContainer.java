@@ -10,6 +10,7 @@ import frc.robot.Constants.DriverPrefs;
 import frc.robot.commands.swerve.DriveCmd;
 import frc.robot.commands.swerve.LimelightDriveCmd;
 import frc.robot.commands.Shooter_MagazineCommand;
+import frc.robot.commands.Shoot.ShootCmd;
 import frc.robot.commands.auto.auto_drivePath_cmd;
 import frc.robot.commands.auto.auto_pathPlanner_cmd;
 import frc.robot.subsystems.Intake_Subsystem;
@@ -20,6 +21,7 @@ import frc.robot.subsystems.Sensors_Subsystem;
 import frc.robot.subsystems.shooter.Shooter_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.hid.HID_Xbox_Subsystem;
+import frc.robot.subsystems.hid.XboxAxis;
 import frc.robot.subsystems.hid.XboxButton;
 import frc.robot.subsystems.ifx.DriverControls.Id;
 //import frc.robot.subsystems.Intake_Subsystem;
@@ -132,6 +134,10 @@ public class RobotContainer {
 
     //RB limelight toggle
     driverControls.bind(Id.Driver, XboxButton.RB).whenPressed(new InstantCommand( limelight::toggleLED ));
+
+    if(Constants.HAS_SHOOTER && Constants.HAS_DRIVETRAIN){
+      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_RIGHT).whenHeld(new ShootCmd(drivetrain));
+    }
   }
 
   // /**
