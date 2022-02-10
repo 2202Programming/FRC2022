@@ -23,8 +23,6 @@ public class DriveCmd extends CommandBase {
     robotCentric("Robot Centric"),
     fieldCentric("Field Centric"),
     hubCentric("Hub Centric"),
-    shootingRecovery("Shooting Recovery"),
-    shootingCentric("Shooting Centric"),
     intakeCentric("Intake Centric");
 
     private String name;
@@ -46,6 +44,7 @@ public class DriveCmd extends CommandBase {
   DriveModeTypes lastDriveMode = DriveModeTypes.robotCentric;
   boolean fieldRelativeMode = false;
 
+  boolean lastShootMode = false;
   // output to Swerve Drivetrain
   double xSpeed, ySpeed, rot;
   Rotation2d currrentHeading;
@@ -140,8 +139,6 @@ public class DriveCmd extends CommandBase {
         output_states = kinematics
             .toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, currrentHeading));
         break;
-
-      case shootingCentric: //same behavior as hubCentric for now
       case hubCentric:
         rot = 0;
         drivetrain.setDriveModeString("Hub Centric Drive");
@@ -166,35 +163,6 @@ public class DriveCmd extends CommandBase {
 
         output_states = kinematics
             .toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, currrentHeading));
-        break;
-
-      case shootingRecovery:
-        drivetrain.setDriveModeString("Shooting Recovery");
-        // set goal of angle PID to be heading (in degrees) current bearing
-        double m_targetAngle = drivetrain.getBearing();
-        double m_currentAngle = drivetrain.getPose().getRotation().getDegrees(); // from -180 to 180
-        double m_angleError = m_targetAngle - m_currentAngle;
-        // feed both PIDs even if not being used.
-        anglePid.setSetpoint(m_targetAngle);
-        rot = anglePid.calculate(m_currentAngle);
-        
-        // deal with continuity issue across 0
-        if (m_angleError < -180) {
-          m_targetAngle += 360;
-        }
-        if (m_angleError > 180) {
-          m_targetAngle -= 360;
-        }
-        hubCentricTarget.setValue(m_targetAngle);
-        NTangleError.setDouble(m_angleError);
-
-        //heading is close enough to bearing, release rotational control back to drivers
-        if(m_angleError < 1){
-          driveMode = lastDriveMode;
-        }
-
-        output_states = kinematics
-        .toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, currrentHeading));
         break;
       case intakeCentric:
         // set goal of angle PID to be heading (in degrees) current bearing
@@ -226,14 +194,16 @@ public class DriveCmd extends CommandBase {
   @Override
   public void execute() {
     
+    if(lastShootMode != drivetrain.getShootingMode()){
+      if(lastShootMode == false){
+        driveMode = lastDriveMode;
+      }
+    }
+    lastShootMode = drivetrain.getShootingMode();
     //trigger is being pressed, drive in shooting mode
     if(drivetrain.getShootingMode()){
-      driveMode = DriveModeTypes.shootingCentric;
-    }
-
-    //this means trigger just got released, time to start recovery mode
-    if(!(drivetrain.getShootingMode()) && (driveMode == DriveModeTypes.shootingCentric)){ 
-      driveMode = DriveModeTypes.shootingRecovery;
+      driveMode = DriveModeTypes.hubCentric;
+      drivetrain.setDriveModeString("hub centric");
     }
     
     calculate();

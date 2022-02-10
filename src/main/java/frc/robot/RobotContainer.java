@@ -126,17 +126,17 @@ public class RobotContainer {
       driverControls.bind(Id.Driver, XboxButton.X)
           //.whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
           .whenPressed(new auto_pathPlanner_cmd(drivetrain, "CenterFace"));
-      driverControls.bind(Id.Driver, XboxButton.LB)
-          //.whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
-          .whenPressed(new auto_pathPlanner_cmd(drivetrain, "Straight5"));
+      // driverControls.bind(Id.Driver, XboxButton.LB)
+      //     //.whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
+      //     .whenPressed(new auto_pathPlanner_cmd(drivetrain, "Straight5"));
 
     }
 
     //RB limelight toggle
     driverControls.bind(Id.Driver, XboxButton.RB).whenPressed(new InstantCommand( limelight::toggleLED ));
 
-    if(Constants.HAS_SHOOTER && Constants.HAS_DRIVETRAIN){
-      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_RIGHT).whenHeld(new ShootCmd(drivetrain));
+    if(Constants.HAS_DRIVETRAIN){
+      driverControls.bind(Id.Driver, XboxButton.LB).whenPressed(new ShootCmd(drivetrain));
     }
   }
 
