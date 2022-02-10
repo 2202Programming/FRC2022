@@ -39,6 +39,7 @@ public class auto_drivePath_cmd extends CommandBase {
     if (path != null) {
       // Reset odometry to the starting pose of the trajectory.
       m_robotDrive.setPose(path.getInitialPose());
+      m_robotDrive.setDriveModeString("AutoDrive Path " + chooser.toString());
     }
   }
 
@@ -79,7 +80,9 @@ public class auto_drivePath_cmd extends CommandBase {
   }
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    m_robotDrive.setDriveModeString("None");
+  }
 
   // Returns true when the command should end.
   @Override

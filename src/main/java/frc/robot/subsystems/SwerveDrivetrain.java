@@ -64,11 +64,6 @@ public class SwerveDrivetrain extends SubsystemBase {
   private final SwerveModuleMK3[] modules;
 
   private NetworkTable table;
-  private NetworkTableEntry can_utilization;
-  private NetworkTableEntry busOffCount;
-  private NetworkTableEntry receiveErrorCount;
-  private NetworkTableEntry transmitErrorCount;
-  private NetworkTableEntry txFullCount;
   private NetworkTableEntry currentX;
   private NetworkTableEntry currentY;
   private NetworkTableEntry currentHeading;
@@ -77,7 +72,7 @@ public class SwerveDrivetrain extends SubsystemBase {
   private NetworkTableEntry velocityFR;
   private NetworkTableEntry velocityBL;
   private NetworkTableEntry velocityBR;
-
+  private NetworkTableEntry driveString;
 
   double drive_kP = DriveTrain.drivePIDF.getP();
   double drive_kI = DriveTrain.drivePIDF.getI();
@@ -91,6 +86,7 @@ public class SwerveDrivetrain extends SubsystemBase {
 
   public final String NT_Name = "DT"; // expose data under DriveTrain table
   private int timer;
+  private String driveModeString;
 
   public SwerveDrivetrain() {
     sensors = RobotContainer.RC().sensors;
@@ -119,12 +115,6 @@ public class SwerveDrivetrain extends SubsystemBase {
 
     // for updating CAN status in periodic
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
-    can_utilization = table.getEntry("/CanUtilization");
-    busOffCount = table.getEntry("/CanBusOffCount");
-    receiveErrorCount = table.getEntry("/CanReceiveErrorCount");
-    transmitErrorCount = table.getEntry("/CanTransmitErrorCount");
-    txFullCount = table.getEntry("/CanTxError");
-
     currentX = table.getEntry("/Current X");
     currentY = table.getEntry("/Current Y");
     currentHeading = table.getEntry("/Current Heading");
@@ -132,7 +122,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     velocityFR = table.getEntry("/Velocity Front Right");
     velocityBL = table.getEntry("/Velocity Back Left");
     velocityBR = table.getEntry("/Velocity Back Right");
-
+    driveString = table.getEntry("/DriveMode");
 
     // display PID coefficients on SmartDashboard if tuning drivetrain
     /*
@@ -178,13 +168,6 @@ public class SwerveDrivetrain extends SubsystemBase {
     // updates CAN status data every 4 cycles
     timer++;
     if (timer == 5) {
-      CANStatus canStatus = RobotController.getCANStatus();
-      can_utilization.setDouble(canStatus.percentBusUtilization);
-      busOffCount.setDouble(canStatus.busOffCount);
-      receiveErrorCount.setDouble(canStatus.receiveErrorCount);
-      transmitErrorCount.setDouble(canStatus.transmitErrorCount);
-      txFullCount.setDouble(canStatus.txFullCount);
-
       currentX.setDouble(m_pose.getX());
       currentY.setDouble(m_pose.getY());
       currentHeading.setDouble(m_pose.getRotation().getDegrees());
@@ -192,6 +175,7 @@ public class SwerveDrivetrain extends SubsystemBase {
       velocityFR.setDouble(modules[1].getVelocity());
       velocityBL.setDouble(modules[2].getVelocity());
       velocityBR.setDouble(modules[3].getVelocity());
+      driveString.setString(driveModeString);
       timer = 0;
 
       //if Drivetrain tuning
@@ -281,4 +265,11 @@ public class SwerveDrivetrain extends SubsystemBase {
     }
   }
 
+  public String getDriveModeString(){
+    return driveModeString;
+  }
+
+  public void setDriveModeString(String temp){
+    driveModeString = temp;
+  }
 }

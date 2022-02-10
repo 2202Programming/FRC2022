@@ -106,6 +106,8 @@ public class Sensors_Subsystem extends MonitoredSubsystemBase implements Gyro {
   // configurion setting
   YawSensor c_yaw_type = YawSensor.kNavX;
 
+  double log_counter = 0;
+
   public Sensors_Subsystem() {
 
     // alocate sensors
@@ -139,7 +141,7 @@ public class Sensors_Subsystem extends MonitoredSubsystemBase implements Gyro {
     nt_cancoder_fr = table.getEntry("cc_fr");
 
     calibrate();
-    log();
+    log(20);
   }
 
   public void setSensorType(YawSensor type) {
@@ -188,7 +190,7 @@ public class Sensors_Subsystem extends MonitoredSubsystemBase implements Gyro {
 
     getRotationPositions(m_rot);
 
-    log();
+    log(20);
   }
 
   void setupSimulation() {
@@ -201,30 +203,33 @@ public class Sensors_Subsystem extends MonitoredSubsystemBase implements Gyro {
     // m_gyroSim.setAngle(-m_drivetrainSimulator.getHeading().getDegrees());
   }
 
-  public void log() {
-    nt_accelX.setDouble(m_ahrs.getWorldLinearAccelX());
-    nt_accelY.setDouble(m_ahrs.getWorldLinearAccelY());
-    nt_accelZ.setDouble(m_ahrs.getWorldLinearAccelZ());
+  public void log(double mod) {
 
-    nt_yaw_navx.setDouble(m_yaw_navx);
-    nt_yaw_navx_dot.setDouble(m_yaw_navx_d);
+    log_counter++;
+    if ((log_counter % mod)==0) {
+      nt_accelX.setDouble(m_ahrs.getWorldLinearAccelX());
+      nt_accelY.setDouble(m_ahrs.getWorldLinearAccelY());
+      nt_accelZ.setDouble(m_ahrs.getWorldLinearAccelZ());
 
-    nt_yaw_xrs450.setDouble(m_yaw_xrs450);
-    nt_yaw_xrs450_dot.setDouble(m_yaw_xrs450_d);
+      nt_yaw_navx.setDouble(m_yaw_navx);
+      nt_yaw_navx_dot.setDouble(m_yaw_navx_d);
 
-    nt_yaw_blend.setDouble(m_yaw_blend);
-// CHANGED 2022: For some reason the method name is getCANStatus instead of GetCANStatus
-    CANJNI.getCANStatus(m_canStatus);
-    nt_canUtilization.setDouble(m_canStatus.percentBusUtilization);
-    nt_canRxError.setNumber(m_canStatus.receiveErrorCount);
-    nt_canTxError.setNumber(m_canStatus.transmitErrorCount);
+      nt_yaw_xrs450.setDouble(m_yaw_xrs450);
+      nt_yaw_xrs450_dot.setDouble(m_yaw_xrs450_d);
 
-    getRotationPositions(m_rot);
-    nt_cancoder_bl.setDouble(m_rot.back_left);
-    nt_cancoder_br.setDouble(m_rot.back_right);
-    nt_cancoder_fl.setDouble(m_rot.front_left);
-    nt_cancoder_fr.setDouble(m_rot.front_right);
+      nt_yaw_blend.setDouble(m_yaw_blend);
+  // CHANGED 2022: For some reason the method name is getCANStatus instead of GetCANStatus
+      CANJNI.getCANStatus(m_canStatus);
+      nt_canUtilization.setDouble(m_canStatus.percentBusUtilization);
+      nt_canRxError.setNumber(m_canStatus.receiveErrorCount);
+      nt_canTxError.setNumber(m_canStatus.transmitErrorCount);
 
+      getRotationPositions(m_rot);
+      nt_cancoder_bl.setDouble(m_rot.back_left);
+      nt_cancoder_br.setDouble(m_rot.back_right);
+      nt_cancoder_fl.setDouble(m_rot.front_left);
+      nt_cancoder_fr.setDouble(m_rot.front_right);
+    }
   }
 
   public void reset() {
