@@ -139,6 +139,7 @@ public class DriveCmd extends CommandBase {
         output_states = kinematics
             .toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, currrentHeading));
         break;
+
       case hubCentric:
         rot = 0;
         drivetrain.setDriveModeString("Hub Centric Drive");
@@ -164,6 +165,7 @@ public class DriveCmd extends CommandBase {
         output_states = kinematics
             .toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, currrentHeading));
         break;
+
       case intakeCentric:
         // set goal of angle PID to be heading (in degrees) current bearing
         drivetrain.setDriveModeString("Intake Centric");
@@ -194,20 +196,17 @@ public class DriveCmd extends CommandBase {
   @Override
   public void execute() {
     
-    if(lastShootMode != drivetrain.getShootingMode()){
-      if(drivetrain.getShootingMode() == false){
-        driveMode = lastDriveMode;
+    boolean shootingModeOn = drivetrain.getShootingMode();
+    if (lastShootMode != shootingModeOn) {//shoot mode has changed
+      if(shootingModeOn){ //switched to shooting mode; hub centric mode while in shooting mode
+        driveMode = DriveModeTypes.hubCentric;
+        drivetrain.setDriveModeString("Shooting mode");
+      } else { //switched out of shooting mode
+        driveMode = lastDriveMode; //revert to pre-shooting drive mode
+        drivetrain.setDriveModeString(driveMode.toString());
       }
-    }
-    lastShootMode = drivetrain.getShootingMode();
-    //trigger is being pressed, drive in shooting mode
-    System.out.println("**here got**");
-
-    if(drivetrain.getShootingMode()){
-      System.out.println("**got here**");
-      driveMode = DriveModeTypes.hubCentric;
-      drivetrain.setDriveModeString("Shooting mode");
-    }
+    }   
+    lastShootMode = shootingModeOn;
     
     calculate();
     drivetrain.drive(output_states);

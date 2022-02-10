@@ -177,8 +177,8 @@ public class SwerveDrivetrain extends SubsystemBase {
 
     // from -PI to +PI
     double temp = Math.atan2(m_pose.getY() - old_pose.getY(), m_pose.getX() - old_pose.getX());
-    if(temp != 0){
-      currentBearing = Math.atan2(m_pose.getY() - old_pose.getY(), m_pose.getX() - old_pose.getX());
+    if(temp != 0){ //remove singularity when moving too slow - otherwise lots of jitter
+      currentBearing = temp;
       // convert this to degrees in the range -180 to 180
       currentBearing = Math.toDegrees(currentBearing);
     }
