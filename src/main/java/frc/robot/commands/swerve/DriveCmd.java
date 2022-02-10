@@ -195,15 +195,18 @@ public class DriveCmd extends CommandBase {
   public void execute() {
     
     if(lastShootMode != drivetrain.getShootingMode()){
-      if(lastShootMode == false){
+      if(drivetrain.getShootingMode() == false){
         driveMode = lastDriveMode;
       }
     }
     lastShootMode = drivetrain.getShootingMode();
     //trigger is being pressed, drive in shooting mode
+    System.out.println("**here got**");
+
     if(drivetrain.getShootingMode()){
+      System.out.println("**got here**");
       driveMode = DriveModeTypes.hubCentric;
-      drivetrain.setDriveModeString("hub centric");
+      drivetrain.setDriveModeString("Shooting mode");
     }
     
     calculate();
