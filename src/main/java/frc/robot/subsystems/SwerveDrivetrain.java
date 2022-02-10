@@ -141,6 +141,8 @@ public class SwerveDrivetrain extends SubsystemBase {
     SmartDashboard.putNumber("Angle D", angle_kD);
     SmartDashboard.putNumber("Angle Feed Forward", angle_kFF);
     */
+    m_pose = m_odometry.update(sensors.getRotation2d(), cur_states);
+    old_pose = m_pose;
   }
 
   public void drive(SwerveModuleState[] states) {
