@@ -22,16 +22,14 @@ import frc.robot.subsystems.shooter.FlyWheel.FlyWheelConfig;
  */
 public final class Constants {
 
-    public static final boolean HAS_INTAKE = false;
-    public static final boolean HAS_SHOOTER = false;
-    public static final boolean HAS_MAGAZINE = false;
-    public static final boolean HAS_DRIVETRAIN = true;
+    public static final boolean HAS_INTAKE  = true;
+    public static final boolean HAS_SHOOTER = true;
+    public static final boolean HAS_MAGAZINE = true;
+    public static final boolean HAS_DRIVETRAIN = false;
 
 
     public static final double DT = 0.02; // 20ms framerate 50Hz
     public static final double Tperiod = 0.02; // framerate period 20ms, 50Hz
-
-    public static final double FLYWHEEL_GEAR_RATIO = 1; //random number
     public static final int NEO_COUNTS_PER_REVOLUTION = 42;
     
     /**
@@ -52,14 +50,16 @@ public final class Constants {
         public static final int DT_FR_CANCODER = 7;
         public static final int DT_FL_CANCODER = 8;
 
-        public static final int MAG_h_belt = 18;
-        public static final int MAG_v_belt = 13;
-
         // Shooter CAN devices
         public static final int SHOOTER_UPPER_TALON = 10;
         public static final int SHOOTER_LOWER_TALON = 11;
 
+        //Intake CAN
+        public static final int INTAKE_TALON = 14;
 
+        // Magazine motors
+        public static final int MAG_TOP_WHEEL = 18;
+        
         // drive train drive / angle motors - sparkmax neo
         public static final int DT_FL_DRIVE = 20;
         public static final int DT_FL_ANGLE = 21;
@@ -77,8 +77,6 @@ public final class Constants {
         public static final boolean BURN_FLASH = false;
 
         public static final int FLYWHEEL = 0; //random number
-
-
     }
 
     // PWM assignments on the Rio
@@ -94,8 +92,9 @@ public final class Constants {
     // Digital IO on the RIO
     public static final class DigitalIO {
       public static final int INTAKE_GATE = 0;
-      public static final int MAGAZINE_GATE = 1;
-
+      public static final int MAGAZINE_GATE1 = 1;
+      public static final int MAGAZINE_GATE2 = 2;
+      public static final int MAGAZINE_GATE3 = 3;
       /* 
       public static final int LEFT_CHASSIS_ENCODER_B = 1;
       public static final int MAGAZINE_GATE_PWR = 4;  
@@ -113,7 +112,7 @@ public final class Constants {
     //Pnumatics control 2 -
     public static final class PCM1 {
       // Double Solenoid
-      public static final int INTAKE_UP_SOLENOID_PCM = 4; // test value
+      public static final int INTAKE_UP_SOLENOID_PCM = 4;   // test value
       public static final int INTAKE_DOWN_SOLENOID_PCM = 5; // test value
       
     }
@@ -225,6 +224,7 @@ public final class Constants {
       // public static final double PowerCellMass = 3.0 / 16.0; // lbs
       public static final double PCNominalRadius = 10 / 2.0 / 12.0; // feet - power cell
       public static final double PCEffectiveRadius = 8 / 2.0 / 12.0; // feet - compressed radius
+      public static final double FlyWheelGearRatio = 1;
 
       /**
        * Convert Target RPM to [motor-units/100ms] 4096 Units/Rev * Target RPM * 600 =

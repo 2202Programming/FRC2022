@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * project.
  */
 public class Robot extends TimedRobot {
-  private RobotContainer robotContainer;
+  //private RobotContainer robotContainer;
   private Command m_autonomousCommand;
   
   /**
@@ -26,7 +26,7 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
-    robotContainer = new RobotContainer();
+    //robotContainer = new RobotContainer();
     // todo() don't use statics
     // robotContainer.limelight.disableLED();
   }

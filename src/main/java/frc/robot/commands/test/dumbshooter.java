@@ -44,14 +44,14 @@ public class dumbshooter extends CommandBase {
     //lowerTarget = SmartDashboard.getNumber("LowerTarget%", 0);
     beltSpeed = SmartDashboard.getNumber("BeltSpeed%", beltSpeed);
     shooter.onPercent(upperTarget, upperTarget);
-    magazine.beltOn(beltSpeed);
+    magazine.driveWheelOn(beltSpeed);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     shooter.onPercent(0, 0);
-    magazine.beltOff();
+    magazine.driveWheelOff();
   }
 
   // Returns true when the command should end.

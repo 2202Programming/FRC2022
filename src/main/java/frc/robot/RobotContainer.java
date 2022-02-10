@@ -4,16 +4,15 @@
 
 package frc.robot;
 
-import edu.wpi.first.cameraserver.CameraServer;
+//import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.DriverPrefs;
-import frc.robot.commands.swerve.DriveCmd;
+//import frc.robot.commands.swerve.DriveCmd;
 import frc.robot.commands.swerve.LimelightDriveCmd;
-import frc.robot.commands.Shooter_MagazineCommand;
-import frc.robot.commands.auto.auto_drivePath_cmd;
+//import frc.robot.commands.Shooter_MagazineCommand;
+//import frc.robot.commands.auto.auto_drivePath_cmd;
 import frc.robot.commands.auto.auto_pathPlanner_cmd;
 import frc.robot.subsystems.Intake_Subsystem;
-//import frc.robot.subsystems.Magazine_Subsystem;
 import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.Magazine_Subsystem;
 import frc.robot.subsystems.Sensors_Subsystem;
@@ -22,11 +21,16 @@ import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.hid.HID_Xbox_Subsystem;
 import frc.robot.subsystems.hid.XboxButton;
 import frc.robot.subsystems.ifx.DriverControls.Id;
-//import frc.robot.subsystems.Intake_Subsystem;
+import frc.robot.commands.IntakeCommand.IntakeMode;
+import frc.robot.commands.MagazineCommand.MagazineMode;
+import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.IntakeDeployToggle;
+import frc.robot.commands.MagazineCommand;
 import frc.robot.ux.Dashboard;
 import frc.robot.commands.test.TestShoot;
-import frc.robot.commands.test.dumbshooter;
-import frc.robot.commands.test.SwerveDriveTest;
+
+//import frc.robot.commands.test.dumbshooter;
+//import frc.robot.commands.test.SwerveDriveTest;
 //test commands
 import frc.robot.commands.test.getTrajectoryFollowTest;
 
@@ -68,7 +72,6 @@ public class RobotContainer {
     
     //these can get created on any hardware setup
     sensors = new Sensors_Subsystem();
-    shooter = new Shooter_Subsystem();
     dashboard = new Dashboard(rc);
     limelight = new Limelight_Subsystem();
     driverControls = new HID_Xbox_Subsystem(DriverPrefs.VelExpo, DriverPrefs.RotationExpo, DriverPrefs.StickDeadzone);
@@ -141,6 +144,21 @@ public class RobotContainer {
   // * </ul>
   // */
   void setAssistantButtons() {
+
+     // Y -toggle intake deploy
+    // B - spin intake while held (to intake the ball)
+    // A - spin intake while held (in reverse to expell the ball)
+
+    driverControls.bind(Id.Assistant, XboxButton.LB).whenPressed(new IntakeDeployToggle());
+    // IntakeCommand takes a DoubleSupplier f() which could be tied to our UX instead of const f() given here.
+    driverControls.bind(Id.Assistant, XboxButton.A).whileHeld(new IntakeCommand((()-> 0.50), IntakeMode.LoadCargo) );
+    // IntakeCommand motor direction
+    driverControls.bind(Id.Assistant, XboxButton.B).whileHeld(new IntakeCommand((()-> 0.50), IntakeMode.ExpellCargo) );
+
+    driverControls.bind(Id.Assistant, XboxButton.X).whileHeld(new MagazineCommand((()-> 0.99), MagazineMode.LoadCargo) );
+    //MagazineCommand to intake or expell ball
+    driverControls.bind(Id.Assistant, XboxButton.L3).whileHeld(new MagazineCommand((()-> 0.99), MagazineMode.ExpellCargo) );
+  
 
   }
 
