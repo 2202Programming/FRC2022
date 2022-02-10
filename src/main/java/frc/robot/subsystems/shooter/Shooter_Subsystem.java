@@ -50,6 +50,7 @@ public class Shooter_Subsystem extends SubsystemBase  {
    * Cleaned up some naming conventions for public and private api.  Removed
    * public access to motors.
    * 
+   * Terminology: PC stands for Power Cell, which is the same as Cargo or Ball in 
    */
 
   private NetworkTable table;
@@ -139,7 +140,7 @@ public class Shooter_Subsystem extends SubsystemBase  {
     VelToRPM.set(0, 1,  1.0 / Shooter.lowerFWConfig.flywheelRadius);
     VelToRPM.set(1, 0, -Shooter.PCEffectiveRadius / Shooter.upperFWConfig.flywheelRadius);
     VelToRPM.set(1, 1, 1.0 / Shooter.upperFWConfig.flywheelRadius);
-    VelToRPM.times(0.5);  // common factor 1/2
+    VelToRPM.times(0.5);  // common factor 1/2 //TODO I think this should be a factor of 2, not 1/2
 
     m_setpoint = defaultShooterSettings;
   }

@@ -1,13 +1,15 @@
 package frc.robot.subsystems;
 
-import frc.robot.Constants.CAN;
-import static frc.robot.Constants.PWM;
+import static frc.robot.Constants.CAN;
 import static frc.robot.Constants.PCM1;
+
+import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+
 import static frc.robot.Constants.DigitalIO;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.DigitalInput;
 
@@ -21,9 +23,8 @@ public class Intake_Subsystem extends SubsystemBase {
     //Localized Constants - what valve value does what action
     static final Value DEPLOY  = Value.kReverse;
     static final Value RETRACT = Value.kForward;
-
     //Instantiations
-    final Spark intake_spark = new Spark(PWM.INTAKE);
+    final TalonSRX intake_mtr = new TalonSRX(CAN.INTAKE_TALON);
     final DoubleSolenoid intake_solenoid = new DoubleSolenoid(CAN.PCM1,
                 PneumaticsModuleType.CTREPCM, 
                 PCM1.INTAKE_UP_SOLENOID_PCM, 
@@ -31,23 +32,20 @@ public class Intake_Subsystem extends SubsystemBase {
     final DigitalInput intake_lightGate = new DigitalInput(DigitalIO.INTAKE_GATE);
 
     //Constructor
-    public Intake_Subsystem(){}
+    public Intake_Subsystem(){
+        
+    }
 
     //Set the Intake Mode
 
     //Turn Intake Motor On by sending a double value
     public void on(double motorStrength) {
-        intake_spark.set(motorStrength);
+        intake_mtr.set(TalonSRXControlMode.PercentOutput, motorStrength);
     }
 
     //Turn Intake Motor Off by setting a double value
     public void off() {
-        intake_spark.set(0);
-    }
-
-    //Turn Intake Motor in reverse by sending a double value
-    public void expell(double motorStrength){
-        intake_spark.set(-motorStrength);
+        intake_mtr.set(TalonSRXControlMode.PercentOutput, 0.0);
     }
 
     //Deploy arm mechanism using a Double Solenoids
@@ -69,4 +67,9 @@ public class Intake_Subsystem extends SubsystemBase {
     public boolean isDeployed() {
       return ( intake_solenoid.get() == DEPLOY); 
     }
+
+    //TODO - how is this different than off()  above? ALSO, prefer shorter off/on 
+    // to avoid intake.intakeOff()    intake.off()   reads better
+    //TODO  is intakeIsOn variable needed, could you create a functions
+    // that looks at the motor state?
 }
