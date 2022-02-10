@@ -24,7 +24,8 @@ public class DriveCmd extends CommandBase {
     fieldCentric("Field Centric"),
     hubCentric("Hub Centric"),
     shootingRecovery("Shooting Recovery"),
-    shootingCentric("Shooting Centric");
+    shootingCentric("Shooting Centric"),
+    intakeCentric("Intake Centric");
 
     private String name;
 
@@ -191,6 +192,29 @@ public class DriveCmd extends CommandBase {
         output_states = kinematics
         .toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, currrentHeading));
         break;
+      case intakeCentric:
+        // set goal of angle PID to be heading (in degrees) current bearing
+        double m_targetAngle2 = drivetrain.getBearing();
+        double m_currentAngle2 = drivetrain.getPose().getRotation().getDegrees(); // from -180 to 180
+        double m_angleError2 = m_targetAngle2 - m_currentAngle2;
+        // feed both PIDs even if not being used.
+        anglePid.setSetpoint(m_targetAngle2);
+        rot = anglePid.calculate(m_currentAngle2);
+        
+        // deal with continuity issue across 0
+        if (m_angleError2 < -180) {
+          m_targetAngle2 += 360;
+        }
+        if (m_angleError2 > 180) {
+          m_targetAngle2 -= 360;
+        }
+        hubCentricTarget.setValue(m_targetAngle2);
+        NTangleError.setDouble(m_angleError2);
+
+        output_states = kinematics
+        .toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, currrentHeading));
+
+      break;
     }
   }
 
@@ -249,8 +273,12 @@ public class DriveCmd extends CommandBase {
         drivetrain.setDriveModeString("Field Centric Drive");
         break;
       case hubCentric:
-        driveMode = DriveModeTypes.robotCentric;
+        driveMode = DriveModeTypes.intakeCentric;
         drivetrain.setDriveModeString("Hub Centric Drive");
+        break;
+      case intakeCentric:
+        driveMode = DriveModeTypes.robotCentric;
+        drivetrain.setDriveModeString("Intake Centric Drive");
         break;
     }
   }
