@@ -86,7 +86,7 @@ public class SwerveDrivetrain extends SubsystemBase {
 
   public final String NT_Name = "DT"; // expose data under DriveTrain table
   private int timer;
-  private String driveModeString;
+  private String driveModeString = "None";
 
   public SwerveDrivetrain() {
     sensors = RobotContainer.RC().sensors;

@@ -94,6 +94,7 @@ public class DriveCmd extends CommandBase {
     NTangleError = table.getEntry("/angleError");
     xJoystick = table.getEntry("/xJoystick");
     yJoystick = table.getEntry("/yJoystick");
+    driveCmd = table.getEntry("/Drive Command");
   }
 
   public DriveCmd(SwerveDrivetrain drivetrain, DriverControls dc, boolean fieldRelativeMode) {
