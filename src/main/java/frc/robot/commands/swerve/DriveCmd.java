@@ -53,6 +53,7 @@ public class DriveCmd extends CommandBase {
 
   // PID for heading to a target
   private PIDController anglePid;
+  private PIDController intakeAnglePid;
   private double angle_kp = 0.075;
   private double angle_ki = 0.004;
   private double angle_kd = 0.005;
@@ -87,6 +88,8 @@ public class DriveCmd extends CommandBase {
     this.kinematics = drivetrain.getKinematics();
 
     anglePid = new PIDController(angle_kp, angle_ki, angle_kd);
+    intakeAnglePid = new PIDController(angle_kp, angle_ki, angle_kd);
+    intakeAnglePid.enableContinuousInput(-180, 180);
 
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
     hubCentricTarget = table.getEntry("/hubCentricTarget");;
@@ -98,6 +101,7 @@ public class DriveCmd extends CommandBase {
     NTangleError = table.getEntry("/angleError");
     xJoystick = table.getEntry("/xJoystick");
     yJoystick = table.getEntry("/yJoystick");
+    driveCmd = table.getEntry("/driveCmd");
   }
 
   public DriveCmd(SwerveDrivetrain drivetrain, DriverControls dc, boolean fieldRelativeMode) {
@@ -194,12 +198,13 @@ public class DriveCmd extends CommandBase {
         break;
       case intakeCentric:
         // set goal of angle PID to be heading (in degrees) current bearing
+        drivetrain.setDriveModeString("Intake Centric");
         double m_targetAngle2 = drivetrain.getBearing();
         double m_currentAngle2 = drivetrain.getPose().getRotation().getDegrees(); // from -180 to 180
         double m_angleError2 = m_targetAngle2 - m_currentAngle2;
         // feed both PIDs even if not being used.
-        anglePid.setSetpoint(m_targetAngle2);
-        rot = anglePid.calculate(m_currentAngle2);
+        intakeAnglePid.setSetpoint(m_targetAngle2);
+        rot = intakeAnglePid.calculate(m_currentAngle2);
         
         // deal with continuity issue across 0
         if (m_angleError2 < -180) {

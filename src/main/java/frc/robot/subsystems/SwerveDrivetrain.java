@@ -88,8 +88,8 @@ public class SwerveDrivetrain extends SubsystemBase {
 
   public final String NT_Name = "DT"; // expose data under DriveTrain table
   private int timer;
-  private String driveModeString;
-  private double currentBearing;
+  private String driveModeString = "NONE";
+  private double currentBearing = 0;
   private boolean shootingModeOn = false;
 
   public SwerveDrivetrain() {
@@ -174,17 +174,21 @@ public class SwerveDrivetrain extends SubsystemBase {
     m_pose = m_odometry.update(sensors.getRotation2d(), cur_states);
 
     // from -PI to +PI
-    currentBearing = Math.atan2(m_pose.getY() - old_pose.getY(), m_pose.getX() - old_pose.getX());
-    // convert this to degrees in the range -180 to 180
-    currentBearing = Math.toDegrees(currentBearing);
+    double temp = Math.atan2(m_pose.getY() - old_pose.getY(), m_pose.getX() - old_pose.getX());
+    if(temp != 0){
+      currentBearing = Math.atan2(m_pose.getY() - old_pose.getY(), m_pose.getX() - old_pose.getX());
+      // convert this to degrees in the range -180 to 180
+      currentBearing = Math.toDegrees(currentBearing);
+    }
 
     // updates CAN status data every 4 cycles
+    nt_currentBearing.setDouble(currentBearing);
+
     timer++;
     if (timer == 5) {
       currentX.setDouble(m_pose.getX());
       currentY.setDouble(m_pose.getY());
       currentHeading.setDouble(m_pose.getRotation().getDegrees());
-      nt_currentBearing.setDouble(currentBearing);
       velocityFL.setDouble(modules[0].getVelocity());
       velocityFR.setDouble(modules[1].getVelocity());
       velocityBL.setDouble(modules[2].getVelocity());
