@@ -28,8 +28,6 @@ public class HigherClimbExtend extends CommandBase {
     
     @Override
     public void initialize() {
-        climber.getLeftEncoder().setPosition(0);
-        climber.getRightEncoder().setPosition(0);
         // TODO: Add resetting for rotation also
         climber.setExtension(HIGHER_EXTENSION_LENGTH);
         climber.setRotation(HIGHER_EXTENSION_ROTATION);

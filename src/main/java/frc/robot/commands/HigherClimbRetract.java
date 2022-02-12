@@ -16,8 +16,7 @@ public class HigherClimbRetract extends CommandBase {
 
     @Override
     public void initialize() {
-        climber.getLeftEncoder().setPosition(0);
-        climber.getRightEncoder().setPosition(0);
+        climber.setExtension(0);
         climber.setRotation(0);
     }
 
