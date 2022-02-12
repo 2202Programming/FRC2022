@@ -196,7 +196,7 @@ public class SwerveDrivetrain extends SubsystemBase {
       velocityBL.setDouble(modules[2].getVelocity());
       velocityBR.setDouble(modules[3].getVelocity());
       driveString.setString(driveModeString);
-      nt_shootingMode.setBoolean(shootingModeOn);
+      //nt_shootingMode.setBoolean(shootingModeOn);
       timer = 0;
 
       //if Drivetrain tuning

@@ -37,6 +37,7 @@ public class LimelightDriveCmd extends DriveCmd {
 
   @Override
   public void execute() {
+    checkShooter();
     calculate(); // parent does most the work, sets output_states
     updateLimelightPID();
     

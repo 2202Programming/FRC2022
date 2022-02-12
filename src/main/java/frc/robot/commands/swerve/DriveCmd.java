@@ -76,6 +76,8 @@ public class DriveCmd extends CommandBase {
   private NetworkTableEntry NTangleError;
   private NetworkTableEntry xJoystick;
   private NetworkTableEntry yJoystick;
+  private NetworkTableEntry NTLastDriveMode;
+  
   public final String NT_Name = "DT"; // expose data under DriveTrain table
 
   double log_counter = 0;
@@ -101,6 +103,7 @@ public class DriveCmd extends CommandBase {
     xJoystick = table.getEntry("/xJoystick");
     yJoystick = table.getEntry("/yJoystick");
     driveCmd = table.getEntry("/driveCmd");
+    NTLastDriveMode = table.getEntry("/LastDriveMode");
   }
 
   public DriveCmd(SwerveDrivetrain drivetrain, DriverControls dc, boolean fieldRelativeMode) {
@@ -195,19 +198,7 @@ public class DriveCmd extends CommandBase {
 
   @Override
   public void execute() {
-    
-    boolean shootingModeOn = drivetrain.getShootingMode();
-    if (lastShootMode != shootingModeOn) {//shoot mode has changed
-      if(shootingModeOn){ //switched to shooting mode; hub centric mode while in shooting mode
-        driveMode = DriveModeTypes.hubCentric;
-        drivetrain.setDriveModeString("Shooting mode");
-      } else { //switched out of shooting mode
-        driveMode = lastDriveMode; //revert to pre-shooting drive mode
-        drivetrain.setDriveModeString(driveMode.toString());
-      }
-    }   
-    lastShootMode = shootingModeOn;
-    
+    checkShooter();
     calculate();
     drivetrain.drive(output_states);
     updateNT();
@@ -275,7 +266,23 @@ public class DriveCmd extends CommandBase {
     rotVelTarget.setValue(rot);
     fieldMode.setBoolean(fieldRelativeMode);
     driveCmd.setString("DriveCmd");
+    //NTLastDriveMode.setString(lastDriveMode.toString());
     }
+  }
+
+  public void checkShooter(){
+    boolean shootingModeOn = drivetrain.getShootingMode();
+      if (lastShootMode != shootingModeOn) {//shoot mode has changed
+      if(shootingModeOn){ //switched to shooting mode; hub centric mode while in shooting mode
+        lastDriveMode = driveMode; //save current drive mode to restore later
+        driveMode = DriveModeTypes.hubCentric;
+        drivetrain.setDriveModeString("Shooting mode");
+      } else { //switched out of shooting mode
+        driveMode = lastDriveMode; //revert to pre-shooting drive mode
+        drivetrain.setDriveModeString(driveMode.toString());
+      }
+    }   
+    lastShootMode = shootingModeOn;
   }
 
 }

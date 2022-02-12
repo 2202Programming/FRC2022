@@ -32,8 +32,8 @@ public class ShootCmd extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    // m_drivetrain.setShootingMode(false);
-    // m_drivetrain.setDriveModeString("NONE");
+    m_drivetrain.setShootingMode(false);
+    m_drivetrain.setDriveModeString("NONE");
   }
 
   // Returns true when the command should end.
