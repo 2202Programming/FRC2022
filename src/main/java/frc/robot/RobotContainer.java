@@ -154,7 +154,7 @@ public class RobotContainer {
      // Y -toggle intake deploy
     // B - spin intake while held (to intake the ball)
     // A - spin intake while held (in reverse to expell the ball)
-
+    if(Constants.HAS_INTAKE) {
     driverControls.bind(Id.Assistant, XboxButton.LB).whenPressed(new IntakeDeployToggle());
     // IntakeCommand takes a DoubleSupplier f() which could be tied to our UX instead of const f() given here.
     driverControls.bind(Id.Assistant, XboxButton.A).whileHeld(new IntakeCommand((()-> 0.50), IntakeMode.LoadCargo) );
@@ -164,7 +164,7 @@ public class RobotContainer {
     driverControls.bind(Id.Assistant, XboxButton.X).whileHeld(new MagazineCommand((()-> 0.99), MagazineMode.LoadCargo) );
     //MagazineCommand to intake or expell ball
     driverControls.bind(Id.Assistant, XboxButton.L3).whileHeld(new MagazineCommand((()-> 0.99), MagazineMode.ExpellCargo) );
-  
+    }
 
   }
 

@@ -22,10 +22,10 @@ import frc.robot.subsystems.shooter.FlyWheel.FlyWheelConfig;
  */
 public final class Constants {
 
-    public static final boolean HAS_INTAKE  = true;
-    public static final boolean HAS_SHOOTER = true;
-    public static final boolean HAS_MAGAZINE = true;
-    public static final boolean HAS_DRIVETRAIN = false;
+    public static final boolean HAS_INTAKE  = false;
+    public static final boolean HAS_SHOOTER = false;
+    public static final boolean HAS_MAGAZINE = false;
+    public static final boolean HAS_DRIVETRAIN = true;
 
 
     public static final double DT = 0.02; // 20ms framerate 50Hz
