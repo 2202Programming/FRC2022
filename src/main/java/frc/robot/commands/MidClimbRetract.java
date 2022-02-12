@@ -1,14 +1,11 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.subsystems.Climber;
 
 public class MidClimbRetract extends CommandBase {
     private final Climber climber;
-
-    // tolerances --> TODO: Move to Constants and change to appropriate values
-    private final double TOLERANCE_LENGTH = 0;
-    private final double TOLERANCE_ROTATION = 0;
 
     public MidClimbRetract(Climber climber) {
         this.climber = climber;
@@ -28,8 +25,8 @@ public class MidClimbRetract extends CommandBase {
     @Override
     // TODO: Velocity better than position because it allows for some error?
     public boolean isFinished() {
-        return ((Math.abs(climber.getLeftEncoder().getPosition()) <= TOLERANCE_LENGTH)
-               && (Math.abs(climber.getRightEncoder().getPosition()) <= TOLERANCE_LENGTH)
+        return ((Math.abs(climber.getLeftEncoder().getPosition()) <= Constants.ClimbSettings.TOLERANCE_LENGTH)
+               && (Math.abs(climber.getRightEncoder().getPosition()) <= Constants.ClimbSettings.TOLERANCE_LENGTH)
         // TODO: Add checks for rotation also
         );
     }
