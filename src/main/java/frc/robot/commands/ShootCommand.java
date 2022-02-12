@@ -52,13 +52,23 @@ public class ShootCommand extends CommandBase{
     @Override
     public void initialize(){
         table = NetworkTableInstance.getDefault().getTable("ShootCommand");
+        ntBallVel = table.getEntry("BallVel");
+        ntBallRPS = table.getEntry("BallRPS");
+
+        ntBallVel.setDouble(0);
+        ntBallRPS.setDouble(0);
+
         cmdSS = new ShooterSettings(); //defaultShooterSettings SUS 
+        prevSS = new ShooterSettings(cmdSS);
+
         stage = Stage.DoNothing;
         count = initialCount;
     }
 
     @Override
     public void execute(){
+
+
         switch(stage){
             case DoNothing:
                 magazine.driveWheelOff();
