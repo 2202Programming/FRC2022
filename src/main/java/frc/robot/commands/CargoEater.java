@@ -39,6 +39,7 @@ public CargoEater(){
         Gate3value = false;
         intakevalue = false;
     }
+    
     @Override
     public void execute(){
         SmartDashboard.putString("Magazine_State", stage.toString());
@@ -52,7 +53,7 @@ public CargoEater(){
                     stage = MStates.WaitBall1;
                     magazine.driveWheelOn(0.001);
                 }
-            break;
+            break; 
                 
             case WaitBall1:
                 if(Gate1value){

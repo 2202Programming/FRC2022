@@ -13,6 +13,7 @@ import frc.robot.commands.Shooter_MagazineCommand;
 import frc.robot.commands.Shoot.ShootCmd;
 import frc.robot.commands.auto.auto_drivePath_cmd;
 import frc.robot.commands.auto.auto_pathPlanner_cmd;
+import frc.robot.commands.ShootCommand;
 import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.Magazine_Subsystem;
@@ -30,6 +31,7 @@ import frc.robot.commands.IntakeDeployToggle;
 import frc.robot.commands.MagazineCommand;
 import frc.robot.ux.Dashboard;
 import frc.robot.commands.test.TestShoot;
+
 
 //import frc.robot.commands.test.dumbshooter;
 //import frc.robot.commands.test.SwerveDriveTest;
@@ -164,7 +166,8 @@ public class RobotContainer {
     driverControls.bind(Id.Assistant, XboxButton.X).whileHeld(new MagazineCommand((()-> 0.99), MagazineMode.LoadCargo) );
     //MagazineCommand to intake or expell ball
     driverControls.bind(Id.Assistant, XboxButton.L3).whileHeld(new MagazineCommand((()-> 0.99), MagazineMode.ExpellCargo) );
-    }
+    driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_RIGHT).whileHeld(new ShootCommand());
+  }
 
   }
 
