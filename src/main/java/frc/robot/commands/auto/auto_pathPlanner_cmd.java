@@ -62,7 +62,7 @@ public class auto_pathPlanner_cmd extends CommandBase {
       PIDController xController = new PIDController(4.0, 0.0, 0.0);
       PIDController yController = new PIDController(4.0, 0.0, 0.0);
       ProfiledPIDController thetaController = new ProfiledPIDController(4, 0, 0, new TrapezoidProfile.Constraints(3, 3));
-      thetaController.enableContinuousInput(-Math.PI, Math.PI); //prevent piroutte paths over continuity
+      thetaController.enableContinuousInput(-180, 180); //prevent piroutte paths over continuity
 
       PPSwerveControllerCommand swerveControllerCommand =
       new PPSwerveControllerCommand(
