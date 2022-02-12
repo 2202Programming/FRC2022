@@ -13,13 +13,12 @@ public class MidClimbRetract extends CommandBase {
 
     @Override
     public void initialize() {
-        climber.setExtension(0);
-        climber.setRotation(0);
     }
 
     @Override
     public void execute() {
-        // empty yet again
+        climber.setExtension(0);
+        climber.setRotation(0);
     }
 
     @Override

@@ -14,14 +14,12 @@ public class MidClimbExtend extends CommandBase {
     
     @Override
     public void initialize() {
-        // TODO: Add resetting for rotation also
-        climber.setExtension(Constants.ClimbSettings.MID_EXTENSION_LENGTH);
-        climber.setRotation(Constants.ClimbSettings.MID_EXTENSION_ROTATION);
     }
 
     @Override
     public void execute() {
-        // :)
+        climber.setExtension(Constants.ClimbSettings.MID_EXTENSION_LENGTH);
+        climber.setRotation(Constants.ClimbSettings.MID_EXTENSION_ROTATION);
     }
 
     @Override
