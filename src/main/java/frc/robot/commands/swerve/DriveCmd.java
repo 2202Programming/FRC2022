@@ -16,6 +16,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.DriveTrain;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.ifx.DriverControls;
+import frc.robot.subsystems.ifx.DriverControls.DriverMode;
 
 public class DriveCmd extends CommandBase {
 
@@ -40,8 +41,8 @@ public class DriveCmd extends CommandBase {
   final DriverControls dc;
   final SwerveDriveKinematics kinematics;
   // command behaviors
-  DriveModeTypes driveMode = DriveModeTypes.robotCentric;
-  DriveModeTypes lastDriveMode = DriveModeTypes.robotCentric;
+  DriveModeTypes driveMode = DriveModeTypes.fieldCentric;
+  DriveModeTypes lastDriveMode = DriveModeTypes.fieldCentric;
   boolean fieldRelativeMode = false;
 
   boolean lastShootMode = false;
@@ -122,6 +123,12 @@ public class DriveCmd extends CommandBase {
     xSpeed = xspeedLimiter.calculate(dc.getVelocityX()) * DriveTrain.kMaxSpeed;
     ySpeed = yspeedLimiter.calculate(dc.getVelocityY()) * DriveTrain.kMaxSpeed;
     rot = rotLimiter.calculate(dc.getXYRotation()) * DriveTrain.kMaxAngularSpeed;
+
+    if ((Math.abs(rot)>0.1) && (driveMode==DriveModeTypes.intakeCentric)){
+      //driver is trying to rotate, drop out of intake mode
+      driveMode=DriveModeTypes.fieldCentric;
+      lastDriveMode=driveMode;
+    }
 
     // Clamp speeds/rot from the Joysticks
     xSpeed = MathUtil.clamp(xSpeed, -Constants.DriveTrain.kMaxSpeed, Constants.DriveTrain.kMaxSpeed);
@@ -232,20 +239,20 @@ public class DriveCmd extends CommandBase {
   public void cycleDriveMode() {
     lastDriveMode = driveMode;
     switch (driveMode) {
-      case robotCentric:
-        driveMode = DriveModeTypes.fieldCentric;
-        drivetrain.setDriveModeString("Robot Centric Drive");
-        break;
+      //case robotCentric:
+      //  driveMode = DriveModeTypes.fieldCentric;
+      //  drivetrain.setDriveModeString("Robot Centric Drive");
+      //  break;
       case fieldCentric:
-        driveMode = DriveModeTypes.hubCentric;
+        driveMode = DriveModeTypes.intakeCentric;
         drivetrain.setDriveModeString("Field Centric Drive");
         break;
-      case hubCentric:
-        driveMode = DriveModeTypes.intakeCentric;
-        drivetrain.setDriveModeString("Hub Centric Drive");
-        break;
+      //case hubCentric:
+      //  driveMode = DriveModeTypes.intakeCentric;
+      //  drivetrain.setDriveModeString("Hub Centric Drive");
+      //  break;
       case intakeCentric:
-        driveMode = DriveModeTypes.robotCentric;
+        driveMode = DriveModeTypes.fieldCentric;
         drivetrain.setDriveModeString("Intake Centric Drive");
         break;
     }
@@ -264,7 +271,7 @@ public class DriveCmd extends CommandBase {
     xVelTarget.setValue(xSpeed);
     yVelTarget.setValue(ySpeed);
     rotVelTarget.setValue(rot);
-    fieldMode.setBoolean(fieldRelativeMode);
+    //fieldMode.setBoolean(fieldRelativeMode);
     driveCmd.setString("DriveCmd");
     //NTLastDriveMode.setString(lastDriveMode.toString());
     }
