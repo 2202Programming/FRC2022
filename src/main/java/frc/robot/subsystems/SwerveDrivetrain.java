@@ -11,6 +11,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -91,7 +92,13 @@ public class SwerveDrivetrain extends SubsystemBase {
   private int timer;
   private String driveModeString = "NONE";
   private double currentBearing = 0;
+  private double filteredBearing = 0;
   private boolean shootingModeOn = false;
+
+  // Creates a new Single-Pole IIR filter
+  // Time constant is 0.1 seconds
+  // Period is 0.02 seconds - this is the standard FRC main loop period
+  private LinearFilter bearingFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
 
   public SwerveDrivetrain() {
     sensors = RobotContainer.RC().sensors;
@@ -182,10 +189,10 @@ public class SwerveDrivetrain extends SubsystemBase {
       // convert this to degrees in the range -180 to 180
       currentBearing = Math.toDegrees(currentBearing);
     }
+    //run bearing through low pass filter
+    filteredBearing = bearingFilter.calculate(currentBearing);
 
     // updates CAN status data every 4 cycles
-    nt_currentBearing.setDouble(currentBearing);
-
     timer++;
     if (timer == 5) {
       currentX.setDouble(m_pose.getX());
@@ -196,6 +203,7 @@ public class SwerveDrivetrain extends SubsystemBase {
       velocityBL.setDouble(modules[2].getVelocity());
       velocityBR.setDouble(modules[3].getVelocity());
       driveString.setString(driveModeString);
+      nt_currentBearing.setDouble(filteredBearing);
       //nt_shootingMode.setBoolean(shootingModeOn);
       timer = 0;
 
@@ -235,7 +243,7 @@ public class SwerveDrivetrain extends SubsystemBase {
   }
 
   public double getBearing(){
-    return currentBearing;
+    return filteredBearing;
   }
 
   public SwerveDriveKinematics getKinematics() {
