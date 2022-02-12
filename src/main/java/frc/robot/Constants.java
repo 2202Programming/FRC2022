@@ -142,6 +142,19 @@ public final class Constants {
         public static PIDFController innerPID = new PIDFController(1, 0, 0, 0);
         public static PIDFController outerPID = new PIDFController(1, 0, 0, 0);
 
+        // TODO: Check
+        // Extension length and rotation needed to hit bars
+        public static final double MID_EXTENSION_LENGTH = 60;
+        public static final double MID_EXTENSION_ROTATION = 0;
+        //TODO: Fix numbers
+        public static final double HIGHER_EXTENSION_LENGTH = 30;
+        public static final double HIGHER_EXTENSION_ROTATION = 30;
+
+        // TODO: change to expected values
+        public static final double TOLERANCE_LENGTH = 0;
+        public static final double TOLERANCE_ROTATION = 0;
+
+
     }
       
 
