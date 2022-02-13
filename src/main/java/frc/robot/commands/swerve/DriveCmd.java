@@ -1,5 +1,7 @@
 package frc.robot.commands.swerve;
 
+import org.opencv.core.Mat;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -185,9 +187,9 @@ public class DriveCmd extends CommandBase {
         break;
 
       case intakeCentric:
-        // set goal of angle PID to be heading (in degrees) current bearing
+        // set goal of angle PID to be commanded bearing (in degrees) from joysticks
         drivetrain.setDriveModeString("Intake Centric");
-        double m_targetAngle2 = drivetrain.getBearing();
+        double m_targetAngle2 = getJoystickBearing();
         double m_currentAngle2 = drivetrain.getPose().getRotation().getDegrees(); // from -180 to 180
         double m_angleError2 = m_targetAngle2 - m_currentAngle2;
         // feed both PIDs even if not being used.
@@ -300,4 +302,22 @@ public class DriveCmd extends CommandBase {
     lastShootMode = shootingModeOn;
   }
 
+  private double getJoystickBearing(){
+    //take joystick X and Y inputs (field centric space) and return an expected direction of travel (-180 to 180 degrees)
+    double joystickBearing = 0;
+    if (xSpeed > 0) { //0 to 180
+      if (ySpeed > 0) { //0 to 90
+        joystickBearing = Math.atan(ySpeed / xSpeed);
+      } else { //90 to 180
+        joystickBearing = Math.atan(-ySpeed / xSpeed) + 90;
+      }
+    } else { //0 to -180
+      if (ySpeed > 0) { //0 to -90
+        joystickBearing = -Math.atan(ySpeed / -xSpeed);
+      } else { //-90 to -180
+        joystickBearing = -(Math.atan(-ySpeed / -xSpeed) + 90);
+      }
+    }
+    return joystickBearing;
+  }
 }
