@@ -113,7 +113,9 @@ public final class Constants {
     public static final class PCM1 {
       // Double Solenoid
       public static final int INTAKE_UP_SOLENOID_PCM = 4;   // test value
-      public static final int INTAKE_DOWN_SOLENOID_PCM = 5; // test value
+      public static final int INTAKE_DOWN_SOLENOID_PCM = 5; //test value
+      public static final int POSITIONER_UP_SOLENOID_PCM = 6;   // test value
+      public static final int POSITIONER_DOWN_SOLENOID_PCM = 7; // test value
       
     }
 
