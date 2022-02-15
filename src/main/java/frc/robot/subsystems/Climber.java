@@ -1,32 +1,24 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
-// import com.revrobotics.CANSparkMax.ControlType;
-import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Counter;
+import edu.wpi.first.wpilibj.PWM;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import edu.wpi.first.wpilibj.Relay;
-import edu.wpi.first.wpilibj.Encoder;
-
-import static frc.robot.Constants.CAN;
-import static frc.robot.Constants.ClimbSettings;
-
-import edu.wpi.first.wpilibj.PWM;
-import edu.wpi.first.wpilibj.Counter;
+import frc.robot.Constants.CAN;
+import frc.robot.Constants.ClimbSettings;
 
 public class Climber extends SubsystemBase{
     // NTs
     private NetworkTable table;
-    private NetworkTableEntry left_extender_speed, right_extender_speed, left_extender_position, right_extender_position, 
-                              left_Rotator_desiredposition, right_Rotator_desiredposition, left_Rotator_actualposition, 
-                              right_Rotator_actualposition;
+    private NetworkTableEntry left_extender_speed, right_extender_speed, left_extender_position, right_extender_position;
 
     // PIDSlot used
     int slot = 0;
@@ -72,10 +64,6 @@ public class Climber extends SubsystemBase{
         right_extender_speed = table.getEntry("Right Extender Speed");
         left_extender_position = table.getEntry("Left Extender Position");
         right_extender_position = table.getEntry("Right Extender Position");
-        left_Rotator_actualposition = table.getEntry("Left Rotator Actual Position");
-        right_Rotator_actualposition = table.getEntry("Right Rotator Actual Position");
-        left_Rotator_desiredposition = table.getEntry("Left Rotator Desired Position");
-        right_Rotator_desiredposition = table.getEntry("Right Rotator Desired Position");
 
         left_pidController_ext = left_motor_ext.getPIDController();
         right_pidController_ext = right_motor_ext.getPIDController();
@@ -97,8 +85,8 @@ public class Climber extends SubsystemBase{
         left_Counter_rot.reset(); //resets the count
         right_Counter_rot.reset(); //resets the count
         // .01(1%) is the speed and 2 degrees is the tolerance
-        left_Arm = new ArmRotation(left_Counter_rot, left_PWM_rot, .01, 2, left_Rotator_desiredposition, left_Rotator_actualposition);
-        right_Arm = new ArmRotation(right_Counter_rot, right_PWM_rot, .01, 2, right_Rotator_desiredposition, right_Rotator_actualposition);
+        left_Arm = new ArmRotation(left_Counter_rot, left_PWM_rot, .01, 2, table.getSubTable("left_arm_rotation"));
+        right_Arm = new ArmRotation(right_Counter_rot, right_PWM_rot, .01, 2, table.getSubTable("left_arm_rotation"));
     }
 
 
@@ -200,13 +188,13 @@ class ArmRotation {
     private NetworkTableEntry sdb_desired;
     private NetworkTableEntry sdb_actual;
 
-    public ArmRotation(Counter m_counter, PWM m_motor, double speed, double tolerance, NetworkTableEntry sdb_desired, NetworkTableEntry sdb_actual) {
+    public ArmRotation(Counter m_counter, PWM m_motor, double speed, double tolerance, NetworkTable table) {
         this.m_counter = m_counter;
         this.m_motor = m_motor;
         this.speed = speed;
         this.tolerance = tolerance;
-        this.sdb_desired = sdb_desired;
-        this.sdb_actual = sdb_actual;
+        this.sdb_desired = table.getEntry("desired");
+        this.sdb_actual = table.getEntry("actual");
     }
 
 
