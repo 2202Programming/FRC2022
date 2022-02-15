@@ -17,18 +17,22 @@ import frc.robot.commands.ShootCommand;
 import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.Magazine_Subsystem;
+import frc.robot.subsystems.Positioner_Subsystem;
 import frc.robot.subsystems.Sensors_Subsystem;
 import frc.robot.subsystems.shooter.Shooter_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.hid.HID_Xbox_Subsystem;
 import frc.robot.subsystems.hid.XboxAxis;
 import frc.robot.subsystems.hid.XboxButton;
+import frc.robot.subsystems.hid.XboxPOV;
 import frc.robot.subsystems.ifx.DriverControls.Id;
 import frc.robot.commands.IntakeCommand.IntakeMode;
 import frc.robot.commands.MagazineCommand.MagazineMode;
+import frc.robot.commands.PositionerCommand.PositionerMode;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.IntakeDeployToggle;
 import frc.robot.commands.MagazineCommand;
+import frc.robot.commands.PositionerCommand;
 import frc.robot.ux.Dashboard;
 import frc.robot.commands.test.TestShoot;
 
@@ -62,6 +66,7 @@ public class RobotContainer {
   public SwerveDrivetrain drivetrain = null;
   public Magazine_Subsystem magazine = null;
   public final Limelight_Subsystem limelight;
+  public final Positioner_Subsystem positioner;
 
   //modifiable commands
   //DriveCmd swd;
@@ -78,6 +83,7 @@ public class RobotContainer {
     sensors = new Sensors_Subsystem();
     dashboard = new Dashboard(rc);
     limelight = new Limelight_Subsystem();
+    positioner = new Positioner_Subsystem();
     driverControls = new HID_Xbox_Subsystem(DriverPrefs.VelExpo, DriverPrefs.RotationExpo, DriverPrefs.StickDeadzone);
    
     //These are hardware specific
@@ -139,6 +145,7 @@ public class RobotContainer {
 
     //RB limelight toggle
     driverControls.bind(Id.Driver, XboxButton.RB).whenPressed(new InstantCommand( limelight::toggleLED ));
+   
 
     if(Constants.HAS_DRIVETRAIN){
       driverControls.bind(Id.Driver, XboxAxis.TRIGGER_RIGHT).whenHeld(new ShootCmd(drivetrain));
@@ -152,6 +159,7 @@ public class RobotContainer {
   // * </ul>
   // */
   void setAssistantButtons() {
+
 
      // Y -toggle intake deploy
     // B - spin intake while held (to intake the ball)
@@ -168,7 +176,9 @@ public class RobotContainer {
     driverControls.bind(Id.Assistant, XboxButton.L3).whileHeld(new MagazineCommand((()-> 0.99), MagazineMode.ExpellCargo) );
     driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_RIGHT).whileHeld(new ShootCommand());
   }
-
+  //Positioner binds :)
+  driverControls.bind(Id.Driver, XboxPOV.POV_UP).whenPressed(new PositionerCommand( PositionerMode.MoveUp ));
+  driverControls.bind(Id.Driver, XboxPOV.POV_DOWN).whenPressed(new PositionerCommand( PositionerMode.MoveDown ));
   }
 
   
