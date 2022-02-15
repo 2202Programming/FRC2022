@@ -11,6 +11,7 @@ public class ShootCommand extends CommandBase{
     final Intake_Subsystem intake;
     final Shooter_Subsystem shooter;
     int count;
+    int initialCount = 0;
 
     enum Stage{
         DoNothing,
@@ -25,10 +26,15 @@ public class ShootCommand extends CommandBase{
         this.magazine = RobotContainer.RC().magazine;
     }
 
+    public ShootCommand withInitialCargo(int count) {
+        this.initialCount = count;
+        return this;
+    }
+
     @Override
     public void initialize(){
         stage = Stage.DoNothing;
-        count = 0;
+        count = initialCount;
     }
     @Override
     public void execute(){

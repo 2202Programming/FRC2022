@@ -57,7 +57,7 @@ public class RobotContainer {
   public final HID_Xbox_Subsystem driverControls;
   public Sensors_Subsystem sensors = null;
   public Intake_Subsystem intake = null; 
-  private SwerveDrivetrain drivetrain = null;
+  public SwerveDrivetrain drivetrain = null;
   public Magazine_Subsystem magazine = null;
   public final Limelight_Subsystem limelight;
 
