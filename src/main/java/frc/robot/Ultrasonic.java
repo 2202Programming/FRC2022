@@ -1,47 +1,70 @@
 package frc.robot;
 
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.AnalogInput;
 
-// Creates a ping-response Ultrasonic object on DIO 1 and 2.
-Ultrasonic ultrasonic = new Ultrasonic(1, 2);
+public class Ultrasonic extends TimedRobot {
 
-// Initialize motor controllers and drive
-Spark left1 new Spark(0);
-Spark left2 = new Spark(1);
+  public DigitalOutput ultrasonicTriggerPinOne = new DigitalOutput(0);
+  
+  public AnalogInput ultrasonicSensorOne = new AnalogInput(0);
+  public double ultrasonicSensorOneRange = 0;
 
-Spark right1 = new Spark(2);
-Spark right2 = new Spark(3);
+  public double voltageScaleFactor = 1;
 
-MotorControllerGroup leftMotors = new MotorControllerGroup(left1, left2);
-MotorControllerGroup rightMotors = new MotorControllerGroup(right1, right2);
+  
+  public void turnOnSensorOne() {
+    ultrasonicTriggerPinOne.set(true);
+  }
 
-DifferentialDrive drive = new DifferentialDrive(leftMotors, rightMotors);
+  public void turnOffSensorOne() {
+    ultrasonicTriggerPinOne.set(false);
+  }
 
-@Override
-public void robotInit() {
-    // Start the ultrasonic in automatic mode
-    Ultrasonic.setAutomaticMode(true);
+  @Override
+  public void robotInit() {
+    //Initialize range readings on SmartDashboard as max distance in Centimeters.
+    SmartDashboard.putNumber("Sensor 1 Range", 500);
+
+  }
+  @Override
+  public void robotPeriodic() {
+    //Publish range readings to SmartDashboard
+    SmartDashboard.putNumber("Sensor 1 Range", ultrasonicSensorOneRange);
+
+    voltageScaleFactor = 5 / RobotController.getVoltage5V(); //Calculate what percentage of 5 Volts we are actually at
+  }
+  @Override
+  public void autonomousInit() {
+    //If we are in Autonomous mode, turn on the first sensor (and turn off the second sensor)
+    turnOnSensorOne();
+  }
+  @Override
+  public void autonomousPeriodic() {
+    //Get a reading from the first sensor, scale it by the voltageScaleFactor, and then scale to Centimeters
+    ultrasonicSensorOneRange = ultrasonicSensorOne.getValue()*voltageScaleFactor*0.125;
+
+  }
+  @Override
+  public void teleopInit() {
+    turnOnSensorOne();
+  }
+  
+
+  @Override
+  public void teleopPeriodic() {
+    //Get a reading from the first sensor, scale it by the voltageScaleFactor, and then scale to Centimeters
+    ultrasonicSensorOneRange = ultrasonicSensorOne.getValue()*voltageScaleFactor*0.125;
+  }
+
+  @Override
+  public void disabledInit() {
+    //If the robot is disabled, turn off both sensors
+    turnOffSensorOne();
+  }
+
 }
 
-@Override
-public void autonomousPeriodic() {
-    if(ultrasonic.GetRangeInches() > 12) {
-        drive.tankDrive(.5, .5);
-    }
-    else {
-        drive.tankDrive(0, 0);
-    }
-}
-
-Ultrasonic ultrasonic = new Ultrasonic(1, 2);
-
-public void robotInit() {
-    // Places a the ultrasonic on the dashboard
-    Shuffleboard.getTab("Example tab").add(ultrasonic);
