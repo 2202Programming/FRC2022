@@ -18,10 +18,15 @@ import edu.wpi.first.wpilibj.Encoder;
 import static frc.robot.Constants.CAN;
 import static frc.robot.Constants.ClimbSettings;
 
+import edu.wpi.first.wpilibj.PWM;
+import edu.wpi.first.wpilibj.Counter;
+
 public class Climber extends SubsystemBase{
     // NTs
     private NetworkTable table;
-    private NetworkTableEntry left_extender_speed, right_extender_speed, left_extender_position, right_extender_position;
+    private NetworkTableEntry left_extender_speed, right_extender_speed, left_extender_position, right_extender_position, 
+                              left_Rotator_desiredposition, right_Rotator_desiredposition, left_Rotator_actualposition, 
+                              right_Rotator_actualposition;
 
     // PIDSlot used
     int slot = 0;
@@ -33,12 +38,13 @@ public class Climber extends SubsystemBase{
     private SparkMaxPIDController right_pidController_ext;
     private RelativeEncoder left_Encoder_ext;
     private RelativeEncoder right_Encoder_ext;
-    private Relay left_Relay_rot;
-    private Relay right_Relay_rot;
-    private Encoder left_Encoder_rot;
-    private Encoder right_Encoder_rot;
-    private double left_current_angle;
-    private double right_current_angle;
+    private PWM left_PWM_rot;
+    private PWM right_PWM_rot;
+    private Counter left_Counter_rot;
+    private Counter right_Counter_rot;
+    private ArmRotation left_Arm;
+    private ArmRotation right_Arm;
+
 
     // rotation arm controller (outer arms rotate)
     // private CANSparkMax l_rotator = new CANSparkMax(CAN.CMB_L_Rotate, MotorType.kBrushless);
@@ -66,6 +72,10 @@ public class Climber extends SubsystemBase{
         right_extender_speed = table.getEntry("Right Extender Speed");
         left_extender_position = table.getEntry("Left Extender Position");
         right_extender_position = table.getEntry("Right Extender Position");
+        left_Rotator_actualposition = table.getEntry("Left Rotator Actual Position");
+        right_Rotator_actualposition = table.getEntry("Right Rotator Actual Position");
+        left_Rotator_desiredposition = table.getEntry("Left Rotator Desired Position");
+        right_Rotator_desiredposition = table.getEntry("Right Rotator Desired Position");
 
         left_pidController_ext = left_motor_ext.getPIDController();
         right_pidController_ext = right_motor_ext.getPIDController();
@@ -76,14 +86,19 @@ public class Climber extends SubsystemBase{
         right_Encoder_ext.setPosition(0);     
         
 
-        left_Relay_rot = new Relay(0);
-        right_Relay_rot = new Relay(0);
-        left_Encoder_rot = new Encoder(0,1); // Initializes an encoder on DIO pins 0 and 1
-        right_Encoder_rot = new Encoder(2,3); // Intializes an encoder on DIO pins 2 and 3
-        left_Encoder_rot.reset();
-        right_Encoder_rot.reset();
-        left_current_angle = 0;
-        right_current_angle = 0;
+        left_PWM_rot = new PWM(0); //PWM pin 0
+        right_PWM_rot = new PWM(1); //PWM pin 1
+        left_Counter_rot = new Counter(Counter.Mode.kExternalDirection); //Setting mode of counter to external direction https://docs.wpilib.org/en/stable/docs/software/hardware-apis/sensors/counters.html
+        right_Counter_rot = new Counter(Counter.Mode.kExternalDirection); 
+        left_Counter_rot.setUpSource(0); //DIO pin 0
+        right_Counter_rot.setUpSource(1); //DIO pin 1
+        left_Counter_rot.clearDownSource(); // tricking the systems that we only have one channel encoder
+        right_Counter_rot.clearDownSource(); // tricking the systems that we only have one channel encoder
+        left_Counter_rot.reset(); //resets the count
+        right_Counter_rot.reset(); //resets the count
+        // .01(1%) is the speed and 2 degrees is the tolerance
+        left_Arm = new ArmRotation(left_Counter_rot, left_PWM_rot, .01, 2, left_Rotator_desiredposition, left_Rotator_actualposition);
+        right_Arm = new ArmRotation(right_Counter_rot, right_PWM_rot, .01, 2, right_Rotator_desiredposition, right_Rotator_actualposition);
     }
 
 
@@ -135,27 +150,10 @@ public class Climber extends SubsystemBase{
      * @param degrees +/- degrees from vertical
      */
     public void setRotation(double degrees) {
-        double left_Encoder_distance = left_Encoder_rot.getDistance();
-        double right_Encoder_distance = right_Encoder_rot.getDistance();
-        double closeEnough = 2; //The current distance is between 2 degrees of the desired distance
-        if (Math.abs(degrees - left_Encoder_distance)<closeEnough){
-            left_Relay_rot.set(Relay.Value.kOff);
-        } else {
-            if (left_Encoder_distance < degrees){
-                left_Relay_rot.set(Relay.Value.kForward);
-            } else {
-                left_Relay_rot.set(Relay.Value.kReverse);
-            }
-        }
-        if (Math.abs(degrees - right_Encoder_distance)<closeEnough){
-            right_Relay_rot.set(Relay.Value.kOff);
-        } else {
-            if (right_Encoder_distance < degrees){
-                right_Relay_rot.set(Relay.Value.kForward);
-            } else {
-                right_Relay_rot.set(Relay.Value.kReverse);
-            }
-        }
+
+        left_Arm.set((int)degrees);
+        right_Arm.set((int)degrees);
+
         // changes the angle of the ? by this many degrees
         // l_rotator.getPIDController().setReference(degrees, ControlType.kPosition);
         // r_rotator.getPIDController().setReference(degrees, ControlType.kPosition);
@@ -186,5 +184,50 @@ public class Climber extends SubsystemBase{
 
     public RelativeEncoder getRightEncoder() {
         return right_motor_ext.getEncoder();
+    }
+}
+
+
+class ArmRotation {
+    private Counter m_counter;
+    private PWM m_motor;
+    private double speed;
+    private double tolerance;
+
+    private int absPositon = 0;
+    private int desPosition = 0;
+    private Boolean kForward = true;
+    private NetworkTableEntry sdb_desired;
+    private NetworkTableEntry sdb_actual;
+
+    public ArmRotation(Counter m_counter, PWM m_motor, double speed, double tolerance, NetworkTableEntry sdb_desired, NetworkTableEntry sdb_actual) {
+        this.m_counter = m_counter;
+        this.m_motor = m_motor;
+        this.speed = speed;
+        this.tolerance = tolerance;
+        this.sdb_desired = sdb_desired;
+        this.sdb_actual = sdb_actual;
+    }
+
+
+    public void periodic() {
+        // add the adjustment
+        double factor = 1;
+        if (!kForward) factor = -1;
+        absPositon += factor * m_counter.get();
+        m_counter.reset();
+
+        if(Math.abs(desPosition - absPositon ) > tolerance) {
+            m_motor.setSpeed(factor * speed);
+        } else {
+            m_motor.setSpeed(0);
+        }
+        sdb_actual.setDouble(absPositon);
+    }
+
+    public void set(int desired) {
+        kForward = desired > absPositon;
+        desPosition = desired;
+        sdb_desired.setDouble(desPosition);
     }
 }
