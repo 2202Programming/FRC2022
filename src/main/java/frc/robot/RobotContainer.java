@@ -175,10 +175,12 @@ public class RobotContainer {
     //MagazineCommand to intake or expell ball
     driverControls.bind(Id.Assistant, XboxButton.L3).whileHeld(new MagazineCommand((()-> 0.99), MagazineMode.ExpellCargo) );
     driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_RIGHT).whileHeld(new ShootCommand());
+
+    //Positioner binds :)
+    driverControls.bind(Id.Driver, XboxPOV.POV_UP).whenPressed(new PositionerCommand( PositionerMode.MoveUp ));
+    driverControls.bind(Id.Driver, XboxPOV.POV_DOWN).whenPressed(new PositionerCommand( PositionerMode.MoveDown ));
   }
-  //Positioner binds :)
-  driverControls.bind(Id.Driver, XboxPOV.POV_UP).whenPressed(new PositionerCommand( PositionerMode.MoveUp ));
-  driverControls.bind(Id.Driver, XboxPOV.POV_DOWN).whenPressed(new PositionerCommand( PositionerMode.MoveDown ));
+  
   }
 
   
