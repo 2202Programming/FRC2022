@@ -14,7 +14,7 @@ import frc.robot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
 
 
 
-public class ShootCommand extends CommandBase{ 
+public class BasicShootCommand extends CommandBase{ 
     public static final double USE_CURRENT_ANGLE = 0.0;
 
     final Magazine_Subsystem magazine;
@@ -39,7 +39,7 @@ public class ShootCommand extends CommandBase{
         WaitingForFlyWheel,
         Shooting,
     }Stage stage;
-    public ShootCommand(){
+    public BasicShootCommand(){
         this.intake = RobotContainer.RC().intake;
         this.shooter = RobotContainer.RC().shooter;
         this.magazine = RobotContainer.RC().magazine;
