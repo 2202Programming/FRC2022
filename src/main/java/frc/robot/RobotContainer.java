@@ -72,9 +72,6 @@ public class RobotContainer {
   */
   void setDriverButtons(){
 
-    //X -- climber test
-    driverControls.bind(Id.Driver, XboxButton.X).whenPressed(new climberTest(climber));
-
     //B - Toggle drive mode
     //driverControls.bind(Id.Driver, XboxButton.B).whenPressed(new InstantCommand( drivetrain::driveModeCycle ));
   
