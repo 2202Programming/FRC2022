@@ -76,14 +76,12 @@ public class Climber extends SubsystemBase{
 
         left_PWM_rot = new PWM(5); //PWM pin 0
         right_PWM_rot = new PWM(6); //PWM pin 1
-        left_Counter_rot = new Counter(Counter.Mode.kExternalDirection); //Setting mode of counter to external direction https://docs.wpilib.org/en/stable/docs/software/hardware-apis/sensors/counters.html
-        right_Counter_rot = new Counter(Counter.Mode.kExternalDirection); 
+        left_Counter_rot = new Counter(Counter.Mode.kTwoPulse); //Setting mode of counter to external direction https://docs.wpilib.org/en/stable/docs/software/hardware-apis/sensors/counters.html
+        right_Counter_rot = new Counter(Counter.Mode.kTwoPulse); 
         left_Counter_rot.setUpSource(0); //DIO pin 0
         right_Counter_rot.setUpSource(1); //DIO pin 1
         left_Counter_rot.clearDownSource(); // tricking the systems that we only have one channel encoder
-        right_Counter_rot.clearDownSource(); // tricking the systems that we only have one channel encoder
-        left_Counter_rot.reset(); //resets the count
-        right_Counter_rot.reset(); //resets the count
+        right_Counter_rot.clearDownSource(); // tricking the systems that we only have one channel encodert
         // .01(1%) is the speed and 2 degrees is the tolerance
         left_Arm = new ArmRotation(left_Counter_rot, left_PWM_rot, .01, 2, table.getSubTable("left_arm_rotation"));
         right_Arm = new ArmRotation(right_Counter_rot, right_PWM_rot, .01, 2, table.getSubTable("right_arm_rotation"));
