@@ -13,8 +13,8 @@ public class PositionerCommand extends CommandBase {
   final Positioner_Subsystem positioner;
   public enum PositionerMode {
     MoveUp, MoveDown
-}
-PositionerMode mode;
+  }
+  PositionerMode mode;
 
   public PositionerCommand(PositionerMode mode) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -50,7 +50,7 @@ PositionerMode mode;
     
     if (mode == PositionerMode.MoveUp){
         positioner.upward();
-    } else if (mode == PositionerMode.MoveDown){
+    }else if (mode == PositionerMode.MoveDown){
         positioner.downward();
     }
   }
@@ -59,7 +59,7 @@ PositionerMode mode;
   @Override
   public void end(boolean interrupted) {
     if (positioner.isUpPosition()) {
-    positioner.downward();
+      positioner.downward();
     }
   }
 
