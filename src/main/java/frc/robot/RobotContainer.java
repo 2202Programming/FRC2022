@@ -9,10 +9,14 @@ package frc.robot;
 
 import frc.robot.Constants.DriverPrefs;
 import frc.robot.commands.MecanumDriveCmd;
+import frc.robot.commands.test.climberTest;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.MecanumDrivetrain;
 import frc.robot.subsystems.Sensors_Subsystem;
 import frc.robot.subsystems.hid.HID_Xbox_Subsystem;
+import frc.robot.subsystems.hid.XboxButton;
 import frc.robot.subsystems.ifx.MecanumDriveIfx;
+import frc.robot.subsystems.ifx.DriverControls.Id;
 // import frc.robot.subsystems.ifx.DriverControls.Id;
 import frc.robot.ux.Dashboard;
 
@@ -30,6 +34,7 @@ public class RobotContainer {
   public final Sensors_Subsystem sensors;
   private final MecanumDriveIfx drivetrain;
   public final Dashboard dashboard;
+  private final Climber climber;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -45,6 +50,8 @@ public class RobotContainer {
 
     //setup the dashboard programatically, creates any choosers, screens
     dashboard = new Dashboard(this);
+
+    climber = new Climber();
 
     setDriverButtons();
     setAssistantButtons();
@@ -64,6 +71,9 @@ public class RobotContainer {
   * </ul>
   */
   void setDriverButtons(){
+
+    //X -- climber test
+    driverControls.bind(Id.Driver, XboxButton.X).whenPressed(new climberTest(climber));
 
     //B - Toggle drive mode
     //driverControls.bind(Id.Driver, XboxButton.B).whenPressed(new InstantCommand( drivetrain::driveModeCycle ));
