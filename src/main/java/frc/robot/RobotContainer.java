@@ -9,25 +9,33 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.DriverPrefs;
 //import frc.robot.commands.swerve.DriveCmd;
 import frc.robot.commands.swerve.LimelightDriveCmd;
-//import frc.robot.commands.Shooter_MagazineCommand;
-//import frc.robot.commands.auto.auto_drivePath_cmd;
+import frc.robot.commands.Shooter_MagazineCommand;
+import frc.robot.commands.Shoot.ShootCmd;
+import frc.robot.commands.auto.auto_drivePath_cmd;
 import frc.robot.commands.auto.auto_pathPlanner_cmd;
+import frc.robot.commands.BasicShootCommand;
 import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.Magazine_Subsystem;
+import frc.robot.subsystems.Positioner_Subsystem;
 import frc.robot.subsystems.Sensors_Subsystem;
 import frc.robot.subsystems.shooter.Shooter_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.hid.HID_Xbox_Subsystem;
+import frc.robot.subsystems.hid.XboxAxis;
 import frc.robot.subsystems.hid.XboxButton;
+import frc.robot.subsystems.hid.XboxPOV;
 import frc.robot.subsystems.ifx.DriverControls.Id;
 import frc.robot.commands.IntakeCommand.IntakeMode;
 import frc.robot.commands.MagazineCommand.MagazineMode;
+import frc.robot.commands.PositionerCommand.PositionerMode;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.IntakeDeployToggle;
 import frc.robot.commands.MagazineCommand;
+import frc.robot.commands.PositionerCommand;
 import frc.robot.ux.Dashboard;
 import frc.robot.commands.test.TestShoot;
+
 
 //import frc.robot.commands.test.dumbshooter;
 //import frc.robot.commands.test.SwerveDriveTest;
@@ -58,6 +66,7 @@ public class RobotContainer {
   private SwerveDrivetrain drivetrain = null;
   public Magazine_Subsystem magazine = null;
   public final Limelight_Subsystem limelight;
+  public final Positioner_Subsystem positioner;
 
   //modifiable commands
   //DriveCmd swd;
@@ -74,6 +83,7 @@ public class RobotContainer {
     sensors = new Sensors_Subsystem();
     dashboard = new Dashboard(rc);
     limelight = new Limelight_Subsystem();
+    positioner = new Positioner_Subsystem();
     driverControls = new HID_Xbox_Subsystem(DriverPrefs.VelExpo, DriverPrefs.RotationExpo, DriverPrefs.StickDeadzone);
    
     //These are hardware specific
@@ -128,13 +138,18 @@ public class RobotContainer {
           //.whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
           .whenPressed(new auto_pathPlanner_cmd(drivetrain, "CenterFace"));
       driverControls.bind(Id.Driver, XboxButton.LB)
-          //.whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
-          .whenPressed(new auto_pathPlanner_cmd(drivetrain, "Straight5"));
+           //.whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
+           .whenPressed(new auto_pathPlanner_cmd(drivetrain, "Straight5"));
 
     }
 
     //RB limelight toggle
     driverControls.bind(Id.Driver, XboxButton.RB).whenPressed(new InstantCommand( limelight::toggleLED ));
+   
+
+    if(Constants.HAS_DRIVETRAIN){
+      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_RIGHT).whenHeld(new ShootCmd(drivetrain));
+    }
   }
 
   // /**
@@ -145,10 +160,11 @@ public class RobotContainer {
   // */
   void setAssistantButtons() {
 
+
      // Y -toggle intake deploy
     // B - spin intake while held (to intake the ball)
     // A - spin intake while held (in reverse to expell the ball)
-
+    if(Constants.HAS_INTAKE) {
     driverControls.bind(Id.Assistant, XboxButton.LB).whenPressed(new IntakeDeployToggle());
     // IntakeCommand takes a DoubleSupplier f() which could be tied to our UX instead of const f() given here.
     driverControls.bind(Id.Assistant, XboxButton.A).whileHeld(new IntakeCommand((()-> 0.50), IntakeMode.LoadCargo) );
@@ -158,8 +174,13 @@ public class RobotContainer {
     driverControls.bind(Id.Assistant, XboxButton.X).whileHeld(new MagazineCommand((()-> 0.99), MagazineMode.LoadCargo) );
     //MagazineCommand to intake or expell ball
     driverControls.bind(Id.Assistant, XboxButton.L3).whileHeld(new MagazineCommand((()-> 0.99), MagazineMode.ExpellCargo) );
-  
+    driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_RIGHT).whileHeld(new BasicShootCommand());
 
+    //Positioner binds :)
+    driverControls.bind(Id.Driver, XboxPOV.POV_UP).whenPressed(new PositionerCommand( PositionerMode.MoveUp ));
+    driverControls.bind(Id.Driver, XboxPOV.POV_DOWN).whenPressed(new PositionerCommand( PositionerMode.MoveDown ));
+  }
+  
   }
 
   
