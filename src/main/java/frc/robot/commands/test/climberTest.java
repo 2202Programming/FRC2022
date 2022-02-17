@@ -17,6 +17,7 @@ public class climberTest extends CommandBase {
     
     public climberTest(Climber climber){
         this.climber = climber;
+        addRequirements(climber);
         table = NetworkTableInstance.getDefault().getTable("Climber");
         ntRot = table.getEntry("Rotation");
         ntExt = table.getEntry("Extension");

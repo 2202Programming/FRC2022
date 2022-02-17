@@ -24,8 +24,8 @@ public class Climber extends SubsystemBase{
     int slot = 0;
 
     // raise/lower controllers
-    private CANSparkMax left_motor_ext= new CANSparkMax(CAN.CMB_LEFT_Extend, MotorType.kBrushless);
-    private CANSparkMax right_motor_ext = new CANSparkMax(CAN.CMB_RIGHT_Extend, MotorType.kBrushless);
+    private CANSparkMax left_motor_ext= new CANSparkMax(CAN.CMB_LO_Extend, MotorType.kBrushless);
+    private CANSparkMax right_motor_ext = new CANSparkMax(CAN.CMB_RO_Extend, MotorType.kBrushless);
     private SparkMaxPIDController left_pidController_ext;
     private SparkMaxPIDController right_pidController_ext;
     private RelativeEncoder left_Encoder_ext;
@@ -74,8 +74,8 @@ public class Climber extends SubsystemBase{
         right_Encoder_ext.setPosition(0);     
         
 
-        left_PWM_rot = new PWM(0); //PWM pin 0
-        right_PWM_rot = new PWM(1); //PWM pin 1
+        left_PWM_rot = new PWM(5); //PWM pin 0
+        right_PWM_rot = new PWM(6); //PWM pin 1
         left_Counter_rot = new Counter(Counter.Mode.kExternalDirection); //Setting mode of counter to external direction https://docs.wpilib.org/en/stable/docs/software/hardware-apis/sensors/counters.html
         right_Counter_rot = new Counter(Counter.Mode.kExternalDirection); 
         left_Counter_rot.setUpSource(0); //DIO pin 0

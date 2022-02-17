@@ -52,6 +52,7 @@ public class RobotContainer {
     dashboard = new Dashboard(this);
 
     climber = new Climber();
+    climber.setDefaultCommand(new climberTest(climber));
 
     setDriverButtons();
     setAssistantButtons();
