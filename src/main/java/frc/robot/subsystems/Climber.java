@@ -83,8 +83,8 @@ public class Climber extends SubsystemBase{
         left_Counter_rot.clearDownSource(); // tricking the systems that we only have one channel encoder
         right_Counter_rot.clearDownSource(); // tricking the systems that we only have one channel encodert
         // .01(1%) is the speed and 2 degrees is the tolerance
-        left_Arm = new ArmRotation(left_Counter_rot, left_PWM_rot, .01, 2, table.getSubTable("left_arm_rotation"));
-        right_Arm = new ArmRotation(right_Counter_rot, right_PWM_rot, .01, 2, table.getSubTable("right_arm_rotation"));
+        left_Arm = new ArmRotation(left_Counter_rot, left_PWM_rot, -0.5, 2, table.getSubTable("left_arm_rotation"));
+        right_Arm = new ArmRotation(right_Counter_rot, right_PWM_rot, 0.5, 2, table.getSubTable("right_arm_rotation"));
     }
 
 
