@@ -190,6 +190,7 @@ public class Climber extends SubsystemBase{
 
 class ArmRotation {
     private Counter m_counter;
+    private int last_count;
     private PWM m_motor;
     private double speed;
     private double tolerance;
@@ -203,6 +204,8 @@ class ArmRotation {
 
     public ArmRotation(Counter m_counter, PWM m_motor, double speed, double tolerance, NetworkTable table) {
         this.m_counter = m_counter;
+        m_counter.reset();
+        last_count = 0;
         this.m_motor = m_motor;
         this.speed = speed;
         this.tolerance = tolerance;
@@ -216,12 +219,12 @@ class ArmRotation {
         // add the adjustment
         double factor = 1;
         if (!kForward) factor = -1;
-
+        
         int raw_counter = m_counter.get();
         
         sdb_counter_raw.setDouble(raw_counter);
-        absPositon += factor * raw_counter;
-        m_counter.reset();
+        absPositon += factor * (raw_counter - last_count);
+        last_count = raw_counter;
 
         if(Math.abs(desPosition - absPositon ) > tolerance) {
             m_motor.setSpeed(factor * speed);
