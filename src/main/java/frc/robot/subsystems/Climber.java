@@ -57,6 +57,7 @@ public class Climber extends SubsystemBase{
         // // Arm extension PIDS
         ClimbSettings.innerPID.copyTo(left_motor_ext.getPIDController(), slot);
         ClimbSettings.innerPID.copyTo(right_motor_ext.getPIDController(), slot);
+        right_motor_ext.setInverted(true);
 
         // NT stuff
         table = NetworkTableInstance.getDefault().getTable("Climber");
@@ -67,6 +68,7 @@ public class Climber extends SubsystemBase{
 
         left_pidController_ext = left_motor_ext.getPIDController();
         right_pidController_ext = right_motor_ext.getPIDController();
+        
         left_Encoder_ext = left_motor_ext.getEncoder();
         right_Encoder_ext = right_motor_ext.getEncoder();
 
@@ -83,8 +85,8 @@ public class Climber extends SubsystemBase{
         left_Counter_rot.clearDownSource(); // tricking the systems that we only have one channel encoder
         right_Counter_rot.clearDownSource(); // tricking the systems that we only have one channel encodert
         // .01(1%) is the speed and 2 degrees is the tolerance
-        left_Arm = new ArmRotation(left_Counter_rot, left_PWM_rot, -0.5, 2, table.getSubTable("left_arm_rotation"));
-        right_Arm = new ArmRotation(right_Counter_rot, right_PWM_rot, 0.5, 2, table.getSubTable("right_arm_rotation"));
+        left_Arm = new ArmRotation(left_Counter_rot, left_PWM_rot, .01, 2, table.getSubTable("left_arm_rotation"));
+        right_Arm = new ArmRotation(right_Counter_rot, right_PWM_rot, .01, 2, table.getSubTable("right_arm_rotation"));
     }
 
 
