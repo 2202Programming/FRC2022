@@ -199,6 +199,7 @@ class ArmRotation {
     private Boolean kForward = true;
     private NetworkTableEntry sdb_desired;
     private NetworkTableEntry sdb_actual;
+    private NetworkTableEntry sdb_counter_raw;
 
     public ArmRotation(Counter m_counter, PWM m_motor, double speed, double tolerance, NetworkTable table) {
         this.m_counter = m_counter;
@@ -207,6 +208,7 @@ class ArmRotation {
         this.tolerance = tolerance;
         this.sdb_desired = table.getEntry("desired");
         this.sdb_actual = table.getEntry("actual");
+        this.sdb_counter_raw = table.getEntry("counter_raw");
     }
 
 
@@ -214,7 +216,11 @@ class ArmRotation {
         // add the adjustment
         double factor = 1;
         if (!kForward) factor = -1;
-        absPositon += factor * m_counter.get();
+
+        int raw_counter = m_counter.get();
+        
+        sdb_counter_raw.setDouble(raw_counter);
+        absPositon += factor * raw_counter;
         m_counter.reset();
 
         if(Math.abs(desPosition - absPositon ) > tolerance) {
