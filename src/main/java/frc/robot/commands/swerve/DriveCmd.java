@@ -314,19 +314,20 @@ public class DriveCmd extends CommandBase {
   private double getJoystickBearing(){
     //take joystick X and Y inputs (field centric space) and return an expected direction of travel (-180 to 180 degrees)
     double joystickBearing = 0;
-    if (xSpeed > 0) { //0 to 180
-      if (ySpeed > 0) { //0 to 90
-        joystickBearing = Math.atan(ySpeed / xSpeed);
-      } else { //90 to 180
-        joystickBearing = Math.atan(-ySpeed / xSpeed) + 90;
-      }
-    } else { //0 to -180
-      if (ySpeed > 0) { //0 to -90
-        joystickBearing = -Math.atan(ySpeed / -xSpeed);
-      } else { //-90 to -180
-        joystickBearing = -(Math.atan(-ySpeed / -xSpeed) + 90);
-      }
-    }
-    return joystickBearing;
+    joystickBearing = Math.atan2(ySpeed, xSpeed);
+    // if (xSpeed > 0) { //0 to 180
+    //   if (ySpeed > 0) { //0 to 90
+    //     joystickBearing = Math.atan(ySpeed / xSpeed);
+    //   } else { //90 to 180
+    //     joystickBearing = Math.atan(-ySpeed / xSpeed) + 90;
+    //   }
+    // } else { //0 to -180
+    //   if (ySpeed > 0) { //0 to -90
+    //     joystickBearing = -Math.atan(ySpeed / -xSpeed);
+    //   } else { //-90 to -180
+    //     joystickBearing = -(Math.atan(-ySpeed / -xSpeed) + 90);
+    //   }
+    // }
+    return Math.toDegrees(joystickBearing);
   }
 }
