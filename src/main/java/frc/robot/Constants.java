@@ -56,6 +56,8 @@ public final class Constants {
 
         //Intake CAN
         public static final int INTAKE_TALON = 14;
+        public static final int INTAKE_SR1 = 15;
+        public static final int INTAKE_SR2 = 16;
 
         // Magazine motors
         public static final int MAG_TOP_WHEEL = 18;

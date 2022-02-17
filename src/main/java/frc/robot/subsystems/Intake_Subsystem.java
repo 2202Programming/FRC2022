@@ -5,12 +5,14 @@ import static frc.robot.Constants.PCM1;
 
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.revrobotics.CANSparkMax;
 
 import static frc.robot.Constants.DigitalIO;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.util.MotorInit;
 import edu.wpi.first.wpilibj.DigitalInput;
 
 
@@ -25,6 +27,10 @@ public class Intake_Subsystem extends SubsystemBase {
     static final Value RETRACT = Value.kForward;
     //Instantiations
     final TalonSRX intake_mtr = new TalonSRX(CAN.INTAKE_TALON);
+
+    final CANSparkMax sideRoller1 = MotorInit.SparkMax("intake-side-roller-1", CAN.INTAKE_SR1, CANSparkMax.MotorType.kBrushless);
+    final CANSparkMax sideRoller2 = MotorInit.SparkMax("intake-side-roller-1", CAN.INTAKE_SR2, CANSparkMax.MotorType.kBrushless);
+
     final DoubleSolenoid intake_solenoid = new DoubleSolenoid(CAN.PCM1,
                 PneumaticsModuleType.CTREPCM, 
                 PCM1.INTAKE_UP_SOLENOID_PCM, 
@@ -33,6 +39,8 @@ public class Intake_Subsystem extends SubsystemBase {
 
     //Constructor
     public Intake_Subsystem(){
+
+        
         
     }
 
@@ -41,6 +49,10 @@ public class Intake_Subsystem extends SubsystemBase {
     //Turn Intake Motor On by sending a double value
     public void on(double motorStrength) {
         intake_mtr.set(TalonSRXControlMode.PercentOutput, motorStrength);
+
+        // super arbitrarycode
+        sideRoller1.setVoltage(motorStrength/4);
+        sideRoller2.setVoltage(motorStrength/4);
     }
 
     //Turn Intake Motor Off by setting a double value
