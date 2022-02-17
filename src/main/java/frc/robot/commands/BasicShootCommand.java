@@ -20,8 +20,9 @@ public class BasicShootCommand extends CommandBase{
     final Magazine_Subsystem magazine;
     final Intake_Subsystem intake;
     final Shooter_Subsystem shooter;
-    int count;
-    int initialCount = 0;
+    final double TESTANGLE = 0.0;
+    final double TESTTOL = 0.02;
+    int ballCount = 999;
 
     NetworkTable table;
     NetworkTableEntry ntUpperRPM;   //FW speeds (output)
@@ -44,11 +45,6 @@ public class BasicShootCommand extends CommandBase{
         this.magazine = RobotContainer.RC().magazine;
     }
 
-    public ShootCommand withInitialCargo(int count) {
-        this.initialCount = count;
-        return this;
-    }
-
     @Override
     public void initialize(){
         table = NetworkTableInstance.getDefault().getTable("ShootCommand");
@@ -62,7 +58,8 @@ public class BasicShootCommand extends CommandBase{
         prevSS = new ShooterSettings(cmdSS);
 
         stage = Stage.DoNothing;
-        count = initialCount;
+        ballCount = ballCount; //SUSpect to change
+        shooter.off();
     }
 
     @Override
