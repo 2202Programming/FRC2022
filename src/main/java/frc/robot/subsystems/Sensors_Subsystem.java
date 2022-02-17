@@ -7,8 +7,11 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.StatusFrame;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix.sensors.CANCoderStatusFrame;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 //import com.kauailabs.navx.AHRSProtocol.AHRSUpdate;
 import com.kauailabs.navx.frc.AHRS;
@@ -117,6 +120,12 @@ public class Sensors_Subsystem extends MonitoredSubsystemBase implements Gyro {
     m_gyro = m_gyro450 = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
     m_gyro_ahrs = m_ahrs = new AHRS(SPI.Port.kMXP, update_hz);
     m_ahrs.enableLogging(true);
+
+    //set all the CanCoders to 100ms refresh rate to save the can bus
+    rot_encoder_bl.setStatusFramePeriod(CANCoderStatusFrame.SensorData, 100, 100);
+    rot_encoder_br.setStatusFramePeriod(CANCoderStatusFrame.SensorData, 100, 100);
+    rot_encoder_fl.setStatusFramePeriod(CANCoderStatusFrame.SensorData, 100, 100);
+    rot_encoder_fr.setStatusFramePeriod(CANCoderStatusFrame.SensorData, 100, 100);
 
     // setup network table
     table = NetworkTableInstance.getDefault().getTable("Sensors");

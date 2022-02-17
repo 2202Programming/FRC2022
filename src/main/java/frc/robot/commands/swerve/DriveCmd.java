@@ -1,7 +1,10 @@
 package frc.robot.commands.swerve;
 
+import org.opencv.core.Mat;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -91,6 +94,12 @@ public class DriveCmd extends CommandBase {
 
   double log_counter = 0;
 
+  // Creates a new Single-Pole IIR filter
+  // Time constant is 0.1 seconds
+  // Period is 0.02 seconds - this is the standard FRC main loop period
+  private LinearFilter bearingFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
+  private double filteredBearing = 0;
+
   public DriveCmd(SwerveDrivetrain drivetrain, DriverControls dc2) {
     this.drivetrain = drivetrain;
     addRequirements(drivetrain);
@@ -131,6 +140,8 @@ public class DriveCmd extends CommandBase {
     xSpeed = xspeedLimiter.calculate(dc.getVelocityX()) * DriveTrain.kMaxSpeed;
     ySpeed = yspeedLimiter.calculate(dc.getVelocityY()) * DriveTrain.kMaxSpeed;
     rot = rotLimiter.calculate(dc.getXYRotation()) * DriveTrain.kMaxAngularSpeed;
+
+    filteredBearing = bearingFilter.calculate(getJoystickBearing());
 
     if ((Math.abs(rot)>0.1) && (driveMode==DriveModeTypes.intakeCentric)){
       //driver is trying to rotate, drop out of intake mode
@@ -185,9 +196,9 @@ public class DriveCmd extends CommandBase {
         break;
 
       case intakeCentric:
-        // set goal of angle PID to be heading (in degrees) current bearing
+        // set goal of angle PID to be commanded bearing (in degrees) from joysticks
         drivetrain.setDriveModeString("Intake Centric");
-        double m_targetAngle2 = drivetrain.getBearing();
+        double m_targetAngle2 = filteredBearing;
         double m_currentAngle2 = drivetrain.getPose().getRotation().getDegrees(); // from -180 to 180
         double m_angleError2 = m_targetAngle2 - m_currentAngle2;
         // feed both PIDs even if not being used.
@@ -300,4 +311,23 @@ public class DriveCmd extends CommandBase {
     lastShootMode = shootingModeOn;
   }
 
+  private double getJoystickBearing(){
+    //take joystick X and Y inputs (field centric space) and return an expected direction of travel (-180 to 180 degrees)
+    double joystickBearing = 0;
+    joystickBearing = Math.atan2(ySpeed, xSpeed);
+    // if (xSpeed > 0) { //0 to 180
+    //   if (ySpeed > 0) { //0 to 90
+    //     joystickBearing = Math.atan(ySpeed / xSpeed);
+    //   } else { //90 to 180
+    //     joystickBearing = Math.atan(-ySpeed / xSpeed) + 90;
+    //   }
+    // } else { //0 to -180
+    //   if (ySpeed > 0) { //0 to -90
+    //     joystickBearing = -Math.atan(ySpeed / -xSpeed);
+    //   } else { //-90 to -180
+    //     joystickBearing = -(Math.atan(-ySpeed / -xSpeed) + 90);
+    //   }
+    // }
+    return Math.toDegrees(joystickBearing);
+  }
 }
