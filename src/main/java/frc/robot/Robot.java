@@ -7,7 +7,9 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ShootCommand;
+import frc.robot.commands.IntakeCommand.IntakeMode;
 import frc.robot.commands.Shoot.ShootCmd;
 import frc.robot.commands.auto.auto_drivePath_cmd;
 import frc.robot.commands.auto.auto_pathPlanner_cmd;
@@ -63,8 +65,8 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     m_autonomousCommand = 
-      new auto_pathPlanner_cmd(robotContainer.drivetrain, "MoveToCenter.json")
-      .andThen(new ShootCommand().withInitialCargo(2));
+    new IntakeCommand((()-> 0.50), IntakeMode.LoadCargo).andThen(new auto_pathPlanner_cmd(robotContainer.drivetrain, "MatchStart"))
+    .andThen(new ShootCommand().withInitialCargo(2));
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {

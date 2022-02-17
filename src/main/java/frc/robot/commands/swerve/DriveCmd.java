@@ -69,6 +69,8 @@ public class DriveCmd extends CommandBase {
   private double angle_ki = 0.004;
   private double angle_kd = 0.005;
 
+  private double lastBearing; //stores the last significant bearing angle
+
   // private Pose2d centerField = new Pose2d(27, 13.5, new Rotation2d()); //actual
   // hub location?
   private Pose2d centerField = new Pose2d(10, 0, new Rotation2d()); // close point for testing to max rotation obvious
@@ -315,6 +317,16 @@ public class DriveCmd extends CommandBase {
     //take joystick X and Y inputs (field centric space) and return an expected direction of travel (-180 to 180 degrees)
     double joystickBearing = 0;
     joystickBearing = Math.atan2(ySpeed, xSpeed);
+    
+    if(Math.abs(xSpeed) >= 0.05 || Math.abs(ySpeed) >= 0.05){
+      lastBearing = joystickBearing;
+    } else {
+      joystickBearing = lastBearing;
+    }
+
+    // if the joystick has an x or y value above an index (doing something), save the bearing
+    // as the last bearing. If not, use last bearing.
+    
     // if (xSpeed > 0) { //0 to 180
     //   if (ySpeed > 0) { //0 to 90
     //     joystickBearing = Math.atan(ySpeed / xSpeed);
