@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj2.command.Command;
 //import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.DriverPrefs;
@@ -33,6 +34,7 @@ import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.IntakeDeployToggle;
 import frc.robot.commands.MagazineCommand;
 import frc.robot.commands.PositionerCommand;
+import frc.robot.commands.ShootCommand;
 import frc.robot.ux.Dashboard;
 import frc.robot.commands.test.TestShoot;
 
@@ -179,9 +181,14 @@ public class RobotContainer {
     //Positioner binds :)
     driverControls.bind(Id.Driver, XboxPOV.POV_UP).whenPressed(new PositionerCommand( PositionerMode.MoveUp ));
     driverControls.bind(Id.Driver, XboxPOV.POV_DOWN).whenPressed(new PositionerCommand( PositionerMode.MoveDown ));
-  }
-  
+    }  
   }
 
+public Command getAutonomousCommand() {
+  Command autoCommand = new IntakeCommand((()-> 0.50), IntakeMode.LoadCargo).andThen(new auto_pathPlanner_cmd(drivetrain, "MatchStart"))
+    .andThen(new ShootCommand().withInitialCargo(2));
+
+  return autoCommand;
+}
   
 }
