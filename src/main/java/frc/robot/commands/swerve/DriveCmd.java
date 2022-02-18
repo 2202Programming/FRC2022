@@ -258,13 +258,15 @@ public class DriveCmd extends CommandBase {
   }
 
   public void cycleDriveMode() {
-    lastDriveMode = driveMode;
+    //Current use case is only to allow toggling between field and intake centric
+    //Make sure if in hubcentric (trigger held) that toggling doesn't do anything
     switch (driveMode) {
       //case robotCentric:
       //  driveMode = DriveModeTypes.fieldCentric;
       //  drivetrain.setDriveModeString("Robot Centric Drive");
       //  break;
       case fieldCentric:
+        lastDriveMode = driveMode;
         driveMode = DriveModeTypes.intakeCentric;
         drivetrain.setDriveModeString("Field Centric Drive");
         break;
@@ -273,6 +275,7 @@ public class DriveCmd extends CommandBase {
       //  drivetrain.setDriveModeString("Hub Centric Drive");
       //  break;
       case intakeCentric:
+        lastDriveMode = driveMode;
         driveMode = DriveModeTypes.fieldCentric;
         drivetrain.setDriveModeString("Intake Centric Drive");
         break;
