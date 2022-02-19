@@ -83,7 +83,7 @@ public class BasicShootCommand extends CommandBase{
 
             case Shooting:
                 if(!shooter.isReadyToShoot()){
-                    magazine.driveWheelOff();
+                    // magazine.driveWheelOff();
                     stage = Stage.WaitingForFlyWheel;
                 }
             break;

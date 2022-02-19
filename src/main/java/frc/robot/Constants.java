@@ -58,7 +58,7 @@ public final class Constants {
         public static final int INTAKE_TALON = 14;
 
         // Magazine motors
-        public static final int MAG_TOP_WHEEL = 18;
+        public static final int MAG_TOP_WHEEL = 16;
         public static final int MAG_R_BELT = 12;
         public static final int MAG_L_BELT = 13;
         
@@ -263,7 +263,7 @@ public final class Constants {
         lowerFWConfig.maxOpenLoopRPM = 2500;
         lowerFWConfig.gearRatio = 3.0;         // lower fw gear 3:1  (motor:flywheel)
         lowerFWConfig.sensorPhase = false;
-        lowerFWConfig.inverted = true; 
+        lowerFWConfig.inverted = false; 
         lowerFWConfig.flywheelRadius = 2.0 / 12.0;   //feet 
         lowerFWConfig.pid = new PIDFController(0.08, 0.00015, 4.0, 0);   // kP kI kD kF 
         lowerFWConfig.pid.setIzone(1800);
