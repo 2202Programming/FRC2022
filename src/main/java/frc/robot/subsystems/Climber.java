@@ -85,8 +85,8 @@ public class Climber extends SubsystemBase{
         left_Counter_rot.clearDownSource(); // tricking the systems that we only have one channel encoder
         right_Counter_rot.clearDownSource(); // tricking the systems that we only have one channel encodert
         // .01(1%) is the speed and 2 degrees is the tolerance
-        left_Arm = new ArmRotation(left_Counter_rot, left_PWM_rot, .01, 2, table.getSubTable("left_arm_rotation"));
-        right_Arm = new ArmRotation(right_Counter_rot, right_PWM_rot, .01, 2, table.getSubTable("right_arm_rotation"));
+        left_Arm = new ArmRotation(left_Counter_rot, left_PWM_rot, 0.5, 2, table.getSubTable("left_arm_rotation"));
+        right_Arm = new ArmRotation(right_Counter_rot, right_PWM_rot, -0.5, 2, table.getSubTable("right_arm_rotation"));
     }
 
 
@@ -195,7 +195,7 @@ class ArmRotation {
     private double speed;
     private double tolerance;
 
-    private int absPositon = 0;
+    private int prevPositon = 0;
     private int desPosition = 0;
     private Boolean kForward = true;
     private NetworkTableEntry sdb_desired;
@@ -204,8 +204,8 @@ class ArmRotation {
 
     public ArmRotation(Counter m_counter, PWM m_motor, double speed, double tolerance, NetworkTable table) {
         this.m_counter = m_counter;
-        m_counter.reset();
-        last_count = 0;
+        this.m_counter.reset();
+        this.last_count = 0;
         this.m_motor = m_motor;
         this.speed = speed;
         this.tolerance = tolerance;
@@ -223,19 +223,20 @@ class ArmRotation {
         int raw_counter = m_counter.get();
         
         sdb_counter_raw.setDouble(raw_counter);
-        absPositon += factor * (raw_counter - last_count);
+        prevPositon += factor * (raw_counter - last_count);
         last_count = raw_counter;
 
-        if(Math.abs(desPosition - absPositon ) > tolerance) {
+        if(Math.abs(desPosition - prevPositon ) > tolerance) {
             m_motor.setSpeed(factor * speed);
         } else {
             m_motor.setSpeed(0);
         }
-        sdb_actual.setDouble(absPositon);
+        sdb_actual.setDouble(prevPositon);
     }
 
     public void set(int desired) {
-        kForward = desired > absPositon;
+        m_counter.reset();
+        kForward = desired > prevPositon;
         desPosition = desired;
         sdb_desired.setDouble(desPosition);
     }
