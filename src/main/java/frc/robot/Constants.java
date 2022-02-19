@@ -45,10 +45,10 @@ public final class Constants {
         public static final int PCM2 = 2;
 
         // drive train CANCoders
-        public static final int DT_BL_CANCODER = 5;
-        public static final int DT_BR_CANCODER = 6; 
-        public static final int DT_FR_CANCODER = 7;
-        public static final int DT_FL_CANCODER = 8;
+        public static final int DT_BL_CANCODER = 28;
+        public static final int DT_BR_CANCODER = 31; 
+        public static final int DT_FR_CANCODER = 30;
+        public static final int DT_FL_CANCODER = 7;
 
         // Shooter CAN devices
         public static final int SHOOTER_UPPER_TALON = 10;
@@ -58,7 +58,7 @@ public final class Constants {
         public static final int INTAKE_TALON = 14;
 
         // Magazine motors
-        public static final int MAG_TOP_WHEEL = 18;
+        public static final int MAG_TOP_WHEEL = 16;
         
         // drive train drive / angle motors - sparkmax neo
         public static final int DT_FL_DRIVE = 20;
