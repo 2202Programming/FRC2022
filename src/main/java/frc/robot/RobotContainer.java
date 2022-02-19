@@ -215,7 +215,7 @@ public Command getAutonomousCommand() {
     .andThen(new WaitCommand(0.5))
     .andThen(new auto_pathPlanner_cmd(drivetrain, "MatchStart"))
     .andThen(new WaitCommand(0.5))
-    .andThen(new ShootCommand().withInitialCargo(2));
+    .andThen(new BasicShootCommand());
 
   return autoCommand;
 }

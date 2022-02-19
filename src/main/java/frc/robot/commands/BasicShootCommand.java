@@ -33,7 +33,10 @@ public class BasicShootCommand extends CommandBase{
     
     ShooterSettings  cmdSS;         // instance the shooter sees
     ShooterSettings  prevSS;        // instance for prev State
-    final ShooterSettings defaultShooterSettings = new ShooterSettings(15.0, 10.0, USE_CURRENT_ANGLE, 0.01);
+
+    private boolean finished = false;
+
+    final ShooterSettings defaultShooterSettings = new ShooterSettings(15.0, 0.0, USE_CURRENT_ANGLE, 0.01);
 
     public enum Stage{
         DoNothing("Do Nothing"),
@@ -71,7 +74,7 @@ public class BasicShootCommand extends CommandBase{
         prevSS = new ShooterSettings(cmdSS);
 
         stage = Stage.DoNothing;
-        ballCount = ballCount; //SUSpect to change
+        ballCount = ballCount; //SUSpect to change //dumbest line of code I've ever seen.
         shooter.off();
     }
 
@@ -109,9 +112,13 @@ public class BasicShootCommand extends CommandBase{
         magazine.driveWheelOff();
         shooter.off();
     }
+
+    public void setFinished(){
+        finished = true;
+    }
     
     @Override
     public boolean isFinished(){
-        return false;
+        return finished;
     }
 }

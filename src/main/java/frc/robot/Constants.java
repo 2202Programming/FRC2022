@@ -142,8 +142,8 @@ public final class Constants {
     //Pnumatics control 2 -
     public static final class PCM1 {
       // Double Solenoid
-      public static final int INTAKE_UP_SOLENOID_PCM = 2;   // test value
-      public static final int INTAKE_DOWN_SOLENOID_PCM = 3; //test value
+      public static final int INTAKE_UP_SOLENOID_PCM = 3;   // test value
+      public static final int INTAKE_DOWN_SOLENOID_PCM = 2; //test value
       public static final int POSITIONER_UP_SOLENOID_PCM = 0;   // test value
       public static final int POSITIONER_DOWN_SOLENOID_PCM = 1; // test value
       

@@ -176,7 +176,7 @@ public class DriveCmd extends CommandBase {
         drivetrain.setDriveModeString("Hub Centric Drive");
         // set goal of angle PID to be heading (in degrees) from current position to
         // centerfield
-         double targetAngle = getHeading2Target(drivetrain.getPose(), centerField);
+        double targetAngle = getHeading2Target(drivetrain.getPose(), centerField);
         double currentAngle = drivetrain.getPose().getRotation().getDegrees(); // from -180 to 180
         double angleError = targetAngle - currentAngle;
         // feed both PIDs even if not being used.
