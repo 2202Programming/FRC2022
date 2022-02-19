@@ -149,6 +149,10 @@ public final class Constants {
       //Intake Constants
       public static final class Intake {
         // public static final PneumaticsModuleType MODULETYPE = CTREPCM; //DELETE LATER
+        // PID values
+        public static PIDFController r_beltPIDF = new PIDFController(1.0, 0.0, 0.0, 0.0);  
+        public static PIDFController l_beltPIDF = new PIDFController(1.0, 0.0, 0.0, 0.0); 
+  
         
       }
       
@@ -225,10 +229,7 @@ public final class Constants {
     } 
     
     public final static class MagazineSettings {
-      // PID values
-      public static PIDFController r_beltPIDF = new PIDFController(1.0, 0.0, 0.0, 0.0);  
-      public static PIDFController l_beltPIDF = new PIDFController(1.0, 0.0, 0.0, 0.0); 
-
+     
     }
 
     public static final class Shooter {

@@ -171,9 +171,9 @@ public class RobotContainer {
     if(Constants.HAS_INTAKE) {
       driverControls.bind(Id.Assistant, XboxButton.LB).whenPressed(new IntakeDeployToggle());
       // IntakeCommand takes a DoubleSupplier f() which could be tied to our UX instead of const f() given here.
-      driverControls.bind(Id.Assistant, XboxButton.A).whileHeld(new IntakeCommand((()-> 0.50), IntakeMode.LoadCargo) );
+      driverControls.bind(Id.Assistant, XboxButton.A).whileHeld(new IntakeCommand((()-> 0.50), ()-> 0.20,  IntakeMode.LoadCargo) );
       // IntakeCommand motor direction
-      driverControls.bind(Id.Assistant, XboxButton.B).whileHeld(new IntakeCommand((()-> 0.50), IntakeMode.ExpellCargo) );
+      driverControls.bind(Id.Assistant, XboxButton.B).whileHeld(new IntakeCommand((()-> 0.50), ()-> 0.20, IntakeMode.ExpellCargo) );
     }
 
     if(Constants.HAS_MAGAZINE){
@@ -193,7 +193,7 @@ public class RobotContainer {
 
 public Command getAutonomousCommand() {
   Command autoCommand = new InstantCommand(limelight::enableLED)
-    .andThen(new IntakeCommand((()-> 0.50), IntakeMode.LoadCargo))
+    .andThen(new IntakeCommand((()-> 0.50), ()->0.50, IntakeMode.LoadCargo))
     .andThen(new WaitCommand(0.5))
     .andThen(new auto_pathPlanner_cmd(drivetrain, "MatchStart"))
     .andThen(new WaitCommand(0.5))

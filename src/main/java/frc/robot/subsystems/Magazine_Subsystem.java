@@ -10,22 +10,18 @@ import static frc.robot.Constants.DigitalIO;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import static frc.robot.Constants.MagazineSettings;
+
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import static frc.robot.Constants.CAN;
 
 public class Magazine_Subsystem extends SubsystemBase {
-  //slot to use on controllers
-  int slot = 0;
+  
   
   /** Creates a new Magazine2. */
   private TalonSRX top_wheel;
-  private CANSparkMax r_belt = new CANSparkMax(CAN.MAG_R_BELT, MotorType.kBrushless);
-  private CANSparkMax l_belt = new CANSparkMax(CAN.MAG_L_BELT, MotorType.kBrushless);
+  
   //private CANSparkMax v_belt = new CANSparkMax(CAN.MAG_v_belt, MotorType.kBrushless);
   
   /*Definitions*/
@@ -37,14 +33,6 @@ public class Magazine_Subsystem extends SubsystemBase {
   public Magazine_Subsystem() {
     // copy the PID settings to the hardware
     top_wheel = new TalonSRX(CAN.MAG_TOP_WHEEL);
-    MagazineSettings.r_beltPIDF.copyTo(r_belt.getPIDController(), slot);
-    MagazineSettings.l_beltPIDF.copyTo(l_belt.getPIDController(), slot);
-
-    r_belt.clearFaults();
-    r_belt.restoreFactoryDefaults();
-
-    l_belt.clearFaults();
-    l_belt.restoreFactoryDefaults();
   }
 
   @Override
@@ -55,35 +43,15 @@ public class Magazine_Subsystem extends SubsystemBase {
   //sets the belts to a speed
   public void driveWheelOn(double speed){
     top_wheel.set(TalonSRXControlMode.PercentOutput, speed);
-    r_belt.set(speed);
-    l_belt.set(-speed);
-    //v_belt.set(speed);
   }
 
   public void driveWheelOff(){
     top_wheel.set(TalonSRXControlMode.PercentOutput, 0);
-    r_belt.set(0);
-    l_belt.set(0);
-    //v_belt.set(speed);
   }
-
-  //sets the roller wheel to a speed
-  public void rollerWheelOn(double speed){
-    r_belt.set(speed);
-    l_belt.set(-speed);
-  }
-
-  public void rollerWheelOff(){
-    r_belt.set(0);
-    l_belt.set(0);
-  } 
 
   //reverses direction of rotation to expell cargo
   public void expellCargo(double speed){
     top_wheel.set(TalonSRXControlMode.PercentOutput, -speed);
-    r_belt.set(-speed);
-    l_belt.set(speed);
-        //v_belt.set(-speed);
   }
   
   //lets us know if cargo is detected
