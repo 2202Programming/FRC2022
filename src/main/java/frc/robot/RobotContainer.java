@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 //import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.DriverPrefs;
@@ -22,12 +24,14 @@ import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.hid.HID_Xbox_Subsystem;
 import frc.robot.subsystems.hid.XboxAxis;
 import frc.robot.subsystems.hid.XboxButton;
+import frc.robot.subsystems.hid.SideboardController.SBButton;
 import frc.robot.subsystems.ifx.DriverControls.Id;
 import frc.robot.commands.IntakeCommand.IntakeMode;
 import frc.robot.commands.MagazineCommand.MagazineMode;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.IntakeDeployToggle;
 import frc.robot.commands.MagazineCommand;
+import frc.robot.commands.ResetPosition;
 import frc.robot.ux.Dashboard;
 import frc.robot.commands.test.TestShoot;
 
@@ -164,6 +168,16 @@ public class RobotContainer {
     driverControls.bind(Id.Assistant, XboxButton.X).whileHeld(new MagazineCommand((()-> 0.99), MagazineMode.LoadCargo) );
     //MagazineCommand to intake or expell ball
     driverControls.bind(Id.Assistant, XboxButton.L3).whileHeld(new MagazineCommand((()-> 0.99), MagazineMode.ExpellCargo) );
+
+    // Switchboard (6 different begining positions)
+    //red alliance (1st row)
+    driverControls.bind(Id.SwitchBoard, SBButton.Sw11).whenPressed(new ResetPosition(new Pose2d(Constants.Autonomous.RED_START_A_X, Constants.Autonomous.RED_START_A_Y, Constants.Autonomous.RED_START_A_ROT), drivetrain)); //random poses for now
+    driverControls.bind(Id.SwitchBoard, SBButton.Sw12).whenPressed(new ResetPosition(new Pose2d(Constants.Autonomous.RED_START_B_X, Constants.Autonomous.RED_START_B_Y, Constants.Autonomous.RED_START_B_ROT), drivetrain)); //random poses for now
+    driverControls.bind(Id.SwitchBoard, SBButton.Sw13).whenPressed(new ResetPosition(new Pose2d(Constants.Autonomous.RED_START_C_X, Constants.Autonomous.RED_START_C_Y, Constants.Autonomous.RED_START_C_ROT), drivetrain)); //random poses for now
+    //blue alliance (2nd row)
+    driverControls.bind(Id.SwitchBoard, SBButton.Sw21).whenPressed(new ResetPosition(new Pose2d(Constants.Autonomous.BLUE_START_A_X, Constants.Autonomous.BLUE_START_A_Y, Constants.Autonomous.BLUE_START_A_ROT), drivetrain)); //random poses for now
+    driverControls.bind(Id.SwitchBoard, SBButton.Sw22).whenPressed(new ResetPosition(new Pose2d(Constants.Autonomous.BLUE_START_B_X, Constants.Autonomous.BLUE_START_B_Y, Constants.Autonomous.BLUE_START_B_ROT), drivetrain)); //random poses for now
+    driverControls.bind(Id.SwitchBoard, SBButton.Sw23).whenPressed(new ResetPosition(new Pose2d(Constants.Autonomous.BLUE_START_C_X, Constants.Autonomous.BLUE_START_C_Y, Constants.Autonomous.BLUE_START_C_ROT), drivetrain)); //random poses for now
     }
 
   }

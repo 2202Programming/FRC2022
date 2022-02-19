@@ -8,6 +8,7 @@
 package frc.robot;
 
 import frc.robot.util.PIDFController;
+import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.subsystems.shooter.FlyWheel.FlyWheelConfig;
 
 /**
@@ -38,6 +39,32 @@ public final class Constants {
      * Please keep in order ID order
      * 
      */
+    public static final class Autonomous {
+      //These values are for a red alliance start
+      public static final double RED_START_A_X = 10.0;
+      public static final double RED_START_A_Y = 3.08; 
+      public static final double RED_START_B_X = 9.53; 
+      public static final double RED_START_B_Y = 5.58; 
+      public static final double RED_START_C_X = 8.63; 
+      public static final double RED_START_C_Y = 6.07; 
+
+      public static final Rotation2d RED_START_A_ROT = new Rotation2d(0.0);
+      public static final Rotation2d RED_START_B_ROT = new Rotation2d(0.0);
+      public static final Rotation2d RED_START_C_ROT = new Rotation2d(0.0);
+
+      //Blue alliance start
+      public static final double BLUE_START_A_X = 6.45;
+      public static final double BLUE_START_A_Y = 4.88; 
+      public static final double BLUE_START_B_X = 6.99; 
+      public static final double BLUE_START_B_Y = 2.49; 
+      public static final double BLUE_START_C_X = 7.75; 
+      public static final double BLUE_START_C_Y = 2.34; 
+
+      public static final Rotation2d BLUE_START_A_ROT = new Rotation2d(0.0);
+      public static final Rotation2d BLUE_START_B_ROT = new Rotation2d(0.0);
+      public static final Rotation2d BLUE_START_C_ROT = new Rotation2d(0.0);
+
+    }
     public static final class CAN {
         // CAN ID for non-motor devices
         public static final int PDP = 0; // this must be 0
