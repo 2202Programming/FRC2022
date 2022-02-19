@@ -42,9 +42,9 @@ public class IntakeCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if (intake.isDeployed() == false) {
-      intake.deploy();
-    }
+    // if (intake.isDeployed() == false) {
+    //   intake.deploy();
+    // }
   }
 
   // Called every time the scheduler runs while the command is scheduled.

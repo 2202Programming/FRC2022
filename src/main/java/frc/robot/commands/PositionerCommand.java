@@ -25,42 +25,42 @@ public class PositionerCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-      positioner.downward();
+      // positioner.downward();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-      switch (mode){
-        case MoveUp:
-          if (!positioner.isUpPosition())
-          {
-            positioner.upward();
-          }
-          break;
+    //   switch (mode){
+    //     case MoveUp:
+    //       if (!positioner.isUpPosition())
+    //       {
+    //         positioner.upward();
+    //       }
+    //       break;
 
-        case MoveDown:
-          if (positioner.isUpPosition())
-          {
-            positioner.downward();
-          }
-          break;
-      }
+    //     case MoveDown:
+    //       if (positioner.isUpPosition())
+    //       {
+    //         positioner.downward();
+    //       }
+    //       break;
+    //   }
     
     
-    if (mode == PositionerMode.MoveUp){
-        positioner.upward();
-    }else if (mode == PositionerMode.MoveDown){
-        positioner.downward();
-    }
+    // if (mode == PositionerMode.MoveUp){
+    //     positioner.upward();
+    // }else if (mode == PositionerMode.MoveDown){
+    //     positioner.downward();
+    // }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    if (positioner.isUpPosition()) {
-      positioner.downward();
-    }
+    // if (positioner.isUpPosition()) {
+    //   positioner.downward();
+    // }
   }
 
   // Returns true when the command should end.

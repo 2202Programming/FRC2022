@@ -37,6 +37,8 @@ import frc.robot.commands.MagazineCommand.MagazineMode;
 import frc.robot.commands.PositionerCommand.PositionerMode;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.IntakeDeployToggle;
+import frc.robot.commands.PositionerToggle;
+
 import frc.robot.commands.MagazineCommand;
 import frc.robot.commands.PositionerCommand;
 import frc.robot.commands.ResetPosition;
@@ -193,18 +195,20 @@ public class RobotContainer {
     if(Constants.HAS_INTAKE) {
       driverControls.bind(Id.Assistant, XboxButton.LB).whenPressed(new IntakeDeployToggle());
       // IntakeCommand takes a DoubleSupplier f() which could be tied to our UX instead of const f() given here.
-      driverControls.bind(Id.Assistant, XboxButton.A).whileHeld(new IntakeCommand((()-> 0.50), ()-> 0.20,  IntakeMode.LoadCargo) );
+      driverControls.bind(Id.Assistant, XboxButton.A).whileHeld(new IntakeCommand((()-> 0.47), ()-> 0.20,  IntakeMode.LoadCargo) );
       // IntakeCommand motor direction
-      driverControls.bind(Id.Assistant, XboxButton.B).whileHeld(new IntakeCommand((()-> 0.50), ()-> 0.20, IntakeMode.ExpellCargo) );
+      driverControls.bind(Id.Assistant, XboxButton.B).whileHeld(new IntakeCommand((()-> 0.35), ()-> 0.20, IntakeMode.ExpellCargo) );
     }
 
     if(Constants.HAS_MAGAZINE){
       //Positioner binds :)
-      driverControls.bind(Id.Driver, XboxPOV.POV_UP).whenPressed(new PositionerCommand( PositionerMode.MoveUp ));
-      driverControls.bind(Id.Driver, XboxPOV.POV_DOWN).whenPressed(new PositionerCommand( PositionerMode.MoveDown ));
+      driverControls.bind(Id.Assistant, XboxButton.RB).whenPressed(new PositionerToggle());
+
+      // driverControls.bind(Id.Driver, XboxButton.RB).whenPressed(new PositionerCommand( PositionerMode.MoveUp ));
+      // driverControls.bind(Id.Driver, XboxButton.LB).whenPressed(new PositionerCommand( PositionerMode.MoveDown ));
       //MagazineCommand to intake or expell ball
       driverControls.bind(Id.Assistant, XboxButton.X).whileHeld(new MagazineCommand((()-> 1.0), MagazineMode.LoadCargo) );
-      driverControls.bind(Id.Assistant, XboxButton.L3).whileHeld(new MagazineCommand((()-> 1.0), MagazineMode.ExpellCargo) );
+      driverControls.bind(Id.Assistant, XboxButton.Y).whileHeld(new MagazineCommand((()-> 1.0), MagazineMode.ExpellCargo) );
     }
 
     if(Constants.HAS_SHOOTER){

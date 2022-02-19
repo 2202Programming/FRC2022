@@ -36,7 +36,7 @@ public class BasicShootCommand extends CommandBase{
 
     private boolean finished = false;
 
-    final ShooterSettings defaultShooterSettings = new ShooterSettings(25.0, 0.0, USE_CURRENT_ANGLE, 0.01);
+    final ShooterSettings defaultShooterSettings = new ShooterSettings(20.0, 0.0, USE_CURRENT_ANGLE, 0.01);
 
     public enum Stage{
         DoNothing("Do Nothing"),

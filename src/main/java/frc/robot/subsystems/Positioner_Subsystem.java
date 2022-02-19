@@ -34,17 +34,17 @@ public class Positioner_Subsystem extends SubsystemBase {
     //Turn Intake Motor Off by setting a double value
 
     //Deploy arm mechanism using a Double Solenoids
-    public void upward() {
+    public void deploy() {
         positioner_solenoid.set(UPWARD);
     }
 
     //Retract arm mechanism using a Double Solenoids
-    public void downward() {
+    public void retract() {
         positioner_solenoid.set(DOWNWARD);
     }
 
     //Returns the state of the Intake Arm
-    public boolean isUpPosition() {
+    public boolean isDeployed() {
       return ( positioner_solenoid.get() == UPWARD); 
     }
 
