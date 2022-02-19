@@ -74,6 +74,8 @@ public class RobotContainer {
   public final Limelight_Subsystem limelight;
   public final Positioner_Subsystem positioner;
 
+  public static String auto_path_name = "NONE";
+
   //modifiable commands
   //DriveCmd swd;
   LimelightDriveCmd swd;
@@ -168,19 +170,19 @@ public class RobotContainer {
         // Switchboard (6 different begining positions)
     /*red alliance (1st row)*/
     //bottom of the field (on path planner)
-    driverControls.bind(Id.SwitchBoard, SBButton.Sw11).whenPressed(new ResetPosition(new Pose2d(Constants.Autonomous.RED_START_A_X, Constants.Autonomous.RED_START_A_Y, Constants.Autonomous.RED_START_A_ROT), drivetrain));
+    driverControls.bind(Id.SwitchBoard, SBButton.Sw11).whenPressed(new ResetPosition(new Pose2d(Constants.Autonomous.RED_START_A_X, Constants.Autonomous.RED_START_A_Y, Constants.Autonomous.RED_START_A_ROT), drivetrain, "AutoPath1"));
     //middle of the field
-    driverControls.bind(Id.SwitchBoard, SBButton.Sw12).whenPressed(new ResetPosition(new Pose2d(Constants.Autonomous.RED_START_B_X, Constants.Autonomous.RED_START_B_Y, Constants.Autonomous.RED_START_B_ROT), drivetrain));
+    driverControls.bind(Id.SwitchBoard, SBButton.Sw12).whenPressed(new ResetPosition(new Pose2d(Constants.Autonomous.RED_START_B_X, Constants.Autonomous.RED_START_B_Y, Constants.Autonomous.RED_START_B_ROT), drivetrain, "AutoPath2"));
     //top of the field
-    driverControls.bind(Id.SwitchBoard, SBButton.Sw13).whenPressed(new ResetPosition(new Pose2d(Constants.Autonomous.RED_START_C_X, Constants.Autonomous.RED_START_C_Y, Constants.Autonomous.RED_START_C_ROT), drivetrain));
+    driverControls.bind(Id.SwitchBoard, SBButton.Sw13).whenPressed(new ResetPosition(new Pose2d(Constants.Autonomous.RED_START_C_X, Constants.Autonomous.RED_START_C_Y, Constants.Autonomous.RED_START_C_ROT), drivetrain, "AutoPath3"));
     
     /*blue alliance (2nd row)*/
     //top of the field
-    driverControls.bind(Id.SwitchBoard, SBButton.Sw21).whenPressed(new ResetPosition(new Pose2d(Constants.Autonomous.BLUE_START_A_X, Constants.Autonomous.BLUE_START_A_Y, Constants.Autonomous.BLUE_START_A_ROT), drivetrain));
+    driverControls.bind(Id.SwitchBoard, SBButton.Sw21).whenPressed(new ResetPosition(new Pose2d(Constants.Autonomous.BLUE_START_A_X, Constants.Autonomous.BLUE_START_A_Y, Constants.Autonomous.BLUE_START_A_ROT), drivetrain, "AutoPath4"));
     //middle of the field
-    driverControls.bind(Id.SwitchBoard, SBButton.Sw22).whenPressed(new ResetPosition(new Pose2d(Constants.Autonomous.BLUE_START_B_X, Constants.Autonomous.BLUE_START_B_Y, Constants.Autonomous.BLUE_START_B_ROT), drivetrain));
+    driverControls.bind(Id.SwitchBoard, SBButton.Sw22).whenPressed(new ResetPosition(new Pose2d(Constants.Autonomous.BLUE_START_B_X, Constants.Autonomous.BLUE_START_B_Y, Constants.Autonomous.BLUE_START_B_ROT), drivetrain, "AutoPath5"));
     //bottom of the field
-    driverControls.bind(Id.SwitchBoard, SBButton.Sw23).whenPressed(new ResetPosition(new Pose2d(Constants.Autonomous.BLUE_START_C_X, Constants.Autonomous.BLUE_START_C_Y, Constants.Autonomous.BLUE_START_C_ROT), drivetrain)); 
+    driverControls.bind(Id.SwitchBoard, SBButton.Sw23).whenPressed(new ResetPosition(new Pose2d(Constants.Autonomous.BLUE_START_C_X, Constants.Autonomous.BLUE_START_C_Y, Constants.Autonomous.BLUE_START_C_ROT), drivetrain, "AutoPath6")); 
 
     // LB - toggle intake deploy
     // B  - spin intake while held (to intake the ball)
@@ -213,7 +215,7 @@ public Command getAutonomousCommand() {
   Command autoCommand = new InstantCommand(limelight::enableLED)
     .andThen(new IntakeCommand((()-> 0.50), ()->0.50, IntakeMode.LoadCargo))
     .andThen(new WaitCommand(0.5))
-    .andThen(new auto_pathPlanner_cmd(drivetrain, "MatchStart"))
+    .andThen(new auto_pathPlanner_cmd(drivetrain, auto_path_name))
     .andThen(new WaitCommand(0.5))
     .andThen(new BasicShootCommand());
 
