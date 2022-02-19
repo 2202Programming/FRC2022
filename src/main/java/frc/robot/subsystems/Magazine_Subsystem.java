@@ -39,6 +39,12 @@ public class Magazine_Subsystem extends SubsystemBase {
     top_wheel = new TalonSRX(CAN.MAG_TOP_WHEEL);
     MagazineSettings.r_beltPIDF.copyTo(r_belt.getPIDController(), slot);
     MagazineSettings.l_beltPIDF.copyTo(l_belt.getPIDController(), slot);
+
+    r_belt.clearFaults();
+    r_belt.restoreFactoryDefaults();
+
+    l_belt.clearFaults();
+    l_belt.restoreFactoryDefaults();
   }
 
   @Override
