@@ -85,8 +85,8 @@ public class Climber extends SubsystemBase{
         left_Counter_rot.clearDownSource(); // tricking the systems that we only have one channel encoder
         right_Counter_rot.clearDownSource(); // tricking the systems that we only have one channel encodert
         // .01(1%) is the speed and 2 degrees is the tolerance
-        left_Arm = new ArmRotation(left_Counter_rot, left_PWM_rot, 0.5, 2, table.getSubTable("left_arm_rotation"));
-        right_Arm = new ArmRotation(right_Counter_rot, right_PWM_rot, -0.5, 2, table.getSubTable("right_arm_rotation"));
+        left_Arm = new ArmRotation(left_Counter_rot, left_PWM_rot, 0.25, 2, table.getSubTable("left_arm_rotation"));
+        right_Arm = new ArmRotation(right_Counter_rot, right_PWM_rot, -0.25, 2, table.getSubTable("right_arm_rotation"));
     }
 
 
@@ -189,55 +189,66 @@ public class Climber extends SubsystemBase{
 
 
 class ArmRotation {
-    private Counter m_counter;
-    private int last_count;
-    private PWM m_motor;
-    private double speed;
-    private double tolerance;
+    private final Counter m_counter;
+    private final PWM m_motor;
+    private final double speed; // max motor speed (-1 to 1)
+    private final int tolerance; //[counts] expected 1 to 3 counts
+    private int direction; // plus or minus 1 based on forwards/backwards
+    boolean done = true;   // catches when we hit target
 
-    private int prevPositon = 0;
-    private int desPosition = 0;
-    private Boolean kForward = true;
+    private int curPos = 0;
+    private int prevPos = 0;
+    private int desCount = 0;
     private NetworkTableEntry sdb_desired;
     private NetworkTableEntry sdb_actual;
     private NetworkTableEntry sdb_counter_raw;
+    private NetworkTableEntry sdb_error;
 
-    public ArmRotation(Counter m_counter, PWM m_motor, double speed, double tolerance, NetworkTable table) {
+    public ArmRotation(Counter m_counter, PWM m_motor, double speed, int tolerance, NetworkTable table) {
         this.m_counter = m_counter;
         this.m_counter.reset();
-        this.last_count = 0;
         this.m_motor = m_motor;
         this.speed = speed;
         this.tolerance = tolerance;
         this.sdb_desired = table.getEntry("desired");
         this.sdb_actual = table.getEntry("actual");
         this.sdb_counter_raw = table.getEntry("counter_raw");
+        this.sdb_error = table.getEntry("error");
     }
-
 
     public void periodic() {
-        // add the adjustment
-        double factor = 1;
-        if (!kForward) factor = -1;
-        
-        int raw_counter = m_counter.get();
-        
-        sdb_counter_raw.setDouble(raw_counter);
-        prevPositon += factor * (raw_counter - last_count);
-        last_count = raw_counter;
+        int count = m_counter.get();
 
-        if(Math.abs(desPosition - prevPositon ) > tolerance) {
-            m_motor.setSpeed(factor * speed);
+        if ( count < desCount )  {
+            m_motor.setSpeed(direction * speed);
         } else {
             m_motor.setSpeed(0);
+            if (!done) {
+                prevPos += direction*desCount;
+                count = 0;
+                desCount = 0;
+                done = true;
+            }
         }
-        sdb_actual.setDouble(prevPositon);
+        curPos = prevPos + direction * count;
+        sdb_actual.setDouble(curPos);
+        sdb_counter_raw.setDouble(count);
+        sdb_error.setDouble(desCount - count);
     }
 
-    public void set(int desired) {
+    public void set(int desiredPos) {
+        if (desiredPos == prevPos) return;
         m_counter.reset();
-        kForward = desired > prevPositon;
-        desPosition = desired;
-        sdb_desired.setDouble(desPosition);
+        //calculate direction and number of counts to get where we want.
+        if (desiredPos >= curPos) {
+            direction = 1; 
+            desCount = desiredPos - curPos;
+        } 
+        else {
+            direction = -1;
+            desCount = curPos - desiredPos;
+        }
+        done = false; 
+        sdb_desired.setDouble(desCount);
     }
 }

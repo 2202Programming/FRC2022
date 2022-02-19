@@ -14,6 +14,8 @@ public class climberTest extends CommandBase {
     //Magnitude of rotation / extension left / right motors
     NetworkTableEntry ntRot;
     NetworkTableEntry ntExt;
+    double last_rot;
+    double last_ext;
     
     public climberTest(Climber climber){
         this.climber = climber;
@@ -23,16 +25,22 @@ public class climberTest extends CommandBase {
         ntExt = table.getEntry("Extension");
         ntRot.setDouble(0);
         ntExt.setDouble(0);
-
+        last_rot = 0;
+        last_ext = 0;
 
     }
 
     @Override
     public void execute() {
-        ntRot = table.getEntry("Rotation");
-        ntExt = table.getEntry("Extension");
-        climber.setExtension(ntExt.getDouble(0));
-        climber.setRotation(ntRot.getDouble(0));
+        if (last_ext != ntExt.getDouble(0)){
+            climber.setExtension(ntExt.getDouble(0));
+            last_ext = ntExt.getDouble(0);
+        }
+        if (last_rot != ntRot.getDouble(0)){
+            climber.setRotation(ntRot.getDouble(0));
+            last_rot = ntRot.getDouble(0);
+        }
+        
     }
 
     @Override
