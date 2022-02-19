@@ -205,9 +205,9 @@ public final class Constants {
 
         // Kinematics model - wheel offsets from center of robot (0, 0)
         // Left Front given below, symmetry used for others (in feet)
-        // Robot is 21.25 left-right and 24.25 front-back
-        public static final double XwheelOffset = (21.25/12)/2;     
-        public static final double YwheelOffset = (24.25/12)/2;
+        // Betabot is 21.516 left-right and 24.87 front-back
+        public static final double XwheelOffset = (21.516/12)/2;     
+        public static final double YwheelOffset = (24.87/12)/2;
         public static final double wheelCorrectionFactor = 0.9395; //measured on swervebot
         public static final double wheelDiameter = 0.3333333 * wheelCorrectionFactor;   //[ft]  4" wheels
 
