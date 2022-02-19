@@ -35,11 +35,22 @@ public class BasicShootCommand extends CommandBase{
     ShooterSettings  prevSS;        // instance for prev State
     final ShooterSettings defaultShooterSettings = new ShooterSettings(15.0, 10.0, USE_CURRENT_ANGLE, 0.01);
 
-    enum Stage{
-        DoNothing,
-        WaitingForFlyWheel,
-        Shooting,
+    public enum Stage{
+        DoNothing("Do Nothing"),
+        WaitingForFlyWheel("Waiting for flywheel"),
+        Shooting("Shooting");
+
+        String name;
+
+        private Stage(String name){
+            this.name = name;
+        }
+
+        public String toString(){
+            return name;
+        }
     }Stage stage;
+    
     public BasicShootCommand(){
         this.intake = RobotContainer.RC().intake;
         this.shooter = RobotContainer.RC().shooter;
