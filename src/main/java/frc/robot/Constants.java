@@ -58,7 +58,9 @@ public final class Constants {
         public static final int INTAKE_TALON = 14;
 
         // Magazine motors
-        public static final int MAG_TOP_WHEEL = 16;
+        public static final int MAG_TOP_WHEEL = 18;
+        public static final int MAG_R_BELT = 12;
+        public static final int MAG_L_BELT = 13;
         
         // drive train drive / angle motors - sparkmax neo
         public static final int DT_FL_DRIVE = 20;
@@ -216,8 +218,8 @@ public final class Constants {
     
     public final static class MagazineSettings {
       // PID values
-      public static PIDFController h_beltPIDF = new PIDFController(1.0, 0.0, 0.0, 0.0);  
-      public static PIDFController v_beltPIDF = new PIDFController(1.0, 0.0, 0.0, 0.0); 
+      public static PIDFController r_beltPIDF = new PIDFController(1.0, 0.0, 0.0, 0.0);  
+      public static PIDFController l_beltPIDF = new PIDFController(1.0, 0.0, 0.0, 0.0); 
 
     }
 
