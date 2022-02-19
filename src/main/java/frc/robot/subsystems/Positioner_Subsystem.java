@@ -20,7 +20,7 @@ public class Positioner_Subsystem extends SubsystemBase {
     static final Value DOWNWARD = Value.kForward;
     //Instantiations
     final DoubleSolenoid positioner_solenoid = new DoubleSolenoid(CAN.PCM1,
-                PneumaticsModuleType.CTREPCM, 
+                PneumaticsModuleType.REVPH, 
                 PCM1.POSITIONER_UP_SOLENOID_PCM, 
                 PCM1.POSITIONER_DOWN_SOLENOID_PCM);
 

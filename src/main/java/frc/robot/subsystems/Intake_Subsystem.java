@@ -33,7 +33,7 @@ public class Intake_Subsystem extends SubsystemBase {
     //Instantiations
     final TalonSRX intake_mtr = new TalonSRX(CAN.INTAKE_TALON);
     final DoubleSolenoid intake_solenoid = new DoubleSolenoid(CAN.PCM1,
-                PneumaticsModuleType.CTREPCM, 
+                PneumaticsModuleType.REVPH, 
                 PCM1.INTAKE_UP_SOLENOID_PCM, 
                 PCM1.INTAKE_DOWN_SOLENOID_PCM);
     final DigitalInput intake_lightGate = new DigitalInput(DigitalIO.INTAKE_GATE);
