@@ -6,8 +6,10 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 //import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.DriverPrefs;
 //import frc.robot.commands.swerve.DriveCmd;
@@ -212,12 +214,20 @@ public class RobotContainer {
   }
 
 public Command getAutonomousCommand() {
-  Command autoCommand = new InstantCommand(limelight::enableLED)
-    .andThen(new IntakeCommand((()-> 0.50), ()->0.50, IntakeMode.LoadCargo))
+
+    Command group0 = new auto_pathPlanner_cmd(drivetrain, "AutoPath1")
     .andThen(new WaitCommand(0.5))
-    .andThen(new auto_pathPlanner_cmd(drivetrain, auto_path_name))
-    .andThen(new WaitCommand(0.5))
-    .andThen(new BasicShootCommand());
+    .andThen(new BasicShootCommand()
+    );
+
+    ParallelCommandGroup group1 = new ParallelCommandGroup(
+      new IntakeCommand((()-> 0.50), ()-> 0.20,  IntakeMode.LoadCargo),
+      new MagazineCommand((()-> 1.0), MagazineMode.LoadCargo)
+    );
+
+    Command autoCommand = new InstantCommand(limelight::enableLED)
+    .andThen(group1)
+    .andThen(group0);
 
   return autoCommand;
 }
