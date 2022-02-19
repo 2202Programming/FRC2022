@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 //import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.DriverPrefs;
 //import frc.robot.commands.swerve.DriveCmd;
 import frc.robot.commands.swerve.LimelightDriveCmd;
@@ -185,7 +186,11 @@ public class RobotContainer {
   }
 
 public Command getAutonomousCommand() {
-  Command autoCommand = new IntakeCommand((()-> 0.50), IntakeMode.LoadCargo).andThen(new auto_pathPlanner_cmd(drivetrain, "MatchStart"))
+  Command autoCommand = new InstantCommand(limelight::enableLED)
+    .andThen(new IntakeCommand((()-> 0.50), IntakeMode.LoadCargo))
+    .andThen(new WaitCommand(0.5))
+    .andThen(new auto_pathPlanner_cmd(drivetrain, "MatchStart"))
+    .andThen(new WaitCommand(0.5))
     .andThen(new ShootCommand().withInitialCargo(2));
 
   return autoCommand;
