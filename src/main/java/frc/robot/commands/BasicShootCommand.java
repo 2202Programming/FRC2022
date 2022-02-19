@@ -76,7 +76,7 @@ public class BasicShootCommand extends CommandBase{
 
             case WaitingForFlyWheel:
                 if(shooter.isReadyToShoot()){
-                    magazine.driveWheelOn(0.99);
+                    magazine.driveWheelOn(0.50);
                     stage = Stage.Shooting;
                 }
             break;
@@ -94,7 +94,7 @@ public class BasicShootCommand extends CommandBase{
     public void end(boolean interrupted){
         stage = Stage.DoNothing;
         magazine.driveWheelOff();
-        cmdSS = new ShooterSettings(); //defaultShooterSettings SUS 
+        shooter.off();
     }
     
     @Override

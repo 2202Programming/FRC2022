@@ -98,7 +98,7 @@ public class RobotContainer {
 
     // set default commands
     //drivetrain.setDefaultCommand(new SwerveDriveCommand(drivetrain, driverControls, limelight));
-    if (Constants.HAS_SHOOTER) shooter.setDefaultCommand(new TestShoot(shooter));
+    // if (Constants.HAS_SHOOTER) shooter.setDefaultCommand(new TestShoot(shooter));
     
     if (Constants.HAS_DRIVETRAIN) {
       //swd = new DriveCmd(drivetrain, driverControls);
@@ -164,25 +164,31 @@ public class RobotContainer {
   void setAssistantButtons() {
 
 
-     // Y -toggle intake deploy
-    // B - spin intake while held (to intake the ball)
-    // A - spin intake while held (in reverse to expell the ball)
+    // LB - toggle intake deploy
+    // B  - spin intake while held (to intake the ball)
+    // A  - spin intake while held (in reverse to expell the ball)
+    // RT - spin shooter and index while held
     if(Constants.HAS_INTAKE) {
-    driverControls.bind(Id.Assistant, XboxButton.LB).whenPressed(new IntakeDeployToggle());
-    // IntakeCommand takes a DoubleSupplier f() which could be tied to our UX instead of const f() given here.
-    driverControls.bind(Id.Assistant, XboxButton.A).whileHeld(new IntakeCommand((()-> 0.50), IntakeMode.LoadCargo) );
-    // IntakeCommand motor direction
-    driverControls.bind(Id.Assistant, XboxButton.B).whileHeld(new IntakeCommand((()-> 0.50), IntakeMode.ExpellCargo) );
+      driverControls.bind(Id.Assistant, XboxButton.LB).whenPressed(new IntakeDeployToggle());
+      // IntakeCommand takes a DoubleSupplier f() which could be tied to our UX instead of const f() given here.
+      driverControls.bind(Id.Assistant, XboxButton.A).whileHeld(new IntakeCommand((()-> 0.50), IntakeMode.LoadCargo) );
+      // IntakeCommand motor direction
+      driverControls.bind(Id.Assistant, XboxButton.B).whileHeld(new IntakeCommand((()-> 0.50), IntakeMode.ExpellCargo) );
+    }
 
-    driverControls.bind(Id.Assistant, XboxButton.X).whileHeld(new MagazineCommand((()-> 0.99), MagazineMode.LoadCargo) );
-    //MagazineCommand to intake or expell ball
-    driverControls.bind(Id.Assistant, XboxButton.L3).whileHeld(new MagazineCommand((()-> 0.99), MagazineMode.ExpellCargo) );
-    driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_RIGHT).whileHeld(new BasicShootCommand());
+    if(Constants.HAS_MAGAZINE){
+      //Positioner binds :)
+      driverControls.bind(Id.Driver, XboxPOV.POV_UP).whenPressed(new PositionerCommand( PositionerMode.MoveUp ));
+      driverControls.bind(Id.Driver, XboxPOV.POV_DOWN).whenPressed(new PositionerCommand( PositionerMode.MoveDown ));
+      //MagazineCommand to intake or expell ball
+      driverControls.bind(Id.Assistant, XboxButton.X).whileHeld(new MagazineCommand((()-> 0.99), MagazineMode.LoadCargo) );
+      driverControls.bind(Id.Assistant, XboxButton.L3).whileHeld(new MagazineCommand((()-> 0.99), MagazineMode.ExpellCargo) );
+    }
 
-    //Positioner binds :)
-    driverControls.bind(Id.Driver, XboxPOV.POV_UP).whenPressed(new PositionerCommand( PositionerMode.MoveUp ));
-    driverControls.bind(Id.Driver, XboxPOV.POV_DOWN).whenPressed(new PositionerCommand( PositionerMode.MoveDown ));
+    if(Constants.HAS_SHOOTER){
+      driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_RIGHT).whileHeld(new BasicShootCommand());
     }  
+
   }
 
 public Command getAutonomousCommand() {
