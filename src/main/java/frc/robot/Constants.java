@@ -70,7 +70,7 @@ public final class Constants {
         // CAN ID for non-motor devices
         public static final int PDP = 0; // this must be 0
         public static final int PCM1 = 1; // default ID for PCM
-        public static final int PCM2 = 2;
+        //public static final int PCM2 = 2;
 
         // drive train CANCoders
         public static final int DT_BL_CANCODER = 28;
