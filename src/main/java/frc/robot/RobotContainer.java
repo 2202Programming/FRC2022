@@ -222,12 +222,12 @@ public Command getAutonomousCommand() {
 
     ParallelCommandGroup group1 = new ParallelCommandGroup(
       new IntakeCommand((()-> 0.50), ()-> 0.20,  IntakeMode.LoadCargo),
-      new MagazineCommand((()-> 1.0), MagazineMode.LoadCargo)
+      new MagazineCommand((()-> 1.0), MagazineMode.LoadCargo),
+      group0
     );
 
     Command autoCommand = new InstantCommand(limelight::enableLED)
-    .andThen(group1)
-    .andThen(group0);
+    .andThen(group1);
 
   return autoCommand;
 }

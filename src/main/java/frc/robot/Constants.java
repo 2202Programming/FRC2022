@@ -42,9 +42,9 @@ public final class Constants {
       public static final double RED_START_C_X = 8.57; //top
       public static final double RED_START_C_Y = 6.17; 
 
-      public static final Rotation2d RED_START_A_ROT = new Rotation2d(0.0);
-      public static final Rotation2d RED_START_B_ROT = new Rotation2d(0.0);
-      public static final Rotation2d RED_START_C_ROT = new Rotation2d(0.0);
+      public static final Rotation2d RED_START_A_ROT = new Rotation2d(-180);
+      public static final Rotation2d RED_START_B_ROT = new Rotation2d(-180);
+      public static final Rotation2d RED_START_C_ROT = new Rotation2d(-180);
 
       //Blue alliance start
       public static final double BLUE_START_A_X = 6.60; //top
