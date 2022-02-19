@@ -47,10 +47,11 @@ public class Intake_Subsystem extends SubsystemBase {
         Intake.l_beltPIDF.copyTo(l_belt.getPIDController(), slot);
         r_belt.clearFaults();
         r_belt.restoreFactoryDefaults();
+        r_belt.setInverted(true);
     
         l_belt.clearFaults();
         l_belt.restoreFactoryDefaults();
-        l_belt.setInverted(true);
+        l_belt.setInverted(false);
     }
 
     //Set the Intake Mode

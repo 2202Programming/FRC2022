@@ -29,6 +29,7 @@ public class BasicShootCommand extends CommandBase{
     NetworkTableEntry ntLowerRPM;
     NetworkTableEntry ntBallVel;    // ball physics (input) 
     NetworkTableEntry ntBallRPS;
+    NetworkTableEntry shooterState;
     
     ShooterSettings  cmdSS;         // instance the shooter sees
     ShooterSettings  prevSS;        // instance for prev State
@@ -50,6 +51,7 @@ public class BasicShootCommand extends CommandBase{
         table = NetworkTableInstance.getDefault().getTable("ShootCommand");
         ntBallVel = table.getEntry("BallVel");
         ntBallRPS = table.getEntry("BallRPS");
+        shooterState = table.getEntry("ShooterState");
 
         ntBallVel.setDouble(0);
         ntBallRPS.setDouble(0);
@@ -64,7 +66,7 @@ public class BasicShootCommand extends CommandBase{
 
     @Override
     public void execute(){
-
+        shooterState.setString(stage.toString());
 
         switch(stage){
             case DoNothing:
