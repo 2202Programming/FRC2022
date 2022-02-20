@@ -63,6 +63,14 @@ public class Intake_Subsystem extends SubsystemBase {
         l_belt.set(sideMotorStrength);
     }
 
+    public void defaultOn(){
+        double intakeMotorStrength = 0.47;
+        double sideMotorStrength = 0.2;
+        intake_mtr.set(TalonSRXControlMode.PercentOutput, intakeMotorStrength);
+        r_belt.set(sideMotorStrength);
+        l_belt.set(sideMotorStrength);
+    }
+
     //Turn Intake Motor Off by setting a double value
     public void off() {
         intake_mtr.set(TalonSRXControlMode.PercentOutput, 0.0);

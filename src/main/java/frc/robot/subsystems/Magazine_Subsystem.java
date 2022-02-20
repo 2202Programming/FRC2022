@@ -45,6 +45,10 @@ public class Magazine_Subsystem extends SubsystemBase {
     top_wheel.set(TalonSRXControlMode.PercentOutput, speed);
   }
 
+  public void defaultDriveWheelOn(){
+    top_wheel.set(TalonSRXControlMode.PercentOutput, 1);
+  }
+
   public void driveWheelOff(){
     top_wheel.set(TalonSRXControlMode.PercentOutput, 0);
   }
