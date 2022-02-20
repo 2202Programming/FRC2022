@@ -5,6 +5,7 @@
 package frc.robot.commands.auto;
 
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -34,8 +35,8 @@ public class auto_cmd_group2 extends SequentialCommandGroup {
     this.m_controls = m_controls;
     
     addCommands(
-      new IntakeDeployToggle(),
-      new ParallelDeadlineGroup( //group ends when 1st command ends
+      new InstantCommand( m_intake::deploy ),
+      new ParallelDeadlineGroup( //all run at same time; group ends when 1st command ends
         new ParallelCommandGroup( // all conditions run at once; only one should actually drive the path
           new ConditionalCommand(new auto_pathPlanner_cmd(m_drivetrain, "AutoPath1"), new WaitCommand(0), this::isRedPath1),
           new ConditionalCommand(new auto_pathPlanner_cmd(m_drivetrain, "AutoPath2"), new WaitCommand(0), this::isRedPath2),
