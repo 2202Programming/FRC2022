@@ -8,6 +8,7 @@
 package frc.robot;
 
 import frc.robot.util.PIDFController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.subsystems.shooter.FlyWheel.FlyWheelConfig;
 
@@ -45,7 +46,7 @@ public final class Constants {
       public static final Rotation2d RED_START_A_ROT = new Rotation2d(-180);
       public static final Rotation2d RED_START_B_ROT = new Rotation2d(-180);
       public static final Rotation2d RED_START_C_ROT = new Rotation2d(-180);
-
+  
       //Blue alliance start
       public static final double BLUE_START_A_X = 6.60; //top
       public static final double BLUE_START_A_Y = 5.12; 
@@ -57,6 +58,13 @@ public final class Constants {
       public static final Rotation2d BLUE_START_A_ROT = new Rotation2d(-180);
       public static final Rotation2d BLUE_START_B_ROT = new Rotation2d(-180);
       public static final Rotation2d BLUE_START_C_ROT = new Rotation2d(-180);
+
+      public static final Pose2d RedStartPose1 = new Pose2d(RED_START_A_X, RED_START_A_Y, RED_START_A_ROT);
+      public static final Pose2d RedStartPose2 = new Pose2d(RED_START_B_X, RED_START_B_Y, RED_START_B_ROT);
+      public static final Pose2d RedStartPose3 = new Pose2d(RED_START_C_X, RED_START_C_Y, RED_START_C_ROT);
+      public static final Pose2d BluseStartPose4 = new Pose2d(BLUE_START_A_X, BLUE_START_A_Y, BLUE_START_A_ROT);
+      public static final Pose2d BluseStartPose5= new Pose2d(BLUE_START_B_X, BLUE_START_B_Y, BLUE_START_B_ROT);
+      public static final Pose2d BluseStartPose6 = new Pose2d(BLUE_START_C_X, BLUE_START_C_Y, BLUE_START_C_ROT);
 
     }
     

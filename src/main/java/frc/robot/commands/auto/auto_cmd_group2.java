@@ -6,31 +6,41 @@ package frc.robot.commands.auto;
 
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
+import frc.robot.commands.BasicShootCommand;
+import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.IntakeDeployToggle;
+import frc.robot.commands.MagazineCommand;
 import frc.robot.commands.ResetPosition;
+import frc.robot.commands.IntakeCommand.IntakeMode;
+import frc.robot.commands.MagazineCommand.MagazineMode;
 import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.subsystems.Magazine_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.hid.SideboardController.SBButton;
 import frc.robot.subsystems.ifx.DriverControls;
 
-public class auto_cmd_group extends SequentialCommandGroup {
+public class auto_cmd_group2 extends SequentialCommandGroup {
   SwerveDrivetrain m_drivetrain;
   Magazine_Subsystem m_magazine;
   Intake_Subsystem m_intake;
   DriverControls m_controls;
 
-  public auto_cmd_group(SwerveDrivetrain m_drivetrain, Magazine_Subsystem m_magazine, Intake_Subsystem m_intake, DriverControls m_controls) {
+  public auto_cmd_group2(SwerveDrivetrain m_drivetrain, Magazine_Subsystem m_magazine, Intake_Subsystem m_intake, DriverControls m_controls) {
     this.m_drivetrain = m_drivetrain;
     this.m_magazine = m_magazine;
     this.m_intake = m_intake;
     this.m_controls = m_controls;
     
     addCommands(
-      new InstantCommand(m_intake::defaultOn),
-      new InstantCommand(m_intake::deploy),
+      new IntakeDeployToggle(),
+      new ParallelCommandGroup(
+        new IntakeCommand((()-> 0.47), ()-> 0.20,  IntakeMode.LoadCargo),
+        new MagazineCommand((()-> 1.0), MagazineMode.LoadCargo)
+      ),
       new ConditionalCommand(new ResetPosition(Constants.Autonomous.RedStartPose1, m_drivetrain, "AutoPath1"), new WaitCommand(0), this::isRedPath1),
       new ConditionalCommand(new ResetPosition(Constants.Autonomous.RedStartPose2, m_drivetrain, "AutoPath1"), new WaitCommand(0), this::isRedPath2),
       new ConditionalCommand(new ResetPosition(Constants.Autonomous.RedStartPose3, m_drivetrain, "AutoPath1"), new WaitCommand(0), this::isRedPath3),
@@ -42,8 +52,8 @@ public class auto_cmd_group extends SequentialCommandGroup {
       new ConditionalCommand(new auto_pathPlanner_cmd(m_drivetrain, "AutoPath3"), new WaitCommand(0), this::isRedPath3),
       new ConditionalCommand(new auto_pathPlanner_cmd(m_drivetrain, "AutoPath4"), new WaitCommand(0), this::isBluePath1),
       new ConditionalCommand(new auto_pathPlanner_cmd(m_drivetrain, "AutoPath5"), new WaitCommand(0), this::isBluePath2),
-      new ConditionalCommand(new auto_pathPlanner_cmd(m_drivetrain, "AutoPath6"), new WaitCommand(0), this::isBluePath3)
-
+      new ConditionalCommand(new auto_pathPlanner_cmd(m_drivetrain, "AutoPath6"), new WaitCommand(0), this::isBluePath3),
+      new BasicShootCommand()
     );
   }
 
