@@ -225,7 +225,7 @@ public Command getAutonomousCommand() {
     return new ParallelCommandGroup(
     new InstantCommand(magazine::defaultDriveWheelOn),
     new ConstantBasicShootCommand(),
-    new auto_cmd_group(drivetrain, magazine, intake))
+    new auto_cmd_group(drivetrain, magazine, intake, driverControls))
     ;
   
   
