@@ -17,6 +17,7 @@ import frc.robot.commands.swerve.LimelightDriveCmd;
 import frc.robot.commands.Shooter_MagazineCommand;
 import frc.robot.commands.Shoot.ShootCmd;
 import frc.robot.commands.auto.auto_cmd_group;
+import frc.robot.commands.auto.auto_cmd_group2;
 import frc.robot.commands.auto.auto_drivePath_cmd;
 import frc.robot.commands.auto.auto_pathPlanner_cmd;
 import frc.robot.commands.BasicShootCommand;
@@ -221,14 +222,7 @@ public class RobotContainer {
   }
 
 public Command getAutonomousCommand() {
-
-    return new ParallelCommandGroup(
-    new InstantCommand(magazine::defaultDriveWheelOn),
-    new ConstantBasicShootCommand(),
-    new auto_cmd_group(drivetrain, magazine, intake, driverControls))
-    ;
-  
-  
+    return new auto_cmd_group2(drivetrain, magazine, intake, driverControls); 
 }
   
 }
