@@ -71,9 +71,9 @@ public class DriveCmd extends CommandBase {
 
   private double lastBearing; //stores the last significant bearing angle
 
-  // private Pose2d centerField = new Pose2d(27, 13.5, new Rotation2d()); //actual
+  private Pose2d centerField = new Pose2d(27, 13.5, new Rotation2d()); //actual
   // hub location?
-  private Pose2d centerField = new Pose2d(10, 0, new Rotation2d()); // close point for testing to max rotation obvious
+  //private Pose2d centerField = new Pose2d(10, 0, new Rotation2d()); // close point for testing to max rotation obvious
 
   // Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
   final SlewRateLimiter xspeedLimiter = new SlewRateLimiter(3);
@@ -176,7 +176,11 @@ public class DriveCmd extends CommandBase {
         drivetrain.setDriveModeString("Hub Centric Drive");
         // set goal of angle PID to be heading (in degrees) from current position to
         // centerfield
-         double targetAngle = getHeading2Target(drivetrain.getPose(), centerField);
+        double targetAngle = getHeading2Target(drivetrain.getPose(), centerField);
+        targetAngle = targetAngle + 180; // flip since shooter is on "back" of robot
+        if(targetAngle > 180){
+          targetAngle = targetAngle - 360;
+        }
         double currentAngle = drivetrain.getPose().getRotation().getDegrees(); // from -180 to 180
         double angleError = targetAngle - currentAngle;
         // feed both PIDs even if not being used.

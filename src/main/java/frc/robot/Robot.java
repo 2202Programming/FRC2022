@@ -7,13 +7,6 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.commands.IntakeCommand;
-import frc.robot.commands.ShootCommand;
-import frc.robot.commands.IntakeCommand.IntakeMode;
-import frc.robot.commands.Shoot.ShootCmd;
-import frc.robot.commands.auto.auto_drivePath_cmd;
-import frc.robot.commands.auto.auto_pathPlanner_cmd;
-import frc.robot.commands.swerve.DriveCmd;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -23,7 +16,6 @@ import frc.robot.commands.swerve.DriveCmd;
  */
 public class Robot extends TimedRobot {
   private RobotContainer robotContainer;
-  private Command m_autonomousCommand;
   
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -64,11 +56,9 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = 
-    new IntakeCommand((()-> 0.50), IntakeMode.LoadCargo).andThen(new auto_pathPlanner_cmd(robotContainer.drivetrain, "MatchStart"))
-    .andThen(new ShootCommand().withInitialCargo(2));
+    Command m_autonomousCommand = robotContainer.getAutonomousCommand();
 
-    // schedule the autonomous command (example)
+    // schedule the autonomous command
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
@@ -79,7 +69,9 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {}
 
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+    CommandScheduler.getInstance().cancelAll();
+  }
 
   /** This function is called periodically during operator control. */
   @Override

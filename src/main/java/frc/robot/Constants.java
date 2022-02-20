@@ -23,15 +23,42 @@ import frc.robot.subsystems.shooter.FlyWheel.FlyWheelConfig;
  */
 public final class Constants {
 
-    public static final boolean HAS_INTAKE  = false;
-    public static final boolean HAS_SHOOTER = false;
-    public static final boolean HAS_MAGAZINE = false;
+    public static final boolean HAS_INTAKE  = true;
+    public static final boolean HAS_SHOOTER = true;
+    public static final boolean HAS_MAGAZINE = true;
     public static final boolean HAS_DRIVETRAIN = true;
 
 
     public static final double DT = 0.02; // 20ms framerate 50Hz
     public static final double Tperiod = 0.02; // framerate period 20ms, 50Hz
     public static final int NEO_COUNTS_PER_REVOLUTION = 42;
+
+    public static final class Autonomous {
+      //These values are for a red alliance start
+      public static final double RED_START_A_X = 9.91; //bottom
+      public static final double RED_START_A_Y = 2.92; 
+      public static final double RED_START_B_X = 9.45; //middle
+      public static final double RED_START_B_Y = 5.65; 
+      public static final double RED_START_C_X = 8.57; //top
+      public static final double RED_START_C_Y = 6.17; 
+
+      public static final Rotation2d RED_START_A_ROT = new Rotation2d(-180);
+      public static final Rotation2d RED_START_B_ROT = new Rotation2d(-180);
+      public static final Rotation2d RED_START_C_ROT = new Rotation2d(-180);
+
+      //Blue alliance start
+      public static final double BLUE_START_A_X = 6.60; //top
+      public static final double BLUE_START_A_Y = 5.12; 
+      public static final double BLUE_START_B_X = 7.08; //middle
+      public static final double BLUE_START_B_Y = 2.62; 
+      public static final double BLUE_START_C_X = 7.94; //bottom
+      public static final double BLUE_START_C_Y = 2.21; 
+
+      public static final Rotation2d BLUE_START_A_ROT = new Rotation2d(-180);
+      public static final Rotation2d BLUE_START_B_ROT = new Rotation2d(-180);
+      public static final Rotation2d BLUE_START_C_ROT = new Rotation2d(-180);
+
+    }
     
     /**
      * CAN bus IDs
@@ -69,13 +96,13 @@ public final class Constants {
         // CAN ID for non-motor devices
         public static final int PDP = 0; // this must be 0
         public static final int PCM1 = 1; // default ID for PCM
-        public static final int PCM2 = 2;
+        //public static final int PCM2 = 2;
 
         // drive train CANCoders
-        public static final int DT_BL_CANCODER = 5;
-        public static final int DT_BR_CANCODER = 6; 
-        public static final int DT_FR_CANCODER = 7;
-        public static final int DT_FL_CANCODER = 8;
+        public static final int DT_BL_CANCODER = 28;
+        public static final int DT_BR_CANCODER = 31; 
+        public static final int DT_FR_CANCODER = 30;
+        public static final int DT_FL_CANCODER = 7;
 
         // Shooter CAN devices
         public static final int SHOOTER_UPPER_TALON = 10;
@@ -85,7 +112,9 @@ public final class Constants {
         public static final int INTAKE_TALON = 14;
 
         // Magazine motors
-        public static final int MAG_TOP_WHEEL = 18;
+        public static final int MAG_TOP_WHEEL = 16;
+        public static final int MAG_R_BELT = 12;
+        public static final int MAG_L_BELT = 13;
         
         // drive train drive / angle motors - sparkmax neo
         public static final int DT_FL_DRIVE = 20;
@@ -139,8 +168,10 @@ public final class Constants {
     //Pnumatics control 2 -
     public static final class PCM1 {
       // Double Solenoid
-      public static final int INTAKE_UP_SOLENOID_PCM = 4;   // test value
-      public static final int INTAKE_DOWN_SOLENOID_PCM = 5; // test value
+      public static final int INTAKE_UP_SOLENOID_PCM = 2;   // test value
+      public static final int INTAKE_DOWN_SOLENOID_PCM = 3; //test value
+      public static final int POSITIONER_UP_SOLENOID_PCM = 0;   // test value
+      public static final int POSITIONER_DOWN_SOLENOID_PCM = 1; // test value
       
     }
 
@@ -172,6 +203,10 @@ public final class Constants {
       //Intake Constants
       public static final class Intake {
         // public static final PneumaticsModuleType MODULETYPE = CTREPCM; //DELETE LATER
+        // PID values
+        public static PIDFController r_beltPIDF = new PIDFController(1.0, 0.0, 0.0, 0.0);  
+        public static PIDFController l_beltPIDF = new PIDFController(1.0, 0.0, 0.0, 0.0); 
+  
         
       }
       
@@ -215,10 +250,18 @@ public final class Constants {
         // public static final double CC_FR_OFFSET = -173.84;
         // public static final double CC_BR_OFFSET = -27.24;
       
+        /* FOR SWERVEBOT
         public static final double CC_FL_OFFSET =   -100.142; //-99.842; //  -99.667;
         public static final double CC_BL_OFFSET =    91.33; //91.83;  //   90.43;
         public static final double CC_FR_OFFSET =   -175.135; //-174.635; // -175.25;
         public static final double CC_BR_OFFSET =   -28.215; //-28.415; //  -28.38;
+        */
+
+        //FOR BETABOT
+        public static final double CC_FL_OFFSET =    -175.60; 
+        public static final double CC_BL_OFFSET =    -115.40; 
+        public static final double CC_FR_OFFSET =   -162.15; 
+        public static final double CC_BR_OFFSET =   158.81; 
 
         // public static final double CC_FL_OFFSET = 0;
         // public static final double CC_BL_OFFSET = 0;
@@ -228,9 +271,9 @@ public final class Constants {
 
         // Kinematics model - wheel offsets from center of robot (0, 0)
         // Left Front given below, symmetry used for others (in feet)
-        // Robot is 21.25 left-right and 24.25 front-back
-        public static final double XwheelOffset = (21.25/12)/2;     
-        public static final double YwheelOffset = (24.25/12)/2;
+        // Betabot is 21.516 left-right and 24.87 front-back
+        public static final double XwheelOffset = (21.516/12)/2;     
+        public static final double YwheelOffset = (24.87/12)/2;
         public static final double wheelCorrectionFactor = 0.9395; //measured on swervebot
         public static final double wheelDiameter = 0.3333333 * wheelCorrectionFactor;   //[ft]  4" wheels
 
@@ -240,10 +283,7 @@ public final class Constants {
     } 
     
     public final static class MagazineSettings {
-      // PID values
-      public static PIDFController h_beltPIDF = new PIDFController(1.0, 0.0, 0.0, 0.0);  
-      public static PIDFController v_beltPIDF = new PIDFController(1.0, 0.0, 0.0, 0.0); 
-
+     
     }
 
     public static final class Shooter {
@@ -267,7 +307,7 @@ public final class Constants {
         upperFWConfig.maxOpenLoopRPM = 2500;  // estimated from 2000 RPM test
         upperFWConfig.gearRatio = 3.0;        // upper is 5:1 (motor:fw)
         upperFWConfig.sensorPhase = false;
-        upperFWConfig.inverted = false;
+        upperFWConfig.inverted = true;
         upperFWConfig.flywheelRadius = 2.0 / 12.0; // feet
         upperFWConfig.pid = new PIDFController(0.08, 0.00015, 4.0, 0); // kP kI kD kFF
         upperFWConfig.pid.setIzone(1800);
@@ -278,7 +318,7 @@ public final class Constants {
         lowerFWConfig.maxOpenLoopRPM = 2500;
         lowerFWConfig.gearRatio = 3.0;         // lower fw gear 3:1  (motor:flywheel)
         lowerFWConfig.sensorPhase = false;
-        lowerFWConfig.inverted = true; 
+        lowerFWConfig.inverted = false; 
         lowerFWConfig.flywheelRadius = 2.0 / 12.0;   //feet 
         lowerFWConfig.pid = new PIDFController(0.08, 0.00015, 4.0, 0);   // kP kI kD kF 
         lowerFWConfig.pid.setIzone(1800);

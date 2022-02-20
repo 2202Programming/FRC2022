@@ -100,7 +100,7 @@ public class Shooter_Subsystem extends SubsystemBase  {
       return (this.vel == other.vel) &&
              (this.rps == other.rps) &&
              (this.angle == other.angle) &&
-             (this.velTol == other .velTol);
+             (this.velTol == other.velTol);
     }
   }
 
@@ -151,7 +151,6 @@ public class Shooter_Subsystem extends SubsystemBase  {
     actual.set(upper_shooter.getRPM(), lower_shooter.getRPM());
     error.minus(target, actual);
     log();
-
     // monitor if the  shooter rpm and angle is ready to shoot
     isAtGoal();
   }

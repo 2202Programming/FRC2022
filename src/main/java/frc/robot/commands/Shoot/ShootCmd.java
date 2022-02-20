@@ -5,12 +5,15 @@
 package frc.robot.commands.Shoot;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.commands.BasicShootCommand;
 import frc.robot.subsystems.SwerveDrivetrain;
 
 public class ShootCmd extends CommandBase {
   /** Creates a new ShootCmd. */
 
   SwerveDrivetrain m_drivetrain;
+  BasicShootCommand shootcmd = new BasicShootCommand();
 
   public ShootCmd(SwerveDrivetrain drivetrain) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -22,6 +25,7 @@ public class ShootCmd extends CommandBase {
   @Override
   public void initialize() {
     m_drivetrain.setShootingMode(true);
+    CommandScheduler.getInstance().schedule(shootcmd);
     m_drivetrain.setDriveModeString("Shooting mode");
   }
 
@@ -33,6 +37,7 @@ public class ShootCmd extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     m_drivetrain.setShootingMode(false);
+    shootcmd.setFinished();
     m_drivetrain.setDriveModeString("NONE");
   }
 
