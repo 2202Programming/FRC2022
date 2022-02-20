@@ -37,15 +37,14 @@ public class auto_cmd_group extends SequentialCommandGroup {
       new ResetPosition(new Pose2d(Constants.Autonomous.RED_START_A_X, Constants.Autonomous.RED_START_A_Y, Constants.Autonomous.RED_START_A_ROT), m_drivetrain, "None"), //CHANGE
       new InstantCommand(m_intake::defaultOn),
       new InstantCommand(m_intake::deploy),
-      new InstantCommand(m_magazine::defaultDriveWheelOn),
-      new auto_pathPlanner_cmd(m_drivetrain, "AutoPath1"), //CHANGE
+      new auto_pathPlanner_cmd(m_drivetrain, "AutoPath1") //CHANGE
       // new ConditionalCommand(new auto_pathPlanner_cmd(m_drivetrain, "AutoPath1"), null, this::isRedPath1),
       // new ConditionalCommand(new auto_pathPlanner_cmd(m_drivetrain, "AutoPath2"), null, this::isRedPath2),
       // new ConditionalCommand(new auto_pathPlanner_cmd(m_drivetrain, "AutoPath3"), null, this::isRedPath3),
       // new ConditionalCommand(new auto_pathPlanner_cmd(m_drivetrain, "AutoPath4"), null, this::isBluePath1),
       // new ConditionalCommand(new auto_pathPlanner_cmd(m_drivetrain, "AutoPath5"), null, this::isBluePath2),
       // new ConditionalCommand(new auto_pathPlanner_cmd(m_drivetrain, "AutoPath6"), null, this::isBluePath3),
-      new BasicShootCommand()
+
     );
   }
 
