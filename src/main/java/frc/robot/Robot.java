@@ -69,7 +69,9 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {}
 
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+    CommandScheduler.getInstance().cancelAll();
+  }
 
   /** This function is called periodically during operator control. */
   @Override

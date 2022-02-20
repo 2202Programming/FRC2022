@@ -144,7 +144,7 @@ public class RobotContainer {
         //.whenPressed(new SwerveDriveTest(drivetrain, 1, 0).withTimeout(8));
 
     // Y - reset Pose
-    if (Constants.HAS_DRIVETRAIN) driverControls.bind(Id.Driver, XboxButton.Y).whenPressed(new InstantCommand(drivetrain::resetPose));
+    if (Constants.HAS_DRIVETRAIN) driverControls.bind(Id.Driver, XboxButton.Y).whenPressed(new InstantCommand(drivetrain::resetAnglePose));
 
     // X - follow path off chooser
     if (Constants.HAS_DRIVETRAIN) {
