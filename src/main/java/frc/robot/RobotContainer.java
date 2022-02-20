@@ -221,8 +221,8 @@ public class RobotContainer {
 
   }
 
-public Command getAutonomousCommand() {
-    return new auto_cmd_group2(drivetrain, magazine, intake, driverControls); 
-}
+  public Command getAutonomousCommand() {
+      return new auto_cmd_group2(drivetrain, magazine, intake, driverControls); 
+  }
   
 }

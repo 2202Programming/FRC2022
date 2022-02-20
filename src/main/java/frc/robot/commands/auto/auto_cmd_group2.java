@@ -6,6 +6,7 @@ package frc.robot.commands.auto;
 
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.BasicShootCommand;
@@ -34,17 +35,19 @@ public class auto_cmd_group2 extends SequentialCommandGroup {
     
     addCommands(
       new IntakeDeployToggle(),
-      new ParallelCommandGroup(
+      new ParallelDeadlineGroup( //group ends when 1st command ends
+        new ParallelCommandGroup( // all conditions run at once; only one should actually drive the path
+          new ConditionalCommand(new auto_pathPlanner_cmd(m_drivetrain, "AutoPath1"), new WaitCommand(0), this::isRedPath1),
+          new ConditionalCommand(new auto_pathPlanner_cmd(m_drivetrain, "AutoPath2"), new WaitCommand(0), this::isRedPath2),
+          new ConditionalCommand(new auto_pathPlanner_cmd(m_drivetrain, "AutoPath3"), new WaitCommand(0), this::isRedPath3),
+          new ConditionalCommand(new auto_pathPlanner_cmd(m_drivetrain, "AutoPath4"), new WaitCommand(0), this::isBluePath1),
+          new ConditionalCommand(new auto_pathPlanner_cmd(m_drivetrain, "AutoPath5"), new WaitCommand(0), this::isBluePath2),
+          new ConditionalCommand(new auto_pathPlanner_cmd(m_drivetrain, "AutoPath6"), new WaitCommand(0), this::isBluePath3)
+        ),
         new IntakeCommand((()-> 0.47), ()-> 0.20,  IntakeMode.LoadCargo),
         new MagazineCommand((()-> 1.0), MagazineMode.LoadCargo)
       ),
-      new ConditionalCommand(new auto_pathPlanner_cmd(m_drivetrain, "AutoPath1"), new WaitCommand(0), this::isRedPath1),
-      new ConditionalCommand(new auto_pathPlanner_cmd(m_drivetrain, "AutoPath2"), new WaitCommand(0), this::isRedPath2),
-      new ConditionalCommand(new auto_pathPlanner_cmd(m_drivetrain, "AutoPath3"), new WaitCommand(0), this::isRedPath3),
-      new ConditionalCommand(new auto_pathPlanner_cmd(m_drivetrain, "AutoPath4"), new WaitCommand(0), this::isBluePath1),
-      new ConditionalCommand(new auto_pathPlanner_cmd(m_drivetrain, "AutoPath5"), new WaitCommand(0), this::isBluePath2),
-      new ConditionalCommand(new auto_pathPlanner_cmd(m_drivetrain, "AutoPath6"), new WaitCommand(0), this::isBluePath3),
-      new BasicShootCommand()
+      new BasicShootCommand().withTimeout(10)
     );
   }
 
