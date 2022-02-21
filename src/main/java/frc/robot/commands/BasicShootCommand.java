@@ -23,6 +23,7 @@ public class BasicShootCommand extends CommandBase{
     final double TESTANGLE = 0.0;
     final double TESTTOL = 0.02;
     int ballCount = 999;
+    int backupCounter = 0;
 
     NetworkTable table;
     NetworkTableEntry ntUpperRPM;   //FW speeds (output)
@@ -41,6 +42,7 @@ public class BasicShootCommand extends CommandBase{
     public enum Stage{
         DoNothing("Do Nothing"),
         WaitingForFlyWheel("Waiting for flywheel"),
+        PreparingToShoot("Preparing to Shoot"),
         Shooting("Shooting");
 
         String name;
@@ -74,7 +76,6 @@ public class BasicShootCommand extends CommandBase{
         prevSS = new ShooterSettings(cmdSS);
 
         stage = Stage.DoNothing;
-        ballCount = ballCount; //SUSpect to change //dumbest line of code I've ever seen.
         shooter.off();
     }
 
@@ -92,16 +93,24 @@ public class BasicShootCommand extends CommandBase{
 
             case WaitingForFlyWheel:
                 if(shooter.isReadyToShoot()){
-                    magazine.driveWheelOn(0.50);
-                    stage = Stage.Shooting;
+                    magazine.driveWheelOff(); //dont advance indexer if shooting wheels aren't ready
+                    stage = Stage.PreparingToShoot;
                 }
             break;
 
+            //back the balls away from wheels a touch
+            case PreparingToShoot:
+                magazine.expellCargo(-0.1);
+                backupCounter++;
+                if (backupCounter > 20) {
+                    backupCounter = 0;
+                    stage = Stage.Shooting;
+                }                
+
             case Shooting:
                 if(!shooter.isReadyToShoot()){
-                    // magazine.driveWheelOff();
                     stage = Stage.WaitingForFlyWheel;
-                }
+                } else magazine.driveWheelOn(1.0);
             break;
         }
     }
