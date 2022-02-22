@@ -54,7 +54,9 @@ public class BasicShootCommand extends CommandBase{
         public String toString(){
             return name;
         }
-    }Stage stage;
+    }
+    
+    Stage stage;
     
     public BasicShootCommand(){
         this.intake = RobotContainer.RC().intake;

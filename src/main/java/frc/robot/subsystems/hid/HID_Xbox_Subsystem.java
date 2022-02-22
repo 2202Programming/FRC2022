@@ -312,4 +312,5 @@ public boolean initialSideboard(SBButton buttonId) {
   int mask = 1 << (buttonId.value -1);
   return (switches & mask) !=0 ? true : false ;
 }
+
 }
