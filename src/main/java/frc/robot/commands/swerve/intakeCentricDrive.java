@@ -44,7 +44,7 @@ public class intakeCentricDrive extends CommandBase {
   private double angle_ki = 0.004;
   private double angle_kd = 0.005;
 
-  private double lastBearing; //stores the last significant bearing angle
+  private Rotation2d lastBearing; //stores the last significant bearing angle
 
   // Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
   final SlewRateLimiter xspeedLimiter = new SlewRateLimiter(3);
@@ -57,8 +57,8 @@ public class intakeCentricDrive extends CommandBase {
   public final String NT_Name = "DC"; 
 
   double log_counter = 0;
-  double m_targetAngle2;
-  double m_angleError2;
+  Rotation2d m_targetAngle;
+  Rotation2d m_angleError;
 
   // Creates a new Single-Pole IIR filter
   // Time constant is 0.1 seconds
@@ -66,10 +66,10 @@ public class intakeCentricDrive extends CommandBase {
   private LinearFilter bearingFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
   private double filteredBearing = 0;
 
-  public intakeCentricDrive(SwerveDrivetrain drivetrain, DriverControls dc2) {
+  public intakeCentricDrive(SwerveDrivetrain drivetrain, DriverControls dc) {
     this.drivetrain = drivetrain;
     addRequirements(drivetrain);
-    this.dc = dc2;
+    this.dc = dc;
     this.kinematics = drivetrain.getKinematics();
 
     intakeAnglePid = new PIDController(angle_kp, angle_ki, angle_kd);
@@ -92,31 +92,23 @@ public class intakeCentricDrive extends CommandBase {
     ySpeed = yspeedLimiter.calculate(dc.getVelocityY()) * DriveTrain.kMaxSpeed;
     rot = rotLimiter.calculate(dc.getXYRotation()) * DriveTrain.kMaxAngularSpeed;
 
-    filteredBearing = bearingFilter.calculate(getJoystickBearing());
+    filteredBearing = bearingFilter.calculate(getJoystickBearing().getRadians());
 
     // Clamp speeds/rot from the Joysticks
     xSpeed = MathUtil.clamp(xSpeed, -Constants.DriveTrain.kMaxSpeed, Constants.DriveTrain.kMaxSpeed);
     ySpeed = MathUtil.clamp(ySpeed, -Constants.DriveTrain.kMaxSpeed, Constants.DriveTrain.kMaxSpeed);
     rot = MathUtil.clamp(rot, -Constants.DriveTrain.kMaxAngularSpeed, Constants.DriveTrain.kMaxAngularSpeed);
 
-    currrentHeading = drivetrain.getPose().getRotation();
-
     // set goal of angle PID to be commanded bearing (in degrees) from joysticks
-    m_targetAngle2 = filteredBearing;
-    double m_currentAngle2 = drivetrain.getPose().getRotation().getDegrees(); // from -180 to 180
-    m_angleError2 = m_targetAngle2 - m_currentAngle2;
-    intakeAnglePid.setSetpoint(m_targetAngle2);
-    rot = intakeAnglePid.calculate(m_currentAngle2);
+    m_targetAngle = new Rotation2d(filteredBearing);
+    Rotation2d m_currentAngle = drivetrain.getPose().getRotation(); // from -Pi to Pi
+    m_angleError = m_targetAngle;
+    m_angleError.minus(m_currentAngle);
+    intakeAnglePid.setSetpoint(m_targetAngle.getDegrees()); //PID already tuned in degrees
+    rot = intakeAnglePid.calculate(m_currentAngle.getDegrees());
     
-    // deal with continuity issue across 0 // Is this necessary?  It's happening after the pid calculation....
-    if (m_angleError2 < -180) {
-      m_targetAngle2 += 360;
-    }
-    if (m_angleError2 > 180) {
-      m_targetAngle2 -= 360;
-    }
     output_states = kinematics
-    .toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, currrentHeading));
+    .toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, m_currentAngle));
 
   }
 
@@ -136,21 +128,20 @@ public class intakeCentricDrive extends CommandBase {
     log_counter++;
     if ((log_counter%20)==0) {
     // update network tables
-      NTTargetAngle.setValue(m_targetAngle2);
-      NTangleError.setDouble(m_angleError2);
+      NTTargetAngle.setDouble(m_targetAngle.getDegrees());
+      NTangleError.setDouble(m_angleError.getDegrees());
     }
   }
 
-  private double getJoystickBearing(){
-    //take joystick X and Y inputs (field centric space) and return an expected direction of travel (-180 to 180 degrees)
-    double joystickBearing = 0;
-    joystickBearing = Math.atan2(ySpeed, xSpeed);
+  private Rotation2d getJoystickBearing(){
+    //take joystick X and Y inputs (field centric space) and return an expected direction of travel (-Pi to Pi Rad)
+    Rotation2d joystickBearing = new Rotation2d(Math.atan2(ySpeed, xSpeed));
     
-    if(Math.abs(xSpeed) >= 0.05 || Math.abs(ySpeed) >= 0.05){
+    if(Math.abs(xSpeed) >= 0.05 || Math.abs(ySpeed) >= 0.05){ //if the joysticks aren't moved out of deadzone, just return last bearing.
       lastBearing = joystickBearing;
     } else {
       joystickBearing = lastBearing;
     }
-    return Math.toDegrees(joystickBearing);
+    return joystickBearing;
   }
 }
