@@ -71,7 +71,6 @@ public class SwerveDrivetrain extends SubsystemBase {
   private NetworkTableEntry velocityFR;
   private NetworkTableEntry velocityBL;
   private NetworkTableEntry velocityBR;
-  private NetworkTableEntry driveString;
   
   double drive_kP = DriveTrain.drivePIDF.getP();
   double drive_kI = DriveTrain.drivePIDF.getI();
@@ -128,8 +127,6 @@ public class SwerveDrivetrain extends SubsystemBase {
     velocityFR = table.getEntry("/Velocity Front Right");
     velocityBL = table.getEntry("/Velocity Back Left");
     velocityBR = table.getEntry("/Velocity Back Right");
-    driveString = table.getEntry("/DriveMode");
-
 
     // display PID coefficients on SmartDashboard if tuning drivetrain
     /*

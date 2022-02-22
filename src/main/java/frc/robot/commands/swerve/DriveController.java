@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package frc.robot.commands.swerve;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -10,17 +10,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.RobotContainer;
-import frc.robot.commands.swerve.fieldCentricDrive;
-import frc.robot.commands.swerve.hubCentricDrive;
-import frc.robot.commands.swerve.intakeCentricDrive;
-import frc.robot.commands.swerve.robotCentricDrive;
+import frc.robot.commands.Shoot.BasicShootCommand;
 import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.Magazine_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.ifx.DriverControls;
 import frc.robot.subsystems.shooter.Shooter_Subsystem;
 
-public class driveController extends CommandBase {
+public class DriveController extends CommandBase {
 
   public enum DriveModes {
     robotCentric("Robot Centric"),
@@ -41,10 +38,10 @@ public class driveController extends CommandBase {
   Shooter_Subsystem shooter;
   Magazine_Subsystem magazine;
   Limelight_Subsystem limelight;
-  robotCentricDrive m_robotCentricDrive;
-  fieldCentricDrive m_fieldCentricDrive;
-  hubCentricDrive m_hubCentricDrive;
-  intakeCentricDrive m_intakeCentricDrive;
+  RobotCentricDrive m_robotCentricDrive;
+  FieldCentricDrive m_fieldCentricDrive;
+  HubCentricDrive m_hubCentricDrive;
+  IntakeCentricDrive m_intakeCentricDrive;
   BasicShootCommand m_basicShootCommand;
 
   Command currentCmd;
@@ -60,7 +57,7 @@ public class driveController extends CommandBase {
   public final String NT_Name = "DC"; // expose data under Drive Controller table
   int log_counter = 0;
 
-  public driveController() {
+  public DriveController() {
     this.drivetrain = RobotContainer.RC().drivetrain;
     this.dc = RobotContainer.RC().driverControls;
     this.shooter = RobotContainer.RC().shooter;
@@ -73,10 +70,10 @@ public class driveController extends CommandBase {
 
   @Override
   public void initialize() {
-    m_robotCentricDrive = new robotCentricDrive(drivetrain, dc);
-    m_fieldCentricDrive = new fieldCentricDrive(drivetrain, dc);
-    m_hubCentricDrive = new hubCentricDrive(drivetrain, dc, limelight);
-    m_intakeCentricDrive = new intakeCentricDrive(drivetrain, dc);
+    m_robotCentricDrive = new RobotCentricDrive(drivetrain, dc);
+    m_fieldCentricDrive = new FieldCentricDrive(drivetrain, dc);
+    m_hubCentricDrive = new HubCentricDrive(drivetrain, dc, limelight);
+    m_intakeCentricDrive = new IntakeCentricDrive(drivetrain, dc);
     m_basicShootCommand = new BasicShootCommand();
 
     currentCmd = m_fieldCentricDrive;

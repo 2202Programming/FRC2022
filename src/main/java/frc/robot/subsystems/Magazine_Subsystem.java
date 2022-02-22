@@ -4,26 +4,19 @@
 
 package frc.robot.subsystems;
 
-
-import static frc.robot.Constants.DigitalIO;
-
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-
-
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import static frc.robot.Constants.CAN;
+import frc.robot.Constants.CAN;
+import frc.robot.Constants.DigitalIO;
 
 public class Magazine_Subsystem extends SubsystemBase {
-  
-  
-  /** Creates a new Magazine2. */
+  /** Creates a new Magazine. */
   private TalonSRX top_wheel;
   
-  //private CANSparkMax v_belt = new CANSparkMax(CAN.MAG_v_belt, MotorType.kBrushless);
-  
+
   /*Definitions*/
   final DigitalInput lightGate1 = new DigitalInput(DigitalIO.MAGAZINE_GATE1);
   final DigitalInput lightGate2 = new DigitalInput(DigitalIO.MAGAZINE_GATE2);
@@ -68,7 +61,5 @@ public class Magazine_Subsystem extends SubsystemBase {
   public boolean isGate3Blocked(){
     return lightGate3.get();
   }
-  //TODO Think about the API to expose for writing commands
-  // TODO - Postion or velocity control?
 
 }

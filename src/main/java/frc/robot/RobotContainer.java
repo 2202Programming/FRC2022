@@ -9,8 +9,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 //import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.DriverPrefs;
-import frc.robot.commands.swerve.LimelightDriveCmd;
-import frc.robot.commands.driveController;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.IntakeCommand.IntakeMode;
 import frc.robot.commands.IntakeDeployToggle;
@@ -18,11 +16,9 @@ import frc.robot.commands.MagazineCommand;
 import frc.robot.commands.MagazineCommand.MagazineMode;
 import frc.robot.commands.PositionerToggle;
 import frc.robot.commands.Shoot.BasicShootCommand;
-import frc.robot.commands.Shoot.ShootCmd;
 import frc.robot.commands.auto.auto_cmd_group2;
 import frc.robot.commands.auto.auto_pathPlanner_cmd;
-import frc.robot.commands.BasicShootCommand;
-//import frc.robot.commands.swerve.DriveCmd;
+import frc.robot.commands.swerve.DriveController;
 import frc.robot.commands.swerve.LimelightDriveCmd;
 //import frc.robot.commands.test.dumbshooter;
 //import frc.robot.commands.test.SwerveDriveTest;
@@ -41,15 +37,6 @@ import frc.robot.subsystems.ifx.DriverControls.Id;
 import frc.robot.subsystems.shooter.Shooter_Subsystem;
 import frc.robot.ux.Dashboard;
 
-/**
- * This class is where the bulk of the robot should be declared. Since
- * Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in
- * the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of
- * the robot (including
- * subsystems, commands, and button mappings) should be declared here.
- */
 public class RobotContainer {
   static RobotContainer rc;
 
@@ -69,7 +56,7 @@ public class RobotContainer {
 
   public static String auto_path_name = "NONE";
 
-  private static driveController m_driveController = null;
+  private static DriveController m_driveController = null;
 
   //modifiable commands
   //DriveCmd swd;
@@ -103,7 +90,7 @@ public class RobotContainer {
     if (Constants.HAS_DRIVETRAIN && Constants.HAS_SHOOTER && Constants.HAS_MAGAZINE) {
       //swd = new DriveCmd(drivetrain, driverControls);
       //swd = new LimelightDriveCmd(drivetrain, driverControls, limelight);
-      m_driveController = new driveController();
+      m_driveController = new DriveController();
       CommandScheduler.getInstance().schedule(m_driveController);
       //drivetrain.setDefaultCommand(m_driveController);
     }

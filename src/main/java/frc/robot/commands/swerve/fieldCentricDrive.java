@@ -21,7 +21,7 @@ import frc.robot.subsystems.ifx.DriverControls;
 */
 
 
-public class fieldCentricDrive extends CommandBase {
+public class FieldCentricDrive extends CommandBase {
 
   final SwerveDrivetrain drivetrain;
   final DriverControls dc;
@@ -39,7 +39,7 @@ public class fieldCentricDrive extends CommandBase {
 
   double log_counter = 0;
 
-  public fieldCentricDrive(SwerveDrivetrain drivetrain, DriverControls dc2) {
+  public FieldCentricDrive(SwerveDrivetrain drivetrain, DriverControls dc2) {
     this.drivetrain = drivetrain;
     addRequirements(drivetrain);
     this.dc = dc2;

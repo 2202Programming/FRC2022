@@ -25,10 +25,10 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CAN;
-import frc.robot.subsystems.util.MonitoredSubsystemBase;
 
-public class Sensors_Subsystem extends MonitoredSubsystemBase implements Gyro {
+public class Sensors_Subsystem extends SubsystemBase implements Gyro {
 
   public enum YawSensor {
     kNavX, kADXRS450, kBlended
@@ -178,7 +178,7 @@ public class Sensors_Subsystem extends MonitoredSubsystemBase implements Gyro {
   }
 
   @Override
-  public void monitored_periodic() {
+  public void periodic() {
     // This method will be called once per scheduler run
 
     if(m_ahrs.isMagnetometerCalibrated()){ // We will only get valid fused headings if the magnetometer is calibrated

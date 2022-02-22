@@ -26,7 +26,7 @@ import frc.robot.subsystems.ifx.DriverControls;
 */
 
 
-public class intakeCentricDrive extends CommandBase {
+public class IntakeCentricDrive extends CommandBase {
 
   final SwerveDrivetrain drivetrain;
   final DriverControls dc;
@@ -66,7 +66,7 @@ public class intakeCentricDrive extends CommandBase {
   private LinearFilter bearingFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
   private double filteredBearing = 0;
 
-  public intakeCentricDrive(SwerveDrivetrain drivetrain, DriverControls dc) {
+  public IntakeCentricDrive(SwerveDrivetrain drivetrain, DriverControls dc) {
     this.drivetrain = drivetrain;
     addRequirements(drivetrain);
     this.dc = dc;

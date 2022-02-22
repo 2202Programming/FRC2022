@@ -28,11 +28,6 @@ public class Positioner_Subsystem extends SubsystemBase {
     public Positioner_Subsystem(){
         
     }
-
-    //Turn Intake Motor On by sending a double value
-
-    //Turn Intake Motor Off by setting a double value
-
     //Deploy arm mechanism using a Double Solenoids
     public void deploy() {
         positioner_solenoid.set(UPWARD);
@@ -48,9 +43,4 @@ public class Positioner_Subsystem extends SubsystemBase {
       return ( positioner_solenoid.get() == UPWARD); 
     }
 
-    //TODO - how is this different than off()  above? ALSO, prefer shorter off/on 
-    // to avoid intake.intakeOff()    intake.off()   reads better
-    //TODO  is intakeIsOn variable needed, could you create a functions
-    // that looks at the motor state?
-    //Among Us
 }

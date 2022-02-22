@@ -96,8 +96,8 @@ public final class Constants {
 
         // Magazine motors
         public static final int MAG_TOP_WHEEL = 16;
-        public static final int MAG_R_BELT = 12;
-        public static final int MAG_L_BELT = 13;
+        public static final int MAG_R_SIDE_MTR = 12;
+        public static final int MAG_L_SIDE_MTR = 13;
         
         // drive train drive / angle motors - sparkmax neo
         public static final int DT_FL_DRIVE = 20;
@@ -185,10 +185,9 @@ public final class Constants {
 
       //Intake Constants
       public static final class Intake {
-        // public static final PneumaticsModuleType MODULETYPE = CTREPCM; //DELETE LATER
-        // PID values
-        public static PIDFController r_beltPIDF = new PIDFController(1.0, 0.0, 0.0, 0.0);  
-        public static PIDFController l_beltPIDF = new PIDFController(1.0, 0.0, 0.0, 0.0); 
+        // PID values to get copied to the hardware
+        public static PIDFController r_side_mtrPIDF = new PIDFController(1.0, 0.0, 0.0, 0.0);  
+        public static PIDFController l_side_mtrPIDF = new PIDFController(1.0, 0.0, 0.0, 0.0); 
   
         
       }

@@ -20,7 +20,7 @@ import frc.robot.subsystems.ifx.DriverControls;
 */
 
 
-public class robotCentricDrive extends CommandBase {
+public class RobotCentricDrive extends CommandBase {
 
   final SwerveDrivetrain drivetrain;
   final DriverControls dc;
@@ -37,7 +37,7 @@ public class robotCentricDrive extends CommandBase {
 
   double log_counter = 0;
 
-  public robotCentricDrive(SwerveDrivetrain drivetrain, DriverControls dc2) {
+  public RobotCentricDrive(SwerveDrivetrain drivetrain, DriverControls dc2) {
     this.drivetrain = drivetrain;
     addRequirements(drivetrain);
     this.dc = dc2;

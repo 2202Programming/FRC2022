@@ -38,20 +38,20 @@ public class Intake_Subsystem extends SubsystemBase {
                 PCM1.INTAKE_DOWN_SOLENOID_PCM);
     final DigitalInput intake_lightGate = new DigitalInput(DigitalIO.INTAKE_GATE);
 
-    private CANSparkMax r_belt = new CANSparkMax(CAN.MAG_R_BELT, MotorType.kBrushless);
-    private CANSparkMax l_belt = new CANSparkMax(CAN.MAG_L_BELT, MotorType.kBrushless);
+    private CANSparkMax r_side_mtr = new CANSparkMax(CAN.MAG_R_SIDE_MTR, MotorType.kBrushless);
+    private CANSparkMax l_side_mtr = new CANSparkMax(CAN.MAG_L_SIDE_MTR, MotorType.kBrushless);
 
     //Constructor
     public Intake_Subsystem(){
-        Intake.r_beltPIDF.copyTo(r_belt.getPIDController(), slot);
-        Intake.l_beltPIDF.copyTo(l_belt.getPIDController(), slot);
-        r_belt.clearFaults();
-        r_belt.restoreFactoryDefaults();
-        r_belt.setInverted(true);
+        Intake.r_side_mtrPIDF.copyTo(r_side_mtr.getPIDController(), slot);
+        Intake.l_side_mtrPIDF.copyTo(l_side_mtr.getPIDController(), slot);
+        r_side_mtr.clearFaults();
+        r_side_mtr.restoreFactoryDefaults();
+        r_side_mtr.setInverted(true);
     
-        l_belt.clearFaults();
-        l_belt.restoreFactoryDefaults();
-        l_belt.setInverted(false);
+        l_side_mtr.clearFaults();
+        l_side_mtr.restoreFactoryDefaults();
+        l_side_mtr.setInverted(false);
     }
 
     //Set the Intake Mode
@@ -59,23 +59,23 @@ public class Intake_Subsystem extends SubsystemBase {
     //Turn Intake Motor On by sending a double value
     public void on(double intakeMotorStrength, double sideMotorStrength) {
         intake_mtr.set(TalonSRXControlMode.PercentOutput, intakeMotorStrength);
-        r_belt.set(sideMotorStrength);
-        l_belt.set(sideMotorStrength);
+        r_side_mtr.set(sideMotorStrength);
+        l_side_mtr.set(sideMotorStrength);
     }
 
     public void defaultOn(){
         double intakeMotorStrength = 0.47;
         double sideMotorStrength = 0.2;
         intake_mtr.set(TalonSRXControlMode.PercentOutput, intakeMotorStrength);
-        r_belt.set(sideMotorStrength);
-        l_belt.set(sideMotorStrength);
+        r_side_mtr.set(sideMotorStrength);
+        l_side_mtr.set(sideMotorStrength);
     }
 
     //Turn Intake Motor Off by setting a double value
     public void off() {
         intake_mtr.set(TalonSRXControlMode.PercentOutput, 0.0);
-        r_belt.set(0);
-        l_belt.set(0);
+        r_side_mtr.set(0);
+        l_side_mtr.set(0);
     }
 
     //Deploy arm mechanism using a Double Solenoids
@@ -97,9 +97,4 @@ public class Intake_Subsystem extends SubsystemBase {
     public boolean isDeployed() {
       return ( intake_solenoid.get() == DEPLOY); 
     }
-
-    //TODO - how is this different than off()  above? ALSO, prefer shorter off/on 
-    // to avoid intake.intakeOff()    intake.off()   reads better
-    //TODO  is intakeIsOn variable needed, could you create a functions
-    // that looks at the motor state?
 }

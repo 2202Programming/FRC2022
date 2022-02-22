@@ -27,7 +27,7 @@ import frc.robot.subsystems.ifx.DriverControls;
 */
 
 
-public class hubCentricDrive extends CommandBase {
+public class HubCentricDrive extends CommandBase {
 
   final SwerveDrivetrain drivetrain;
   final DriverControls dc;
@@ -71,7 +71,7 @@ public class hubCentricDrive extends CommandBase {
   Rotation2d angleError;
   Rotation2d targetAngle;
 
-  public hubCentricDrive(SwerveDrivetrain drivetrain, DriverControls dc, Limelight_Subsystem limelight) {
+  public HubCentricDrive(SwerveDrivetrain drivetrain, DriverControls dc, Limelight_Subsystem limelight) {
     this.drivetrain = drivetrain;
     addRequirements(drivetrain);
     this.dc = dc;
