@@ -58,20 +58,23 @@ public class BasicShootCommand extends CommandBase{
         this.intake = RobotContainer.RC().intake;
         this.shooter = RobotContainer.RC().shooter;
         this.magazine = RobotContainer.RC().magazine;
-    }
 
-    @Override
-    public void initialize(){
         table = NetworkTableInstance.getDefault().getTable("ShootCommand");
         ntBallVel = table.getEntry("BallVel");
         ntBallRPS = table.getEntry("BallRPS");
         shooterState = table.getEntry("ShooterState");
+        
 
-        ntBallVel.setDouble(0);
-        ntBallRPS.setDouble(0);
+        ntBallVel.setDefaultDouble(20.0);
+        ntBallRPS.setDefaultDouble(0);
+    }
 
+    @Override
+    public void initialize(){
         cmdSS = new ShooterSettings(); //defaultShooterSettings SUS 
         prevSS = new ShooterSettings(cmdSS);
+
+        cmdSS.vel = ntBallVel.getDouble(0);
 
         stage = Stage.DoNothing;
         ballCount = ballCount; //SUSpect to change //dumbest line of code I've ever seen.
@@ -85,14 +88,12 @@ public class BasicShootCommand extends CommandBase{
         switch(stage){
             case DoNothing:
                 magazine.driveWheelOff();
-                cmdSS = defaultShooterSettings;
                 shooter.spinup(cmdSS);
                 stage = Stage.WaitingForFlyWheel;
             break;
 
             case WaitingForFlyWheel:
                 if(shooter.isReadyToShoot()){
-                    magazine.driveWheelOn(0.50);
                     stage = Stage.Shooting;
                 }
             break;
