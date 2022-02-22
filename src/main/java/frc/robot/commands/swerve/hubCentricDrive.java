@@ -1,10 +1,7 @@
 package frc.robot.commands.swerve;
 
-import org.opencv.core.Mat;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -39,7 +36,6 @@ public class hubCentricDrive extends CommandBase {
 
   // output to Swerve Drivetrain
   double xSpeed, ySpeed, rot;
-  Rotation2d currrentHeading;
   SwerveModuleState[] output_states;
 
   // PID for odometery-based heading to a target
@@ -71,9 +67,9 @@ public class hubCentricDrive extends CommandBase {
   public final String NT_Name = "DC"; // expose data under Drive Controller table
 
   double log_counter = 0;
-  double currentAngle;
-  double angleError;
-  double targetAngle;
+  Rotation2d currentAngle;
+  Rotation2d angleError;
+  Rotation2d targetAngle;
 
   public hubCentricDrive(SwerveDrivetrain drivetrain, DriverControls dc, Limelight_Subsystem limelight) {
     this.drivetrain = drivetrain;
@@ -83,6 +79,7 @@ public class hubCentricDrive extends CommandBase {
     this.limelight = limelight;
 
     anglePid = new PIDController(angle_kp, angle_ki, angle_kd);
+    anglePid.enableContinuousInput(-Math.PI, Math.PI);
     limelightPid = new PIDController(limelight_kP, limelight_kI, limelight_kD);
 
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
@@ -108,20 +105,16 @@ public class hubCentricDrive extends CommandBase {
     ySpeed = MathUtil.clamp(ySpeed, -Constants.DriveTrain.kMaxSpeed, Constants.DriveTrain.kMaxSpeed);
     rot = MathUtil.clamp(rot, -Constants.DriveTrain.kMaxAngularSpeed, Constants.DriveTrain.kMaxAngularSpeed);
 
-    currrentHeading = drivetrain.getPose().getRotation();
-
     rot = 0;
-    // set goal of angle PID to be heading (in degrees) from current position to
+    // set goal of angle PID to be heading (in rad) from current position to
     // centerfield
     targetAngle = getHeading2Target(drivetrain.getPose(), centerField);
-    targetAngle = targetAngle + 180; // flip since shooter is on "back" of robot
-    if(targetAngle > 180){
-      targetAngle = targetAngle - 360;
-    }
-    currentAngle = drivetrain.getPose().getRotation().getDegrees(); // from -180 to 180
-    angleError = targetAngle - currentAngle;
-    anglePid.setSetpoint(targetAngle);
-    rot = anglePid.calculate(currentAngle);
+    targetAngle.plus(new Rotation2d(Math.PI)); // flip since shooter is on "back" of robot, bound to -pi to +pi
+    currentAngle = drivetrain.getPose().getRotation(); // from -pi to pi
+    angleError = targetAngle;
+    angleError.minus(currentAngle);
+    anglePid.setSetpoint(targetAngle.getDegrees()); //PID was tuned in degrees already
+    rot = anglePid.calculate(currentAngle.getDegrees());
 
     if (limelight.getTarget() && limelight.getLEDStatus()) {
       // if limelight is available, override rotation input from odometery to limelight
@@ -130,18 +123,10 @@ public class hubCentricDrive extends CommandBase {
       // update rotation and calulate new output-states
       rot = llLimiter.calculate(limelightPidOutput);
     }
-    
-    // deal with continuity issue across 0 //not sure this is necessary, it's happening after PID calculations...
-    if (angleError < -180) {
-      targetAngle += 360;
-    }
-    if (angleError > 180) {
-      targetAngle -= 360;
-    }
-    output_states = kinematics
-        .toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, currrentHeading));
 
-    }
+    output_states = kinematics
+        .toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, currentAngle));
+  }
 
   @Override
   public void execute() {
@@ -156,13 +141,9 @@ public class hubCentricDrive extends CommandBase {
   }
 
   // takes 2 positions, gives heading from current point to target (in degrees)
-  double getHeading2Target(Pose2d current, Pose2d target) {
+  Rotation2d getHeading2Target(Pose2d current, Pose2d target) {
     // from -PI to +PI
-    double theta = Math.atan2(target.getY() - current.getY(), target.getX() - current.getX());
-
-    // convert this to degrees in the range -180 to 180
-    theta = Math.toDegrees(theta);
-    return theta;
+    return new Rotation2d(Math.atan2(target.getY() - current.getY(), target.getX() - current.getX()));
   }
 
 
@@ -171,7 +152,7 @@ public class hubCentricDrive extends CommandBase {
     if ((log_counter%20)==0) {
     // update network tables
     hubCentricTarget.setValue(targetAngle);
-    NTangleError.setDouble(angleError);
+    NTangleError.setDouble(angleError.getDegrees());
     }
   }
 }
