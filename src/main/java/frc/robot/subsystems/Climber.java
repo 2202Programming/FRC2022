@@ -8,8 +8,6 @@ import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.Counter;
-import edu.wpi.first.wpilibj.PWM;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants.CAN;
@@ -24,18 +22,17 @@ public class Climber extends SubsystemBase{
     int slot = 0;
 
     // raise/lower controllers
-    private CANSparkMax left_motor_ext= new CANSparkMax(CAN.CMB_LO_Extend, MotorType.kBrushless);
-    private CANSparkMax right_motor_ext = new CANSparkMax(CAN.CMB_RO_Extend, MotorType.kBrushless);
+    private CANSparkMax left_motor_ext= new CANSparkMax(CAN.CMB_LEFT_Extend, MotorType.kBrushless);
+    private CANSparkMax right_motor_ext = new CANSparkMax(CAN.CMB_RIGHT_Extend, MotorType.kBrushless);
     private SparkMaxPIDController left_pidController_ext;
     private SparkMaxPIDController right_pidController_ext;
-    private RelativeEncoder left_Encoder_ext;
-    private RelativeEncoder right_Encoder_ext;
-    private PWM left_PWM_rot;
-    private PWM right_PWM_rot;
-    private Counter left_Counter_rot;
-    private Counter right_Counter_rot;
+
     private ArmRotation left_Arm;
     private ArmRotation right_Arm;
+    private CANSparkMax left_motor_rot = new CANSparkMax(CAN.CMB_LEFT_Rotate, MotorType.kBrushed);
+    private CANSparkMax right_motor_rot = new CANSparkMax(CAN.CMB_RIGHT_Rotate, MotorType.kBrushed);
+    private SparkMaxPIDController left_pidController_rot;
+    private SparkMaxPIDController right_pidController_rot;
 
 
     // rotation arm controller (outer arms rotate)
@@ -55,9 +52,13 @@ public class Climber extends SubsystemBase{
         // ClimbSettings.armPID.copyTo(l_rotator.getPIDController(), slot);
         // ClimbSettings.armPID.copyTo(r_rotator.getPIDController(), slot);
         // // Arm extension PIDS
-        ClimbSettings.innerPID.copyTo(left_motor_ext.getPIDController(), slot);
-        ClimbSettings.innerPID.copyTo(right_motor_ext.getPIDController(), slot);
+        ClimbSettings.extendPID.copyTo(left_motor_ext.getPIDController(), slot);
+        ClimbSettings.extendPID.copyTo(right_motor_ext.getPIDController(), slot);
         right_motor_ext.setInverted(true);
+
+        ClimbSettings.rotatePID.copyTo(left_motor_rot.getPIDController(), slot);
+        ClimbSettings.rotatePID.copyTo(right_motor_rot.getPIDController(), slot);
+        right_motor_rot.setInverted(true);
 
         // NT stuff
         table = NetworkTableInstance.getDefault().getTable("Climber");
@@ -69,24 +70,17 @@ public class Climber extends SubsystemBase{
         left_pidController_ext = left_motor_ext.getPIDController();
         right_pidController_ext = right_motor_ext.getPIDController();
         
-        left_Encoder_ext = left_motor_ext.getEncoder();
-        right_Encoder_ext = right_motor_ext.getEncoder();
+        left_motor_ext.getEncoder().setPosition(0);
+        right_motor_ext.getEncoder().setPosition(0);
 
-        left_Encoder_ext.setPosition(0);
-        right_Encoder_ext.setPosition(0);     
-        
+        left_pidController_rot = left_motor_ext.getPIDController();
+        right_pidController_rot = right_motor_ext.getPIDController();
+ 
+        left_motor_rot.getEncoder().setPosition(0);
+        right_motor_rot.getEncoder().setPosition(0);
 
-        left_PWM_rot = new PWM(5); //PWM pin 0
-        right_PWM_rot = new PWM(6); //PWM pin 1
-        left_Counter_rot = new Counter(Counter.Mode.kTwoPulse); //Setting mode of counter to external direction https://docs.wpilib.org/en/stable/docs/software/hardware-apis/sensors/counters.html
-        right_Counter_rot = new Counter(Counter.Mode.kTwoPulse); 
-        left_Counter_rot.setUpSource(0); //DIO pin 0
-        right_Counter_rot.setUpSource(1); //DIO pin 1
-        left_Counter_rot.clearDownSource(); // tricking the systems that we only have one channel encoder
-        right_Counter_rot.clearDownSource(); // tricking the systems that we only have one channel encodert
-        // .01(1%) is the speed and 2 degrees is the tolerance
-        left_Arm = new ArmRotation(left_Counter_rot, left_PWM_rot, 0.25, 2, table.getSubTable("left_arm_rotation"));
-        right_Arm = new ArmRotation(right_Counter_rot, right_PWM_rot, -0.25, 2, table.getSubTable("right_arm_rotation"));
+        left_Arm = new ArmRotation(table.getSubTable("left_arm_rotation"), left_pidController_rot);
+        right_Arm = new ArmRotation(table.getSubTable("right_arm_rotation"), right_pidController_rot);
     }
 
 
@@ -148,13 +142,13 @@ public class Climber extends SubsystemBase{
         // 174.9 counter/rotation on motor
         // Motor is connected to a 20 tooth pulley that drives
         //    a 42 tooth pulley
-        left_Arm.set((int)degrees);
-        right_Arm.set((int)degrees);
 
         // changes the angle of the ? by this many degrees
         // l_rotator.getPIDController().setReference(degrees, ControlType.kPosition);
         // r_rotator.getPIDController().setReference(degrees, ControlType.kPosition);
-
+        float counts = (float) degrees;
+        left_Arm.set(counts);
+        right_Arm.set(counts);
     }
 
     public void stop() {
@@ -187,68 +181,20 @@ public class Climber extends SubsystemBase{
     }
 }
 
-
 class ArmRotation {
-    private final Counter m_counter;
-    private final PWM m_motor;
-    private final double speed; // max motor speed (-1 to 1)
-    private final int tolerance; //[counts] expected 1 to 3 counts
-    private int direction; // plus or minus 1 based on forwards/backwards
-    boolean done = true;   // catches when we hit target
-
-    private int curPos = 0;
-    private int prevPos = 0;
-    private int desCount = 0;
     private NetworkTableEntry sdb_desired;
-    private NetworkTableEntry sdb_actual;
-    private NetworkTableEntry sdb_counter_raw;
-    private NetworkTableEntry sdb_error;
+    private SparkMaxPIDController pidController_rot;
 
-    public ArmRotation(Counter m_counter, PWM m_motor, double speed, int tolerance, NetworkTable table) {
-        this.m_counter = m_counter;
-        this.m_counter.reset();
-        this.m_motor = m_motor;
-        this.speed = speed;
-        this.tolerance = tolerance;
+    public ArmRotation(NetworkTable table, SparkMaxPIDController pidController_rot) {
+        this.pidController_rot = pidController_rot;
         this.sdb_desired = table.getEntry("desired");
-        this.sdb_actual = table.getEntry("actual");
-        this.sdb_counter_raw = table.getEntry("counter_raw");
-        this.sdb_error = table.getEntry("error");
     }
-
     public void periodic() {
-        int count = m_counter.get();
 
-        if ( count < desCount )  {
-            m_motor.setSpeed(direction * speed);
-        } else {
-            m_motor.setSpeed(0);
-            if (!done) {
-                prevPos += direction*desCount;
-                count = 0;
-                desCount = 0;
-                done = true;
-            }
-        }
-        curPos = prevPos + direction * count;
-        sdb_actual.setDouble(curPos);
-        sdb_counter_raw.setDouble(count);
-        sdb_error.setDouble(desCount - count);
     }
 
-    public void set(int desiredPos) {
-        if (desiredPos == prevPos) return;
-        m_counter.reset();
-        //calculate direction and number of counts to get where we want.
-        if (desiredPos >= curPos) {
-            direction = 1; 
-            desCount = desiredPos - curPos;
-        } 
-        else {
-            direction = -1;
-            desCount = curPos - desiredPos;
-        }
-        done = false; 
-        sdb_desired.setDouble(desCount);
+    public void set(double counts) {
+        pidController_rot.setReference(counts, CANSparkMax.ControlType.kPosition);
+        sdb_desired.setDouble(counts);
     }
 }

@@ -43,14 +43,10 @@ public final class Constants {
         public static final int DT_FL_CANCODER = 8;
 
         // Climber Arms - L/R left/right I/O inner/outer
-        public static final int CMB_L_Rotate = 10;
-        public static final int CMB_R_Rotate = 11;
-        public static final int CMB_LI_Extend = 12;
-        public static final int CMB_RI_Extend = 13;
-        public static final int CMB_LO_Extend = 14;
-        public static final int CMB_RO_Extend = 15;
-        //public static final int CMB_RIGHT_Extend = 0;
-        //public static final int CMB_LEFT_Extend = 0;
+        public static final int CMB_LEFT_Rotate = 10;
+        public static final int CMB_RIGHT_Rotate = 11;
+        public static final int CMB_RIGHT_Extend = 14;
+        public static final int CMB_LEFT_Extend = 15;
         
         
         // drive train drive / angle motors - sparkmax neo
@@ -138,9 +134,8 @@ public final class Constants {
 
     public static final class ClimbSettings {
         //TODO example pid init, climber may have a few - DPL  1/15/22
-        public static PIDFController armPID = new PIDFController(1, 0, 0, 0);
-        public static PIDFController innerPID = new PIDFController(1, 0, 0, 0);
-        public static PIDFController outerPID = new PIDFController(1, 0, 0, 0);
+        public static PIDFController rotatePID = new PIDFController(1, 0, 0, 0);
+        public static PIDFController extendPID = new PIDFController(1, 0, 0, 0);
 
         // TODO: Check
         // Extension length and rotation needed to hit bars
