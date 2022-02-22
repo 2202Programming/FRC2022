@@ -104,13 +104,13 @@ public class Climber extends SubsystemBase{
     }
     // @param inches from extender absolute position
     public void setExtension(double inches) {
-        // TODO Add conversion factor. (use setPositionConversionFactor()???)
+        double count = ((25.4*36*42)/(5*24))*inches; //25.4 is mm per inch, 36 is revs per 1 pev with gearbox, 42 is counts per rev and 5 is mm per 1 tooth
         //   42 Counts per rev, but SmartMotion was showing rotations not counts
         //   Connected to a 36:1 gearbox that could change
         //   Gearbox connected to a 24 tooth pulley that is connected to a linear belt
         //   Need to ask mechs to do analysis to convert 24 tooth pulley to linear distance
 
-        float count =  (float) inches; // convert command inches to encoder counts
+        
         left_pidController_ext.setReference(count, CANSparkMax.ControlType.kPosition);
         right_pidController_ext.setReference(count, CANSparkMax.ControlType.kPosition);
     }
@@ -144,10 +144,9 @@ public class Climber extends SubsystemBase{
      * @param degrees +/- degrees from vertical
      */
     public void setRotation(double degrees) {
-        //TODO Implement conversion factor.
+        degrees = (42*174.9)/(360*20); //42 and 20 are the tooth pullies, 174.9 is the counts per rot and 360 is the degrees
         // 174.9 counter/rotation on motor
-        // Motor is connected to a 20 tooth pulley that drives
-        //    a 42 tooth pulley
+        // Motor is connected to a 20 tooth pulley that drives a 42 tooth pulley
         left_Arm.set((int)degrees);
         right_Arm.set((int)degrees);
 
