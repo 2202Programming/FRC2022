@@ -16,10 +16,7 @@ public class climberTestIntegrated extends CommandBase {
     NetworkTable table;
 
     // Magnitude of rotation / extension left / right motors
-    NetworkTableEntry ntRot;
-    NetworkTableEntry ntExt;
-    double last_rot;
-    double last_ext;
+    NetworkTableEntry key;
     double chosenNumber;
     double previousNumber;
 
@@ -27,9 +24,7 @@ public class climberTestIntegrated extends CommandBase {
         this.climber = climber;
         addRequirements(climber);
         table = NetworkTableInstance.getDefault().getTable("Climber");
-        ntRot = table.getEntry("Rotation");
-        ntRot.setDouble(0);
-        last_rot = 0;
+        key = table.getEntry("Key");
         chosenNumber = 0;
         previousNumber = chosenNumber;
 
@@ -37,7 +32,7 @@ public class climberTestIntegrated extends CommandBase {
 
     @Override
     public void execute() {
-        chosenNumber = table.getEntry("Rotation").getDouble(0);
+        chosenNumber = table.getEntry("Key").getDouble(0);
         if (chosenNumber != previousNumber) {
             if (chosenNumber == 1)
                 new MidClimbExtend(climber).schedule();
