@@ -144,11 +144,11 @@ public class driveController extends CommandBase {
       case robotCentric:
       case hubCentric:
       case fieldCentric:
-        requestedDriveMode = DriveModes.fieldCentric;
+        requestedDriveMode = DriveModes.intakeCentric;
         break;
 
       case intakeCentric:
-        requestedDriveMode = DriveModes.intakeCentric;
+        requestedDriveMode = DriveModes.fieldCentric;
         break;
     }
   }
