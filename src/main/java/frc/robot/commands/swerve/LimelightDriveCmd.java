@@ -37,7 +37,7 @@ public class LimelightDriveCmd extends DriveCmd {
 
   @Override
   public void execute() {
-    checkShooter();
+    //checkShooter();
     calculate(); // parent does most the work, sets output_states
     updateLimelightPID();
     
@@ -45,7 +45,6 @@ public class LimelightDriveCmd extends DriveCmd {
         limelight.getTarget() &&
         limelight.getLEDStatus()) {
       // we only use limelight in hubCentric mode
-      drivetrain.setDriveModeString("Limelight Guided Hub Centric");
       limelightPid.setSetpoint(0); // always go towards the light.
       limelightPidOutput = limelightPid.calculate(limelight.getFilteredX());
       // update rotation and calulate new output-states

@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -11,8 +13,10 @@ import frc.robot.commands.swerve.fieldCentricDrive;
 import frc.robot.commands.swerve.hubCentricDrive;
 import frc.robot.commands.swerve.intakeCentricDrive;
 import frc.robot.commands.swerve.robotCentricDrive;
+import frc.robot.subsystems.Magazine_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.ifx.DriverControls;
+import frc.robot.subsystems.shooter.Shooter_Subsystem;
 
 public class driveController extends CommandBase {
 
@@ -32,54 +36,67 @@ public class driveController extends CommandBase {
 
   SwerveDrivetrain drivetrain;
   DriverControls dc;
+  Shooter_Subsystem shooter;
+  Magazine_Subsystem magazine;
   robotCentricDrive m_robotCentricDrive;
   fieldCentricDrive m_fieldCentricDrive;
   hubCentricDrive m_hubCentricDrive;
   intakeCentricDrive m_intakeCentricDrive;
+  BasicShootCommand m_basicShootCommand;
+
   Command currentCmd;
   DriveModes requestedDriveMode = DriveModes.fieldCentric;
   DriveModes currentDriveMode = DriveModes.fieldCentric;
   DriveModes lastDriveMode = DriveModes.fieldCentric;
   boolean currentlyShooting = false;
+  boolean shootingRequested = false;
 
-  public driveController(SwerveDrivetrain drivetrain, DriverControls dc) {
-    // Use addRequirements() here to declare subsystem dependencies.
+  NetworkTable table;
+  private NetworkTableEntry driveMode;
+  private NetworkTableEntry shootingMode;
+  public final String NT_Name = "DC"; // expose data under Drive Controller table
+  int log_counter = 0;
+
+  public driveController(SwerveDrivetrain drivetrain, DriverControls dc, Shooter_Subsystem shooter, Magazine_Subsystem magazine) {
     this.drivetrain = drivetrain;
     this.dc = dc;
+    this.shooter = shooter;
+    this.magazine = magazine;
 
+    driveMode = table.getEntry("/driveMode");
+    shootingMode = table.getEntry("/shootingModeOn");
   }
 
-  // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     m_robotCentricDrive = new robotCentricDrive(drivetrain, dc);
     m_fieldCentricDrive = new fieldCentricDrive(drivetrain, dc);
     m_hubCentricDrive = new hubCentricDrive(drivetrain, dc);
     m_intakeCentricDrive = new intakeCentricDrive(drivetrain, dc);
+    m_basicShootCommand = new BasicShootCommand();
 
     currentCmd = m_fieldCentricDrive;
     CommandScheduler.getInstance().schedule(currentCmd); // start default drive mode
   }
 
-  // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    checkShooter();
     checkDropout();
     checkRequests();
+    updateNT();
   }
 
-  public void cycleDriveMode() {
-    //Current use case is only to allow toggling between field and intake centric
-    //Make sure if in hubcentric (trigger held) that toggling doesn't do anything
-    switch (currentDriveMode) {
+  private void checkShooter(){
+    if (!currentlyShooting && shootingRequested){ //start shooting
+      currentlyShooting = true;
+      requestedDriveMode = DriveModes.hubCentric;
+      CommandScheduler.getInstance().schedule(m_basicShootCommand);
 
-      case fieldCentric:
-        requestedDriveMode = DriveModes.fieldCentric;
-        break;
-
-      case intakeCentric:
-        requestedDriveMode = DriveModes.intakeCentric;
-        break;
+    } else if (currentlyShooting && !shootingRequested){ //stop shooting
+      currentlyShooting = false;
+      requestedDriveMode = lastDriveMode;
+      m_basicShootCommand.end(true);
     }
   }
 
@@ -116,13 +133,46 @@ public class driveController extends CommandBase {
     }
   }
 
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {}
+  public void cycleDriveMode() {
+    //Current use case is only to allow toggling between field and intake centric
+    //Make sure if in hubcentric (trigger held) that toggling drops back to default fieldcentric
+    switch (currentDriveMode) {
+      case robotCentric:
+      case hubCentric:
+      case fieldCentric:
+        requestedDriveMode = DriveModes.fieldCentric;
+        break;
 
-  // Returns true when the command should end.
+      case intakeCentric:
+        requestedDriveMode = DriveModes.intakeCentric;
+        break;
+    }
+  }
+
+  public void turnOnShootingMode(){
+    shootingRequested = true;
+  }
+
+  public void turnOffShootingMode(){
+    shootingRequested = false;
+  }
+
+  @Override
+  public void end(boolean interrupted) {
+    currentCmd.end(true);
+  }
+
   @Override
   public boolean isFinished() {
     return false;
+  }
+
+  void updateNT() {
+    log_counter++;
+    if ((log_counter%20)==0) {
+      // update network tables
+      driveMode.setString(currentDriveMode.toString());
+      shootingMode.setBoolean(currentlyShooting);
+    }
   }
 }

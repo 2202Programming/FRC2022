@@ -2,13 +2,9 @@ package frc.robot.commands.swerve;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveTrain;
@@ -32,23 +28,12 @@ public class robotCentricDrive extends CommandBase {
 
   // output to Swerve Drivetrain
   double xSpeed, ySpeed, rot;
-  Rotation2d currrentHeading;
   SwerveModuleState[] output_states;
 
   // Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
   final SlewRateLimiter xspeedLimiter = new SlewRateLimiter(3);
   final SlewRateLimiter yspeedLimiter = new SlewRateLimiter(3);
   final SlewRateLimiter rotLimiter = new SlewRateLimiter(3);
-
-  NetworkTable table;
-  private NetworkTableEntry driveCmd;
-  private NetworkTableEntry xVelTarget;
-  private NetworkTableEntry yVelTarget;
-  private NetworkTableEntry rotVelTarget;
-  private NetworkTableEntry xJoystick;
-  private NetworkTableEntry yJoystick;
-  
-  public final String NT_Name = "DT"; // expose data under DriveTrain table
 
   double log_counter = 0;
 
@@ -57,21 +42,11 @@ public class robotCentricDrive extends CommandBase {
     addRequirements(drivetrain);
     this.dc = dc2;
     this.kinematics = drivetrain.getKinematics();
-
-    table = NetworkTableInstance.getDefault().getTable(NT_Name);
-
-    xVelTarget = table.getEntry("/xVelTarget");
-    yVelTarget = table.getEntry("/yVelTarget");
-    rotVelTarget = table.getEntry("/rotVelTarget");
-    xJoystick = table.getEntry("/xJoystick");
-    yJoystick = table.getEntry("/yJoystick");
-    driveCmd = table.getEntry("/driveCmd");
   }
 
 
   @Override
   public void initialize() {
-    updateNT();
   }
 
   void calculate() {
@@ -86,9 +61,6 @@ public class robotCentricDrive extends CommandBase {
     ySpeed = MathUtil.clamp(ySpeed, -Constants.DriveTrain.kMaxSpeed, Constants.DriveTrain.kMaxSpeed);
     rot = MathUtil.clamp(rot, -Constants.DriveTrain.kMaxAngularSpeed, Constants.DriveTrain.kMaxAngularSpeed);
 
-    currrentHeading = drivetrain.getPose().getRotation();
-
-    drivetrain.setDriveModeString("Robot Centric Drive");
     output_states = kinematics.toSwerveModuleStates(new ChassisSpeeds(xSpeed, ySpeed, rot));
   }
 
@@ -96,25 +68,11 @@ public class robotCentricDrive extends CommandBase {
   public void execute() {
     calculate();
     drivetrain.drive(output_states);
-    updateNT();
   }
 
   @Override
   public void end(boolean interrupted) {
-    drivetrain.setDriveModeString("None");
     drivetrain.stop();
   }
 
-  void updateNT() {
-    log_counter++;
-    if ((log_counter%20)==0) {
-      // update network tables
-      xJoystick.setDouble(dc.getVelocityX());
-      yJoystick.setDouble(dc.getVelocityY());
-      xVelTarget.setValue(xSpeed);
-      yVelTarget.setValue(ySpeed);
-      rotVelTarget.setValue(rot);
-      driveCmd.setString("DriveCmd");
-    }
-  }
 }

@@ -43,7 +43,6 @@ public class auto_pathPlanner_cmd extends CommandBase {
       //IMPORTANT: Pathplanner heading of first point is the assumed starting heading of your bot
       //If first point has a non-zero heading, the gryo will get offset with this setPose
       m_robotDrive.setPose(path.getInitialPose());
-      m_robotDrive.setDriveModeString("AutoDrive Path " + pathname);
     }
   }
 
@@ -88,7 +87,6 @@ public class auto_pathPlanner_cmd extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_robotDrive.setDriveModeString("None");
   }
 
   // Returns true when the command should end.

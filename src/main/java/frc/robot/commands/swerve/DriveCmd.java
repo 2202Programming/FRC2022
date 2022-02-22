@@ -161,19 +161,16 @@ public class DriveCmd extends CommandBase {
     // Now workout drive mode behavior
     switch (driveMode) {
       case robotCentric:
-        drivetrain.setDriveModeString("Robot Centric Drive");
         output_states = kinematics.toSwerveModuleStates(new ChassisSpeeds(xSpeed, ySpeed, rot));
         break;
 
       case fieldCentric:
-        drivetrain.setDriveModeString("Field Centric Drive");
         output_states = kinematics
             .toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, currrentHeading));
         break;
 
       case hubCentric:
         rot = 0;
-        drivetrain.setDriveModeString("Hub Centric Drive");
         // set goal of angle PID to be heading (in degrees) from current position to
         // centerfield
         double targetAngle = getHeading2Target(drivetrain.getPose(), centerField);
@@ -203,7 +200,6 @@ public class DriveCmd extends CommandBase {
 
       case intakeCentric:
         // set goal of angle PID to be commanded bearing (in degrees) from joysticks
-        drivetrain.setDriveModeString("Intake Centric");
         double m_targetAngle2 = filteredBearing;
         double m_currentAngle2 = drivetrain.getPose().getRotation().getDegrees(); // from -180 to 180
         double m_angleError2 = m_targetAngle2 - m_currentAngle2;
@@ -230,7 +226,7 @@ public class DriveCmd extends CommandBase {
 
   @Override
   public void execute() {
-    checkShooter();
+    //checkShooter();
     calculate();
     drivetrain.drive(output_states);
     updateNT();
@@ -238,7 +234,6 @@ public class DriveCmd extends CommandBase {
 
   @Override
   public void end(boolean interrupted) {
-    drivetrain.setDriveModeString("None");
     drivetrain.stop();
   }
 
@@ -272,7 +267,6 @@ public class DriveCmd extends CommandBase {
       case fieldCentric:
         lastDriveMode = driveMode;
         driveMode = DriveModeTypes.intakeCentric;
-        drivetrain.setDriveModeString("Field Centric Drive");
         break;
       //case hubCentric:
       //  driveMode = DriveModeTypes.intakeCentric;
@@ -281,7 +275,6 @@ public class DriveCmd extends CommandBase {
       case intakeCentric:
         lastDriveMode = driveMode;
         driveMode = DriveModeTypes.fieldCentric;
-        drivetrain.setDriveModeString("Intake Centric Drive");
         break;
     }
   }
@@ -305,20 +298,20 @@ public class DriveCmd extends CommandBase {
     }
   }
 
-  public void checkShooter(){
-    boolean shootingModeOn = drivetrain.getShootingMode();
-      if (lastShootMode != shootingModeOn) {//shoot mode has changed
-      if(shootingModeOn){ //switched to shooting mode; hub centric mode while in shooting mode
-        lastDriveMode = driveMode; //save current drive mode to restore later
-        driveMode = DriveModeTypes.hubCentric;
-        drivetrain.setDriveModeString("Shooting mode");
-      } else { //switched out of shooting mode
-        driveMode = lastDriveMode; //revert to pre-shooting drive mode
-        drivetrain.setDriveModeString(driveMode.toString());
-      }
-    }   
-    lastShootMode = shootingModeOn;
-  }
+  // public void checkShooter(){
+  //   boolean shootingModeOn = drivetrain.getShootingMode();
+  //     if (lastShootMode != shootingModeOn) {//shoot mode has changed
+  //     if(shootingModeOn){ //switched to shooting mode; hub centric mode while in shooting mode
+  //       lastDriveMode = driveMode; //save current drive mode to restore later
+  //       driveMode = DriveModeTypes.hubCentric;
+  //       drivetrain.setDriveModeString("Shooting mode");
+  //     } else { //switched out of shooting mode
+  //       driveMode = lastDriveMode; //revert to pre-shooting drive mode
+  //       drivetrain.setDriveModeString(driveMode.toString());
+  //     }
+  //   }   
+  //   lastShootMode = shootingModeOn;
+  // }
 
   private double getJoystickBearing(){
     //take joystick X and Y inputs (field centric space) and return an expected direction of travel (-180 to 180 degrees)

@@ -39,7 +39,6 @@ public class intakeCentricDrive extends CommandBase {
   SwerveModuleState[] output_states;
 
   // PID for heading to a target
-  private PIDController anglePid;
   private PIDController intakeAnglePid;
   private double angle_kp = 0.075;
   private double angle_ki = 0.004;
@@ -53,20 +52,13 @@ public class intakeCentricDrive extends CommandBase {
   final SlewRateLimiter rotLimiter = new SlewRateLimiter(3);
 
   NetworkTable table;
-  private NetworkTableEntry driveCmd;
-  private NetworkTableEntry fieldMode;
-  private NetworkTableEntry hubCentricTarget;
-  private NetworkTableEntry xVelTarget;
-  private NetworkTableEntry yVelTarget;
-  private NetworkTableEntry rotVelTarget;
   private NetworkTableEntry NTangleError;
-  private NetworkTableEntry xJoystick;
-  private NetworkTableEntry yJoystick;
-  private NetworkTableEntry NTLastDriveMode;
-  
-  public final String NT_Name = "DT"; // expose data under DriveTrain table
+  private NetworkTableEntry NTTargetAngle;
+  public final String NT_Name = "DC"; 
 
   double log_counter = 0;
+  double m_targetAngle2;
+  double m_angleError2;
 
   // Creates a new Single-Pole IIR filter
   // Time constant is 0.1 seconds
@@ -80,22 +72,12 @@ public class intakeCentricDrive extends CommandBase {
     this.dc = dc2;
     this.kinematics = drivetrain.getKinematics();
 
-    anglePid = new PIDController(angle_kp, angle_ki, angle_kd);
     intakeAnglePid = new PIDController(angle_kp, angle_ki, angle_kd);
     intakeAnglePid.enableContinuousInput(-180, 180);
 
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
-    hubCentricTarget = table.getEntry("/hubCentricTarget");;
-    fieldMode = table.getEntry("/FieldMode");
-
-    xVelTarget = table.getEntry("/xVelTarget");
-    yVelTarget = table.getEntry("/yVelTarget");
-    rotVelTarget = table.getEntry("/rotVelTarget");
     NTangleError = table.getEntry("/angleError");
-    xJoystick = table.getEntry("/xJoystick");
-    yJoystick = table.getEntry("/yJoystick");
-    driveCmd = table.getEntry("/driveCmd");
-    NTLastDriveMode = table.getEntry("/LastDriveMode");
+    NTTargetAngle = table.getEntry("/TargetAngle");
   }
 
   @Override
@@ -120,24 +102,19 @@ public class intakeCentricDrive extends CommandBase {
     currrentHeading = drivetrain.getPose().getRotation();
 
     // set goal of angle PID to be commanded bearing (in degrees) from joysticks
-    drivetrain.setDriveModeString("Intake Centric");
-    double m_targetAngle2 = filteredBearing;
+    m_targetAngle2 = filteredBearing;
     double m_currentAngle2 = drivetrain.getPose().getRotation().getDegrees(); // from -180 to 180
-    double m_angleError2 = m_targetAngle2 - m_currentAngle2;
-    // feed both PIDs even if not being used.
+    m_angleError2 = m_targetAngle2 - m_currentAngle2;
     intakeAnglePid.setSetpoint(m_targetAngle2);
     rot = intakeAnglePid.calculate(m_currentAngle2);
     
-    // deal with continuity issue across 0
+    // deal with continuity issue across 0 // Is this necessary?  It's happening after the pid calculation....
     if (m_angleError2 < -180) {
       m_targetAngle2 += 360;
     }
     if (m_angleError2 > 180) {
       m_targetAngle2 -= 360;
     }
-    hubCentricTarget.setValue(m_targetAngle2);
-    NTangleError.setDouble(m_angleError2);
-
     output_states = kinematics
     .toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, currrentHeading));
 
@@ -152,24 +129,17 @@ public class intakeCentricDrive extends CommandBase {
 
   @Override
   public void end(boolean interrupted) {
-    drivetrain.setDriveModeString("None");
     drivetrain.stop();
   }
-
 
   void updateNT() {
     log_counter++;
     if ((log_counter%20)==0) {
     // update network tables
-    xJoystick.setDouble(dc.getVelocityX());
-    yJoystick.setDouble(dc.getVelocityY());
-    xVelTarget.setValue(xSpeed);
-    yVelTarget.setValue(ySpeed);
-    rotVelTarget.setValue(rot);
-    driveCmd.setString("DriveCmd");
+      NTTargetAngle.setValue(m_targetAngle2);
+      NTangleError.setDouble(m_angleError2);
     }
   }
-
 
   private double getJoystickBearing(){
     //take joystick X and Y inputs (field centric space) and return an expected direction of travel (-180 to 180 degrees)

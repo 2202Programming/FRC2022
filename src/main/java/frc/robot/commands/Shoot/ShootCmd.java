@@ -24,9 +24,8 @@ public class ShootCmd extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_drivetrain.setShootingMode(true);
     CommandScheduler.getInstance().schedule(shootcmd);
-    m_drivetrain.setDriveModeString("Shooting mode");
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -36,9 +35,7 @@ public class ShootCmd extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_drivetrain.setShootingMode(false);
     shootcmd.setFinished();
-    m_drivetrain.setDriveModeString("NONE");
   }
 
   // Returns true when the command should end.

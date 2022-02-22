@@ -4,24 +4,15 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandGroupBase;
-//import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.DriverPrefs;
-//import frc.robot.commands.swerve.DriveCmd;
 import frc.robot.commands.swerve.LimelightDriveCmd;
-import frc.robot.commands.Shooter_MagazineCommand;
-import frc.robot.commands.Shoot.ShootCmd;
-import frc.robot.commands.auto.auto_cmd_group;
+import frc.robot.commands.driveController;
 import frc.robot.commands.auto.auto_cmd_group2;
-import frc.robot.commands.auto.auto_drivePath_cmd;
 import frc.robot.commands.auto.auto_pathPlanner_cmd;
 import frc.robot.commands.BasicShootCommand;
-import frc.robot.commands.ConstantBasicShootCommand;
 import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.Magazine_Subsystem;
@@ -32,38 +23,18 @@ import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.hid.HID_Xbox_Subsystem;
 import frc.robot.subsystems.hid.XboxAxis;
 import frc.robot.subsystems.hid.XboxButton;
-import frc.robot.subsystems.hid.XboxPOV;
-import frc.robot.subsystems.hid.SideboardController.SBButton;
 import frc.robot.subsystems.ifx.DriverControls.Id;
 import frc.robot.commands.IntakeCommand.IntakeMode;
 import frc.robot.commands.MagazineCommand.MagazineMode;
-import frc.robot.commands.PositionerCommand.PositionerMode;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.IntakeDeployToggle;
 import frc.robot.commands.PositionerToggle;
-
 import frc.robot.commands.MagazineCommand;
-import frc.robot.commands.PositionerCommand;
-import frc.robot.commands.ResetPosition;
-import frc.robot.commands.ShootCommand;
 import frc.robot.ux.Dashboard;
-import frc.robot.commands.test.TestShoot;
 
-
-//import frc.robot.commands.test.dumbshooter;
-//import frc.robot.commands.test.SwerveDriveTest;
 //test commands
 import frc.robot.commands.test.getTrajectoryFollowTest;
 
-/**
- * This class is where the bulk of the robot should be declared. Since
- * Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in
- * the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of
- * the robot (including
- * subsystems, commands, and button mappings) should be declared here.
- */
 public class RobotContainer {
   static RobotContainer rc;
 
@@ -82,6 +53,8 @@ public class RobotContainer {
   public final Positioner_Subsystem positioner;
 
   public static String auto_path_name = "NONE";
+
+  private static driveController m_driveController = null;
 
   //modifiable commands
   //DriveCmd swd;
@@ -112,10 +85,12 @@ public class RobotContainer {
     //drivetrain.setDefaultCommand(new SwerveDriveCommand(drivetrain, driverControls, limelight));
     // if (Constants.HAS_SHOOTER) shooter.setDefaultCommand(new TestShoot(shooter));
     
-    if (Constants.HAS_DRIVETRAIN) {
+    if (Constants.HAS_DRIVETRAIN && Constants.HAS_SHOOTER && Constants.HAS_MAGAZINE) {
       //swd = new DriveCmd(drivetrain, driverControls);
-      swd = new LimelightDriveCmd(drivetrain, driverControls, limelight);
-      drivetrain.setDefaultCommand(swd);
+      //swd = new LimelightDriveCmd(drivetrain, driverControls, limelight);
+      m_driveController = new driveController(drivetrain, driverControls, shooter, magazine);
+      CommandScheduler.getInstance().schedule(m_driveController);
+      //drivetrain.setDefaultCommand(m_driveController);
     }
     
     // //setup the dashboard programatically, creates any choosers, screens
@@ -137,7 +112,7 @@ public class RobotContainer {
   void setDriverButtons() {
     // B - Toggle drive mode
     if (Constants.HAS_DRIVETRAIN) {
-      driverControls.bind(Id.Driver, XboxButton.B).whenPressed(new InstantCommand(swd::cycleDriveMode));
+      driverControls.bind(Id.Driver, XboxButton.B).whenPressed(m_driveController::cycleDriveMode);
     }
     // A - Trajectory Test
     if (Constants.HAS_DRIVETRAIN) 
@@ -163,7 +138,9 @@ public class RobotContainer {
    
 
     if(Constants.HAS_DRIVETRAIN){
-      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_RIGHT).whenHeld(new ShootCmd(drivetrain));
+      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_RIGHT).whenPressed(m_driveController::turnOnShootingMode);
+      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_RIGHT).whenReleased(m_driveController::turnOffShootingMode);
+      
     }
   }
 
