@@ -9,10 +9,12 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.RobotContainer;
 import frc.robot.commands.swerve.fieldCentricDrive;
 import frc.robot.commands.swerve.hubCentricDrive;
 import frc.robot.commands.swerve.intakeCentricDrive;
 import frc.robot.commands.swerve.robotCentricDrive;
+import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.Magazine_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.ifx.DriverControls;
@@ -38,6 +40,7 @@ public class driveController extends CommandBase {
   DriverControls dc;
   Shooter_Subsystem shooter;
   Magazine_Subsystem magazine;
+  Limelight_Subsystem limelight;
   robotCentricDrive m_robotCentricDrive;
   fieldCentricDrive m_fieldCentricDrive;
   hubCentricDrive m_hubCentricDrive;
@@ -57,11 +60,12 @@ public class driveController extends CommandBase {
   public final String NT_Name = "DC"; // expose data under Drive Controller table
   int log_counter = 0;
 
-  public driveController(SwerveDrivetrain drivetrain, DriverControls dc, Shooter_Subsystem shooter, Magazine_Subsystem magazine) {
-    this.drivetrain = drivetrain;
-    this.dc = dc;
-    this.shooter = shooter;
-    this.magazine = magazine;
+  public driveController() {
+    this.drivetrain = RobotContainer.RC().drivetrain;
+    this.dc = RobotContainer.RC().driverControls;
+    this.shooter = RobotContainer.RC().shooter;
+    this.magazine = RobotContainer.RC().magazine;
+    this.limelight = RobotContainer.RC().limelight;
 
     driveMode = table.getEntry("/driveMode");
     shootingMode = table.getEntry("/shootingModeOn");
@@ -71,7 +75,7 @@ public class driveController extends CommandBase {
   public void initialize() {
     m_robotCentricDrive = new robotCentricDrive(drivetrain, dc);
     m_fieldCentricDrive = new fieldCentricDrive(drivetrain, dc);
-    m_hubCentricDrive = new hubCentricDrive(drivetrain, dc);
+    m_hubCentricDrive = new hubCentricDrive(drivetrain, dc, limelight);
     m_intakeCentricDrive = new intakeCentricDrive(drivetrain, dc);
     m_basicShootCommand = new BasicShootCommand();
 

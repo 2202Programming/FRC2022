@@ -88,7 +88,7 @@ public class RobotContainer {
     if (Constants.HAS_DRIVETRAIN && Constants.HAS_SHOOTER && Constants.HAS_MAGAZINE) {
       //swd = new DriveCmd(drivetrain, driverControls);
       //swd = new LimelightDriveCmd(drivetrain, driverControls, limelight);
-      m_driveController = new driveController(drivetrain, driverControls, shooter, magazine);
+      m_driveController = new driveController();
       CommandScheduler.getInstance().schedule(m_driveController);
       //drivetrain.setDefaultCommand(m_driveController);
     }

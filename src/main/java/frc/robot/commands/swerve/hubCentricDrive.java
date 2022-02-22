@@ -17,6 +17,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveTrain;
+import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.ifx.DriverControls;
 
@@ -34,19 +35,26 @@ public class hubCentricDrive extends CommandBase {
   final SwerveDrivetrain drivetrain;
   final DriverControls dc;
   final SwerveDriveKinematics kinematics;
+  final Limelight_Subsystem limelight;
 
   // output to Swerve Drivetrain
   double xSpeed, ySpeed, rot;
   Rotation2d currrentHeading;
   SwerveModuleState[] output_states;
 
-  // PID for heading to a target
+  // PID for odometery-based heading to a target
   private PIDController anglePid;
-  private PIDController intakeAnglePid;
   private double angle_kp = 0.075;
   private double angle_ki = 0.004;
   private double angle_kd = 0.005;
 
+  // PID for limelight-based heading to a target
+  PIDController limelightPid;
+  double limelight_kP = 0.05;
+  double limelight_kI = 0.0;
+  double limelight_kD = 0.0;
+  double limelightPidOutput = 0.0;
+  
   private Pose2d centerField = new Pose2d(27, 13.5, new Rotation2d()); //actual
   // hub location?
   //private Pose2d centerField = new Pose2d(10, 0, new Rotation2d()); // close point for testing to max rotation obvious
@@ -55,6 +63,7 @@ public class hubCentricDrive extends CommandBase {
   final SlewRateLimiter xspeedLimiter = new SlewRateLimiter(3);
   final SlewRateLimiter yspeedLimiter = new SlewRateLimiter(3);
   final SlewRateLimiter rotLimiter = new SlewRateLimiter(3);
+  final SlewRateLimiter llLimiter = new SlewRateLimiter(3);
 
   NetworkTable table;
   private NetworkTableEntry hubCentricTarget;
@@ -66,15 +75,15 @@ public class hubCentricDrive extends CommandBase {
   double angleError;
   double targetAngle;
 
-  public hubCentricDrive(SwerveDrivetrain drivetrain, DriverControls dc2) {
+  public hubCentricDrive(SwerveDrivetrain drivetrain, DriverControls dc, Limelight_Subsystem limelight) {
     this.drivetrain = drivetrain;
     addRequirements(drivetrain);
-    this.dc = dc2;
+    this.dc = dc;
     this.kinematics = drivetrain.getKinematics();
+    this.limelight = limelight;
 
     anglePid = new PIDController(angle_kp, angle_ki, angle_kd);
-    intakeAnglePid = new PIDController(angle_kp, angle_ki, angle_kd);
-    intakeAnglePid.enableContinuousInput(-180, 180);
+    limelightPid = new PIDController(limelight_kP, limelight_kI, limelight_kD);
 
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
     hubCentricTarget = table.getEntry("/hubCentricTarget");
@@ -111,11 +120,18 @@ public class hubCentricDrive extends CommandBase {
     }
     currentAngle = drivetrain.getPose().getRotation().getDegrees(); // from -180 to 180
     angleError = targetAngle - currentAngle;
-    // feed both PIDs even if not being used.
     anglePid.setSetpoint(targetAngle);
     rot = anglePid.calculate(currentAngle);
+
+    if (limelight.getTarget() && limelight.getLEDStatus()) {
+      // if limelight is available, override rotation input from odometery to limelight
+      limelightPid.setSetpoint(0); // always go towards the light.
+      limelightPidOutput = limelightPid.calculate(limelight.getFilteredX());
+      // update rotation and calulate new output-states
+      rot = llLimiter.calculate(limelightPidOutput);
+    }
     
-    // deal with continuity issue across 0
+    // deal with continuity issue across 0 //not sure this is necessary, it's happening after PID calculations...
     if (angleError < -180) {
       targetAngle += 360;
     }
