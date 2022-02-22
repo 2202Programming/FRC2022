@@ -1,7 +1,5 @@
 package frc.robot.commands.swerve;
 
-import org.opencv.core.Mat;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.LinearFilter;
@@ -21,6 +19,8 @@ import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.ifx.DriverControls;
 
 /* Current driving behavior:
+
+  TODO: DPL 2/21/22 - move to CMD layer
   Starts in field centric
   B will toggle between field centric and intake centric
   Holding right trigger will switch to hub centric until you let go, then it will go back to original mode
@@ -90,7 +90,6 @@ public class DriveCmd extends CommandBase {
   private NetworkTableEntry NTangleError;
   private NetworkTableEntry xJoystick;
   private NetworkTableEntry yJoystick;
-  private NetworkTableEntry NTLastDriveMode;
   
   public final String NT_Name = "DT"; // expose data under DriveTrain table
 
@@ -123,7 +122,7 @@ public class DriveCmd extends CommandBase {
     xJoystick = table.getEntry("/xJoystick");
     yJoystick = table.getEntry("/yJoystick");
     driveCmd = table.getEntry("/driveCmd");
-    NTLastDriveMode = table.getEntry("/LastDriveMode");
+    //NTLastDriveMode = table.getEntry("/LastDriveMode");
   }
 
   public DriveCmd(SwerveDrivetrain drivetrain, DriverControls dc, boolean fieldRelativeMode) {
@@ -276,6 +275,8 @@ public class DriveCmd extends CommandBase {
         lastDriveMode = driveMode;
         driveMode = DriveModeTypes.fieldCentric;
         break;
+        default:
+          break;    // DPL 2/21/22 - for some reason we don't need other modes - can this get moved to Commands?
     }
   }
 

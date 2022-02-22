@@ -6,7 +6,6 @@ package frc.robot.commands.Shoot;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.commands.BasicShootCommand;
 import frc.robot.subsystems.SwerveDrivetrain;
 
 public class ShootCmd extends CommandBase {

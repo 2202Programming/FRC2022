@@ -176,12 +176,13 @@ public class SwerveModuleMK3 {
 
   }
 
-  void setDrivePID(PIDFController temp)
+  // PID accessor for use in Test/Tune Commands
+  public void setDrivePID(PIDFController temp)
   {
     temp.copyTo(driveMotorPID, kSlot); 
   }
 
-  void setAnglePID(PIDFController temp)
+  public void setAnglePID(PIDFController temp)
   {
     temp.copyTo(angleMotorPID, kSlot); 
   }

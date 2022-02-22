@@ -4,7 +4,7 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
-import frc.robot.commands.BasicShootCommand.Stage;
+import frc.robot.commands.Shoot.BasicShootCommand.Stage;
 import frc.robot.subsystems.Magazine_Subsystem;
 import frc.robot.subsystems.Intake_Subsystem;
 
