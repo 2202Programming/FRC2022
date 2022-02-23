@@ -11,6 +11,7 @@ import frc.robot.util.PIDFController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.subsystems.shooter.FlyWheel.FlyWheelConfig;
+import frc.robot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -269,6 +270,9 @@ public final class Constants {
     }
 
     public static final class Shooter {
+      public static final double DefaultRPMTolerance = .05;  // percent of RPM
+      public static final ShooterSettings DefaultSettings = new ShooterSettings(10.0, 0.0);  //ft/s, rot/s
+
       // Power Cell info
       // public static final double PowerCellMass = 3.0 / 16.0; // lbs
       public static final double PCNominalRadius = 10 / 2.0 / 12.0; // feet - power cell

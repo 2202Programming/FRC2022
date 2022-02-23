@@ -18,17 +18,6 @@ import frc.robot.Constants.DriveTrain;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.ifx.DriverControls;
 
-/* Current driving behavior:
-
-  TODO: DPL 2/21/22 - move to CMD layer
-  Starts in field centric
-  B will toggle between field centric and intake centric
-  Holding right trigger will switch to hub centric until you let go, then it will go back to original mode
-          (either field or intake centric, depending what you started in)
-  If in intake centric and you try to rotate with left joystick, will drop back to field centric mode.
-*/
-
-
 public class DriveCmd extends CommandBase {
 
   public enum DriveModeTypes {

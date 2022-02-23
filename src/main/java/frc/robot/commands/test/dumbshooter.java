@@ -50,7 +50,7 @@ public class dumbshooter extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    shooter.onPercent(0, 0);
+    shooter.off();
     magazine.driveWheelOff();
   }
 

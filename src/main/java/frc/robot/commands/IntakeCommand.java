@@ -19,7 +19,6 @@ public class IntakeCommand extends CommandBase {
   DoubleSupplier intakeSpeed;
   DoubleSupplier sideIntakeSpeed;
 
-  //TODO prefer enums over untyped ints 
   public enum IntakeMode {
     LoadCargo, ExpellCargo
   }
