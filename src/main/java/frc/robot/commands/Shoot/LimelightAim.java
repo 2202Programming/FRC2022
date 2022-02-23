@@ -2,6 +2,8 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
+//Aims the robot using limelight and odometry to target
+
 package frc.robot.commands.Shoot;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -16,7 +18,7 @@ import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 
-public class LimelightShoot extends CommandBase {
+public class LimelightAim extends CommandBase {
   /** Creates a new LimelightShoot. */
 
   SwerveDrivetrain drivetrain;
@@ -50,7 +52,7 @@ public class LimelightShoot extends CommandBase {
   private boolean finished = false;
   private double tolerance;
 
-  public LimelightShoot(double tolerance) {
+  public LimelightAim(double tolerance) {
     // tolerance is in degrees
     addRequirements(drivetrain);
     this.drivetrain = RobotContainer.RC().drivetrain;

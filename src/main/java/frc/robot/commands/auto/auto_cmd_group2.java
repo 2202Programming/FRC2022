@@ -10,12 +10,13 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.RobotContainer;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.MagazineCommand;
 import frc.robot.commands.IntakeCommand.IntakeMode;
 import frc.robot.commands.MagazineCommand.MagazineMode;
 import frc.robot.commands.Shoot.BasicShootCommand;
-import frc.robot.commands.Shoot.LimelightShoot;
+import frc.robot.commands.Shoot.LimelightAim;
 import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.subsystems.Magazine_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
@@ -36,6 +37,7 @@ public class auto_cmd_group2 extends SequentialCommandGroup {
     
     addCommands(
       new InstantCommand( m_intake::deploy ),
+      new InstantCommand( RobotContainer.RC().limelight::enableLED ),
       new ParallelDeadlineGroup( //all run at same time; group ends when 1st command ends
         new ParallelCommandGroup( // all conditions run at once; only one should actually drive the path
           new ConditionalCommand(new auto_pathPlanner_cmd(m_drivetrain, "AutoPath1"), new WaitCommand(0), this::isRedPath1),
@@ -48,7 +50,7 @@ public class auto_cmd_group2 extends SequentialCommandGroup {
         new IntakeCommand((()-> 0.47), ()-> 0.20,  IntakeMode.LoadCargo),
         new MagazineCommand((()-> 1.0), MagazineMode.LoadCargo)
       ),
-      new LimelightShoot(1.0).withTimeout(3),
+      new LimelightAim(1.0).withTimeout(3),
       new BasicShootCommand().withTimeout(10)
     );
   }
