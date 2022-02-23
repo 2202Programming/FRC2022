@@ -15,6 +15,7 @@ import frc.robot.commands.MagazineCommand;
 import frc.robot.commands.IntakeCommand.IntakeMode;
 import frc.robot.commands.MagazineCommand.MagazineMode;
 import frc.robot.commands.Shoot.BasicShootCommand;
+import frc.robot.commands.Shoot.LimelightShoot;
 import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.subsystems.Magazine_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
@@ -47,6 +48,7 @@ public class auto_cmd_group2 extends SequentialCommandGroup {
         new IntakeCommand((()-> 0.47), ()-> 0.20,  IntakeMode.LoadCargo),
         new MagazineCommand((()-> 1.0), MagazineMode.LoadCargo)
       ),
+      new LimelightShoot(1.0).withTimeout(3),
       new BasicShootCommand().withTimeout(10)
     );
   }
