@@ -53,12 +53,12 @@ public class LimelightAim extends CommandBase {
   private double tolerance;
 
   public LimelightAim(double tolerance) {
-    // tolerance is in degrees
-    addRequirements(drivetrain);
     this.drivetrain = RobotContainer.RC().drivetrain;
+    // tolerance is in degrees
     this.limelight = RobotContainer.RC().limelight;
     this.kinematics = drivetrain.getKinematics();
     this.tolerance = tolerance;
+    addRequirements(drivetrain);
   }
 
   // Called when the command is initially scheduled.

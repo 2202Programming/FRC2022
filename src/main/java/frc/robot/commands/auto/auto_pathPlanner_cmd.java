@@ -4,6 +4,8 @@
 
 package frc.robot.commands.auto;
 
+import javax.tools.StandardJavaFileManager.PathFactory;
+
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
@@ -12,6 +14,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.SwerveDrivetrain;
 
@@ -24,6 +27,7 @@ public class auto_pathPlanner_cmd extends CommandBase {
   // This will load the file "Example Path.path" and generate it with a max velocity of 8 m/s and a max acceleration of 5 m/s^2
   PathPlannerTrajectory path;
   String pathname;
+  Command runcommand;
 
   public auto_pathPlanner_cmd(SwerveDrivetrain drive, String pathname) {
     m_robotDrive = drive;
@@ -46,7 +50,7 @@ public class auto_pathPlanner_cmd extends CommandBase {
     }
   }
 
-  // Called every time the scheduler runs while the command is scheduled.
+    // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     Command runcommand = getPathCommand();
@@ -55,6 +59,7 @@ public class auto_pathPlanner_cmd extends CommandBase {
 
   public Command getPathCommand() {
     if (path == null) {
+      System.out.println("No path");
       return new InstantCommand();  // no path selected
     }
       
@@ -84,14 +89,43 @@ public class auto_pathPlanner_cmd extends CommandBase {
     return swerveControllerCommand.andThen(() -> m_robotDrive.stop()).withTimeout(20);
 
   }
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     return true;
+  }
+
+  public static Command PathFactory(SwerveDrivetrain m_robotDrive, String pathname){
+    var path = PathPlanner.loadPath(pathname, 3, 3);
+
+    if (path == null) {
+      return new InstantCommand();  // no path selected
+    }
+      
+      PIDController xController = new PIDController(4.0, 0.0, 0.0);
+      PIDController yController = new PIDController(4.0, 0.0, 0.0);
+      ProfiledPIDController thetaController = new ProfiledPIDController(4, 0, 0, new TrapezoidProfile.Constraints(3, 3));
+      //Units are radians for thetaController; PPSwerveController is using radians internally.
+      thetaController.enableContinuousInput(-Math.PI, Math.PI); //prevent piroutte paths over continuity
+
+      PPSwerveControllerCommand swerveControllerCommand =
+      new PPSwerveControllerCommand(
+          path,
+          m_robotDrive::getPose, // Functional interface to feed supplier
+          m_robotDrive.getKinematics(),
+          // Position controllers 
+          xController,
+          yController,
+          thetaController,
+          m_robotDrive::drive,
+          m_robotDrive
+      );
+
+        // Reset odometry to the starting pose of the trajectory.
+        m_robotDrive.setPose(path.getInitialPose());
+
+    // Run path following command, then stop at the end.
+    return swerveControllerCommand.andThen(() -> m_robotDrive.stop()).withTimeout(20);
   }
 }

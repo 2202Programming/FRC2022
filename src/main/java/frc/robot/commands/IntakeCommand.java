@@ -35,7 +35,7 @@ public class IntakeCommand extends CommandBase {
       this.intakeSpeed = intakeSpeedFunction;
       this.sideIntakeSpeed = sideIntakeSpeedFunction;
 
-      addRequirements(intake);
+      //addRequirements(intake);
   }
 
   // Called when the command is initially scheduled.

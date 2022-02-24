@@ -257,7 +257,7 @@ public final class Constants {
         // Betabot is 21.516 left-right and 24.87 front-back
         public static final double XwheelOffset = (21.516/12)/2;     
         public static final double YwheelOffset = (24.87/12)/2;
-        public static final double wheelCorrectionFactor = 0.9395; //measured on swervebot
+        public static final double wheelCorrectionFactor = 0.80; //measured on swervebot
         public static final double wheelDiameter = 0.3333333 * wheelCorrectionFactor;   //[ft]  4" wheels
 
         // Gear ratios - confirmed https://www.swervedrivespecialties.com/products/mk3-swerve-module?variant=39420433203313

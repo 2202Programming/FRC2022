@@ -4,14 +4,17 @@
 
 package frc.robot.commands.auto;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.RobotContainer;
 import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.IntakeDeployToggle;
 import frc.robot.commands.MagazineCommand;
 import frc.robot.commands.IntakeCommand.IntakeMode;
 import frc.robot.commands.MagazineCommand.MagazineMode;
@@ -34,54 +37,41 @@ public class auto_cmd_group2 extends SequentialCommandGroup {
     this.m_magazine = m_magazine;
     this.m_intake = m_intake;
     this.m_controls = m_controls;
+
+    Command finalAuto;
+
+    if(m_controls.readSideboard(SBButton.Sw11)){
+      finalAuto = auto_pathPlanner_cmd.PathFactory(m_drivetrain, "AutoPath1");
+    }
+    else if(m_controls.readSideboard(SBButton.Sw12)){
+      finalAuto = auto_pathPlanner_cmd.PathFactory(m_drivetrain, "AutoPath2");
+    }
+    else{
+      finalAuto = auto_pathPlanner_cmd.PathFactory(m_drivetrain, "AutoPath3");
+    }
     
+
     addCommands(
       new InstantCommand( m_intake::deploy ),
       new InstantCommand( RobotContainer.RC().limelight::enableLED ),
       new ParallelDeadlineGroup( //all run at same time; group ends when 1st command ends
-        new ParallelCommandGroup( // all conditions run at once; only one should actually drive the path
-          new ConditionalCommand(new auto_pathPlanner_cmd(m_drivetrain, "AutoPath1"), new WaitCommand(0), this::isRedPath1),
-          new ConditionalCommand(new auto_pathPlanner_cmd(m_drivetrain, "AutoPath2"), new WaitCommand(0), this::isRedPath2),
-          new ConditionalCommand(new auto_pathPlanner_cmd(m_drivetrain, "AutoPath3"), new WaitCommand(0), this::isRedPath3),
-          new ConditionalCommand(new auto_pathPlanner_cmd(m_drivetrain, "AutoPath4"), new WaitCommand(0), this::isBluePath1),
-          new ConditionalCommand(new auto_pathPlanner_cmd(m_drivetrain, "AutoPath5"), new WaitCommand(0), this::isBluePath2),
-          new ConditionalCommand(new auto_pathPlanner_cmd(m_drivetrain, "AutoPath6"), new WaitCommand(0), this::isBluePath3)
-        ),
-        new IntakeCommand((()-> 0.47), ()-> 0.20,  IntakeMode.LoadCargo),
+        finalAuto,
+        new IntakeCommand((()-> 0.55), ()-> 0.20,  IntakeMode.LoadCargo),
         new MagazineCommand((()-> 1.0), MagazineMode.LoadCargo)
       ),
-      new LimelightAim(1.0).withTimeout(3),
-      new BasicShootCommand().withTimeout(10)
+      new IntakeDeployToggle(),
+      new ParallelDeadlineGroup( //all run at same time; group ends when 1st command ends
+        new LimelightAim(1.0).withTimeout(3),
+        new IntakeCommand((()-> 0.55), ()-> 0.20,  IntakeMode.LoadCargo),
+        new MagazineCommand((()-> 1.0), MagazineMode.LoadCargo)
+    ),
+      new MagazineCommand((()-> 1.0), MagazineMode.ExpellCargo).withTimeout(.75),
+      new ParallelDeadlineGroup(
+        new BasicShootCommand().withTimeout(10),
+        new MagazineCommand((()-> 1.0), MagazineMode.LoadCargo),
+        new IntakeCommand((()-> 0.55), ()-> 0.20,  IntakeMode.LoadCargo)
+      )
     );
   }
 
-  public boolean isRedPath1(){
-    System.out.println("Switch 11: " + m_controls.readSideboard(SBButton.Sw11));
-    return m_controls.readSideboard(SBButton.Sw11);
-  }
-
-  public boolean isRedPath2(){
-    System.out.println("Switch 12: " + m_controls.readSideboard(SBButton.Sw12));
-    return m_controls.readSideboard(SBButton.Sw12);
-  }
-
-  public boolean isRedPath3(){
-    System.out.println("Switch 13: " + m_controls.readSideboard(SBButton.Sw13));
-    return m_controls.readSideboard(SBButton.Sw13);
-  }
-
-  public boolean isBluePath1(){
-    System.out.println("Switch 21: " + m_controls.readSideboard(SBButton.Sw21));
-    return m_controls.readSideboard(SBButton.Sw21);
-  }
-
-  public boolean isBluePath2(){
-    System.out.println("Switch 22: " + m_controls.readSideboard(SBButton.Sw22));
-    return m_controls.readSideboard(SBButton.Sw22);
-  }
-
-  public boolean isBluePath3(){
-    System.out.println("Switch 23: " + m_controls.readSideboard(SBButton.Sw23));
-    return m_controls.readSideboard(SBButton.Sw23);
-  }
 }
