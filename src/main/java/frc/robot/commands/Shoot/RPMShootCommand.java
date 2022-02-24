@@ -53,20 +53,25 @@ public class RPMShootCommand extends CommandBase{
     }
     
     Stage stage;
+
+    public RPMShootCommand(FlyWheelRPM target){
+        this.intake = RobotContainer.RC().intake;
+        this.shooter = RobotContainer.RC().shooter;
+        this.magazine = RobotContainer.RC().magazine;
+        this.cmdRPM = target;
+    }
     
     public RPMShootCommand(){
         this.intake = RobotContainer.RC().intake;
         this.shooter = RobotContainer.RC().shooter;
         this.magazine = RobotContainer.RC().magazine;
+        cmdRPM = defaultShooterRPMs;
     }
 
     @Override
     public void initialize(){
         table = NetworkTableInstance.getDefault().getTable("ShootCommand");
         shooterState = table.getEntry("ShooterState");
-
-        cmdRPM = defaultShooterRPMs;
-        prevRPM = defaultShooterRPMs;
 
         stage = Stage.DoNothing;
         shooter.off();
