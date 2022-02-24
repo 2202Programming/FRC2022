@@ -14,10 +14,11 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.RobotContainer;
 import frc.robot.commands.IntakeCommand;
-import frc.robot.commands.IntakeDeployToggle;
 import frc.robot.commands.MagazineCommand;
+import frc.robot.commands.MoveIntake;
 import frc.robot.commands.IntakeCommand.IntakeMode;
 import frc.robot.commands.MagazineCommand.MagazineMode;
+import frc.robot.commands.MoveIntake.DeployMode;
 import frc.robot.commands.Shoot.BasicShootCommand;
 import frc.robot.commands.Shoot.LimelightAim;
 import frc.robot.subsystems.Intake_Subsystem;
@@ -52,14 +53,14 @@ public class auto_cmd_group2 extends SequentialCommandGroup {
     
 
     addCommands(
-      new InstantCommand( m_intake::deploy ),
+      new MoveIntake(DeployMode.Deploy),
       new InstantCommand( RobotContainer.RC().limelight::enableLED ),
       new ParallelDeadlineGroup( //all run at same time; group ends when 1st command ends
         finalAuto,
         new IntakeCommand((()-> 0.55), ()-> 0.20,  IntakeMode.LoadCargo),
         new MagazineCommand((()-> 1.0), MagazineMode.LoadCargo)
       ),
-      new IntakeDeployToggle(),
+      new MoveIntake(DeployMode.Retract),
       new ParallelDeadlineGroup( //all run at same time; group ends when 1st command ends
         new LimelightAim(1.0).withTimeout(3),
         new IntakeCommand((()-> 0.55), ()-> 0.20,  IntakeMode.LoadCargo),
