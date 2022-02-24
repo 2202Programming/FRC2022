@@ -59,6 +59,7 @@ public class DriveController extends CommandBase {
   int log_counter = 0;
 
   public DriveController() {
+    System.out.println("Drive Controller Constructed");
     this.drivetrain = RobotContainer.RC().drivetrain;
     this.dc = RobotContainer.RC().driverControls;
     this.shooter = RobotContainer.RC().shooter;
@@ -78,7 +79,7 @@ public class DriveController extends CommandBase {
 
   @Override
   public void initialize() {
-
+    System.out.println("Drive Controller Initialized");
     currentCmd = m_fieldCentricDrive;
     CommandScheduler.getInstance().schedule(currentCmd); // start default drive mode
   }
@@ -100,7 +101,7 @@ public class DriveController extends CommandBase {
     } else if (currentlyShooting && !shootingRequested){ //stop shooting
       currentlyShooting = false;
       requestedDriveMode = lastDriveMode;
-      m_basicShootCommand.end(true);
+      CommandScheduler.getInstance().cancel(m_basicShootCommand);
     }
   }
 

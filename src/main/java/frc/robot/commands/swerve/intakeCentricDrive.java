@@ -78,6 +78,8 @@ public class IntakeCentricDrive extends CommandBase {
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
     NTangleError = table.getEntry("/angleError");
     NTTargetAngle = table.getEntry("/TargetAngle");
+
+    lastBearing = new Rotation2d(0);
   }
 
   @Override

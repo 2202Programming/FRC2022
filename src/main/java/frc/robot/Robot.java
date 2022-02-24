@@ -71,6 +71,9 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     CommandScheduler.getInstance().cancelAll();
+    if(RobotContainer.m_driveController != null){
+      CommandScheduler.getInstance().schedule(RobotContainer.m_driveController);
+    }
   }
 
   /** This function is called periodically during operator control. */

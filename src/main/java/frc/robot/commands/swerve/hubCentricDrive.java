@@ -151,7 +151,7 @@ public class HubCentricDrive extends CommandBase {
     log_counter++;
     if ((log_counter%20)==0) {
     // update network tables
-    hubCentricTarget.setValue(targetAngle);
+    hubCentricTarget.setDouble(targetAngle.getDegrees());
     NTangleError.setDouble(angleError.getDegrees());
     }
   }

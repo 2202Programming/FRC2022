@@ -56,7 +56,7 @@ public class RobotContainer {
 
   public static String auto_path_name = "NONE";
 
-  private static DriveController m_driveController = null;
+  public static DriveController m_driveController = null;
 
   //modifiable commands
   //DriveCmd swd;
@@ -91,7 +91,6 @@ public class RobotContainer {
       //swd = new DriveCmd(drivetrain, driverControls);
       //swd = new LimelightDriveCmd(drivetrain, driverControls, limelight);
       m_driveController = new DriveController();
-      CommandScheduler.getInstance().schedule(m_driveController);
       //drivetrain.setDefaultCommand(m_driveController);
     }
     
