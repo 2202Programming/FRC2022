@@ -11,10 +11,12 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.DriverPrefs;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.IntakeCommand.IntakeMode;
-import frc.robot.commands.IntakeDeployToggle;
+import static frc.robot.commands.MoveIntake.DeployMode;
+import frc.robot.commands.MoveIntake;
 import frc.robot.commands.MagazineCommand;
 import frc.robot.commands.MagazineCommand.MagazineMode;
-import frc.robot.commands.PositionerToggle;
+import frc.robot.commands.MovePositioner.PositionerMode;
+import frc.robot.commands.MovePositioner;
 import frc.robot.commands.Shoot.BasicShootCommand;
 import frc.robot.commands.auto.auto_cmd_group2;
 import frc.robot.commands.auto.auto_pathPlanner_cmd;
@@ -175,7 +177,7 @@ public class RobotContainer {
     // A  - spin intake while held (in reverse to expell the ball)
     // RT - spin shooter and index while held
     if(Constants.HAS_INTAKE) {
-      driverControls.bind(Id.Assistant, XboxButton.LB).whenPressed(new IntakeDeployToggle());
+      driverControls.bind(Id.Assistant, XboxButton.LB).whenPressed(new MoveIntake(DeployMode.Toggle));
       // IntakeCommand takes a DoubleSupplier f() which could be tied to our UX instead of const f() given here.
       driverControls.bind(Id.Assistant, XboxButton.A).whileHeld(new IntakeCommand((()-> 0.47), ()-> 0.20,  IntakeMode.LoadCargo) );
       // IntakeCommand motor direction
@@ -184,7 +186,7 @@ public class RobotContainer {
 
     if(Constants.HAS_MAGAZINE){
       //Positioner binds :)
-      driverControls.bind(Id.Assistant, XboxButton.RB).whenPressed(new PositionerToggle());
+      driverControls.bind(Id.Assistant, XboxButton.RB).whenPressed(new MovePositioner(PositionerMode.Toggle));
 
       // driverControls.bind(Id.Driver, XboxButton.RB).whenPressed(new PositionerCommand( PositionerMode.MoveUp ));
       // driverControls.bind(Id.Driver, XboxButton.LB).whenPressed(new PositionerCommand( PositionerMode.MoveDown ));
