@@ -231,7 +231,7 @@ public class Shooter_Subsystem extends SubsystemBase  {
    * 
    * @param goals   (flywheel rpm goals)
    */
-  void on(FlyWheelRPM goals) {
+  public void on(FlyWheelRPM goals) {
     // save the targets for at goal calcs
     target.copy(goals);
     
