@@ -6,6 +6,7 @@ package frc.robot.commands.swerve;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -64,17 +65,19 @@ public class DriveController extends CommandBase {
     this.magazine = RobotContainer.RC().magazine;
     this.limelight = RobotContainer.RC().limelight;
 
+    m_robotCentricDrive = new RobotCentricDrive(drivetrain, dc);
+    m_fieldCentricDrive = new FieldCentricDrive(drivetrain, dc);
+    m_hubCentricDrive = new HubCentricDrive(drivetrain, dc, limelight);
+    m_intakeCentricDrive = new IntakeCentricDrive(drivetrain, dc);
+    m_basicShootCommand = new BasicShootCommand();
+
+    table = NetworkTableInstance.getDefault().getTable(NT_Name);
     driveMode = table.getEntry("/driveMode");
     shootingMode = table.getEntry("/shootingModeOn");
   }
 
   @Override
   public void initialize() {
-    m_robotCentricDrive = new RobotCentricDrive(drivetrain, dc);
-    m_fieldCentricDrive = new FieldCentricDrive(drivetrain, dc);
-    m_hubCentricDrive = new HubCentricDrive(drivetrain, dc, limelight);
-    m_intakeCentricDrive = new IntakeCentricDrive(drivetrain, dc);
-    m_basicShootCommand = new BasicShootCommand();
 
     currentCmd = m_fieldCentricDrive;
     CommandScheduler.getInstance().schedule(currentCmd); // start default drive mode
