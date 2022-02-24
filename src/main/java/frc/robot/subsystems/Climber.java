@@ -4,6 +4,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.SparkMaxLimitSwitch;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -13,10 +14,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.ClimbSettings;
 
-public class Climber extends SubsystemBase{
+
+public class Climber extends SubsystemBase {
     // NTs
     private NetworkTable table;
-    private NetworkTableEntry left_extender_speed, right_extender_speed, left_extender_position, right_extender_position;
+    private NetworkTableEntry left_extender_speed, right_extender_speed, left_extender_position, right_extender_position, left_reverse_open, right_reverse_open, left_rotation_limit, right_rotation_limit, left_forward_open, right_forward_open;
 
     // PIDSlot used
     int slot = 0;
@@ -27,12 +29,42 @@ public class Climber extends SubsystemBase{
     private SparkMaxPIDController left_pidController_ext;
     private SparkMaxPIDController right_pidController_ext;
 
+
+    // Limit switches extension
+    // TODO: Is type kNormallyClosed or kNormallyOpen? Also check for rotation limit swithces
+    // TODO: Implement what happens if limit switch is true
+    /**
+     * Note: there are 3 limit switches --
+     *  1 limit switch to check if extension is at top
+     *  1 limit switch to check if extension is at bottom
+     *  1 limit switch to check if rotation is vertical
+     */
+
+    private SparkMaxLimitSwitch leftForwardLimitSwitch = left_motor_ext.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyClosed);
+    private SparkMaxLimitSwitch rightForwardLimitSwitch = right_motor_ext.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyClosed);
+
+    private SparkMaxLimitSwitch leftReverseLimitSwitch = left_motor_ext.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyClosed);
+    private SparkMaxLimitSwitch rightReverseLimitSwitch = right_motor_ext.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyClosed);
+    
+    
     private ArmRotation left_Arm;
     private ArmRotation right_Arm;
     private CANSparkMax left_motor_rot = new CANSparkMax(CAN.CMB_LEFT_Rotate, MotorType.kBrushed);
     private CANSparkMax right_motor_rot = new CANSparkMax(CAN.CMB_RIGHT_Rotate, MotorType.kBrushed);
     private SparkMaxPIDController left_pidController_rot;
     private SparkMaxPIDController right_pidController_rot;
+
+    // Limit switches rotation
+    private SparkMaxLimitSwitch leftRotationLimitSwitch = left_motor_rot.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyClosed);
+    private SparkMaxLimitSwitch rightRotationLimitSwitch = right_motor_rot.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyClosed);
+    boolean leftRotationIsPressed;
+    boolean rightRotationIsPressed;
+    boolean leftForwardLimitSwitchIsPressed;
+    boolean rightForwardLimitSwitchIsPressed;
+    boolean leftReverseIsPressed;
+    boolean rightReverseIsPressed;
+    
+
 
 
     // rotation arm controller (outer arms rotate)
@@ -52,6 +84,10 @@ public class Climber extends SubsystemBase{
         // ClimbSettings.armPID.copyTo(l_rotator.getPIDController(), slot);
         // ClimbSettings.armPID.copyTo(r_rotator.getPIDController(), slot);
         // // Arm extension PIDS
+        
+        
+        
+        
         ClimbSettings.extendPID.copyTo(left_motor_ext.getPIDController(), slot);
         ClimbSettings.extendPID.copyTo(right_motor_ext.getPIDController(), slot);
         right_motor_ext.setInverted(true);
@@ -61,11 +97,22 @@ public class Climber extends SubsystemBase{
         right_motor_rot.setInverted(true);
 
         // NT stuff
+        
         table = NetworkTableInstance.getDefault().getTable("Climber");
         left_extender_speed = table.getEntry("Left Extender Speed");
         right_extender_speed = table.getEntry("Right Extender Speed");
+        
         left_extender_position = table.getEntry("Left Extender Position");
         right_extender_position = table.getEntry("Right Extender Position");
+        
+        left_reverse_open = table.getEntry("Left Reverse Limit Enabled");
+        right_reverse_open = table.getEntry("Right Reverse Limit Enabled");
+        
+        left_forward_open = table.getEntry("Left Forward Limit Enabled");
+        right_forward_open = table.getEntry("Right Forward Limit Enabled");
+        
+        left_rotation_limit = table.getEntry("Left Rotation Limit Enabled");
+        right_rotation_limit = table.getEntry("Right Rotation Limit Enabled");
 
         left_pidController_ext = left_motor_ext.getPIDController();
         right_pidController_ext = right_motor_ext.getPIDController();
@@ -81,6 +128,19 @@ public class Climber extends SubsystemBase{
 
         left_Arm = new ArmRotation(table.getSubTable("left_arm_rotation"), left_pidController_rot);
         right_Arm = new ArmRotation(table.getSubTable("right_arm_rotation"), right_pidController_rot);
+        
+        leftForwardLimitSwitch.enableLimitSwitch(leftForwardLimitSwitch.isPressed());
+        rightForwardLimitSwitch.enableLimitSwitch(rightForwardLimitSwitch.isPressed());
+
+        leftReverseLimitSwitch.enableLimitSwitch(leftReverseLimitSwitch.isPressed());
+        rightReverseLimitSwitch.enableLimitSwitch(rightReverseLimitSwitch.isPressed());
+
+        leftRotationLimitSwitch.enableLimitSwitch(leftRotationLimitSwitch.isPressed());
+        rightRotationLimitSwitch.enableLimitSwitch(rightRotationLimitSwitch.isPressed());
+
+        leftRotationIsPressed = leftRotationLimitSwitch.isPressed();
+        rightRotationIsPressed = rightRotationLimitSwitch.isPressed();
+
     }
 
 
@@ -159,12 +219,44 @@ public class Climber extends SubsystemBase{
         right_motor_ext.set(right);
     }
 
+    
+    
     public void periodic() {
+        // Sets limit switch enabled
+        leftRotationIsPressed = leftRotationLimitSwitch.isPressed();
+        rightRotationIsPressed = rightRotationLimitSwitch.isPressed();
+        
+        leftForwardLimitSwitchIsPressed = rightRotationLimitSwitch.isPressed();
+        rightForwardLimitSwitchIsPressed = rightRotationLimitSwitch.isPressed();
+        
+        leftReverseIsPressed = leftReverseLimitSwitch.isPressed();
+        rightReverseIsPressed = rightReverseLimitSwitch.isPressed();
+        
+        leftRotationLimitSwitch.enableLimitSwitch(leftRotationIsPressed);
+        rightRotationLimitSwitch.enableLimitSwitch(rightRotationIsPressed);
+        
+        leftForwardLimitSwitch.enableLimitSwitch(leftForwardLimitSwitchIsPressed);
+        rightForwardLimitSwitch.enableLimitSwitch(rightForwardLimitSwitchIsPressed);
+        
+        leftReverseLimitSwitch.enableLimitSwitch(leftReverseIsPressed);
+        rightReverseLimitSwitch.enableLimitSwitch(rightReverseIsPressed);
+
+
         // NT updates
         left_extender_speed.setDouble(left_motor_ext.getEncoder().getVelocity());
         right_extender_speed.setDouble(right_motor_ext.getEncoder().getVelocity());
+        
         left_extender_position.setDouble(left_motor_ext.getEncoder().getPosition());
         right_extender_position.setDouble(right_motor_ext.getEncoder().getPosition());
+        
+        left_reverse_open.setBoolean(leftReverseLimitSwitch.isPressed());
+        right_reverse_open.setBoolean(rightReverseLimitSwitch.isPressed());
+        
+        left_forward_open.setBoolean(leftForwardLimitSwitch.isPressed());
+        right_forward_open.setBoolean(rightForwardLimitSwitch.isPressed());
+        
+        left_rotation_limit.setBoolean(leftRotationIsPressed);
+        right_rotation_limit.setBoolean(rightRotationIsPressed);
 
         left_Arm.periodic();
         right_Arm.periodic();
