@@ -21,30 +21,52 @@ public class NtBind extends SubsystemBase {
     Boolean apply();
   }
 
+  public apply buildDoubleInput(NtBind ntBind, NetworkTable table, String name, Field f, Object state) {
+    var a = new doubleApply();
+    var nt = table.getEntry(name);
+
+    a.current = () -> {
+      try {
+        return f.getDouble(state);
+      } catch (Exception e) {
+        ntBind.ReportError(table.getPath(), name, e);
+        return 0.0;
+      }
+    };
+
+    a.set = (Double val) -> {
+      try {
+        f.setDouble(state, val);
+      } catch (Exception e) {
+        ntBind.ReportError(table.getPath(), name, e);
+      }
+    };
+
+    a.next = () -> nt.getDouble(a.current.get());
+
+    return a;
+  }
+
+
+  public apply buildDoubleOutput(NtBind ntBind, NetworkTable table, String name, Field f, Object state) {
+    var a = new doubleApply();
+    var nt = table.getEntry(name);
+
+    a.current = () -> nt.getDouble(0.0);
+    a.set = (Double val) -> nt.setDouble(val);
+    a.next = () -> {
+      try {
+        return f.getDouble(state);
+      } catch (Exception e) {
+        ntBind.ReportError(table.getPath(), name, e);
+        return 0.0;
+      }
+    };
+    
+    return a;
+  }
+
   class doubleApply implements apply {
-    public doubleApply(NtBind ntBind, NetworkTable table, String name, Field f, Object state) {
-      var nt = table.getEntry(name);
-
-      this.current = () -> {
-        try {
-          return f.getDouble(state);
-        } catch (Exception e) {
-          ntBind.ReportError(table.getPath(), name, e);
-          return 0.0;
-        }
-      };
-
-      this.set = (Double val) -> {
-        try {
-          f.setDouble(state, val);
-        } catch (Exception e) {
-          ntBind.ReportError(table.getPath(), name, e);
-        }
-      };
-
-      this.next = () -> nt.getDouble(this.current.get());
-    }
-
     Supplier<Double> current;
     Consumer<Double> set;
     Supplier<Double> next;
@@ -73,10 +95,10 @@ public class NtBind extends SubsystemBase {
         isChanged |= a.apply();
       }
 
-      if(isChanged && onChange != null) {
+      if (isChanged && onChange != null) {
         onChange.run();
       }
- 
+
       return isChanged;
     }
   }
@@ -101,7 +123,21 @@ public class NtBind extends SubsystemBase {
           }
 
           if (field.getType().equals(double.class)) {
-            data.applys.add(new doubleApply(this, sub, entryName, field, state));
+            data.applys.add(buildDoubleInput(this, sub, entryName, field, state));
+          }
+        }
+
+        if (annotation instanceof NtOutput) {
+          var ntOutput = (NtOutput) annotation;
+
+          // figure out we should call it
+          var entryName = ntOutput.name();
+          if (entryName == "") {
+            entryName = field.getName();
+          }
+
+          if (field.getType().equals(double.class)) {
+            data.applys.add(buildDoubleOutput(this, sub, entryName, field, state));
           }
         }
       }
@@ -112,7 +148,17 @@ public class NtBind extends SubsystemBase {
   }
 
   public void ReportError(String table, String name, Exception e) {
+    // todo: real comments and reporting and something
+  }
 
+  private static NtBind instance;
+
+  public static NtBind getInstance() {
+    if (instance == null) {
+      instance = new NtBind();
+    }
+
+    return instance;
   }
 
   /** Creates a new NtBind. */
