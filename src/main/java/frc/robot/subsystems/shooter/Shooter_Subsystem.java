@@ -16,6 +16,8 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.numbers.N2;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.Shooter;
+import frc.robot.subsystems.shooter.FlyWheel.FlyWheelConfig;
+import frc.robot.util.PIDFController;
 
 
 public class Shooter_Subsystem extends SubsystemBase  {
@@ -280,4 +282,37 @@ public class Shooter_Subsystem extends SubsystemBase  {
     nt_upperRPMErr.setDouble(error.upper);
   }
 
+  public void setPIDUpper(double kP, double kI, double kD){
+    upper_shooter.setPID(kP, kI, kD);
+  }
+
+  public void setPIDLower(double kP, double kI, double kD){
+    lower_shooter.setPID(kP, kI, kD);
+  }
+
+  public double getlowerP(){
+    return lower_shooter.getP();
+  }
+
+  public double getlowerI(){
+    return lower_shooter.getI();
+  }
+
+  public double getlowerD(){
+    return lower_shooter.getD();
+  }
+
+  public double getUpperP(){
+    return upper_shooter.getP();
+  }
+
+  public double getUpperI(){
+    return upper_shooter.getI();
+  }
+
+  public double getUpperD(){
+    return upper_shooter.getD();
+  }
+
 }
+

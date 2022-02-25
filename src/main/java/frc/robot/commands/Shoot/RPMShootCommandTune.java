@@ -31,6 +31,14 @@ public class RPMShootCommandTune extends CommandBase{
 
     private boolean finished = false;
 
+    private double upperP;
+    private double upperI;
+    private double upperD;
+    private double lowerP;
+    private double lowerI;
+    private double lowerD;
+
+
     final FlyWheelRPM defaultShooterRPMs = new FlyWheelRPM(1000,1000);
 
     public enum Stage{
@@ -73,12 +81,14 @@ public class RPMShootCommandTune extends CommandBase{
 
         stage = Stage.DoNothing;
         shooter.off();
+
     }
 
     @Override
     public void execute(){
         shooterState.setString(stage.toString());
         checkDashboard();
+        getPID();
         switch(stage){
             case DoNothing:
                 magazine.driveWheelOff();
@@ -107,6 +117,33 @@ public class RPMShootCommandTune extends CommandBase{
                     stage = Stage.WaitingForFlyWheel;
                 } else magazine.driveWheelOn(1.0);
             break;
+        }
+    }
+
+    private void getPID(){
+        upperP = shooter.getUpperP();
+        upperI = shooter.getUpperI();
+        upperD = shooter.getUpperD();
+        lowerP = shooter.getlowerP();
+        lowerI = shooter.getlowerI();
+        lowerD = shooter.getlowerD();
+        SmartDashboard.putNumber("Current Upper P", upperP);
+        SmartDashboard.putNumber("Current Upper I", upperI);
+        SmartDashboard.putNumber("Current Upper D", upperD);
+        SmartDashboard.putNumber("Current Lower P", lowerP);
+        SmartDashboard.putNumber("Current Lower I", lowerI);
+        SmartDashboard.putNumber("Current Lower D", lowerD);
+    }
+
+    private void checkPID(){
+        if (upperP != SmartDashboard.getNumber("Requested Upper P", upperP)){
+            shooter.setPIDUpper(SmartDashboard.getNumber("Requested Upper P", upperP), upperI, upperD);
+        }
+        if (upperI != SmartDashboard.getNumber("Requested Upper I", upperI)){
+            shooter.setPIDUpper(upperP, SmartDashboard.getNumber("Requested Upper I", upperI), upperD);
+        }
+        if (upperD != SmartDashboard.getNumber("Requested Upper D", upperD)){
+            shooter.setPIDUpper(upperP, upperI, SmartDashboard.getNumber("Requested Upper D", upperD));
         }
     }
 

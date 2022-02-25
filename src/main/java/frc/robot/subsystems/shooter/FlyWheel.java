@@ -59,10 +59,13 @@ public class FlyWheel {
   final double FWrpm2Counts; // flywheel RPM given motor-unit counts (f(gear, meas-period))
   final double MUCounts2FWrpm; // motor units (counts/100ms) to FW RPM (1/FWrpm2Counts)
 
+  public FlyWheelConfig cfg;
+
   FlyWheel(int CAN_ID, FlyWheelConfig cfg) {
     srxconfig = new TalonSRXConfiguration();
     motor = new WPI_TalonSRX(CAN_ID);
     motor.setInverted(cfg.inverted);
+    this.cfg = cfg;
 
     // flywheel constants RPM given motor-unit counts (f(gear, meas-period))
     FWrpm2Counts = Shooter.kRPM2Counts * cfg.gearRatio; // motor counts are bigger, motor spins faster than FW
@@ -123,4 +126,23 @@ public class FlyWheel {
   public void setPercent(double pct) {
     motor.set(ControlMode.PercentOutput, pct);
   }
+
+  public void setPID(double kP, double kI, double kD){
+    cfg.pid.setPID(kP, kI, kD);
+    cfg.pid.copyTo(srxconfig.slot0);
+  }
+
+  public double getP(){
+    return cfg.pid.getP();
+  }
+
+  public double getI(){
+    return cfg.pid.getI();
+  }
+
+  public double getD(){
+    return cfg.pid.getD();
+  }
+
+
 } // FlyWheel
