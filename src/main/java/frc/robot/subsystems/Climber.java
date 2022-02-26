@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxLimitSwitch.Type;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.SparkMaxLimitSwitch;
@@ -19,7 +20,8 @@ public class Climber extends SubsystemBase {
     // NTs
     private NetworkTable table;
     private NetworkTableEntry left_extender_speed, right_extender_speed, left_extender_position, right_extender_position, left_reverse_open, right_reverse_open, left_rotation_limit, right_rotation_limit, left_forward_open, right_forward_open;
-
+    private NetworkTableEntry right_extensions_upper_limit, right_extensions_lower_limit, left_extensions_upper_limit, left_extensions_lower_limit, arm_extensions_desired_position;
+    private NetworkTableEntry extension_amps;
     // PIDSlot used
     int slot = 0;
 
@@ -64,7 +66,7 @@ public class Climber extends SubsystemBase {
     boolean leftReverseIsPressed;
     boolean rightReverseIsPressed;
     
-
+    int currentAmps;
 
 
     // rotation arm controller (outer arms rotate)
@@ -72,6 +74,8 @@ public class Climber extends SubsystemBase {
     // private CANSparkMax r_rotator = new CANSparkMax(CAN.CMB_R_Rotate, MotorType.kBrushless);
 
     public Climber() {
+        table = NetworkTableInstance.getDefault().getTable("Climber");
+
         // TODO - raise/lower are actions ie commands. In the sub-sys we are defining
         // devices
         // and behaviors. Left/Right Inner/Outer arms left-rotator, right-rotator
@@ -84,13 +88,22 @@ public class Climber extends SubsystemBase {
         // ClimbSettings.armPID.copyTo(l_rotator.getPIDController(), slot);
         // ClimbSettings.armPID.copyTo(r_rotator.getPIDController(), slot);
         // // Arm extension PIDS
-        
+        right_motor_ext.clearFaults();
+        right_motor_ext.restoreFactoryDefaults();
+        left_motor_ext.clearFaults();
+        left_motor_ext.restoreFactoryDefaults();
         
         
         
         ClimbSettings.extendPID.copyTo(left_motor_ext.getPIDController(), slot);
         ClimbSettings.extendPID.copyTo(right_motor_ext.getPIDController(), slot);
-        right_motor_ext.setInverted(true);
+        right_motor_ext.setInverted(false);
+        left_motor_ext.setInverted(true);
+        extension_amps=table.getEntry("amps");
+        right_motor_ext.setSmartCurrentLimit((int)extension_amps.getDouble(1));
+        left_motor_ext.setSmartCurrentLimit((int)extension_amps.getDouble(1));
+        extension_amps.setDefaultDouble(1);
+        currentAmps = (int)extension_amps.getDouble(1);
 
         ClimbSettings.rotatePID.copyTo(left_motor_rot.getPIDController(), slot);
         ClimbSettings.rotatePID.copyTo(right_motor_rot.getPIDController(), slot);
@@ -98,12 +111,16 @@ public class Climber extends SubsystemBase {
 
         // NT stuff
         
-        table = NetworkTableInstance.getDefault().getTable("Climber");
         left_extender_speed = table.getEntry("Left Extender Speed");
         right_extender_speed = table.getEntry("Right Extender Speed");
         
         left_extender_position = table.getEntry("Left Extender Position");
         right_extender_position = table.getEntry("Right Extender Position");
+
+        right_extensions_lower_limit = table.getEntry("Right Extensions Lower Limit");
+        left_extensions_lower_limit = table.getEntry("Left Extensions Lower Limit");
+        right_extensions_upper_limit = table.getEntry("Right Extensions Upper Limit");
+        left_extensions_upper_limit = table.getEntry("Left Extensions Upper Limit");
         
         left_reverse_open = table.getEntry("Left Reverse Limit Enabled");
         right_reverse_open = table.getEntry("Right Reverse Limit Enabled");
@@ -114,32 +131,34 @@ public class Climber extends SubsystemBase {
         left_rotation_limit = table.getEntry("Left Rotation Limit Enabled");
         right_rotation_limit = table.getEntry("Right Rotation Limit Enabled");
 
+        arm_extensions_desired_position = table.getEntry("Arm Extensions Desired Position");
+
         left_pidController_ext = left_motor_ext.getPIDController();
         right_pidController_ext = right_motor_ext.getPIDController();
         
-        left_motor_ext.getEncoder().setPosition(0);
-        right_motor_ext.getEncoder().setPosition(0);
+        // left_motor_ext.getEncoder().setPosition(0);
+        // right_motor_ext.getEncoder().setPosition(0);
 
         left_pidController_rot = left_motor_ext.getPIDController();
         right_pidController_rot = right_motor_ext.getPIDController();
- 
-        left_motor_rot.getEncoder().setPosition(0);
-        right_motor_rot.getEncoder().setPosition(0);
+// //  
+//         left_motor_rot.getEncoder().setPosition(0);
+//         right_motor_rot.getEncoder().setPosition(0);
 
-        left_Arm = new ArmRotation(table.getSubTable("left_arm_rotation"), left_pidController_rot);
-        right_Arm = new ArmRotation(table.getSubTable("right_arm_rotation"), right_pidController_rot);
+        // left_Arm = new ArmRotation(table.getSubTable("left_arm_rotation"), left_pidController_rot);
+        // right_Arm = new ArmRotation(table.getSubTable("right_arm_rotation"), right_pidController_rot);
         
-        leftForwardLimitSwitch.enableLimitSwitch(leftForwardLimitSwitch.isPressed());
-        rightForwardLimitSwitch.enableLimitSwitch(rightForwardLimitSwitch.isPressed());
+        // leftForwardLimitSwitch.enableLimitSwitch(leftForwardLimitSwitch.isPressed());
+        // rightForwardLimitSwitch.enableLimitSwitch(rightForwardLimitSwitch.isPressed());
 
-        leftReverseLimitSwitch.enableLimitSwitch(leftReverseLimitSwitch.isPressed());
-        rightReverseLimitSwitch.enableLimitSwitch(rightReverseLimitSwitch.isPressed());
+        // leftReverseLimitSwitch.enableLimitSwitch(leftReverseLimitSwitch.isPressed());
+        // rightReverseLimitSwitch.enableLimitSwitch(rightReverseLimitSwitch.isPressed());
 
-        leftRotationLimitSwitch.enableLimitSwitch(leftRotationLimitSwitch.isPressed());
-        rightRotationLimitSwitch.enableLimitSwitch(rightRotationLimitSwitch.isPressed());
+        // leftRotationLimitSwitch.enableLimitSwitch(leftRotationLimitSwitch.isPressed());
+        // rightRotationLimitSwitch.enableLimitSwitch(rightRotationLimitSwitch.isPressed());
 
-        leftRotationIsPressed = leftRotationLimitSwitch.isPressed();
-        rightRotationIsPressed = rightRotationLimitSwitch.isPressed();
+        // leftRotationIsPressed = leftRotationLimitSwitch.isPressed();
+        // rightRotationIsPressed = rightRotationLimitSwitch.isPressed();
 
     }
 
@@ -158,12 +177,14 @@ public class Climber extends SubsystemBase {
     }
     // @param inches from extender absolute position
     public void setExtension(double inches) {
-        double count = ((25.4*36*42)/(5*24))*inches; //25.4 is mm per inch, 36 is revs per 1 pev with gearbox, 42 is counts per rev and 5 is mm per 1 tooth
+        double count = inches*(120/(15+(7/8))); //really dumb measured math probably not accurate
+        //double count = ((25.4*36*42)/(5*24))*inches; //25.4 is mm per inch, 36 is revs per 1 pev with gearbox, 42 is counts per rev and 5 is mm per 1 tooth
         //   42 Counts per rev, but SmartMotion was showing rotations not counts
         //   Connected to a 36:1 gearbox that could change
         //   Gearbox connected to a 24 tooth pulley that is connected to a linear belt
         //   Need to ask mechs to do analysis to convert 24 tooth pulley to linear distance
 
+        arm_extensions_desired_position.setDouble(count);
         
         left_pidController_ext.setReference(count, CANSparkMax.ControlType.kPosition);
         right_pidController_ext.setReference(count, CANSparkMax.ControlType.kPosition);
@@ -205,8 +226,8 @@ public class Climber extends SubsystemBase {
         // changes the angle of the ? by this many degrees
         // l_rotator.getPIDController().setReference(degrees, ControlType.kPosition);
         // r_rotator.getPIDController().setReference(degrees, ControlType.kPosition);
-        left_Arm.set((float)counts);
-        right_Arm.set((float)counts);
+        // left_Arm.set((float)counts);
+        // right_Arm.set((float)counts);
     }
 
     public void stop() {
@@ -258,8 +279,20 @@ public class Climber extends SubsystemBase {
         left_rotation_limit.setBoolean(leftRotationIsPressed);
         right_rotation_limit.setBoolean(rightRotationIsPressed);
 
-        left_Arm.periodic();
-        right_Arm.periodic();
+        left_extensions_upper_limit.setBoolean(left_motor_ext.getForwardLimitSwitch(Type.kNormallyClosed).isPressed());
+        right_extensions_upper_limit.setBoolean(right_motor_ext.getForwardLimitSwitch(Type.kNormallyClosed).isPressed());
+
+        left_extensions_lower_limit.setBoolean(left_motor_ext.getReverseLimitSwitch(Type.kNormallyClosed).isPressed());
+        right_extensions_lower_limit.setBoolean(right_motor_ext.getReverseLimitSwitch(Type.kNormallyClosed).isPressed());
+
+        var newamps = (int)extension_amps.getDouble(1);
+        if(currentAmps != newamps){ 
+            currentAmps = newamps;
+            left_motor_ext.setSmartCurrentLimit(newamps);
+            right_motor_ext.setSmartCurrentLimit(newamps);
+        }
+        // left_Arm.periodic();
+        // right_Arm.periodic();
     }
 
     public RelativeEncoder getLeftEncoder() {

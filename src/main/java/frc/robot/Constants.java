@@ -43,8 +43,8 @@ public final class Constants {
         public static final int DT_FL_CANCODER = 8;
 
         // Climber Arms - L/R left/right I/O inner/outer
-        public static final int CMB_LEFT_Rotate = 10;
-        public static final int CMB_RIGHT_Rotate = 11;
+        public static final int CMB_LEFT_Rotate = 16;
+        public static final int CMB_RIGHT_Rotate = 17;
         public static final int CMB_RIGHT_Extend = 14;
         public static final int CMB_LEFT_Extend = 15;
         
@@ -134,8 +134,8 @@ public final class Constants {
 
     public static final class ClimbSettings {
         //TODO example pid init, climber may have a few - DPL  1/15/22
-        public static PIDFController rotatePID = new PIDFController(1, 0, 0, 0);
-        public static PIDFController extendPID = new PIDFController(1, 0, 0, 0);
+        public static PIDFController rotatePID = new PIDFController(.05, 0, 0, 0);
+        public static PIDFController extendPID = new PIDFController(.05, 0, 0, 0);
 
         // TODO: Check
         // Extension length and rotation needed to hit bars

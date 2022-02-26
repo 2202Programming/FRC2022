@@ -31,8 +31,8 @@ public class RobotContainer {
   public static RobotContainer   RC() {return rc;}
 
   public final HID_Xbox_Subsystem driverControls;
-  public final Sensors_Subsystem sensors;
-  private final MecanumDriveIfx drivetrain;
+  // public final Sensors_Subsystem sensors;
+  // private final MecanumDriveIfx drivetrain;
   public final Dashboard dashboard;
   private final Climber climber;
 
@@ -41,12 +41,12 @@ public class RobotContainer {
     RobotContainer.rc = this;
 
     //create our subsystems
-    sensors = new Sensors_Subsystem();
+    // sensors = new Sensors_Subsystem();
     driverControls = new HID_Xbox_Subsystem(DriverPrefs.VelExpo, DriverPrefs.RotationExpo, DriverPrefs.StickDeadzone); 
-    drivetrain = new MecanumDrivetrain();
+    // drivetrain = new MecanumDrivetrain();
 
     // set default commands
-    drivetrain.setDefaultCommand(new MecanumDriveCmd(drivetrain, driverControls));
+    // drivetrain.setDefaultCommand(new MecanumDriveCmd(drivetrain, driverControls));
 
     //setup the dashboard programatically, creates any choosers, screens
     dashboard = new Dashboard(this);

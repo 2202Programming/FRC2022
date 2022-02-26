@@ -97,6 +97,8 @@ public class PIDFController extends PIDController {
       dest.setD(this.getD(), slot);
       dest.setFF(this.getF(), slot);
       dest.setIZone(this.getIzone(), slot);
+      dest.setSmartMotionMaxVelocity(.1, slot);
+      dest.setSmartMotionMaxAccel(.01, slot);
     }
 
     public void copyTo(SlotConfiguration dest) {
