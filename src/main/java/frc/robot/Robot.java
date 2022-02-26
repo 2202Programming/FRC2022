@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.Shoot.RPMShootCommand;
@@ -84,6 +85,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testInit() {
+    LiveWindow.setEnabled(false);
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
     CommandScheduler.getInstance().schedule(new RPMShootCommandTune());

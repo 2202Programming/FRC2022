@@ -38,6 +38,9 @@ public class RPMShootCommandTune extends CommandBase{
     private double lowerI;
     private double lowerD;
 
+    private double upperRequestedRPM = 1000;
+    private double lowerRequestedRPM = 1000;
+
 
     final FlyWheelRPM defaultShooterRPMs = new FlyWheelRPM(1000,1000);
 
@@ -82,12 +85,10 @@ public class RPMShootCommandTune extends CommandBase{
 
         stage = Stage.DoNothing;
         shooter.off();
-
     }
 
     @Override
     public void execute(){
-        System.out.println("***Shooter Tune execute***");
         shooterState.setString(stage.toString());
         checkDashboard();
         getPID();
@@ -136,6 +137,10 @@ public class RPMShootCommandTune extends CommandBase{
         SmartDashboard.putNumber("Current Lower P", lowerP);
         SmartDashboard.putNumber("Current Lower I", lowerI);
         SmartDashboard.putNumber("Current Lower D", lowerD);
+
+        SmartDashboard.putNumber("Upper RPM Requested", upperRequestedRPM);
+        SmartDashboard.putNumber("Lower RPM Requested", lowerRequestedRPM);
+
     }
 
     private void checkPID(){
@@ -165,7 +170,9 @@ public class RPMShootCommandTune extends CommandBase{
         SmartDashboard.putNumber("Current Upper RPM", actualRPMs.upper);
         SmartDashboard.putNumber("Current Lower RPM", actualRPMs.lower);
         SmartDashboard.putString("Shooting Stage", stage.toString());
-        cmdRPM = new FlyWheelRPM(SmartDashboard.getNumber("Upper RPM Requested", 1000), SmartDashboard.getNumber("Lower RPM Requested", 1000));
+        upperRequestedRPM = SmartDashboard.getNumber("Upper RPM Requested", 1000);
+        lowerRequestedRPM = SmartDashboard.getNumber("Lower RPM Requested", 1000);
+        cmdRPM = new FlyWheelRPM(lowerRequestedRPM, upperRequestedRPM);
     }
 
     @Override
