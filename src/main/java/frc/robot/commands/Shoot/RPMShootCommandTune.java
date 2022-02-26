@@ -1,6 +1,5 @@
 package frc.robot.commands.Shoot;
 
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.RobotContainer;
@@ -15,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.shooter.FlyWheelRPM;
 import frc.robot.subsystems.shooter.Shooter_Subsystem;
 import frc.robot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
+import frc.robot.util.PoseMath;
 
 public class RPMShootCommandTune extends CommandBase{ 
     public static final double USE_CURRENT_ANGLE = 0.0;
@@ -37,9 +37,6 @@ public class RPMShootCommandTune extends CommandBase{
     private double upperP;
     private double upperI;
     private double upperD;
-    private double lowerP;
-    private double lowerI;
-    private double lowerD;
 
     private double requestedVelocity = 10;
     private double previousVelocity = 10;
@@ -69,13 +66,10 @@ public class RPMShootCommandTune extends CommandBase{
 
     @Override
     public void initialize(){
-        System.out.println("***Shooter Tune init***");
         table = NetworkTableInstance.getDefault().getTable("ShootCommand");
 
         currentShooterCommand = new BasicShootCommand(new ShooterSettings(10, 0.0, USE_CURRENT_ANGLE, 0.01));
         CommandScheduler.getInstance().schedule(currentShooterCommand);
-
-        //shooter.off();
     }
 
     @Override
@@ -83,22 +77,16 @@ public class RPMShootCommandTune extends CommandBase{
         checkDashboard();
         getPID();
         checkPID();
-        distanceToTarget = distanceToTarget();
+        distanceToTarget = PoseMath.poseDistance(RobotContainer.RC().drivetrain.getPose(), centerField);
     }
 
     private void getPID(){
         upperP = shooter.getUpperP();
         upperI = shooter.getUpperI();
         upperD = shooter.getUpperD();
-        lowerP = shooter.getlowerP();
-        lowerI = shooter.getlowerI();
-        lowerD = shooter.getlowerD();
-        SmartDashboard.putNumber("Current Upper P", upperP);
-        SmartDashboard.putNumber("Current Upper I", upperI);
-        SmartDashboard.putNumber("Current Upper D", upperD);
-        SmartDashboard.putNumber("Current Lower P", lowerP);
-        SmartDashboard.putNumber("Current Lower I", lowerI);
-        SmartDashboard.putNumber("Current Lower D", lowerD);
+        SmartDashboard.putNumber("Current Flywheel P", upperP);
+        SmartDashboard.putNumber("Current Flywheel I", upperI);
+        SmartDashboard.putNumber("Current Flywheel D", upperD);
 
         SmartDashboard.putNumber("Velocity Requested", requestedVelocity);
         FlyWheelRPM flyWheelRPM = new FlyWheelRPM();
@@ -109,23 +97,17 @@ public class RPMShootCommandTune extends CommandBase{
     }
 
     private void checkPID(){
-        if (upperP != SmartDashboard.getNumber("Requested Upper P", upperP)){
-            shooter.setPIDUpper(SmartDashboard.getNumber("Requested Upper P", upperP), upperI, upperD);
+        if (upperP != SmartDashboard.getNumber("Requested Flywheel P", upperP)){
+            shooter.setPIDUpper(SmartDashboard.getNumber("Requested Flywheel P", upperP), upperI, upperD);
+            shooter.setPIDLower(SmartDashboard.getNumber("Requested Flywheel P", upperP), upperI, upperD);
         }
-        if (upperI != SmartDashboard.getNumber("Requested Upper I", upperI)){
-            shooter.setPIDUpper(upperP, SmartDashboard.getNumber("Requested Upper I", upperI), upperD);
+        if (upperI != SmartDashboard.getNumber("Requested Flywheel I", upperI)){
+            shooter.setPIDUpper(upperP, SmartDashboard.getNumber("Requested Flywheel I", upperI), upperD);
+            shooter.setPIDLower(upperP, SmartDashboard.getNumber("Requested Flywheel I", upperI), upperD);
         }
-        if (upperD != SmartDashboard.getNumber("Requested Upper D", upperD)){
-            shooter.setPIDUpper(upperP, upperI, SmartDashboard.getNumber("Requested Upper D", upperD));
-        }
-        if (lowerP != SmartDashboard.getNumber("Requested lower P", lowerP)){
-            shooter.setPIDLower(SmartDashboard.getNumber("Requested lower P", lowerP), lowerI, lowerD);
-        }
-        if (lowerI != SmartDashboard.getNumber("Requested lower I", lowerI)){
-            shooter.setPIDLower(lowerP, SmartDashboard.getNumber("Requested lower I", lowerI), lowerD);
-        }
-        if (lowerD != SmartDashboard.getNumber("Requested lower D", lowerD)){
-            shooter.setPIDLower(lowerP, lowerI, SmartDashboard.getNumber("Requested lower D", lowerD));
+        if (upperD != SmartDashboard.getNumber("Requested Flywheel D", upperD)){
+            shooter.setPIDUpper(upperP, upperI, SmartDashboard.getNumber("Requested Flywheel D", upperD));
+            shooter.setPIDLower(upperP, upperI, SmartDashboard.getNumber("Requested Flywheel D", upperD));
         }
     }
 
@@ -142,7 +124,6 @@ public class RPMShootCommandTune extends CommandBase{
 
     @Override
     public void end(boolean interrupted){
-        System.out.println("***Shooter Tune end***");
         currentShooterCommand.setFinished();
     }
 
@@ -155,10 +136,6 @@ public class RPMShootCommandTune extends CommandBase{
         return finished;
     }
 
-    private double distanceToTarget(){
-        return Math.sqrt(
-            (Math.abs(RobotContainer.RC().drivetrain.getPose().getX() - centerField.getX()) * Math.abs(RobotContainer.RC().drivetrain.getPose().getX() - centerField.getX())) +
-            (Math.abs(RobotContainer.RC().drivetrain.getPose().getY() - centerField.getY()) * Math.abs(RobotContainer.RC().drivetrain.getPose().getY() - centerField.getY())));
-    }
+
     
 }
