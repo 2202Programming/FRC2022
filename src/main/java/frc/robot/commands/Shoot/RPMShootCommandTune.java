@@ -89,6 +89,7 @@ public class RPMShootCommandTune extends CommandBase{
         shooterState.setString(stage.toString());
         checkDashboard();
         getPID();
+        checkPID();
         switch(stage){
             case DoNothing:
                 magazine.driveWheelOff();
@@ -144,6 +145,15 @@ public class RPMShootCommandTune extends CommandBase{
         }
         if (upperD != SmartDashboard.getNumber("Requested Upper D", upperD)){
             shooter.setPIDUpper(upperP, upperI, SmartDashboard.getNumber("Requested Upper D", upperD));
+        }
+        if (lowerP != SmartDashboard.getNumber("Requested lower P", lowerP)){
+            shooter.setPIDLower(SmartDashboard.getNumber("Requested lower P", lowerP), lowerI, lowerD);
+        }
+        if (lowerI != SmartDashboard.getNumber("Requested lower I", lowerI)){
+            shooter.setPIDLower(lowerP, SmartDashboard.getNumber("Requested lower I", lowerI), lowerD);
+        }
+        if (lowerD != SmartDashboard.getNumber("Requested lower D", lowerD)){
+            shooter.setPIDLower(lowerP, lowerI, SmartDashboard.getNumber("Requested lower D", lowerD));
         }
     }
 
