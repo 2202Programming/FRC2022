@@ -9,6 +9,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 /** Common Pose-based calculations */
 public class PoseMath {
 
+  private static double metersToFeet = 3.28084;
+
   /*
    * poseDistance(x) - returns distance between two poses
    *              
@@ -22,4 +24,7 @@ public class PoseMath {
           (Math.pow(pose1.getY() - pose2.getY(),2)));
   }
 
+  public static Pose2d convertMetersToFeet(Pose2d pose){
+    return new Pose2d(pose.getX()*metersToFeet, pose.getY()*metersToFeet, pose.getRotation());
+  }
 }

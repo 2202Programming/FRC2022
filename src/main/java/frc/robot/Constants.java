@@ -37,41 +37,11 @@ public final class Constants {
     public static final int NEO_COUNTS_PER_REVOLUTION = 42;
 
     public static final class Autonomous {
-      //These values are for a red alliance start
-      public static final double RED_START_A_X = 9.91; //bottom
-      public static final double RED_START_A_Y = 2.92; 
-      public static final double RED_START_B_X = 9.45; //middle
-      public static final double RED_START_B_Y = 5.65; 
-      public static final double RED_START_C_X = 8.57; //top
-      public static final double RED_START_C_Y = 6.17; 
 
-      public static final Rotation2d RED_START_A_ROT = new Rotation2d(-180);
-      public static final Rotation2d RED_START_B_ROT = new Rotation2d(-180);
-      public static final Rotation2d RED_START_C_ROT = new Rotation2d(-180);
-  
-      //Blue alliance start
-      public static final double BLUE_START_A_X = 6.60; //top
-      public static final double BLUE_START_A_Y = 5.12; 
-      public static final double BLUE_START_B_X = 7.08; //middle
-      public static final double BLUE_START_B_Y = 2.62; 
-      public static final double BLUE_START_C_X = 7.94; //bottom
-      public static final double BLUE_START_C_Y = 2.21; 
-
-      public static final Rotation2d BLUE_START_A_ROT = new Rotation2d(-180);
-      public static final Rotation2d BLUE_START_B_ROT = new Rotation2d(-180);
-      public static final Rotation2d BLUE_START_C_ROT = new Rotation2d(-180);
-
-      public static final Pose2d RedStartPose1 = new Pose2d(RED_START_A_X, RED_START_A_Y, RED_START_A_ROT);
-      public static final Pose2d RedStartPose2 = new Pose2d(RED_START_B_X, RED_START_B_Y, RED_START_B_ROT);
-      public static final Pose2d RedStartPose3 = new Pose2d(RED_START_C_X, RED_START_C_Y, RED_START_C_ROT);
-      public static final Pose2d BluseStartPose4 = new Pose2d(BLUE_START_A_X, BLUE_START_A_Y, BLUE_START_A_ROT);
-      public static final Pose2d BluseStartPose5= new Pose2d(BLUE_START_B_X, BLUE_START_B_Y, BLUE_START_B_ROT);
-      public static final Pose2d BluseStartPose6 = new Pose2d(BLUE_START_C_X, BLUE_START_C_Y, BLUE_START_C_ROT);
-
-      public static final Pose2d startPose1 = new Pose2d(7.67,1.82,new Rotation2d(-180)); //Bottom, furthest from terminal
-      public static final Pose2d startPose2 = new Pose2d(6.86,2.63,new Rotation2d(-180)); //Middle
-      public static final Pose2d startPose3 = new Pose2d(6.7,5.47,new Rotation2d(-180)); //Top
-      public static final Pose2d hubPose = new Pose2d(8.27,4.12,new Rotation2d(0)); //Center of Hub
+      public static final Pose2d startPose1 = PoseMath.convertMetersToFeet(new Pose2d(7.67,1.82,new Rotation2d(-180))); //Bottom, furthest from terminal
+      public static final Pose2d startPose2 = PoseMath.convertMetersToFeet(new Pose2d(6.86,2.63,new Rotation2d(-180))); //Middle
+      public static final Pose2d startPose3 = PoseMath.convertMetersToFeet(new Pose2d(6.7,5.47,new Rotation2d(-180))); //Top
+      public static final Pose2d hubPose = PoseMath.convertMetersToFeet(new Pose2d(8.27,4.12,new Rotation2d(0))); //Center of Hub
       public static final Pose2d testStartPose = new Pose2d(5,5,new Rotation2d(-180));
 
     }

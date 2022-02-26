@@ -31,12 +31,6 @@ public class auto_cmd_group extends SequentialCommandGroup {
     addCommands(
       new InstantCommand(m_intake::defaultOn),
       new InstantCommand(m_intake::deploy),
-      new ConditionalCommand(new ResetPosition(Constants.Autonomous.RedStartPose1, m_drivetrain, "AutoPath1"), new WaitCommand(0), this::isRedPath1),
-      new ConditionalCommand(new ResetPosition(Constants.Autonomous.RedStartPose2, m_drivetrain, "AutoPath1"), new WaitCommand(0), this::isRedPath2),
-      new ConditionalCommand(new ResetPosition(Constants.Autonomous.RedStartPose3, m_drivetrain, "AutoPath1"), new WaitCommand(0), this::isRedPath3),
-      new ConditionalCommand(new ResetPosition(Constants.Autonomous.BluseStartPose4, m_drivetrain, "AutoPath1"), new WaitCommand(0), this::isBluePath1),
-      new ConditionalCommand(new ResetPosition(Constants.Autonomous.BluseStartPose5, m_drivetrain, "AutoPath1"), new WaitCommand(0), this::isBluePath2),
-      new ConditionalCommand(new ResetPosition(Constants.Autonomous.BluseStartPose6, m_drivetrain, "AutoPath1"), new WaitCommand(0), this::isBluePath3),
       new ConditionalCommand(new auto_pathPlanner_cmd(m_drivetrain, "AutoPath1"), new WaitCommand(0), this::isRedPath1),
       new ConditionalCommand(new auto_pathPlanner_cmd(m_drivetrain, "AutoPath2"), new WaitCommand(0), this::isRedPath2),
       new ConditionalCommand(new auto_pathPlanner_cmd(m_drivetrain, "AutoPath3"), new WaitCommand(0), this::isRedPath3),
