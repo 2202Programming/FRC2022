@@ -11,6 +11,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.shooter.FlyWheelRPM;
 import frc.robot.subsystems.shooter.Shooter_Subsystem;
+import frc.robot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
 
 public class RPMShootCommandTune extends CommandBase{ 
     public static final double USE_CURRENT_ANGLE = 0.0;
@@ -26,7 +27,6 @@ public class RPMShootCommandTune extends CommandBase{
     NetworkTable table;
     NetworkTableEntry shooterState;
 
-    FlyWheelRPM cmdRPM;
     FlyWheelRPM prevRPM;
 
     private boolean finished = false;
@@ -38,9 +38,11 @@ public class RPMShootCommandTune extends CommandBase{
     private double lowerI;
     private double lowerD;
 
-    private double upperRequestedRPM = 1000;
-    private double lowerRequestedRPM = 1000;
+    private double requestedVelocity = 10;
 
+    ShooterSettings  cmdSS;         // instance the shooter sees
+
+    final ShooterSettings defaultShooterSettings = new ShooterSettings(requestedVelocity, 0.0, USE_CURRENT_ANGLE, 0.01);
 
     final FlyWheelRPM defaultShooterRPMs = new FlyWheelRPM(1000,1000);
 
@@ -63,18 +65,19 @@ public class RPMShootCommandTune extends CommandBase{
     
     Stage stage;
 
-    public RPMShootCommandTune(FlyWheelRPM target){
+    public RPMShootCommandTune(double requestedVelocity){
         this.intake = RobotContainer.RC().intake;
         this.shooter = RobotContainer.RC().shooter;
         this.magazine = RobotContainer.RC().magazine;
-        this.cmdRPM = target;
+        ShooterSettings target = new ShooterSettings(requestedVelocity, 0.0, USE_CURRENT_ANGLE, 0.01);
+        this.cmdSS = target;
     }
     
     public RPMShootCommandTune(){
         this.intake = RobotContainer.RC().intake;
         this.shooter = RobotContainer.RC().shooter;
         this.magazine = RobotContainer.RC().magazine;
-        cmdRPM = defaultShooterRPMs;
+        cmdSS = defaultShooterSettings;
     }
 
     @Override
@@ -96,7 +99,7 @@ public class RPMShootCommandTune extends CommandBase{
         switch(stage){
             case DoNothing:
                 magazine.driveWheelOff();
-                shooter.on(cmdRPM);
+                shooter.spinup(cmdSS);
                 stage = Stage.WaitingForFlyWheel;
             break;
 
@@ -138,9 +141,7 @@ public class RPMShootCommandTune extends CommandBase{
         SmartDashboard.putNumber("Current Lower I", lowerI);
         SmartDashboard.putNumber("Current Lower D", lowerD);
 
-        SmartDashboard.putNumber("Upper RPM Requested", upperRequestedRPM);
-        SmartDashboard.putNumber("Lower RPM Requested", lowerRequestedRPM);
-
+        SmartDashboard.putNumber("Velocity Requested", requestedVelocity);
     }
 
     private void checkPID(){
@@ -170,9 +171,8 @@ public class RPMShootCommandTune extends CommandBase{
         SmartDashboard.putNumber("Current Upper RPM", actualRPMs.upper);
         SmartDashboard.putNumber("Current Lower RPM", actualRPMs.lower);
         SmartDashboard.putString("Shooting Stage", stage.toString());
-        upperRequestedRPM = SmartDashboard.getNumber("Upper RPM Requested", 1000);
-        lowerRequestedRPM = SmartDashboard.getNumber("Lower RPM Requested", 1000);
-        cmdRPM = new FlyWheelRPM(lowerRequestedRPM, upperRequestedRPM);
+        requestedVelocity = SmartDashboard.getNumber("Velocity Requested", 10);
+        cmdSS = new ShooterSettings(requestedVelocity, 0.0, USE_CURRENT_ANGLE, 0.01);
     }
 
     @Override
