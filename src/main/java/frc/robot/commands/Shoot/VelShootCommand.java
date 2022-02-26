@@ -95,6 +95,7 @@ public class VelShootCommand extends CommandBase{
         calculateVelocity();
         if(calculatedVel != cmdSS.vel){
             cmdSS = new ShooterSettings(calculatedVel, cmdSS.rps, cmdSS.angle, cmdSS.velTol);
+            shooter.spinup(cmdSS);
         }
 
         switch(stage){
