@@ -300,7 +300,7 @@ public final class Constants {
         upperFWConfig.maxOpenLoopRPM = 1870;  // estimated from 2000 RPM test
         upperFWConfig.gearRatio = 3.0;        // upper is 5:1 (motor:fw)
         upperFWConfig.sensorPhase = false;
-        upperFWConfig.inverted = true;
+        upperFWConfig.inverted = false;
         upperFWConfig.flywheelRadius = 2.0 / 12.0; // feet
         upperFWConfig.pid = new PIDFController(0.15, 0.0, 2.0, 0); // kP kI kD kFF
         upperFWConfig.pid.setIzone(1800);

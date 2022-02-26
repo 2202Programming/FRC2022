@@ -276,8 +276,8 @@ public class Shooter_Subsystem extends SubsystemBase  {
   
   public void log() {
     // Put any useful log message here, called about 10x per second
-    nt_lowerRPM.setDouble(actual.upper);
-    nt_upperRPM.setDouble(actual.lower);
+    nt_lowerRPM.setDouble(actual.lower);
+    nt_upperRPM.setDouble(actual.upper);
     nt_lowerRPMErr.setDouble(error.lower);
     nt_upperRPMErr.setDouble(error.upper);
   }
