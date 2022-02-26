@@ -31,6 +31,8 @@ public class BasicShootCommand extends CommandBase{
     NetworkTableEntry ntBallVel;    // ball physics (input) 
     NetworkTableEntry ntBallRPS;
     NetworkTableEntry shooterState;
+
+    ShooterSettings specialSettings;
     
     ShooterSettings  cmdSS;         // instance the shooter sees
     ShooterSettings  prevSS;        // instance for prev State
@@ -62,6 +64,16 @@ public class BasicShootCommand extends CommandBase{
         this.intake = RobotContainer.RC().intake;
         this.shooter = RobotContainer.RC().shooter;
         this.magazine = RobotContainer.RC().magazine;
+
+        specialSettings = defaultShooterSettings;
+    }
+
+    public BasicShootCommand(ShooterSettings shooterSettings){
+        this.intake = RobotContainer.RC().intake;
+        this.shooter = RobotContainer.RC().shooter;
+        this.magazine = RobotContainer.RC().magazine;
+
+        specialSettings = shooterSettings;
     }
 
     @Override
@@ -85,10 +97,11 @@ public class BasicShootCommand extends CommandBase{
     public void execute(){
         shooterState.setString(stage.toString());
 
+        cmdSS = specialSettings;
+
         switch(stage){
             case DoNothing:
                 magazine.driveWheelOff();
-                cmdSS = defaultShooterSettings;
                 shooter.spinup(cmdSS);
                 stage = Stage.WaitingForFlyWheel;
             break;

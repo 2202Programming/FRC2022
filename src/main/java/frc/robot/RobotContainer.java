@@ -18,6 +18,7 @@ import frc.robot.commands.MagazineCommand.MagazineMode;
 import frc.robot.commands.MovePositioner.PositionerMode;
 import frc.robot.commands.MovePositioner;
 import frc.robot.commands.Shoot.BasicShootCommand;
+import frc.robot.commands.Shoot.RPMShootCommandTune;
 import frc.robot.commands.auto.auto_cmd_group2;
 import frc.robot.commands.auto.auto_pathPlanner_cmd;
 import frc.robot.commands.swerve.DriveController;
@@ -196,7 +197,9 @@ public class RobotContainer {
     }
 
     if(Constants.HAS_SHOOTER){
-      driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_RIGHT).whileHeld(new BasicShootCommand());
+      //driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_RIGHT).whileHeld(new BasicShootCommand());
+      driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_RIGHT).whileHeld(new RPMShootCommandTune());
+
     }  
 
   }

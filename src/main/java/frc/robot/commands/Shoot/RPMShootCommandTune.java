@@ -1,6 +1,8 @@
 package frc.robot.commands.Shoot;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.subsystems.Magazine_Subsystem;
@@ -44,26 +46,7 @@ public class RPMShootCommandTune extends CommandBase{
 
     final ShooterSettings defaultShooterSettings = new ShooterSettings(requestedVelocity, 0.0, USE_CURRENT_ANGLE, 0.01);
 
-    final FlyWheelRPM defaultShooterRPMs = new FlyWheelRPM(1000,1000);
-
-    public enum Stage{
-        DoNothing("Do Nothing"),
-        WaitingForFlyWheel("Waiting for flywheel"),
-        PreparingToShoot("Preparing to Shoot"),
-        Shooting("Shooting");
-
-        String name;
-
-        private Stage(String name){
-            this.name = name;
-        }
-
-        public String toString(){
-            return name;
-        }
-    }
-    
-    Stage stage;
+    private BasicShootCommand currentShooterCommand;
 
     public RPMShootCommandTune(double requestedVelocity){
         this.intake = RobotContainer.RC().intake;
@@ -84,47 +67,18 @@ public class RPMShootCommandTune extends CommandBase{
     public void initialize(){
         System.out.println("***Shooter Tune init***");
         table = NetworkTableInstance.getDefault().getTable("ShootCommand");
-        shooterState = table.getEntry("ShooterState");
 
-        stage = Stage.DoNothing;
-        shooter.off();
+        currentShooterCommand = new BasicShootCommand(new ShooterSettings(10, 0.0, USE_CURRENT_ANGLE, 0.01));
+        CommandScheduler.getInstance().schedule(currentShooterCommand);
+
+        //shooter.off();
     }
 
     @Override
     public void execute(){
-        shooterState.setString(stage.toString());
-        checkDashboard();
-        getPID();
-        checkPID();
-        switch(stage){
-            case DoNothing:
-                magazine.driveWheelOff();
-                shooter.spinup(cmdSS);
-                stage = Stage.WaitingForFlyWheel;
-            break;
-
-            case WaitingForFlyWheel:
-                if(shooter.isReadyToShoot()){
-                    magazine.driveWheelOff(); //dont advance indexer if shooting wheels aren't ready
-                    stage = Stage.PreparingToShoot;
-                }
-            break;
-
-            //back the balls away from wheels a touch
-            case PreparingToShoot:
-                magazine.expellCargo(-0.1);
-                backupCounter++;
-                if (backupCounter > 20) {
-                    backupCounter = 0;
-                    stage = Stage.Shooting;
-                }                
-
-            case Shooting:
-                if(!shooter.isReadyToShoot()){
-                    stage = Stage.WaitingForFlyWheel;
-                } else magazine.driveWheelOn(1.0);
-            break;
-        }
+        //checkDashboard();
+        //getPID();
+        //checkPID();
     }
 
     private void getPID(){
@@ -166,21 +120,14 @@ public class RPMShootCommandTune extends CommandBase{
     }
 
     private void checkDashboard(){
-        FlyWheelRPM actualRPMs = new FlyWheelRPM();
-        shooter.getFlyWheelRPM(actualRPMs);
-        SmartDashboard.putNumber("Current Upper RPM", actualRPMs.upper);
-        SmartDashboard.putNumber("Current Lower RPM", actualRPMs.lower);
-        SmartDashboard.putString("Shooting Stage", stage.toString());
         requestedVelocity = SmartDashboard.getNumber("Velocity Requested", 10);
         cmdSS = new ShooterSettings(requestedVelocity, 0.0, USE_CURRENT_ANGLE, 0.01);
     }
 
     @Override
     public void end(boolean interrupted){
-        stage = Stage.DoNothing;
-        magazine.driveWheelOff();
-        shooter.off();
         System.out.println("***Shooter Tune end***");
+        currentShooterCommand.setFinished();
     }
 
     public void setFinished(){
