@@ -41,6 +41,7 @@ public class RPMShootCommandTune extends CommandBase{
     private double lowerD;
 
     private double requestedVelocity = 10;
+    private double previousVelocity = 10;
 
     ShooterSettings  cmdSS;         // instance the shooter sees
 
@@ -76,9 +77,9 @@ public class RPMShootCommandTune extends CommandBase{
 
     @Override
     public void execute(){
-        //checkDashboard();
-        //getPID();
-        //checkPID();
+        checkDashboard();
+        getPID();
+        checkPID();
     }
 
     private void getPID(){
@@ -122,6 +123,12 @@ public class RPMShootCommandTune extends CommandBase{
     private void checkDashboard(){
         requestedVelocity = SmartDashboard.getNumber("Velocity Requested", 10);
         cmdSS = new ShooterSettings(requestedVelocity, 0.0, USE_CURRENT_ANGLE, 0.01);
+        if(requestedVelocity != previousVelocity){
+            currentShooterCommand.setFinished();
+            currentShooterCommand = new BasicShootCommand(new ShooterSettings(requestedVelocity, 0.0, USE_CURRENT_ANGLE, 0.01)); 
+            CommandScheduler.getInstance().schedule(currentShooterCommand);
+        }
+        previousVelocity = requestedVelocity;
     }
 
     @Override
