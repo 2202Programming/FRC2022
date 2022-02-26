@@ -97,6 +97,10 @@ public class RPMShootCommandTune extends CommandBase{
         SmartDashboard.putNumber("Current Lower D", lowerD);
 
         SmartDashboard.putNumber("Velocity Requested", requestedVelocity);
+        FlyWheelRPM flyWheelRPM = new FlyWheelRPM();
+        shooter.getFlyWheelRPM(flyWheelRPM);
+        SmartDashboard.putNumber("Upper RPM", flyWheelRPM.upper);
+        SmartDashboard.putNumber("Lower RPM", flyWheelRPM.lower);
     }
 
     private void checkPID(){

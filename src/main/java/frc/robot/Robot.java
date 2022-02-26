@@ -75,9 +75,8 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     CommandScheduler.getInstance().cancelAll();
     if(RobotContainer.m_driveController != null){
-       CommandScheduler.getInstance().schedule(RobotContainer.m_driveController);
-      CommandScheduler.getInstance().schedule(new RPMShootCommandTune());
-
+      CommandScheduler.getInstance().schedule(RobotContainer.m_driveController);
+      //CommandScheduler.getInstance().schedule(new RPMShootCommandTune());
     }
   }
 
@@ -91,9 +90,12 @@ public class Robot extends TimedRobot {
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
     CommandScheduler.getInstance().schedule(new RPMShootCommandTune());
+    CommandScheduler.getInstance().schedule(RobotContainer.m_driveController);
   }
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+    CommandScheduler.getInstance().run();
+  }
 }
