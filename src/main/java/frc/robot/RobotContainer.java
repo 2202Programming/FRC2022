@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 //import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.Constants.Autonomous;
 import frc.robot.Constants.DriverPrefs;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.IntakeCommand.IntakeMode;
@@ -17,6 +18,7 @@ import frc.robot.commands.MagazineCommand;
 import frc.robot.commands.MagazineCommand.MagazineMode;
 import frc.robot.commands.MovePositioner.PositionerMode;
 import frc.robot.commands.MovePositioner;
+import frc.robot.commands.ResetPosition;
 import frc.robot.commands.Shoot.BasicShootCommand;
 import frc.robot.commands.Shoot.RPMShootCommandTune;
 import frc.robot.commands.auto.auto_cmd_group2;
@@ -199,9 +201,9 @@ public class RobotContainer {
     if(Constants.HAS_SHOOTER){
       //driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_RIGHT).whileHeld(new BasicShootCommand());
       driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_RIGHT).whileHeld(new RPMShootCommandTune());
-
     }  
-
+    // Y - reset Pose
+    if (Constants.HAS_DRIVETRAIN) driverControls.bind(Id.Driver, XboxButton.Y).whenPressed(new ResetPosition(Autonomous.testStartPose, drivetrain, "none"));
   }
 
   public Command getAutonomousCommand() {

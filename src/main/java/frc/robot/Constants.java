@@ -67,6 +67,8 @@ public final class Constants {
       public static final Pose2d BluseStartPose5= new Pose2d(BLUE_START_B_X, BLUE_START_B_Y, BLUE_START_B_ROT);
       public static final Pose2d BluseStartPose6 = new Pose2d(BLUE_START_C_X, BLUE_START_C_Y, BLUE_START_C_ROT);
 
+      public static final Pose2d testStartPose = new Pose2d(5,5,new Rotation2d(-180));
+
     }
     
     /**

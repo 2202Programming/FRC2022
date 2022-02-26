@@ -6,7 +6,8 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.subsystems.Magazine_Subsystem;
-
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -48,7 +49,9 @@ public class RPMShootCommandTune extends CommandBase{
     final ShooterSettings defaultShooterSettings = new ShooterSettings(requestedVelocity, 0.0, USE_CURRENT_ANGLE, 0.01);
 
     private BasicShootCommand currentShooterCommand;
-
+    private Pose2d centerField = new Pose2d(27, 13.5, new Rotation2d()); //actual
+    private double distanceToTarget = 0;
+    
     public RPMShootCommandTune(double requestedVelocity){
         this.intake = RobotContainer.RC().intake;
         this.shooter = RobotContainer.RC().shooter;
@@ -80,6 +83,7 @@ public class RPMShootCommandTune extends CommandBase{
         checkDashboard();
         getPID();
         checkPID();
+        distanceToTarget = distanceToTarget();
     }
 
     private void getPID(){
@@ -101,6 +105,7 @@ public class RPMShootCommandTune extends CommandBase{
         shooter.getFlyWheelRPM(flyWheelRPM);
         SmartDashboard.putNumber("Upper RPM", flyWheelRPM.upper);
         SmartDashboard.putNumber("Lower RPM", flyWheelRPM.lower);
+        SmartDashboard.putNumber("DistanceToTarget", distanceToTarget);
     }
 
     private void checkPID(){
@@ -149,4 +154,11 @@ public class RPMShootCommandTune extends CommandBase{
     public boolean isFinished(){
         return finished;
     }
+
+    private double distanceToTarget(){
+        return Math.sqrt(
+            (Math.abs(RobotContainer.RC().drivetrain.getPose().getX() - centerField.getX()) * Math.abs(RobotContainer.RC().drivetrain.getPose().getX() - centerField.getX())) +
+            (Math.abs(RobotContainer.RC().drivetrain.getPose().getY() - centerField.getY()) * Math.abs(RobotContainer.RC().drivetrain.getPose().getY() - centerField.getY())));
+    }
+    
 }
