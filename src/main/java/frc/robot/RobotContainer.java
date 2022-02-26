@@ -40,6 +40,7 @@ import frc.robot.subsystems.hid.XboxAxis;
 import frc.robot.subsystems.hid.XboxButton;
 import frc.robot.subsystems.ifx.DriverControls.Id;
 import frc.robot.subsystems.shooter.Shooter_Subsystem;
+import frc.robot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
 import frc.robot.ux.Dashboard;
 
 public class RobotContainer {
@@ -135,7 +136,7 @@ public class RobotContainer {
           .whenPressed(new auto_pathPlanner_cmd(drivetrain, "CenterFace"));
       driverControls.bind(Id.Driver, XboxButton.LB)
            //.whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
-           .whenPressed(new auto_pathPlanner_cmd(drivetrain, "Straight18ft"));
+           .whenPressed(new auto_pathPlanner_cmd(drivetrain, "AutoPath4"));
 
     }
 
@@ -199,8 +200,7 @@ public class RobotContainer {
     }
 
     if(Constants.HAS_SHOOTER){
-      //driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_RIGHT).whileHeld(new BasicShootCommand());
-      driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_RIGHT).whileHeld(new RPMShootCommandTune());
+      driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_RIGHT).whileHeld(new BasicShootCommand(new ShooterSettings(20, 0.0), 20 ));
     }  
     // Y - reset Pose
     if (Constants.HAS_DRIVETRAIN) driverControls.bind(Id.Driver, XboxButton.Y).whenPressed(new ResetPosition(Autonomous.testStartPose, drivetrain, "none"));

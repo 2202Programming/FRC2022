@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.Autonomous;
+import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.IntakeCommand.IntakeMode;
 import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.subsystems.Magazine_Subsystem;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -81,6 +83,7 @@ public class RPMShootCommandTune extends CommandBase{
         SmartDashboard.putNumber("Requested Flywheel P", r_upperP);
         SmartDashboard.putNumber("Requested Flywheel I", r_upperI);
         SmartDashboard.putNumber("Requested Flywheel D", r_upperD);
+        CommandScheduler.getInstance().schedule(new IntakeCommand((()-> 0.47), ()-> 0.20,  IntakeMode.LoadCargo));
     }
 
     @Override
@@ -139,6 +142,7 @@ public class RPMShootCommandTune extends CommandBase{
     @Override
     public void end(boolean interrupted){
         currentShooterCommand.setFinished();
+        intake.off();
     }
 
     public void setFinished(){

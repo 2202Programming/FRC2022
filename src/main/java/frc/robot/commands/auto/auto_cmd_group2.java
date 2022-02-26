@@ -61,17 +61,17 @@ public class auto_cmd_group2 extends SequentialCommandGroup {
         new IntakeCommand((()-> 0.55), ()-> 0.20,  IntakeMode.LoadCargo),
         new MagazineCommand((()-> 1.0), MagazineMode.LoadCargo)
       ),
-      new MoveIntake(DeployMode.Retract),
-      new ParallelDeadlineGroup( //all run at same time; group ends when 1st command ends
-        new LimelightAim(1.0).withTimeout(3),
-        new IntakeCommand((()-> 0.55), ()-> 0.20,  IntakeMode.LoadCargo),
-        new MagazineCommand((()-> 1.0), MagazineMode.LoadCargo)
-    ),
-      new MagazineCommand((()-> 1.0), MagazineMode.ExpellCargo).withTimeout(.75),
+      //new MoveIntake(DeployMode.Retract),
+    //   new ParallelDeadlineGroup( //all run at same time; group ends when 1st command ends
+    //     new LimelightAim(1.0).withTimeout(3),
+    //     new IntakeCommand((()-> 0.55), ()-> 0.20,  IntakeMode.LoadCargo),
+    //     new MagazineCommand((()-> 1.0), MagazineMode.LoadCargo)
+    // ),
+      //new MagazineCommand((()-> 1.0), MagazineMode.ExpellCargo).withTimeout(.75),
       new ParallelDeadlineGroup(
-        new BasicShootCommand(new ShooterSettings(20.0, 0.0), 20).withTimeout(10),
-        new MagazineCommand((()-> 1.0), MagazineMode.LoadCargo),
-        new IntakeCommand((()-> 0.55), ()-> 0.20,  IntakeMode.LoadCargo)
+        new BasicShootCommand(new ShooterSettings(20.0, 0.0), 20).withTimeout(10)
+       // new MagazineCommand((()-> 1.0), MagazineMode.LoadCargo),
+       // new IntakeCommand((()-> 0.55), ()-> 0.20,  IntakeMode.LoadCargo)
       )
     );
   }
