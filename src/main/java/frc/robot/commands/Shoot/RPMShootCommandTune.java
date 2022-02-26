@@ -74,7 +74,7 @@ public class RPMShootCommandTune extends CommandBase{
     public void initialize(){
         table = NetworkTableInstance.getDefault().getTable("ShootCommand");
 
-        currentShooterCommand = new BasicShootCommand(new ShooterSettings(10, 0.0, USE_CURRENT_ANGLE, 0.01));
+        currentShooterCommand = new BasicShootCommand(new ShooterSettings(10, 0.0) , 20);
         CommandScheduler.getInstance().schedule(currentShooterCommand);
         RobotContainer.RC().drivetrain.setPose(Autonomous.startPose1);
 
@@ -130,7 +130,7 @@ public class RPMShootCommandTune extends CommandBase{
         cmdSS = new ShooterSettings(requestedVelocity, 0.0, USE_CURRENT_ANGLE, 0.01);
         if(requestedVelocity != previousVelocity){
             currentShooterCommand.setFinished();
-            currentShooterCommand = new BasicShootCommand(new ShooterSettings(requestedVelocity, 0.0, USE_CURRENT_ANGLE, 0.01)); 
+            currentShooterCommand = new BasicShootCommand(new ShooterSettings(requestedVelocity, 0.0), 20 ); // backup count frames 
             CommandScheduler.getInstance().schedule(currentShooterCommand);
         }
         previousVelocity = requestedVelocity;

@@ -26,6 +26,7 @@ import frc.robot.subsystems.Magazine_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.hid.SideboardController.SBButton;
 import frc.robot.subsystems.ifx.DriverControls;
+import frc.robot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
 
 public class auto_cmd_group2 extends SequentialCommandGroup {
   SwerveDrivetrain m_drivetrain;
@@ -68,7 +69,7 @@ public class auto_cmd_group2 extends SequentialCommandGroup {
     ),
       new MagazineCommand((()-> 1.0), MagazineMode.ExpellCargo).withTimeout(.75),
       new ParallelDeadlineGroup(
-        new BasicShootCommand().withTimeout(10),
+        new BasicShootCommand(new ShooterSettings(20.0, 0.0), 20).withTimeout(10),
         new MagazineCommand((()-> 1.0), MagazineMode.LoadCargo),
         new IntakeCommand((()-> 0.55), ()-> 0.20,  IntakeMode.LoadCargo)
       )

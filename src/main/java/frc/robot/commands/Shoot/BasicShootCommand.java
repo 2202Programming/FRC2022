@@ -8,7 +8,7 @@ import frc.robot.subsystems.Magazine_Subsystem;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-
+import edu.wpi.first.wpilibj.AddressableLED;
 import frc.robot.subsystems.shooter.Shooter_Subsystem;
 import frc.robot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
 
@@ -22,6 +22,8 @@ public class BasicShootCommand extends CommandBase{
     final Shooter_Subsystem shooter;
     final double TESTANGLE = 0.0;
     final double TESTTOL = 0.02;
+    final int BackupPeriod;
+
     int ballCount = 999;
     int backupCounter = 0;
 
@@ -39,12 +41,14 @@ public class BasicShootCommand extends CommandBase{
 
     private boolean finished = false;
 
-    final ShooterSettings defaultShooterSettings = new ShooterSettings(20.0, 0.0, USE_CURRENT_ANGLE, 0.01);
+    final static ShooterSettings defaultShooterSettings = new ShooterSettings(20.0, 0.0, USE_CURRENT_ANGLE, 0.01);
 
     public enum Stage{
         DoNothing("Do Nothing"),
         WaitingForFlyWheel("Waiting for flywheel"),
+        BackingMagazine("Backing  Mag"),
         PreparingToShoot("Preparing to Shoot"),
+        WaitingForSolution("doing complex math"),
         Shooting("Shooting");
 
         String name;
@@ -60,20 +64,13 @@ public class BasicShootCommand extends CommandBase{
     
     Stage stage;
     
-    public BasicShootCommand(){
+    public BasicShootCommand(ShooterSettings shooterSettings, int backupFrameCount){
         this.intake = RobotContainer.RC().intake;
         this.shooter = RobotContainer.RC().shooter;
         this.magazine = RobotContainer.RC().magazine;
-
-        specialSettings = defaultShooterSettings;
-    }
-
-    public BasicShootCommand(ShooterSettings shooterSettings){
-        this.intake = RobotContainer.RC().intake;
-        this.shooter = RobotContainer.RC().shooter;
-        this.magazine = RobotContainer.RC().magazine;
-
         specialSettings = shooterSettings;
+        BackupPeriod = backupFrameCount;  //number of frames to move mag back slowly 5-20
+        addRequirements(magazine,shooter);
     }
 
     @Override
@@ -91,6 +88,7 @@ public class BasicShootCommand extends CommandBase{
 
         stage = Stage.DoNothing;
         shooter.off();
+        magazine.driveWheelOff();
     }
 
     @Override
@@ -101,32 +99,41 @@ public class BasicShootCommand extends CommandBase{
 
         switch(stage){
             case DoNothing:
-                magazine.driveWheelOff();
-                shooter.spinup(cmdSS);
-                stage = Stage.WaitingForFlyWheel;
+                backupCounter = 0;
+                stage = Stage.BackingMagazine;
+                magazine.expellCargo(0.1);
+            break;
+
+            case BackingMagazine:                
+                backupCounter++;
+                if (backupCounter > BackupPeriod) {
+                    backupCounter = 0;
+                    magazine.driveWheelOff();
+                    stage = Stage.WaitingForFlyWheel;
+                    shooter.spinup(cmdSS);
+                }                
             break;
 
             case WaitingForFlyWheel:
                 if(shooter.isReadyToShoot()){
-                    magazine.driveWheelOff(); //dont advance indexer if shooting wheels aren't ready
-                    stage = Stage.PreparingToShoot;
+                    stage = Stage.WaitingForSolution;
                 }
             break;
 
-            //back the balls away from wheels a touch
-            case PreparingToShoot:
-                magazine.expellCargo(-0.1);
-                backupCounter++;
-                if (backupCounter > 20) {
-                    backupCounter = 0;
-                    stage = Stage.Shooting;
-                }                
+            case WaitingForSolution:
+                // do fancy check and when ready, goto shooting
+                stage = Stage.Shooting;
+                magazine.driveWheelOn(1.0);
+                break;
 
             case Shooting:
                 if(!shooter.isReadyToShoot()){
+                    magazine.driveWheelOff();
                     stage = Stage.WaitingForFlyWheel;
-                } else magazine.driveWheelOn(1.0);
+                }
             break;
+            default:
+                break;
         }
     }
 

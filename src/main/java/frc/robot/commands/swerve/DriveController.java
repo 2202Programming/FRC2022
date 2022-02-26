@@ -17,6 +17,7 @@ import frc.robot.subsystems.Magazine_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.ifx.DriverControls;
 import frc.robot.subsystems.shooter.Shooter_Subsystem;
+import frc.robot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
 
 public class DriveController extends CommandBase {
 
@@ -70,7 +71,7 @@ public class DriveController extends CommandBase {
     m_fieldCentricDrive = new FieldCentricDrive(drivetrain, dc);
     m_hubCentricDrive = new HubCentricDrive(drivetrain, dc, limelight);
     m_intakeCentricDrive = new IntakeCentricDrive(drivetrain, dc);
-    m_basicShootCommand = new BasicShootCommand();
+    m_basicShootCommand = new BasicShootCommand(new ShooterSettings(20,0), 15); //ft/s,rot, backupcount
 
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
     driveMode = table.getEntry("/driveMode");
