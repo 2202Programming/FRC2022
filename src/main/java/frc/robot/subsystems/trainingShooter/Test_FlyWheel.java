@@ -1,5 +1,5 @@
 package frc.robot.subsystems.trainingShooter;
 
-public class FlyWheel {
+public class Test_FlyWheel {
     
 }
