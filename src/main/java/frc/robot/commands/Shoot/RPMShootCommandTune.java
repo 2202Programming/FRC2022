@@ -40,6 +40,10 @@ public class RPMShootCommandTune extends CommandBase{
     private double upperI;
     private double upperD;
 
+    private double r_upperP = 0.08;
+    private double r_upperI = 0.00015;
+    private double r_upperD = 4.0;
+
     private double requestedVelocity = 10;
     private double previousVelocity = 10;
 
@@ -73,6 +77,10 @@ public class RPMShootCommandTune extends CommandBase{
         currentShooterCommand = new BasicShootCommand(new ShooterSettings(10, 0.0, USE_CURRENT_ANGLE, 0.01));
         CommandScheduler.getInstance().schedule(currentShooterCommand);
         RobotContainer.RC().drivetrain.setPose(Autonomous.startPose1);
+
+        SmartDashboard.putNumber("Requested Flywheel P", r_upperP);
+        SmartDashboard.putNumber("Requested Flywheel I", r_upperI);
+        SmartDashboard.putNumber("Requested Flywheel D", r_upperD);
     }
 
     @Override
@@ -100,17 +108,20 @@ public class RPMShootCommandTune extends CommandBase{
     }
 
     private void checkPID(){
-        if (upperP != SmartDashboard.getNumber("Requested Flywheel P", upperP)){
-            shooter.setPIDUpper(SmartDashboard.getNumber("Requested Flywheel P", upperP), upperI, upperD);
-            shooter.setPIDLower(SmartDashboard.getNumber("Requested Flywheel P", upperP), upperI, upperD);
+        r_upperP = SmartDashboard.getNumber("Requested Flywheel P", upperP);
+        r_upperI = SmartDashboard.getNumber("Requested Flywheel I", upperI);
+        r_upperD = SmartDashboard.getNumber("Requested Flywheel D", upperD);
+        if (upperP != r_upperP){
+            shooter.setPIDUpper(r_upperP, upperI, upperD);
+            shooter.setPIDLower(r_upperP, upperI, upperD);
         }
-        if (upperI != SmartDashboard.getNumber("Requested Flywheel I", upperI)){
-            shooter.setPIDUpper(upperP, SmartDashboard.getNumber("Requested Flywheel I", upperI), upperD);
-            shooter.setPIDLower(upperP, SmartDashboard.getNumber("Requested Flywheel I", upperI), upperD);
+        if (upperI != r_upperI){
+            shooter.setPIDUpper(upperP, r_upperI, upperD);
+            shooter.setPIDLower(upperP, r_upperI, upperD);
         }
-        if (upperD != SmartDashboard.getNumber("Requested Flywheel D", upperD)){
-            shooter.setPIDUpper(upperP, upperI, SmartDashboard.getNumber("Requested Flywheel D", upperD));
-            shooter.setPIDLower(upperP, upperI, SmartDashboard.getNumber("Requested Flywheel D", upperD));
+        if (upperD != r_upperD){
+            shooter.setPIDUpper(upperP, upperI, r_upperD);
+            shooter.setPIDLower(upperP, upperI, r_upperD);
         }
     }
 
