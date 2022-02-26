@@ -11,6 +11,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
+import com.ctre.phoenix.motorcontrol.can.TalonSRXPIDSetConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import frc.robot.Constants.Shooter;
@@ -130,6 +131,10 @@ public class FlyWheel {
   public void setPID(double kP, double kI, double kD){
     cfg.pid.setPID(kP, kI, kD);
     cfg.pid.copyTo(srxconfig.slot0);
+    motor.config_kP(0, kP);
+    motor.config_kI(0, kI);
+    motor.config_kD(0, kD);
+
   }
 
   public double getP(){
