@@ -76,6 +76,7 @@ public class RPMShootCommandTune extends CommandBase{
 
     @Override
     public void initialize(){
+        System.out.println("***Shooter Tune init***");
         table = NetworkTableInstance.getDefault().getTable("ShootCommand");
         shooterState = table.getEntry("ShooterState");
 
@@ -86,6 +87,7 @@ public class RPMShootCommandTune extends CommandBase{
 
     @Override
     public void execute(){
+        System.out.println("***Shooter Tune execute***");
         shooterState.setString(stage.toString());
         checkDashboard();
         getPID();
@@ -171,6 +173,7 @@ public class RPMShootCommandTune extends CommandBase{
         stage = Stage.DoNothing;
         magazine.driveWheelOff();
         shooter.off();
+        System.out.println("***Shooter Tune end***");
     }
 
     public void setFinished(){
