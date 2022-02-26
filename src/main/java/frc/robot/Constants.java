@@ -302,7 +302,7 @@ public final class Constants {
         upperFWConfig.sensorPhase = false;
         upperFWConfig.inverted = true;
         upperFWConfig.flywheelRadius = 2.0 / 12.0; // feet
-        upperFWConfig.pid = new PIDFController(0.08, 0.00015, 4.0, 0); // kP kI kD kFF
+        upperFWConfig.pid = new PIDFController(0.15, 0.0, 2.0, 0); // kP kI kD kFF
         upperFWConfig.pid.setIzone(1800);
       }
 
@@ -313,7 +313,7 @@ public final class Constants {
         lowerFWConfig.sensorPhase = false;
         lowerFWConfig.inverted = false; 
         lowerFWConfig.flywheelRadius = 2.0 / 12.0;   //feet 
-        lowerFWConfig.pid = new PIDFController(0.08, 0.00015, 4.0, 0);   // kP kI kD kF 
+        lowerFWConfig.pid = new PIDFController(0.15, 0.0, 2.0, 0); // kP kI kD kFF
         lowerFWConfig.pid.setIzone(1800);
       }
 

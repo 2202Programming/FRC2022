@@ -40,12 +40,12 @@ public class RPMShootCommandTune extends CommandBase{
     private double upperI;
     private double upperD;
 
-    private double r_upperP = 0.08;
-    private double r_upperI = 0.00015;
-    private double r_upperD = 4.0;
+    private double r_upperP = 0.1;
+    private double r_upperI = 0.0;
+    private double r_upperD = 0.0;
 
-    private double requestedVelocity = 10;
-    private double previousVelocity = 10;
+    private double requestedVelocity = 25;
+    private double previousVelocity = 25;
 
     ShooterSettings  cmdSS;         // instance the shooter sees
 
