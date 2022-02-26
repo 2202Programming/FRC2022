@@ -8,6 +8,7 @@
 package frc.robot;
 
 import frc.robot.util.PIDFController;
+import frc.robot.util.PoseMath;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.subsystems.shooter.FlyWheel.FlyWheelConfig;
@@ -67,6 +68,10 @@ public final class Constants {
       public static final Pose2d BluseStartPose5= new Pose2d(BLUE_START_B_X, BLUE_START_B_Y, BLUE_START_B_ROT);
       public static final Pose2d BluseStartPose6 = new Pose2d(BLUE_START_C_X, BLUE_START_C_Y, BLUE_START_C_ROT);
 
+      public static final Pose2d startPose1 = new Pose2d(7.67,1.82,new Rotation2d(-180)); //Bottom, furthest from terminal
+      public static final Pose2d startPose2 = new Pose2d(6.86,2.63,new Rotation2d(-180)); //Middle
+      public static final Pose2d startPose3 = new Pose2d(6.7,5.47,new Rotation2d(-180)); //Top
+      public static final Pose2d hubPose = new Pose2d(8.27,4.12,new Rotation2d(0)); //Center of Hub
       public static final Pose2d testStartPose = new Pose2d(5,5,new Rotation2d(-180));
 
     }
