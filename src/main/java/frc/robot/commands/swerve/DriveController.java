@@ -102,12 +102,12 @@ public class DriveController extends CommandBase {
       currentlyShooting = true;
       requestedDriveMode = DriveModes.hubCentric;
       CommandScheduler.getInstance().schedule(m_velShootCommand);
-
     } else if (currentlyShooting && !shootingRequested){ //stop shooting
       currentlyShooting = false;
       requestedDriveMode = lastDriveMode;
       CommandScheduler.getInstance().cancel(m_velShootCommand);
-    } else if (currentlyShooting) { //if angle error is small, set solution to be true to allow shooter to shoot
+    } 
+    if (currentlyShooting) { //if angle error is small, set solution to be true to allow shooter to shoot
         if (Math.abs(m_hubCentricDrive.getAngleError().getDegrees()) > angleErrorTolerance){
           m_velShootCommand.setSolution(false);
           NThasSolution.setBoolean(false);
