@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.RobotContainer;
-import frc.robot.commands.Shoot.BasicShootCommand;
 import frc.robot.commands.Shoot.VelShootCommand;
 import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.Magazine_Subsystem;
@@ -45,7 +44,7 @@ public class DriveController extends CommandBase {
   FieldCentricDrive m_fieldCentricDrive;
   HubCentricDrive m_hubCentricDrive;
   IntakeCentricDrive m_intakeCentricDrive;
-  VelShootCommand m_basicShootCommand;
+  VelShootCommand m_velShootCommand;
 
   Command currentCmd;
   DriveModes requestedDriveMode = DriveModes.fieldCentric;
@@ -53,10 +52,13 @@ public class DriveController extends CommandBase {
   DriveModes lastDriveMode = DriveModes.fieldCentric;
   boolean currentlyShooting = false;
   boolean shootingRequested = false;
+  boolean hasSolution = false;
+  double angleErrorTolerance = 5.0;
 
   NetworkTable table;
   private NetworkTableEntry driveMode;
   private NetworkTableEntry shootingMode;
+  private NetworkTableEntry NThasSolution;
   public final String NT_Name = "DC"; // expose data under Drive Controller table
   int log_counter = 0;
 
@@ -72,11 +74,12 @@ public class DriveController extends CommandBase {
     m_fieldCentricDrive = new FieldCentricDrive(drivetrain, dc);
     m_hubCentricDrive = new HubCentricDrive(drivetrain, dc, limelight);
     m_intakeCentricDrive = new IntakeCentricDrive(drivetrain, dc);
-    m_basicShootCommand = new VelShootCommand(new ShooterSettings(20,0), 15); //ft/s,rot, backupcount
+    m_velShootCommand = new VelShootCommand(new ShooterSettings(20,0), 15); //ft/s,rot, backupcount
 
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
     driveMode = table.getEntry("/driveMode");
     shootingMode = table.getEntry("/shootingModeOn");
+    NThasSolution = table.getEntry("/HasSolution");
   }
 
   @Override
@@ -98,12 +101,20 @@ public class DriveController extends CommandBase {
     if (!currentlyShooting && shootingRequested){ //start shooting
       currentlyShooting = true;
       requestedDriveMode = DriveModes.hubCentric;
-      CommandScheduler.getInstance().schedule(m_basicShootCommand);
+      CommandScheduler.getInstance().schedule(m_velShootCommand);
 
     } else if (currentlyShooting && !shootingRequested){ //stop shooting
       currentlyShooting = false;
       requestedDriveMode = lastDriveMode;
-      CommandScheduler.getInstance().cancel(m_basicShootCommand);
+      CommandScheduler.getInstance().cancel(m_velShootCommand);
+    } else if (currentlyShooting) { //if angle error is small, set solution to be true to allow shooter to shoot
+        if (Math.abs(m_hubCentricDrive.getAngleError().getDegrees()) > angleErrorTolerance){
+          m_velShootCommand.setSolution(false);
+          NThasSolution.setBoolean(false);
+        } else {
+          m_velShootCommand.setSolution(true);
+          NThasSolution.setBoolean(true);
+        }
     }
   }
 

@@ -120,6 +120,7 @@ public class HubCentricDrive extends CommandBase {
       // if limelight is available, override rotation input from odometery to limelight
       limelightPid.setSetpoint(0); // always go towards the light.
       limelightPidOutput = limelightPid.calculate(limelight.getFilteredX());
+      angleError = Rotation2d.fromDegrees(limelight.getFilteredX()); //approximation of degrees off center
       // update rotation and calulate new output-states
       rot = llLimiter.calculate(limelightPidOutput);
     }
@@ -155,4 +156,9 @@ public class HubCentricDrive extends CommandBase {
     NTangleError.setDouble(angleError.getDegrees());
     }
   }
+
+  public Rotation2d getAngleError() {
+    return this.angleError;
+  }
+
 }
