@@ -9,7 +9,6 @@ import frc.robot.subsystems.Magazine_Subsystem;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.AddressableLED;
 import frc.robot.subsystems.shooter.Shooter_Subsystem;
 import frc.robot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
 import frc.robot.util.PoseMath;
@@ -43,6 +42,9 @@ public class VelShootCommand extends CommandBase{
     double calculatedVel = 20;
 
     private boolean finished = false;
+    private boolean solution = true;
+
+
 
     final static ShooterSettings defaultShooterSettings = new ShooterSettings(20.0, 0.0, USE_CURRENT_ANGLE, 0.01);
 
@@ -122,9 +124,10 @@ public class VelShootCommand extends CommandBase{
             break;
 
             case WaitingForSolution:
-                // do fancy check and when ready, goto shooting
-                stage = Stage.Shooting;
-                magazine.driveWheelOn(1.0);
+                if(solution){
+                    stage = Stage.Shooting;
+                    magazine.driveWheelOn(1.0);
+                }
                 break;
 
             case Shooting:
@@ -161,5 +164,14 @@ public class VelShootCommand extends CommandBase{
 
     private void NTupdates(){
         ntBallVel.setDouble(calculatedVel);
-        shooterState.setString(stage.toString());    }
+        shooterState.setString(stage.toString());
+    }
+
+    public boolean getSolution() {
+        return this.solution;
+    }
+
+    public void setSolution(boolean solution) {
+        this.solution = solution;
+    }
 }

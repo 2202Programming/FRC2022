@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.RobotContainer;
 import frc.robot.commands.Shoot.BasicShootCommand;
+import frc.robot.commands.Shoot.VelShootCommand;
 import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.Magazine_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
@@ -44,7 +45,7 @@ public class DriveController extends CommandBase {
   FieldCentricDrive m_fieldCentricDrive;
   HubCentricDrive m_hubCentricDrive;
   IntakeCentricDrive m_intakeCentricDrive;
-  BasicShootCommand m_basicShootCommand;
+  VelShootCommand m_basicShootCommand;
 
   Command currentCmd;
   DriveModes requestedDriveMode = DriveModes.fieldCentric;
@@ -71,7 +72,7 @@ public class DriveController extends CommandBase {
     m_fieldCentricDrive = new FieldCentricDrive(drivetrain, dc);
     m_hubCentricDrive = new HubCentricDrive(drivetrain, dc, limelight);
     m_intakeCentricDrive = new IntakeCentricDrive(drivetrain, dc);
-    m_basicShootCommand = new BasicShootCommand(new ShooterSettings(20,0), 15); //ft/s,rot, backupcount
+    m_basicShootCommand = new VelShootCommand(new ShooterSettings(20,0), 15); //ft/s,rot, backupcount
 
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
     driveMode = table.getEntry("/driveMode");
