@@ -65,7 +65,7 @@ public class Shooter_Subsystem extends SubsystemBase  {
   final FlyWheel  lower_shooter; 
   
   /**
-   * ShooterSettings - simple struture to group the shooters settings.
+   * ShooterSettings - simple struture (lies) to group the shooters settings.
    * 
    *   Rotations/sec is used as input, remember to convert to RADIAN/SEC
    *   to calculate speeds
@@ -149,8 +149,7 @@ public class Shooter_Subsystem extends SubsystemBase  {
  
     // monitor if the  shooter flywheel rpms to see if they are at setpoint
     double tol = m_setpoint.velTol;
-    m_readyToShoot = ((Math.abs(error.upper) < (target.upper*tol)) &&
-                      (Math.abs(error.lower) < (target.lower*tol)) );   
+    m_readyToShoot = ((Math.abs(error.upper) < (target.upper*tol)) &&(Math.abs(error.lower) < (target.lower*tol)) );   
     log();
   }
 
