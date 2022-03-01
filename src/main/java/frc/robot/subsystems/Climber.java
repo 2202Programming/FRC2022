@@ -19,19 +19,10 @@ import frc.robot.Constants.ClimbSettings;
 public class Climber extends SubsystemBase {
     // NTs
     private NetworkTable table;
-    private NetworkTableEntry left_extender_speed, right_extender_speed, left_extender_position, right_extender_position, left_reverse_open, right_reverse_open, left_rotation_limit, right_rotation_limit, left_forward_open, right_forward_open;
-    private NetworkTableEntry right_extensions_upper_limit, right_extensions_lower_limit, left_extensions_upper_limit, left_extensions_lower_limit, arm_extensions_desired_position;
-    private NetworkTableEntry extension_amps;
     // PIDSlot used
     int slot = 0;
 
-    // raise/lower controllers
-    private CANSparkMax left_motor_ext= new CANSparkMax(CAN.CMB_LEFT_Extend, MotorType.kBrushless);
-    private CANSparkMax right_motor_ext = new CANSparkMax(CAN.CMB_RIGHT_Extend, MotorType.kBrushless);
-    private SparkMaxPIDController left_pidController_ext;
-    private SparkMaxPIDController right_pidController_ext;
-
-
+ 
     // Limit switches extension
     // TODO: Is type kNormallyClosed or kNormallyOpen? Also check for rotation limit swithces
     // TODO: Implement what happens if limit switch is true
@@ -42,31 +33,14 @@ public class Climber extends SubsystemBase {
      *  1 limit switch to check if rotation is vertical
      */
 
-    private SparkMaxLimitSwitch leftForwardLimitSwitch = left_motor_ext.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyClosed);
-    private SparkMaxLimitSwitch rightForwardLimitSwitch = right_motor_ext.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyClosed);
-
-    private SparkMaxLimitSwitch leftReverseLimitSwitch = left_motor_ext.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyClosed);
-    private SparkMaxLimitSwitch rightReverseLimitSwitch = right_motor_ext.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyClosed);
-    
-    
-    private ArmRotation left_Arm;
-    private ArmRotation right_Arm;
     private CANSparkMax left_motor_rot = new CANSparkMax(CAN.CMB_LEFT_Rotate, MotorType.kBrushed);
     private CANSparkMax right_motor_rot = new CANSparkMax(CAN.CMB_RIGHT_Rotate, MotorType.kBrushed);
-    private SparkMaxPIDController left_pidController_rot;
-    private SparkMaxPIDController right_pidController_rot;
-
-    // Limit switches rotation
-    private SparkMaxLimitSwitch leftRotationLimitSwitch = left_motor_rot.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyClosed);
-    private SparkMaxLimitSwitch rightRotationLimitSwitch = right_motor_rot.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyClosed);
-    boolean leftRotationIsPressed;
-    boolean rightRotationIsPressed;
-    boolean leftForwardLimitSwitchIsPressed;
-    boolean rightForwardLimitSwitchIsPressed;
-    boolean leftReverseIsPressed;
-    boolean rightReverseIsPressed;
-    
-    int currentAmps;
+    private CANSparkMax left_motor_ext = new CANSparkMax(CAN.CMB_LEFT_Extend, MotorType.kBrushless);
+    private CANSparkMax right_motor_ext = new CANSparkMax(CAN.CMB_RIGHT_Extend, MotorType.kBrushless);
+    private ArmExtension left_Arm_ext;
+    private ArmExtension right_Arm_ext;
+    private ArmRotation left_Arm_rot;
+    private ArmRotation right_Arm_rot;
 
 
     // rotation arm controller (outer arms rotate)
@@ -99,11 +73,7 @@ public class Climber extends SubsystemBase {
         ClimbSettings.extendPID.copyTo(right_motor_ext.getPIDController(), slot);
         right_motor_ext.setInverted(false);
         left_motor_ext.setInverted(true);
-        extension_amps=table.getEntry("amps");
-        right_motor_ext.setSmartCurrentLimit((int)extension_amps.getDouble(1));
-        left_motor_ext.setSmartCurrentLimit((int)extension_amps.getDouble(1));
-        extension_amps.setDefaultDouble(1);
-        currentAmps = (int)extension_amps.getDouble(1);
+       
 
         ClimbSettings.rotatePID.copyTo(left_motor_rot.getPIDController(), slot);
         ClimbSettings.rotatePID.copyTo(right_motor_rot.getPIDController(), slot);
@@ -138,9 +108,6 @@ public class Climber extends SubsystemBase {
         
         // left_motor_ext.getEncoder().setPosition(0);
         // right_motor_ext.getEncoder().setPosition(0);
-
-        left_pidController_rot = left_motor_ext.getPIDController();
-        right_pidController_rot = right_motor_ext.getPIDController();
 // //  
 //         left_motor_rot.getEncoder().setPosition(0);
 //         right_motor_rot.getEncoder().setPosition(0);
@@ -177,12 +144,6 @@ public class Climber extends SubsystemBase {
     }
     // @param inches from extender absolute position
     public void setExtension(double inches) {
-        double count = inches*(120/(15+(7/8))); //really dumb measured math probably not accurate
-        //double count = ((25.4*36*42)/(5*24))*inches; //25.4 is mm per inch, 36 is revs per 1 pev with gearbox, 42 is counts per rev and 5 is mm per 1 tooth
-        //   42 Counts per rev, but SmartMotion was showing rotations not counts
-        //   Connected to a 36:1 gearbox that could change
-        //   Gearbox connected to a 24 tooth pulley that is connected to a linear belt
-        //   Need to ask mechs to do analysis to convert 24 tooth pulley to linear distance
 
         arm_extensions_desired_position.setDouble(count);
         
@@ -218,17 +179,7 @@ public class Climber extends SubsystemBase {
      * 
      * @param degrees +/- degrees from vertical
      */
-    public void setRotation(double degrees) {
-        double counts = (42*174.9*degrees)/(360*20); //42 and 20 are the tooth pullies, 174.9 is the counts per rot and 360 is the degrees
-        // 174.9 counter/rotation on motor
-        // Motor is connected to a 20 tooth pulley that drives
-        //    a 42 tooth pulley
-        // changes the angle of the ? by this many degrees
-        // l_rotator.getPIDController().setReference(degrees, ControlType.kPosition);
-        // r_rotator.getPIDController().setReference(degrees, ControlType.kPosition);
-        // left_Arm.set((float)counts);
-        // right_Arm.set((float)counts);
-    }
+    
 
     public void stop() {
         left_motor_ext.set(0);
@@ -326,19 +277,127 @@ public class Climber extends SubsystemBase {
 }
 
 class ArmRotation {
-    private NetworkTableEntry sdb_desired;
+// motors n stuff
+    private CANSparkMax motor_rot;
     private SparkMaxPIDController pidController_rot;
+    private SparkMaxLimitSwitch VerticalLimitSwitch;
+// nts
+    private NetworkTable network_table;
+    private NetworkTableEntry nte_curr_pos_deg;
+    private NetworkTableEntry nte_curr_pos_count;
+    private NetworkTableEntry nte_des_pos_deg;
+    private NetworkTableEntry nte_des_pos_count;
+    private NetworkTableEntry nte_curr_current_amp;
+    private NetworkTableEntry nte_curr_current_limit_amp;
 
-    public ArmRotation(NetworkTable table, SparkMaxPIDController pidController_rot) {
-        this.pidController_rot = pidController_rot;
-        this.sdb_desired = table.getEntry("desired");
+    private final double CONVERSION_FACTOR;
+
+    public ArmRotation(NetworkTable table, CANSparkMax motor_rot, boolean inverted) {
+        
+        // motors
+        this.motor_rot = motor_rot;
+        this.motor_rot.setInverted(inverted);
+
+        VerticalLimitSwitch = motor_rot.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyClosed);
+        this.pidController_rot = motor_rot.getPIDController();
+
+
+        // NTs
+        this.network_table = table;
+        nte_curr_pos_deg = network_table.getEntry("Current Arm Rotation (degrees)");
+        nte_curr_pos_deg.setDouble(0);
+        nte_curr_pos_count = network_table.getEntry("Current Arm Rotation (counts)");
+        nte_curr_pos_count.setDouble(0);
+        nte_des_pos_deg = network_table.getEntry("Desired Arm Rotation (degrees)");
+        nte_des_pos_deg.setDouble(0);
+        nte_des_pos_count = network_table.getEntry("Desired Arm Rotation (counts)");
+        nte_des_pos_count.setDouble(0);
+        nte_curr_current_amp = network_table.getEntry("Current Amperage (amps)");
+        nte_curr_current_amp.setDouble(0);
+        nte_curr_current_limit_amp = network_table.getEntry("Amperage Limit (amps)");
+        nte_curr_current_limit_amp.setDouble(0);
+
+        CONVERSION_FACTOR = motor_rot.getEncoder().getPositionConversionFactor();
     }
     public void periodic() {
-
+        double motor_curr_deg = motor_rot.getEncoder().getPosition();
+        nte_curr_pos_deg.setDouble(motor_curr_deg);
+        nte_curr_pos_count.setDouble(motor_curr_deg / CONVERSION_FACTOR);
+        nte_curr_current_amp.setDouble(motor_rot.getOutputCurrent());
+// current limit n stuff
+        motor_rot.setSmartCurrentLimit((int) nte_curr_current_limit_amp.getDouble(5));
+        
     }
 
-    public void set(double counts) {
+    public void set(double degrees) {
+        double counts = (42*174.9*degrees)/(360*20); //42 and 20 are the tooth pullies, 174.9 is the counts per rot and 360 is the degrees
+        // 174.9 counter/rotation on motor
+        // Motor is connected to a 20 tooth pulley that drives
+        //    a 42 tooth pulley
+        // changes the angle of the ? by this many degrees
+        // l_rotator.getPIDController().setReference(degrees, ControlType.kPosition);
+        // r_rotator.getPIDController().setReference(degrees, ControlType.kPosition);
+        // left_Arm.set((float)counts);
+        // right_Arm.set((float)counts);
         pidController_rot.setReference(counts, CANSparkMax.ControlType.kPosition);
-        sdb_desired.setDouble(counts);
+        nte_des_pos_deg.setDouble(degrees);
+        nte_des_pos_count.setDouble(counts);
+    }
+}
+
+class ArmExtension {
+    private NetworkTable network_table;
+    private SparkMaxPIDController pidController_ext;
+    private SparkMaxLimitSwitch ForwardLimitSwitch;
+    private SparkMaxLimitSwitch ReverseLimitSwitch;
+    private CANSparkMax motor_ext;
+    private NetworkTableEntry nte_curr_pos_in;
+    private NetworkTableEntry nte_curr_pos_count;
+    private NetworkTableEntry nte_des_pos_in;
+    private NetworkTableEntry nte_des_pos_count;
+    private NetworkTableEntry nte_motor_amp_limit;
+    private NetworkTableEntry nte_amps_now;
+    private final int conversion_factor = (120/(15+(7/8))); //really dumb measured math probably not accurate
+        // //double count = ((25.4*36*42)/(5*24))*inches; //25.4 is mm per inch, 36 is revs per 1 pev with gearbox, 42 is counts per rev and 5 is mm per 1 tooth
+        // //   42 Counts per rev, but SmartMotion was showing rotations not counts
+        // //   Connected to a 36:1 gearbox that could change
+        // //   Gearbox connected to a 24 tooth pulley that is connected to a linear belt
+        // //   Need to ask mechs to do analysis to convert 24 tooth pulley to linear distance;
+
+    public ArmExtension(NetworkTable table, CANSparkMax motor_ext, boolean inverted){
+        this.motor_ext = motor_ext;
+        this.motor_ext.setInverted(inverted);
+
+        ForwardLimitSwitch = motor_ext.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyClosed);
+        ReverseLimitSwitch = motor_ext.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyClosed);
+        this.pidController_ext = motor_ext.getPIDController(); 
+        
+        this.network_table = table;
+        nte_curr_pos_in = this.network_table.getEntry("Current Arm Position (inches)");
+        nte_curr_pos_in.setDouble(0);
+        nte_curr_pos_count = this.network_table.getEntry("Current Arm Position (count)");
+        nte_curr_pos_count.setDouble(0);
+        nte_des_pos_in = this.network_table.getEntry("Desired Position (inches)");
+        nte_des_pos_in.setDouble(0);
+        nte_des_pos_count = this.network_table.getEntry("Desired Positon (count)");
+        nte_des_pos_count.setDouble(0);
+        nte_motor_amp_limit = this.network_table.getEntry("Motor Amp Limit");
+        nte_motor_amp_limit.setDouble(0);
+        nte_amps_now = this.network_table.getEntry("Amps Now");
+        nte_amps_now.setDouble(0);
+    }
+
+    public void periodic(){
+        nte_curr_pos_in.setDouble(motor_ext.getEncoder().getPosition()/conversion_factor);
+        nte_curr_pos_count.setDouble(motor_ext.getEncoder().getPosition());
+        motor_ext.setSmartCurrentLimit((int) nte_motor_amp_limit.getDouble(5));
+        nte_amps_now.getDouble(motor_ext.getOutputCurrent());
+    }
+    public void set(double inches) {
+        double count = inches*conversion_factor;
+        pidController_ext.setReference(count, CANSparkMax.ControlType.kPosition);
+        //motor_ext.getPIDController().setReference(count, CANSparkMax.ControlType.kPosition);
+        nte_des_pos_in.setDouble(inches);
+        nte_des_pos_count.setDouble(count);
     }
 }
