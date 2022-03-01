@@ -34,21 +34,23 @@ public class Magazine_Subsystem extends SubsystemBase {
   }
 
   //sets the belts to a speed
+
+  //Drivewheel on applies a percent output between -1 and 1
   public void driveWheelOn(double speed){
     top_wheel.set(TalonSRXControlMode.PercentOutput, speed);
   }
-
+  //defaultDriveWheelOn sets percent output to 1
   public void defaultDriveWheelOn(){
-    top_wheel.set(TalonSRXControlMode.PercentOutput, 1);
+    driveWheelOn(1);
   }
-
+  //defaultDriveWheelOn sets percent output to 0
   public void driveWheelOff(){
-    top_wheel.set(TalonSRXControlMode.PercentOutput, 0);
+    driveWheelOn(0);
   }
 
   //reverses direction of rotation to expell cargo
   public void expellCargo(double speed){
-    top_wheel.set(TalonSRXControlMode.PercentOutput, -speed);
+    driveWheelOn(-speed);
   }
   
   //lets us know if cargo is detected
@@ -63,3 +65,4 @@ public class Magazine_Subsystem extends SubsystemBase {
   }
 
 }
+
