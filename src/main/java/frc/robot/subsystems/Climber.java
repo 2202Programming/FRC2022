@@ -11,7 +11,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import frc.robot.Constants;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.ClimbSettings;
 
@@ -314,6 +314,14 @@ public class Climber extends SubsystemBase {
     public void setAmperageLimit(int limit) {
         right_motor_ext.setSmartCurrentLimit((int)extension_amps.getDouble(limit));
         left_motor_ext.setSmartCurrentLimit((int)extension_amps.getDouble(limit));
+    }
+
+    public boolean checkIsFinished(double ext_pos, double rot_pos) {
+        return(Math.abs(this.getLeftExtEncoder().getPosition() - ext_pos) <= Constants.ClimbSettings.TOLERANCE_LENGTH 
+               && (Math.abs(this.getRightExtEncoder().getPosition() - ext_pos) <= Constants.ClimbSettings.TOLERANCE_LENGTH)
+               && (Math.abs(this.getLeftRotEncoder().getPosition() - rot_pos) <= Constants.ClimbSettings.TOLERANCE_ROTATION)
+               && (Math.abs(this.getRightRotEncoder().getPosition() - rot_pos) <= Constants.ClimbSettings.TOLERANCE_ROTATION)
+        );
     }
 }
 
