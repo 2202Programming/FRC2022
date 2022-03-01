@@ -13,7 +13,7 @@ public class HigherClimbRetract extends CommandBase {
 
     @Override
     public void initialize() {
-        
+        climber.setAmperageLimit(Constants.ClimbSettings.MAX_AMPERAGE);
     }
 
     @Override
@@ -23,11 +23,11 @@ public class HigherClimbRetract extends CommandBase {
     }
 
     @Override
-    // TODO: Velocity better than position because it allows for some error?
     public boolean isFinished() {
-        return ((Math.abs(climber.getLeftEncoder().getPosition()) <= Constants.ClimbSettings.TOLERANCE_LENGTH)
-               && (Math.abs(climber.getRightEncoder().getPosition()) <= Constants.ClimbSettings.TOLERANCE_LENGTH)
-        // TODO: Add checks for rotation also
+        return ((Math.abs(climber.getLeftExtEncoder().getPosition()) <= Constants.ClimbSettings.TOLERANCE_LENGTH)
+               && (Math.abs(climber.getRightExtEncoder().getPosition()) <= Constants.ClimbSettings.TOLERANCE_LENGTH)
+               && (Math.abs(climber.getLeftRotEncoder().getPosition()) <= Constants.ClimbSettings.TOLERANCE_ROTATION)
+               && (Math.abs(climber.getRightRotEncoder().getPosition()) <= Constants.ClimbSettings.TOLERANCE_ROTATION)
         );
     }
 }

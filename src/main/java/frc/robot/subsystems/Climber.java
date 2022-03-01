@@ -295,12 +295,25 @@ public class Climber extends SubsystemBase {
         // right_Arm.periodic();
     }
 
-    public RelativeEncoder getLeftEncoder() {
+    public RelativeEncoder getLeftExtEncoder() {
         return left_motor_ext.getEncoder();
     }
 
-    public RelativeEncoder getRightEncoder() {
+    public RelativeEncoder getRightExtEncoder() {
         return right_motor_ext.getEncoder();
+    }
+
+    public RelativeEncoder getLeftRotEncoder() {
+        return left_motor_rot.getEncoder();
+    }
+
+    public RelativeEncoder getRightRotEncoder() {
+        return right_motor_rot.getEncoder();
+    }
+
+    public void setAmperageLimit(int limit) {
+        right_motor_ext.setSmartCurrentLimit((int)extension_amps.getDouble(limit));
+        left_motor_ext.setSmartCurrentLimit((int)extension_amps.getDouble(limit));
     }
 }
 

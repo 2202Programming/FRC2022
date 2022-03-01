@@ -14,8 +14,7 @@ public class HigherClimbExtend extends CommandBase {
     
     @Override
     public void initialize() {
-        // TODO: Add resetting for rotation also
-        
+        climber.setAmperageLimit(Constants.ClimbSettings.MAX_AMPERAGE);
     }
 
     @Override
@@ -26,9 +25,10 @@ public class HigherClimbExtend extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return(Math.abs(climber.getLeftEncoder().getPosition() - Constants.ClimbSettings.HIGHER_EXTENSION_LENGTH) <= Constants.ClimbSettings.TOLERANCE_LENGTH 
-               && (Math.abs(climber.getRightEncoder().getPosition() - Constants.ClimbSettings.HIGHER_EXTENSION_LENGTH) <= Constants.ClimbSettings.TOLERANCE_LENGTH)
-        // TODO: Check conditions for rotation motors also
+        return(Math.abs(climber.getLeftExtEncoder().getPosition() - Constants.ClimbSettings.HIGHER_EXTENSION_LENGTH) <= Constants.ClimbSettings.TOLERANCE_LENGTH 
+               && (Math.abs(climber.getRightExtEncoder().getPosition() - Constants.ClimbSettings.HIGHER_EXTENSION_LENGTH) <= Constants.ClimbSettings.TOLERANCE_LENGTH)
+               && (Math.abs(climber.getLeftRotEncoder().getPosition() - Constants.ClimbSettings.HIGHER_EXTENSION_ROTATION) <= Constants.ClimbSettings.TOLERANCE_ROTATION)
+               && (Math.abs(climber.getRightRotEncoder().getPosition() - Constants.ClimbSettings.HIGHER_EXTENSION_ROTATION) <= Constants.ClimbSettings.TOLERANCE_ROTATION)
         );
     }
 

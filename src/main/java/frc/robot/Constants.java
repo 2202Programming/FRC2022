@@ -149,6 +149,9 @@ public final class Constants {
         public static final double TOLERANCE_LENGTH = 0;
         public static final double TOLERANCE_ROTATION = 0;
 
+        // TODO: Change to actual amperage values
+        public static final int MAX_AMPERAGE = 1;
+
 
     }
       
