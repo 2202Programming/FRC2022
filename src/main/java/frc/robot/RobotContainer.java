@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 //import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.Constants.Autonomous;
 import frc.robot.Constants.DriverPrefs;
 import frc.robot.commands.IntakeCommand;
@@ -15,6 +16,7 @@ import frc.robot.commands.IntakeCommand.IntakeMode;
 import static frc.robot.commands.MoveIntake.DeployMode;
 import frc.robot.commands.MoveIntake;
 import frc.robot.commands.MagazineCommand;
+import frc.robot.commands.MaintainMag;
 import frc.robot.commands.MagazineCommand.MagazineMode;
 import frc.robot.commands.MovePositioner.PositionerMode;
 import frc.robot.commands.MovePositioner;
@@ -183,7 +185,11 @@ public class RobotContainer {
     if(Constants.HAS_INTAKE) {
       driverControls.bind(Id.Assistant, XboxButton.LB).whenPressed(new MoveIntake(DeployMode.Toggle));
       // IntakeCommand takes a DoubleSupplier f() which could be tied to our UX instead of const f() given here.
-      driverControls.bind(Id.Assistant, XboxButton.A).whileHeld(new IntakeCommand((()-> 0.47), ()-> 0.20,  IntakeMode.LoadCargo) );
+      //driverControls.bind(Id.Assistant, XboxButton.A).whileHeld(new IntakeCommand((()-> 0.47), ()-> 0.20,  IntakeMode.LoadCargo) );
+      driverControls.bind(Id.Assistant,XboxButton.A).whileHeld(new ParallelCommandGroup(
+        new IntakeCommand((()-> 0.47), ()-> 0.20,  IntakeMode.LoadCargo),
+        new MaintainMag(magazine, ()-> 0.2)
+      ));
       // IntakeCommand motor direction
       driverControls.bind(Id.Assistant, XboxButton.B).whileHeld(new IntakeCommand((()-> 0.35), ()-> 0.20, IntakeMode.ExpellCargo) );
     }
