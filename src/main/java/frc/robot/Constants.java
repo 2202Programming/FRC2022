@@ -30,7 +30,8 @@ public final class Constants {
     public static final boolean HAS_SHOOTER = true;
     public static final boolean HAS_MAGAZINE = true;
     public static final boolean HAS_DRIVETRAIN = true;
-
+    public static final double  FTperM = 3.28084;
+    public static final double  MperFT = 1.0/FTperM; 
 
     public static final double DT = 0.02; // 20ms framerate 50Hz
     public static final double Tperiod = 0.02; // framerate period 20ms, 50Hz
@@ -38,12 +39,12 @@ public final class Constants {
 
     public static final class Autonomous {
 
-      public static final Pose2d startPose1 = PoseMath.convertMetersToFeet(new Pose2d(7.67,1.82,new Rotation2d(-180))); //Bottom, furthest from terminal
-      public static final Pose2d startPose2 = PoseMath.convertMetersToFeet(new Pose2d(6.86,2.63,new Rotation2d(-180))); //Middle
-      public static final Pose2d startPose3 = PoseMath.convertMetersToFeet(new Pose2d(6.7,5.47,new Rotation2d(-180))); //Top
-      public static final Pose2d hubPose = PoseMath.convertMetersToFeet(new Pose2d(8.27,4.12,new Rotation2d(0))); //Center of Hub
+      //path coordinates are in meters - utility only works in meters
+      public static final Pose2d startPose1 = new Pose2d(7.67,1.82,new Rotation2d(-180)); //Bottom, furthest from terminal
+      public static final Pose2d startPose2 = new Pose2d(6.86,2.63,new Rotation2d(-180)); //Middle
+      public static final Pose2d startPose3 = new Pose2d(6.7,5.47,new Rotation2d(-180)); //Top
+      public static final Pose2d hubPose =    new Pose2d(8.27,4.12,new Rotation2d(0)); //Center of Hub
       public static final Pose2d testStartPose = new Pose2d(5,5,new Rotation2d(-180));
-
     }
     
     /**
@@ -181,10 +182,9 @@ public final class Constants {
     public static final class DriveTrain {
         // motor constraints
         public static final double motorMaxRPM = 5600;    // motor limit
-        
 
         // Constraints on speeds enforeced in DriveTrain
-        public static final double kMaxSpeed = 12.0; // [ft/s]
+        public static final double kMaxSpeed = 12.0*MperFT; // [m/s]
         public static final double kMaxAngularSpeed = 2*Math.PI; // [rad/s] 
         //Max neo free speed is 12.1 ft/s per specs
 
@@ -200,7 +200,8 @@ public final class Constants {
 
         // SmartMax PID values [kp, ki, kd, kff] - these get sent to hardware controller
         // DEBUG - SET FF first for drive, then add KP
-        public static final PIDFController drivePIDF = new PIDFController(0.09, 0.0, 0.0, 0.08076);  
+        // NOTE: Not sure if the pid needs MperFT or if the scaling is done with conversion factor. I think we need it. 2/28/22
+        public static final PIDFController drivePIDF = new PIDFController(0.09*MperFT, 0.0, 0.0, 0.08076*MperFT);  
         public static final PIDFController anglePIDF = new PIDFController(0.01, 0.0, 0.0, 0.0); //maybe 1.0,0.0,0.1 from SDS sample code?
         
         
@@ -217,25 +218,19 @@ public final class Constants {
         public static final double CC_BR_OFFSET =   -28.215; //-28.415; //  -28.38;
         */
 
-        //FOR BETABOT
+        //FOR BETABOT - degrees
         public static final double CC_FL_OFFSET =    -175.60; 
         public static final double CC_BL_OFFSET =    -115.40; 
         public static final double CC_FR_OFFSET =   -162.15; 
         public static final double CC_BR_OFFSET =   158.81; 
 
-        // public static final double CC_FL_OFFSET = 0;
-        // public static final double CC_BL_OFFSET = 0;
-        // public static final double CC_FR_OFFSET = 0;
-        // public static final double CC_BR_OFFSET = 0;
-
-
         // Kinematics model - wheel offsets from center of robot (0, 0)
-        // Left Front given below, symmetry used for others (in feet)
-        // Betabot is 21.516 left-right and 24.87 front-back
-        public static final double XwheelOffset = (21.516/12)/2;     
-        public static final double YwheelOffset = (24.87/12)/2;
-        public static final double wheelCorrectionFactor = 0.80; //measured on swervebot
-        public static final double wheelDiameter = 0.3333333 * wheelCorrectionFactor;   //[ft]  4" wheels
+        // Left Front given below, symmetry used for others 
+        // Betabot is 21.516" left-right and 24.87" front-back
+        public static final double XwheelOffset = MperFT*(21.516/12)/2;     
+        public static final double YwheelOffset = MperFT*(24.87/12)/2; 
+        public static final double wheelCorrectionFactor = 0.80; //measured on swervebot    TODO: test after meter conversion and measurement
+        public static final double wheelDiameter = 97.52 /1000.0 * wheelCorrectionFactor;   //measured 2/28/22 mm [m]
 
         // Gear ratios - confirmed https://www.swervedrivespecialties.com/products/mk3-swerve-module?variant=39420433203313
         public static final double kSteeringGR = 12.8;   // [mo-turns to 1 angle wheel turn]

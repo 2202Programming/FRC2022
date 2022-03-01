@@ -21,7 +21,6 @@ import frc.robot.util.PIDFController;
 
 public class SwerveModuleMK3 {
   public final String NT_Name = "DT"; // expose data under DriveTrain table
-
   // Hardware PID settings in Constants.DriveTrain PIDFController
   // PID slot for angle and drive pid on SmartMax controller
   final int kSlot = 0;
@@ -58,17 +57,16 @@ public class SwerveModuleMK3 {
   // tables...
   double m_internalAngle; // measured Neo unbounded [deg]
   double m_externalAngle; // measured CANCoder bounded +/-180 [deg]
-  double m_velocity; // measured velocity [ft/s]
+  double m_velocity; // measured velocity [wheel's-units/s] [m/s]
   double m_angle_target; // desired angle unbounded [deg]
-  double m_vel_target; // desired velocity [ft/s]
-
+  double m_vel_target; // desired velocity [wheel's-units/s]  [m/s]  
   /**
    * SwerveModuleMK3 -
    * 
    * SmartMax controllers used for angle and velocity motors.
    * 
    * SmartMax Velocity mode is used to close the velocity loop. Units will match
-   * the units of the drive-wheel-diameter. [ft/s]
+   * the units of the drive-wheel-diameter. 
    * 
    * Angle in degrees is controlled using position mode on the SmartMax. The angle
    * positon is not constrainted to +/- 180 degrees because the Neo has 32bit
@@ -108,11 +106,9 @@ public class SwerveModuleMK3 {
     driveMotor.setIdleMode(IdleMode.kBrake);
     driveMotorPID = driveMotor.getPIDController();
     driveEncoder = driveMotor.getEncoder();
-    // set driveEncoder to use ft/s
-    driveEncoder.setPositionConversionFactor(Math.PI * DriveTrain.wheelDiameter / DriveTrain.kDriveGR); // mo-rot to ft
-    driveEncoder.setVelocityConversionFactor((Math.PI * DriveTrain.wheelDiameter / DriveTrain.kDriveGR) / 60.0); // mo-rpm
-    // to
-    // ft/s
+    // set driveEncoder to use units of the wheelDiameter, meters
+    driveEncoder.setPositionConversionFactor(Math.PI * DriveTrain.wheelDiameter / DriveTrain.kDriveGR); // mo-rot to wheel units
+    driveEncoder.setVelocityConversionFactor((Math.PI * DriveTrain.wheelDiameter / DriveTrain.kDriveGR) / 60.0); // mo-rpm wheel units 
     sleep(100);
     // Angle Motor config
     angleMotor.setInverted(invertAngleMtr);
@@ -355,7 +351,7 @@ public class SwerveModuleMK3 {
 
   /**
    * 
-   * @return velocity (ft/s)
+   * @return velocity wheel's units [m] 
    */
   public double getVelocity() {
     return m_velocity;
@@ -385,7 +381,7 @@ public class SwerveModuleMK3 {
     // now add that delta to unbounded Neo angle, m_internal isn't range bound
     angleMotorPID.setReference(angleCmdInvert * (m_internalAngle + delta), ControlType.kPosition);
 
-    // use velocity control, in ft/s (ignore variable name)
+    // use velocity control
     driveMotorPID.setReference(m_state.speedMetersPerSecond, ControlType.kVelocity);
   }
 
