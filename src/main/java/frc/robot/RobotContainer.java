@@ -202,8 +202,9 @@ public class RobotContainer {
     if(Constants.HAS_SHOOTER){
       driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_RIGHT).whileHeld(new BasicShootCommand(new ShooterSettings(20, 0.0), 20 ));
     }  
-    // Y - reset Pose
-    //if (Constants.HAS_DRIVETRAIN) driverControls.bind(Id.Driver, XboxButton.Y).whenPressed(new ResetPosition(Autonomous.testStartPose, drivetrain, "none"));
+       // Y - reset Pose
+       if (Constants.HAS_DRIVETRAIN) driverControls.bind(Id.Assistant, XboxButton.Y).whenPressed(new InstantCommand(drivetrain::resetPose));
+
   }
 
   public Command getAutonomousCommand() {
