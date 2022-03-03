@@ -57,9 +57,10 @@ public class SwerveModuleMK3 {
   // tables...
   double m_internalAngle; // measured Neo unbounded [deg]
   double m_externalAngle; // measured CANCoder bounded +/-180 [deg]
-  double m_velocity; // measured velocity [wheel's-units/s] [m/s]
-  double m_angle_target; // desired angle unbounded [deg]
-  double m_vel_target; // desired velocity [wheel's-units/s]  [m/s]  
+  double m_velocity;      // measured velocity [wheel's-units/s] [m/s]
+  double m_position;      // measure wheel positon for calibraiton  [m]
+  double m_angle_target;  // desired angle unbounded [deg]
+  double m_vel_target;    // desired velocity [wheel's-units/s]  [m/s]  
   /**
    * SwerveModuleMK3 -
    * 
@@ -311,6 +312,7 @@ public class SwerveModuleMK3 {
     // measure everything at same time; these get updated every cycle
     m_internalAngle = angleEncoder.getPosition() * angleCmdInvert;
     m_velocity = driveEncoder.getVelocity();
+    m_position = driveEncoder.getPosition();
 
     // these are for human consumption, update slower
     if (frameCounter++ == 10) {
@@ -357,6 +359,16 @@ public class SwerveModuleMK3 {
     return m_velocity;
   }
 
+ /**
+   * 
+   * @return velocity wheel's units [m] 
+   */
+  public double getPosition() {
+    return m_position;
+  }
+
+
+  
   /**
    * Set the speed + rotation of the swerve module from a SwerveModuleState object
    * 
@@ -396,6 +408,7 @@ public class SwerveModuleMK3 {
   private NetworkTableEntry nte_angle;
   private NetworkTableEntry nte_external_angle;
   private NetworkTableEntry nte_velocity;
+  private NetworkTableEntry nte_position;
   private NetworkTableEntry nte_angle_target;
   private NetworkTableEntry nte_vel_target;
   private NetworkTableEntry nte_motor_current;
@@ -409,6 +422,7 @@ public class SwerveModuleMK3 {
     nte_velocity = table.getEntry(NTPrefix + "/velocity");
     nte_angle_target = table.getEntry(NTPrefix + "/angle_target");
     nte_vel_target = table.getEntry(NTPrefix + "/velocity_target");
+    nte_position = table.getEntry(NTPrefix + "/position");
     nte_motor_current = table.getEntry(NTPrefix + "/motor_current");
     nte_applied_output = table.getEntry(NTPrefix + "/applied_output");
   }
@@ -419,6 +433,7 @@ public class SwerveModuleMK3 {
     nte_angle.setDouble(m_internalAngle);
     nte_external_angle.setDouble(m_externalAngle);
     nte_velocity.setDouble(m_velocity);
+    nte_position.setDouble(m_position);
     nte_angle_target.setDouble(m_angle_target);
     nte_vel_target.setDouble(m_vel_target);
     nte_motor_current.setDouble(driveMotor.getOutputCurrent());

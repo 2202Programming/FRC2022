@@ -56,6 +56,7 @@ public class SwerveDrivetrain extends SubsystemBase {
   private Pose2d m_pose;
   private Pose2d old_pose;
   private SwerveModuleState[] cur_states;
+  private SwerveModuleState[] meas_states;   //measured wheel speed & angle
 
   // sensors and our mk3 modules
   private final Sensors_Subsystem sensors;
@@ -71,6 +72,10 @@ public class SwerveDrivetrain extends SubsystemBase {
   private NetworkTableEntry velocityFR;
   private NetworkTableEntry velocityBL;
   private NetworkTableEntry velocityBR;
+  private NetworkTableEntry posFL;
+  private NetworkTableEntry posFR;
+  private NetworkTableEntry posBL;
+  private NetworkTableEntry posBR;
   
   double drive_kP = DriveTrain.drivePIDF.getP();
   double drive_kI = DriveTrain.drivePIDF.getI();
@@ -116,6 +121,7 @@ public class SwerveDrivetrain extends SubsystemBase {
 
     m_odometry = new SwerveDriveOdometry(kinematics, sensors.getRotation2d());
     cur_states = kinematics.toSwerveModuleStates(new ChassisSpeeds(0, 0, 0));
+    meas_states = kinematics.toSwerveModuleStates(new ChassisSpeeds(0, 0, 0));
 
     // for updating CAN status in periodic
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
@@ -127,6 +133,11 @@ public class SwerveDrivetrain extends SubsystemBase {
     velocityFR = table.getEntry("/Velocity Front Right");
     velocityBL = table.getEntry("/Velocity Back Left");
     velocityBR = table.getEntry("/Velocity Back Right");
+    posFL = table.getEntry("/POS FL");
+    posFR = table.getEntry("/POS FR");
+    posBL = table.getEntry("/POS BL");
+    posBR = table.getEntry("/POS BR");
+
 
     // display PID coefficients on SmartDashboard if tuning drivetrain
     /*
@@ -166,11 +177,13 @@ public class SwerveDrivetrain extends SubsystemBase {
     // update data from each of the swerve drive modules.
     for (int i = 0; i < modules.length; i++) {
       modules[i].periodic();
+      meas_states[i].speedMetersPerSecond = modules[i].getVelocity();
+      meas_states[i].angle = modules[i].getAngleRot2d();
     }
 
     // update pose
     old_pose = m_pose;
-    m_pose = m_odometry.update(sensors.getRotation2d(), cur_states);
+    m_pose = m_odometry.update(sensors.getRotation2d(), meas_states);
 
     // from -PI to +PI
     double temp = Math.atan2(m_pose.getY() - old_pose.getY(), m_pose.getX() - old_pose.getX());
@@ -192,6 +205,12 @@ public class SwerveDrivetrain extends SubsystemBase {
       velocityFR.setDouble(modules[1].getVelocity());
       velocityBL.setDouble(modules[2].getVelocity());
       velocityBR.setDouble(modules[3].getVelocity());
+
+      posFL.setDouble(modules[0].getPosition());
+      posFR.setDouble(modules[1].getPosition());
+      posBL.setDouble(modules[2].getPosition());
+      posBR.setDouble(modules[3].getPosition());
+      
       nt_currentBearing.setDouble(filteredBearing);
       timer = 0;
 

@@ -202,8 +202,7 @@ public final class Constants {
         // DEBUG - SET FF first for drive, then add KP
         // NOTE: Not sure if the pid needs MperFT or if the scaling is done with conversion factor. I think we need it. 2/28/22
         //public static final PIDFController drivePIDF = new PIDFController(0.09*MperFT, 0.0, 0.0, 0.08076*MperFT);  
-        static double magicNumber = 5;
-        public static final PIDFController drivePIDF = new PIDFController(0.09, 0.0, 0.0, 0.08076*magicNumber);  
+        public static final PIDFController drivePIDF = new PIDFController(0.09*FTperM, 0.0, 0.0, 0.08076*FTperM);  
         public static final PIDFController anglePIDF = new PIDFController(0.01, 0.0, 0.0, 0.0); //maybe 1.0,0.0,0.1 from SDS sample code?
         
         
@@ -231,7 +230,7 @@ public final class Constants {
         // Betabot is 21.516" left-right and 24.87" front-back
         public static final double XwheelOffset = MperFT*(21.516/12)/2;     
         public static final double YwheelOffset = MperFT*(24.87/12)/2; 
-        public static final double wheelCorrectionFactor = 1; //measured on swervebot    TODO: test after meter conversion and measurement
+        public static final double wheelCorrectionFactor = 1.0; //measured on swervebot    TODO: test after meter conversion and measurement
         public static final double wheelDiameter = 97.52 /1000.0 * wheelCorrectionFactor;   //measured 2/28/22 mm [m]
 
         // Gear ratios - confirmed https://www.swervedrivespecialties.com/products/mk3-swerve-module?variant=39420433203313
