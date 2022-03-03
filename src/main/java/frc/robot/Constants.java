@@ -8,7 +8,6 @@
 package frc.robot;
 
 import frc.robot.util.PIDFController;
-import frc.robot.util.PoseMath;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.subsystems.shooter.FlyWheel.FlyWheelConfig;
@@ -235,7 +234,7 @@ public final class Constants {
 
         // Gear ratios - confirmed https://www.swervedrivespecialties.com/products/mk3-swerve-module?variant=39420433203313
         public static final double kSteeringGR = 12.8;   // [mo-turns to 1 angle wheel turn]
-        public static final double kDriveGR = 8.16;      // [mo-turn to 1 drive wheel turn]
+        public static final double kDriveGR = 8.14;      // [mo-turn to 1 drive wheel turn]  //New mk4 is 8.14:1; old swerve bot was 8.16:1
     } 
     
     public final static class MagazineSettings {
