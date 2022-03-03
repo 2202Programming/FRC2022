@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 //import edu.wpi.first.cameraserver.CameraServer;
@@ -181,11 +183,17 @@ public class RobotContainer {
     // A  - spin intake while held (in reverse to expell the ball)
     // RT - spin shooter and index while held
     if(Constants.HAS_INTAKE) {
+      var table = NetworkTableInstance.getDefault().getTable("Intake");
+      var mainSpeed = table.getEntry("Power/Main");
+      var sideSpeed = table.getEntry("Power/Side");
+      mainSpeed.setDefaultDouble(0.4);
+      sideSpeed.setDefaultDouble(0.4);
+
       driverControls.bind(Id.Assistant, XboxButton.LB).whenPressed(new MoveIntake(DeployMode.Toggle));
       // IntakeCommand takes a DoubleSupplier f() which could be tied to our UX instead of const f() given here.
-      driverControls.bind(Id.Assistant, XboxButton.A).whileHeld(new IntakeCommand((()-> 0.47), ()-> 0.20,  IntakeMode.LoadCargo) );
+      driverControls.bind(Id.Assistant, XboxButton.A).whileHeld(new IntakeCommand((()-> mainSpeed.getDouble(0.4)), ()-> sideSpeed.getDouble(0.4),  IntakeMode.LoadCargo) );
       // IntakeCommand motor direction
-      driverControls.bind(Id.Assistant, XboxButton.B).whileHeld(new IntakeCommand((()-> 0.35), ()-> 0.20, IntakeMode.ExpellCargo) );
+      driverControls.bind(Id.Assistant, XboxButton.B).whileHeld(new IntakeCommand((()-> -1*mainSpeed.getDouble(0.4)), ()-> -1*sideSpeed.getDouble(0.4), IntakeMode.ExpellCargo) );
     }
 
     if(Constants.HAS_MAGAZINE){

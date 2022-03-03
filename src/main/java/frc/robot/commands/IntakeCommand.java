@@ -51,9 +51,9 @@ public class IntakeCommand extends CommandBase {
   public void execute() {
     //Call the double supplier function to get a new speed.
     if (mode == IntakeMode.LoadCargo){
-      intake.on(intakeSpeed.getAsDouble(),sideIntakeSpeed.getAsDouble());
+      intake.setSpeed(intakeSpeed.getAsDouble(),sideIntakeSpeed.getAsDouble());
     } else if (mode == IntakeMode.ExpellCargo) {
-      intake.on( -intakeSpeed.getAsDouble(),sideIntakeSpeed.getAsDouble());
+      intake.setSpeed( -intakeSpeed.getAsDouble(), sideIntakeSpeed.getAsDouble());
     }
 
     //Possible TODO - check light gate and count cargo
