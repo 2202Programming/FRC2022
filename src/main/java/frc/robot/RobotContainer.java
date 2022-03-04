@@ -5,10 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-//import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.Constants.Autonomous;
 import frc.robot.Constants.DriverPrefs;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.IntakeCommand.IntakeMode;
@@ -18,16 +15,11 @@ import frc.robot.commands.MagazineCommand;
 import frc.robot.commands.MagazineCommand.MagazineMode;
 import frc.robot.commands.MovePositioner.PositionerMode;
 import frc.robot.commands.MovePositioner;
-import frc.robot.commands.ResetPosition;
 import frc.robot.commands.Shoot.BasicShootCommand;
-import frc.robot.commands.Shoot.RPMShootCommandTune;
 import frc.robot.commands.auto.auto_cmd_group2;
 import frc.robot.commands.auto.auto_pathPlanner_cmd;
 import frc.robot.commands.swerve.DriveController;
 import frc.robot.commands.swerve.LimelightDriveCmd;
-//import frc.robot.commands.test.dumbshooter;
-//import frc.robot.commands.test.SwerveDriveTest;
-//test commands
 import frc.robot.commands.test.getTrajectoryFollowTest;
 import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.subsystems.Limelight_Subsystem;
@@ -133,10 +125,10 @@ public class RobotContainer {
     if (Constants.HAS_DRIVETRAIN) {
       driverControls.bind(Id.Driver, XboxButton.X)
           //.whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
-          .whenPressed(new auto_pathPlanner_cmd(drivetrain, "CenterFace"));
+          .whenPressed(new auto_pathPlanner_cmd(drivetrain, "Straight5"));
       driverControls.bind(Id.Driver, XboxButton.LB)
            //.whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
-           .whenPressed(new auto_pathPlanner_cmd(drivetrain, "AutoPath4"));
+           .whenPressed(new auto_pathPlanner_cmd(drivetrain, "Straight1"));
 
     }
 
@@ -158,24 +150,6 @@ public class RobotContainer {
   // * </ul>
   // */
   void setAssistantButtons() {
-        // Switchboard (6 different begining positions)
-    /*red alliance (1st row)*/
-    //bottom of the field (on path planner)
-    // driverControls.bind(Id.SwitchBoard, SBButton.Sw11).whenPressed(new ResetPosition(new Pose2d(Constants.Autonomous.RED_START_A_X, Constants.Autonomous.RED_START_A_Y, Constants.Autonomous.RED_START_A_ROT), drivetrain, "AutoPath1"));
-    
-    // //middle of the field
-    // driverControls.bind(Id.SwitchBoard, SBButton.Sw12).whenPressed(new ResetPosition(new Pose2d(Constants.Autonomous.RED_START_B_X, Constants.Autonomous.RED_START_B_Y, Constants.Autonomous.RED_START_B_ROT), drivetrain, "AutoPath2"));
-    // //top of the field
-    // driverControls.bind(Id.SwitchBoard, SBButton.Sw13).whenPressed(new ResetPosition(new Pose2d(Constants.Autonomous.RED_START_C_X, Constants.Autonomous.RED_START_C_Y, Constants.Autonomous.RED_START_C_ROT), drivetrain, "AutoPath3"));
-    
-    // /*blue alliance (2nd row)*/
-    // //top of the field
-    // driverControls.bind(Id.SwitchBoard, SBButton.Sw21).whenPressed(new ResetPosition(new Pose2d(Constants.Autonomous.BLUE_START_A_X, Constants.Autonomous.BLUE_START_A_Y, Constants.Autonomous.BLUE_START_A_ROT), drivetrain, "AutoPath4"));
-    // //middle of the field
-    // driverControls.bind(Id.SwitchBoard, SBButton.Sw22).whenPressed(new ResetPosition(new Pose2d(Constants.Autonomous.BLUE_START_B_X, Constants.Autonomous.BLUE_START_B_Y, Constants.Autonomous.BLUE_START_B_ROT), drivetrain, "AutoPath5"));
-    // //bottom of the field
-    // driverControls.bind(Id.SwitchBoard, SBButton.Sw23).whenPressed(new ResetPosition(new Pose2d(Constants.Autonomous.BLUE_START_C_X, Constants.Autonomous.BLUE_START_C_Y, Constants.Autonomous.BLUE_START_C_ROT), drivetrain, "AutoPath6")); 
-
     // LB - toggle intake deploy
     // B  - spin intake while held (to intake the ball)
     // A  - spin intake while held (in reverse to expell the ball)
@@ -192,8 +166,6 @@ public class RobotContainer {
       //Positioner binds :)
       driverControls.bind(Id.Assistant, XboxButton.RB).whenPressed(new MovePositioner(PositionerMode.Toggle));
 
-      // driverControls.bind(Id.Driver, XboxButton.RB).whenPressed(new PositionerCommand( PositionerMode.MoveUp ));
-      // driverControls.bind(Id.Driver, XboxButton.LB).whenPressed(new PositionerCommand( PositionerMode.MoveDown ));
       //MagazineCommand to intake or expell ball
       driverControls.bind(Id.Assistant, XboxButton.X).whileHeld(new MagazineCommand((()-> 1.0), MagazineMode.LoadCargo) );
       driverControls.bind(Id.Assistant, XboxButton.Y).whileHeld(new MagazineCommand((()-> 1.0), MagazineMode.ExpellCargo) );

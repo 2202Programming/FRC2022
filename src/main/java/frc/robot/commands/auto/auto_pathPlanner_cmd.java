@@ -4,8 +4,6 @@
 
 package frc.robot.commands.auto;
 
-import javax.tools.StandardJavaFileManager.PathFactory;
-
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
@@ -14,7 +12,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
+
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.SwerveDrivetrain;
 
@@ -35,7 +33,7 @@ public class auto_pathPlanner_cmd extends CommandBase {
         // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(drive);
 
-    path = PathPlanner.loadPath(pathname, 3, 3);
+    path = PathPlanner.loadPath(pathname, 3, 3); //last two parameters are max velocity and max accelleration
   }
 
   // Called when the command is initially scheduled.
