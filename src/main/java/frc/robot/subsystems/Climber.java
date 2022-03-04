@@ -23,6 +23,7 @@ public class Climber extends SubsystemBase {
     int slot = 0;
 
  
+    // TODO: Move to comments to ArmRotation and ArmExtension objects, verify accuracy
     // Limit switches extension
     // TODO: Is type kNormallyClosed or kNormallyOpen? Also check for rotation limit swithces
     // TODO: Implement what happens if limit switch is true
@@ -33,16 +34,21 @@ public class Climber extends SubsystemBase {
      *  1 limit switch to check if rotation is vertical
      */
 
+    // TODO: I don't think need these here... Create these objects in the construction call of the ArmExtension/Rotation. Something Like...
+    //       ArmExtension armExtLeft = new ArmExtension(table, new CANSparkMax(CAN.CMD_LEFT_ROTATE, MotorType.kBrushless), ... ) 
     private CANSparkMax left_motor_rot = new CANSparkMax(CAN.CMB_LEFT_Rotate, MotorType.kBrushed);
     private CANSparkMax right_motor_rot = new CANSparkMax(CAN.CMB_RIGHT_Rotate, MotorType.kBrushed);
     private CANSparkMax left_motor_ext = new CANSparkMax(CAN.CMB_LEFT_Extend, MotorType.kBrushless);
     private CANSparkMax right_motor_ext = new CANSparkMax(CAN.CMB_RIGHT_Extend, MotorType.kBrushless);
+
+    // TODO: consider creating objects here instead of in Climber class constructor method definition
     private ArmExtension left_Arm_ext;
     private ArmExtension right_Arm_ext;
     private ArmRotation left_Arm_rot;
     private ArmRotation right_Arm_rot;
 
 
+    // TODO: Remove
     // rotation arm controller (outer arms rotate)
     // private CANSparkMax l_rotator = new CANSparkMax(CAN.CMB_L_Rotate, MotorType.kBrushless);
     // private CANSparkMax r_rotator = new CANSparkMax(CAN.CMB_R_Rotate, MotorType.kBrushless);
@@ -50,37 +56,29 @@ public class Climber extends SubsystemBase {
     public Climber() {
         table = NetworkTableInstance.getDefault().getTable("Climber");
 
-        // TODO - raise/lower are actions ie commands. In the sub-sys we are defining
-        // devices
-        // and behaviors. Left/Right Inner/Outer arms left-rotator, right-rotator
-        // gives a better idea of what
-
-        // TODO Set the control type and PID settings - most likely position control
-
-        // Copy the PID settings down to the SparkMax hardware 
-        // Rotation PIDS
-        // ClimbSettings.armPID.copyTo(l_rotator.getPIDController(), slot);
-        // ClimbSettings.armPID.copyTo(r_rotator.getPIDController(), slot);
-        // // Arm extension PIDS
+        // TODO: Move to ArmExtension constructor method definition
         right_motor_ext.clearFaults();
         right_motor_ext.restoreFactoryDefaults();
         left_motor_ext.clearFaults();
         left_motor_ext.restoreFactoryDefaults();
         
         
-        
+        // TODO: Move to ArmExtension constructor method. PID setting are the same for L and R
         ClimbSettings.extendPID.copyTo(left_motor_ext.getPIDController(), slot);
         ClimbSettings.extendPID.copyTo(right_motor_ext.getPIDController(), slot);
+        
+        // TODO: Move to constructor method, pass an 'inverted' boolean argument to constructor 
+        //    Could also create the motor objects before passing them the ArmExtension and then call setInverted out here
         right_motor_ext.setInverted(false);
         left_motor_ext.setInverted(true);
        
-
+        // TODO: Move to constructor method
         ClimbSettings.rotatePID.copyTo(left_motor_rot.getPIDController(), slot);
         ClimbSettings.rotatePID.copyTo(right_motor_rot.getPIDController(), slot);
         right_motor_rot.setInverted(true);
 
         // NT stuff
-        
+        // Move to periodic calls within object definitions?
         left_extender_speed = table.getEntry("Left Extender Speed");
         right_extender_speed = table.getEntry("Right Extender Speed");
         
@@ -101,16 +99,21 @@ public class Climber extends SubsystemBase {
         left_rotation_limit = table.getEntry("Left Rotation Limit Enabled");
         right_rotation_limit = table.getEntry("Right Rotation Limit Enabled");
 
+        // TODO: Remove or move to ArmExtension object
+        //   Think this was for debugging so it was either fixed still needed
         arm_extensions_desired_position = table.getEntry("Arm Extensions Desired Position");
 
+        /// TODO Remove, all handled in ArmExtension object
         left_pidController_ext = left_motor_ext.getPIDController();
         right_pidController_ext = right_motor_ext.getPIDController();
         
+
+        // TODO: Remove?
         // left_motor_ext.getEncoder().setPosition(0);
         // right_motor_ext.getEncoder().setPosition(0);
-// //  
-//         left_motor_rot.getEncoder().setPosition(0);
-//         right_motor_rot.getEncoder().setPosition(0);
+
+        // left_motor_rot.getEncoder().setPosition(0);
+        // right_motor_rot.getEncoder().setPosition(0);
 
         // left_Arm = new ArmRotation(table.getSubTable("left_arm_rotation"), left_pidController_rot);
         // right_Arm = new ArmRotation(table.getSubTable("right_arm_rotation"), right_pidController_rot);
@@ -145,11 +148,15 @@ public class Climber extends SubsystemBase {
     // @param inches from extender absolute position
     public void setExtension(double inches) {
 
+        // TODO: Remove?
         arm_extensions_desired_position.setDouble(count);
         
+        // TODO: Switch to ArmExtension object calls
         left_pidController_ext.setReference(count, CANSparkMax.ControlType.kPosition);
         right_pidController_ext.setReference(count, CANSparkMax.ControlType.kPosition);
     }
+
+    // TODO: Remove
     /**
      * Left and Right arms are controlled in pairs
      * L/R Inner arms move together
@@ -163,6 +170,7 @@ public class Climber extends SubsystemBase {
     //     // assumed vertical
     // }
 
+    // TODO: Remove
     /**
      * Left and Right arms are controlled in pairs
      * L/R Outer arms move together
@@ -174,19 +182,23 @@ public class Climber extends SubsystemBase {
     //     // assumed vertical
     // }
 
+    // TODO: This comment isn't accurate
     /**
      * Outer L/R arms rotate together
      * 
      * @param degrees +/- degrees from vertical
      */
     
-
+    // TODO: Switch to something more descriptive, or stop all movement, not just extensions
     public void stop() {
+        // TODO: Switch to ArmExtension method calls, will need a new method in ArmExtension
         left_motor_ext.set(0);
         right_motor_ext.set(0);
     }
 
-    public void setSpeed(double left, double right) {
+    public void setSpeed(double left, double right) 
+    {
+        // TODO: Switch to ArmExtension calls, change method name, create new method in ArmExtension
         left_motor_ext.set(left);
         right_motor_ext.set(right);
     }
@@ -194,6 +206,8 @@ public class Climber extends SubsystemBase {
     
     
     public void periodic() {
+        // TODO: Move all this to the ArmRotation and ArmExtension periodic calls, and call those here
+
         // Sets limit switch enabled
         leftRotationIsPressed = leftRotationLimitSwitch.isPressed();
         rightRotationIsPressed = rightRotationLimitSwitch.isPressed();
@@ -247,22 +261,27 @@ public class Climber extends SubsystemBase {
     }
 
     public RelativeEncoder getLeftExtEncoder() {
+        // TODO: Create method in ArmExtension object to access encoder, call that method here
         return left_motor_ext.getEncoder();
     }
 
     public RelativeEncoder getRightExtEncoder() {
+        // TODO: And here
         return right_motor_ext.getEncoder();
     }
 
     public RelativeEncoder getLeftRotEncoder() {
+        // TODO: and here
         return left_motor_rot.getEncoder();
     }
 
     public RelativeEncoder getRightRotEncoder() {
+        // TODO: and here
         return right_motor_rot.getEncoder();
     }
 
     public void setAmperageLimit(int limit) {
+        // TODO: Create access methods in ArmExtension and ArmRotation objects, call thise methods here
         right_motor_ext.setSmartCurrentLimit((int)extension_amps.getDouble(limit));
         left_motor_ext.setSmartCurrentLimit((int)extension_amps.getDouble(limit));
     }
@@ -277,11 +296,11 @@ public class Climber extends SubsystemBase {
 }
 
 class ArmRotation {
-// motors n stuff
+    // motors n stuff
     private CANSparkMax motor_rot;
     private SparkMaxPIDController pidController_rot;
     private SparkMaxLimitSwitch VerticalLimitSwitch;
-// nts
+    // nts
     private NetworkTable network_table;
     private NetworkTableEntry nte_curr_pos_deg;
     private NetworkTableEntry nte_curr_pos_count;
@@ -290,7 +309,7 @@ class ArmRotation {
     private NetworkTableEntry nte_curr_current_amp;
     private NetworkTableEntry nte_curr_current_limit_amp;
 
-    private final double CONVERSION_FACTOR;
+    private final double CONVERSION_FACTOR; // TODO: Does this need to be set here? Why are we reading the motor conversion factor and not setting it?
 
     public ArmRotation(NetworkTable table, CANSparkMax motor_rot, boolean inverted) {
         
@@ -324,12 +343,13 @@ class ArmRotation {
         nte_curr_pos_deg.setDouble(motor_curr_deg);
         nte_curr_pos_count.setDouble(motor_curr_deg / CONVERSION_FACTOR);
         nte_curr_current_amp.setDouble(motor_rot.getOutputCurrent());
-// current limit n stuff
+        // current limit n stuff
         motor_rot.setSmartCurrentLimit((int) nte_curr_current_limit_amp.getDouble(5));
         
     }
 
     public void set(double degrees) {
+        // TODO: use conversion factor variable?
         double counts = (42*174.9*degrees)/(360*20); //42 and 20 are the tooth pullies, 174.9 is the counts per rot and 360 is the degrees
         // 174.9 counter/rotation on motor
         // Motor is connected to a 20 tooth pulley that drives
