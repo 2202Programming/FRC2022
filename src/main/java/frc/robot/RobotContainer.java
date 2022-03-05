@@ -4,11 +4,14 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+
 // import java.util.List;
 
 
 import frc.robot.Constants.DriverPrefs;
 import frc.robot.commands.MecanumDriveCmd;
+import frc.robot.commands.climber.CalibrateClimber;
 import frc.robot.commands.test.climberTest;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.MecanumDrivetrain;
@@ -52,7 +55,10 @@ public class RobotContainer {
     dashboard = new Dashboard(this);
 
     climber = new Climber();
-    climber.setDefaultCommand(new climberTest(climber));
+    climber.setDefaultCommand(new SequentialCommandGroup(
+      // new CalibrateClimber(climber),
+      new climberTest(climber)
+    ));
 
     setDriverButtons();
     setAssistantButtons();

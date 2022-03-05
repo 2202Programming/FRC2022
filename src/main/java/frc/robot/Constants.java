@@ -134,10 +134,10 @@ public final class Constants {
 
     public static final class ClimbSettings {
         //TODO example pid init, climber may have a few - DPL  1/15/22
-        public static PIDFController rotatePID = new PIDFController(.05, 0, 0, 0);
+        public static PIDFController rotatePID = new PIDFController(1, 0, 0, 0);
         public static PIDFController extendPID = new PIDFController(.05, 0, 0, 0);
 
-        // TODO: Check
+        // TODO: Chec
         // Extension length and rotation needed to hit bars
         public static final double MID_EXTENSION_LENGTH = 60;
         public static final double MID_EXTENSION_ROTATION = 0;
