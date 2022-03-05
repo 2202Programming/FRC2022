@@ -43,21 +43,44 @@ public class Test_Shooter_Subsystem extends SubsystemBase{
         public double velocity; //Cargo's speed ft/sec
         public double rotationsPerSecond; // Cargo Rotation rotation/sec
         public double angle; //angle in which the Cargo leaves
-        public double velocitTolerance; // percent tolerance
+        public double velocityTolerance; // percent tolerance
         
         //Empty Constructor
-        public ShooterSettings(){}
+        public ShooterSettings(){
+            velocity = 0.0;
+            rotationsPerSecond = 0.0;
+            angle = 0.0;
+            velocityTolerance = 0.0;
+        }
 
         //Constructor Passing in all 4 values
-        public ShooterSettings(){}
+        public ShooterSettings(double velocity, double rotationsPerSecond, double angle, double velocityTolerance){
+            this.velocity = velocity;
+            this.rotationsPerSecond = rotationsPerSecond;
+            this.angle = angle;
+            this.velocityTolerance = velocityTolerance;
+        }
 
         //Constructor with only velocity and rps
-        public ShooterSettings(){}
+        public ShooterSettings(double velocity, double rotationsPerSecond){
+            this.velocity = velocity;
+            this.rotationsPerSecond = rotationsPerSecond;
+            angle = 0.0;
+            velocityTolerance = 0.0;
+        }
 
         //Constructor passing in ShooterSettings
-        public ShooterSettings(){}
+        public ShooterSettings(ShooterSettings shooterSetting){
+            this.velocity = shooterSetting.velocity;
+            this.rotationsPerSecond = shooterSetting.rotationsPerSecond;
+            this.angle = shooterSetting.angle;
+            this.velocityTolerance = shooterSetting.velocityTolerance;
+        }
 
         //Maybe a method to make sure 2 Settings are equal
+        public boolean isEqual(ShooterSettings shooterSetting){
+            return true;
+        }
     }
 
     /*
