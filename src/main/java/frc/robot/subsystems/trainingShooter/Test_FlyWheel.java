@@ -1,5 +1,9 @@
 package frc.robot.subsystems.trainingShooter;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
 public class Test_FlyWheel {
     public static class FlyWheelConfig {
         public PIDFController pid;
@@ -28,7 +32,9 @@ public class Test_FlyWheel {
     //TALONSRXCONFIGURATION
     //WPI_TALONSRX
     //FLYWHEELCONFIGURATION
-
+    srxconfig = new TalonSRXConfiguration(); 
+    motor = new WPI_TalonSRX(CAN_ID);
+    motor.setInverted(cfg.inverted);
     // flywheel constants RPM given motor-unit counts (f(gear, meas-period))
      // motor counts are bigger, motor spins faster than FW
   // motor units (counts/100ms) to FW RPM
@@ -40,21 +46,39 @@ public class Test_FlyWheel {
   }
 
   //Write a function to get RPM
-
+  public double getRPM(){
+    return motor.getSelectedSensorVelocity();
+  }
   //Write a function to get motor output as a percent 
+  public double getPercent(){
+    return motor.getMotorOutputPercent();
 
+  }
 
   //write a function to set the RPM
+  public void setRPM(double RPM ){
+    motor.set(ControlMode.velocity,RPM);
 
+  }
   //write a function to motor to percent
-
+  public void setMotorToPercent(double percentage) {
+    motor.set(ControlMode.PercentOutput,percentage);
+  }
   //write a function to set PID
-
+  public void setPID(double KP, double KI, double KD) {
+    cfg.pid.setPID(KP,KI,KD);
+  }
   //write a function to get P
-
+  public double getKP() {
+    return cfg.pid.getP();
+  }
   //write a function to get I
-
+  public double getKI() {
+    return cfg.pid.getI();
+  }
 
   //write a funciton to get D
-
+  public double getKD() {
+    return cfg.pid.getD();
+  }
 }
