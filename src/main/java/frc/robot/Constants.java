@@ -261,7 +261,7 @@ public final class Constants {
       public static final double maxLongRage = 10; //maximum range in long distance shooting mode
       public static final double minLongRange = 1; //minimum range in long distance shooting mode
       public static final double maxShortRange = 2; //maximum range in short distance shooting mode
-
+      public static final double degPerPixel = 59.6 / 320; //limelight conversion
       // Flywheel info
       // Flywheel maxOpenLoopRPM and gear ratio are used to calculate kFF in shooter
       public static FlyWheelConfig upperFWConfig = new FlyWheelConfig();

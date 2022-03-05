@@ -14,6 +14,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveTrain;
+import frc.robot.Constants.Shooter;
 import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.ifx.DriverControls;
@@ -121,7 +122,7 @@ public class HubCentricDrive extends CommandBase {
       // if limelight is available, override rotation input from odometery to limelight
       limelightPid.setSetpoint(velCorrectLimelightSetpoint()); // always go towards the light.
       limelightPidOutput = limelightPid.calculate(limelight.getFilteredX());
-      angleError = Rotation2d.fromDegrees(limelight.getFilteredX()); //approximation of degrees off center
+      angleError = Rotation2d.fromDegrees(limelight.getFilteredX()*Shooter.degPerPixel); //approximation of degrees off center
       // update rotation and calulate new output-states
       rot = llLimiter.calculate(limelightPidOutput);
     }
@@ -135,7 +136,7 @@ public class HubCentricDrive extends CommandBase {
   }
 
   private double velCorrectLimelightSetpoint(){
-    double degPerPixel = 59.6 / 320;
+    //Constant for limelight pixel to angle conversion at Shooter.degPerPixel
     return 0; //do something fancier based on robot motion
   }
 
