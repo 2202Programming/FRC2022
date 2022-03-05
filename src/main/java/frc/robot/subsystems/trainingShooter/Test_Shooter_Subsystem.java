@@ -79,7 +79,11 @@ public class Test_Shooter_Subsystem extends SubsystemBase{
 
         //Maybe a method to make sure 2 Settings are equal
         public boolean isEqual(ShooterSettings shooterSetting){
-            return true;
+            if(this.velocity == shooterSetting.velocity && this.rotationsPerSecond == shooterSetting.rotationsPerSecond && this.angle == shooterSetting.angle && this.velocityTolerance == shooterSetting.velocityTolerance ){
+                return true;   
+            }
+            return false;
+            
         }
     }
 
