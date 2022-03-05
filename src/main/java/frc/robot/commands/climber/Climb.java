@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.climber;
 
 // import org.opencv.highgui.HighGui;
 
@@ -19,8 +19,7 @@ public class Climb extends SequentialCommandGroup {
         super();
         // Use the following subcommands to climb climbMID climbHIGH stabilize
         // TODO: Implement all these commands
-        this.addCommands(new MidClimbDrive(drivetrain),
-                         new MidClimb(climber), 
+        this.addCommands(new MidClimb(climber), 
                          new Stabilize(climber, mid_stabilize_seconds * 1000), //stabilize expects delay in milliseconds
                          new HigherClimb(climber), 
                          new Stabilize(climber, high_stabilize_seconds * 1000), //stabilize expects delay in milliseconds

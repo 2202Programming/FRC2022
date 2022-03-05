@@ -23,112 +23,29 @@ public class Climber extends SubsystemBase {
     int slot = 0;
 
  
-    // TODO: Move to comments to ArmRotation and ArmExtension objects, verify accuracy
-    // Limit switches extension
-    // TODO: Is type kNormallyClosed or kNormallyOpen? Also check for rotation limit swithces
-    // TODO: Implement what happens if limit switch is true
-    /**
-     * Note: there are 3 limit switches --
-     *  1 limit switch to check if extension is at top
-     *  1 limit switch to check if extension is at bottom
-     *  1 limit switch to check if rotation is vertical
-     */
+    
 
-    // TODO: I don't think need these here... Create these objects in the construction call of the ArmExtension/Rotation. Something Like...
-    //       ArmExtension armExtLeft = new ArmExtension(table, new CANSparkMax(CAN.CMD_LEFT_ROTATE, MotorType.kBrushless), ... ) 
+    
     private CANSparkMax left_motor_rot = new CANSparkMax(CAN.CMB_LEFT_Rotate, MotorType.kBrushed);
     private CANSparkMax right_motor_rot = new CANSparkMax(CAN.CMB_RIGHT_Rotate, MotorType.kBrushed);
     private CANSparkMax left_motor_ext = new CANSparkMax(CAN.CMB_LEFT_Extend, MotorType.kBrushless);
     private CANSparkMax right_motor_ext = new CANSparkMax(CAN.CMB_RIGHT_Extend, MotorType.kBrushless);
 
-    // TODO: consider creating objects here instead of in Climber class constructor method definition
+
     private ArmExtension left_Arm_ext;
     private ArmExtension right_Arm_ext;
     private ArmRotation left_Arm_rot;
     private ArmRotation right_Arm_rot;
 
 
-    // TODO: Remove
-    // rotation arm controller (outer arms rotate)
-    // private CANSparkMax l_rotator = new CANSparkMax(CAN.CMB_L_Rotate, MotorType.kBrushless);
-    // private CANSparkMax r_rotator = new CANSparkMax(CAN.CMB_R_Rotate, MotorType.kBrushless);
-
     public Climber() {
         table = NetworkTableInstance.getDefault().getTable("Climber");
 
-        // TODO: Move to ArmExtension constructor method definition
-        right_motor_ext.clearFaults();
-        right_motor_ext.restoreFactoryDefaults();
-        left_motor_ext.clearFaults();
-        left_motor_ext.restoreFactoryDefaults();
-        
-        
-        // TODO: Move to ArmExtension constructor method. PID setting are the same for L and R
-        ClimbSettings.extendPID.copyTo(left_motor_ext.getPIDController(), slot);
-        ClimbSettings.extendPID.copyTo(right_motor_ext.getPIDController(), slot);
-        
-        // TODO: Move to constructor method, pass an 'inverted' boolean argument to constructor 
-        //    Could also create the motor objects before passing them the ArmExtension and then call setInverted out here
-        right_motor_ext.setInverted(false);
-        left_motor_ext.setInverted(true);
-       
-        // TODO: Move to constructor method
-        ClimbSettings.rotatePID.copyTo(left_motor_rot.getPIDController(), slot);
-        ClimbSettings.rotatePID.copyTo(right_motor_rot.getPIDController(), slot);
-        right_motor_rot.setInverted(true);
 
-        // NT stuff
-        // Move to periodic calls within object definitions?
-        left_extender_speed = table.getEntry("Left Extender Speed");
-        right_extender_speed = table.getEntry("Right Extender Speed");
-        
-        left_extender_position = table.getEntry("Left Extender Position");
-        right_extender_position = table.getEntry("Right Extender Position");
-
-        right_extensions_lower_limit = table.getEntry("Right Extensions Lower Limit");
-        left_extensions_lower_limit = table.getEntry("Left Extensions Lower Limit");
-        right_extensions_upper_limit = table.getEntry("Right Extensions Upper Limit");
-        left_extensions_upper_limit = table.getEntry("Left Extensions Upper Limit");
-        
-        left_reverse_open = table.getEntry("Left Reverse Limit Enabled");
-        right_reverse_open = table.getEntry("Right Reverse Limit Enabled");
-        
-        left_forward_open = table.getEntry("Left Forward Limit Enabled");
-        right_forward_open = table.getEntry("Right Forward Limit Enabled");
-        
-        left_rotation_limit = table.getEntry("Left Rotation Limit Enabled");
-        right_rotation_limit = table.getEntry("Right Rotation Limit Enabled");
-
-        // TODO: Remove or move to ArmExtension object
-        //   Think this was for debugging so it was either fixed still needed
-        arm_extensions_desired_position = table.getEntry("Arm Extensions Desired Position");
-
-        /// TODO Remove, all handled in ArmExtension object
-        left_pidController_ext = left_motor_ext.getPIDController();
-        right_pidController_ext = right_motor_ext.getPIDController();
-        
-
-        // TODO: Remove?
-        // left_motor_ext.getEncoder().setPosition(0);
-        // right_motor_ext.getEncoder().setPosition(0);
-
-        // left_motor_rot.getEncoder().setPosition(0);
-        // right_motor_rot.getEncoder().setPosition(0);
-
-        // left_Arm = new ArmRotation(table.getSubTable("left_arm_rotation"), left_pidController_rot);
-        // right_Arm = new ArmRotation(table.getSubTable("right_arm_rotation"), right_pidController_rot);
-        
-        // leftForwardLimitSwitch.enableLimitSwitch(leftForwardLimitSwitch.isPressed());
-        // rightForwardLimitSwitch.enableLimitSwitch(rightForwardLimitSwitch.isPressed());
-
-        // leftReverseLimitSwitch.enableLimitSwitch(leftReverseLimitSwitch.isPressed());
-        // rightReverseLimitSwitch.enableLimitSwitch(rightReverseLimitSwitch.isPressed());
-
-        // leftRotationLimitSwitch.enableLimitSwitch(leftRotationLimitSwitch.isPressed());
-        // rightRotationLimitSwitch.enableLimitSwitch(rightRotationLimitSwitch.isPressed());
-
-        // leftRotationIsPressed = leftRotationLimitSwitch.isPressed();
-        // rightRotationIsPressed = rightRotationLimitSwitch.isPressed();
+        left_Arm_rot = new ArmRotation(table.getSubTable("left_arm_rotation"), left_motor_rot, false);
+        right_Arm_rot = new ArmRotation(table.getSubTable("right_arm_rotation"), right_motor_rot, true);
+        right_Arm_ext = new ArmExtension(table.getSubTable("right_arm_extension"), right_motor_ext, false);
+        left_Arm_ext =new ArmExtension(table.getSubTable("left_arm_extension"), left_motor_ext, true);
 
     }
 
@@ -148,149 +65,58 @@ public class Climber extends SubsystemBase {
     // @param inches from extender absolute position
     public void setExtension(double inches) {
 
-        // TODO: Remove?
-        arm_extensions_desired_position.setDouble(count);
-        
-        // TODO: Switch to ArmExtension object calls
-        left_pidController_ext.setReference(count, CANSparkMax.ControlType.kPosition);
-        right_pidController_ext.setReference(count, CANSparkMax.ControlType.kPosition);
+        left_Arm_ext.set(inches);
+        right_Arm_ext.set(inches);
+
     }
 
-    // TODO: Remove
-    /**
-     * Left and Right arms are controlled in pairs
-     * L/R Inner arms move together
-     * L/R Outer arms move together
-     * 
-     * @param inches from retracted position
-     */
-    // for raising/lower
-    // public void setInnerExtension(double inches) {
-    //     // negative values lower
-    //     // assumed vertical
-    // }
-
-    // TODO: Remove
-    /**
-     * Left and Right arms are controlled in pairs
-     * L/R Outer arms move together
-     * 
-     * @param inches from retracted position
-     */
-    // public void setOuterExtension(double inches) {
-    //     // negative values lower
-    //     // assumed vertical
-    // }
-
-    // TODO: This comment isn't accurate
-    /**
-     * Outer L/R arms rotate together
-     * 
-     * @param degrees +/- degrees from vertical
-     */
-    
-    // TODO: Switch to something more descriptive, or stop all movement, not just extensions
-    public void stop() {
-        // TODO: Switch to ArmExtension method calls, will need a new method in ArmExtension
-        left_motor_ext.set(0);
-        right_motor_ext.set(0);
+    public void setRotation(double rotationDegrees){
+        left_Arm_rot.set(rotationDegrees);
+        right_Arm_rot.set(rotationDegrees);
     }
+
 
     public void setSpeed(double left, double right) 
     {
-        // TODO: Switch to ArmExtension calls, change method name, create new method in ArmExtension
-        left_motor_ext.set(left);
-        right_motor_ext.set(right);
+        //TODO implement arms with speed control
     }
 
     
     
     public void periodic() {
-        // TODO: Move all this to the ArmRotation and ArmExtension periodic calls, and call those here
-
-        // Sets limit switch enabled
-        leftRotationIsPressed = leftRotationLimitSwitch.isPressed();
-        rightRotationIsPressed = rightRotationLimitSwitch.isPressed();
-        
-        leftForwardLimitSwitchIsPressed = rightRotationLimitSwitch.isPressed();
-        rightForwardLimitSwitchIsPressed = rightRotationLimitSwitch.isPressed();
-        
-        leftReverseIsPressed = leftReverseLimitSwitch.isPressed();
-        rightReverseIsPressed = rightReverseLimitSwitch.isPressed();
-        
-        leftRotationLimitSwitch.enableLimitSwitch(leftRotationIsPressed);
-        rightRotationLimitSwitch.enableLimitSwitch(rightRotationIsPressed);
-        
-        leftForwardLimitSwitch.enableLimitSwitch(leftForwardLimitSwitchIsPressed);
-        rightForwardLimitSwitch.enableLimitSwitch(rightForwardLimitSwitchIsPressed);
-        
-        leftReverseLimitSwitch.enableLimitSwitch(leftReverseIsPressed);
-        rightReverseLimitSwitch.enableLimitSwitch(rightReverseIsPressed);
-
-
-        // NT updates
-        left_extender_speed.setDouble(left_motor_ext.getEncoder().getVelocity());
-        right_extender_speed.setDouble(right_motor_ext.getEncoder().getVelocity());
-        
-        left_extender_position.setDouble(left_motor_ext.getEncoder().getPosition());
-        right_extender_position.setDouble(right_motor_ext.getEncoder().getPosition());
-        
-        left_reverse_open.setBoolean(leftReverseLimitSwitch.isPressed());
-        right_reverse_open.setBoolean(rightReverseLimitSwitch.isPressed());
-        
-        left_forward_open.setBoolean(leftForwardLimitSwitch.isPressed());
-        right_forward_open.setBoolean(rightForwardLimitSwitch.isPressed());
-        
-        left_rotation_limit.setBoolean(leftRotationIsPressed);
-        right_rotation_limit.setBoolean(rightRotationIsPressed);
-
-        left_extensions_upper_limit.setBoolean(left_motor_ext.getForwardLimitSwitch(Type.kNormallyClosed).isPressed());
-        right_extensions_upper_limit.setBoolean(right_motor_ext.getForwardLimitSwitch(Type.kNormallyClosed).isPressed());
-
-        left_extensions_lower_limit.setBoolean(left_motor_ext.getReverseLimitSwitch(Type.kNormallyClosed).isPressed());
-        right_extensions_lower_limit.setBoolean(right_motor_ext.getReverseLimitSwitch(Type.kNormallyClosed).isPressed());
-
-        var newamps = (int)extension_amps.getDouble(1);
-        if(currentAmps != newamps){ 
-            currentAmps = newamps;
-            left_motor_ext.setSmartCurrentLimit(newamps);
-            right_motor_ext.setSmartCurrentLimit(newamps);
-        }
-        // left_Arm.periodic();
-        // right_Arm.periodic();
+        left_Arm_ext.periodic();
+        right_Arm_ext.periodic();
+        left_Arm_rot.periodic();
+        right_Arm_rot.periodic();
     }
 
-    public RelativeEncoder getLeftExtEncoder() {
-        // TODO: Create method in ArmExtension object to access encoder, call that method here
-        return left_motor_ext.getEncoder();
+    public double getLeftExtInches(){
+        return left_Arm_ext.getInches();
     }
 
-    public RelativeEncoder getRightExtEncoder() {
-        // TODO: And here
-        return right_motor_ext.getEncoder();
+    public double getRightExtInches(){
+        return right_Arm_ext.getInches();
     }
 
-    public RelativeEncoder getLeftRotEncoder() {
-        // TODO: and here
-        return left_motor_rot.getEncoder();
+    public double getLeftRotation(){
+        return left_Arm_rot.getRotationDegrees();
     }
 
-    public RelativeEncoder getRightRotEncoder() {
-        // TODO: and here
-        return right_motor_rot.getEncoder();
+    public double getRightRotation(){
+        return right_Arm_rot.getRotationDegrees();
     }
 
     public void setAmperageLimit(int limit) {
         // TODO: Create access methods in ArmExtension and ArmRotation objects, call thise methods here
-        right_motor_ext.setSmartCurrentLimit((int)extension_amps.getDouble(limit));
-        left_motor_ext.setSmartCurrentLimit((int)extension_amps.getDouble(limit));
+        right_motor_ext.setSmartCurrentLimit(limit);
+        left_motor_ext.setSmartCurrentLimit(limit);
     }
 
     public boolean checkIsFinished(double ext_pos, double rot_pos) {
-        return(Math.abs(this.getLeftExtEncoder().getPosition() - ext_pos) <= Constants.ClimbSettings.TOLERANCE_LENGTH 
-               && (Math.abs(this.getRightExtEncoder().getPosition() - ext_pos) <= Constants.ClimbSettings.TOLERANCE_LENGTH)
-               && (Math.abs(this.getLeftRotEncoder().getPosition() - rot_pos) <= Constants.ClimbSettings.TOLERANCE_ROTATION)
-               && (Math.abs(this.getRightRotEncoder().getPosition() - rot_pos) <= Constants.ClimbSettings.TOLERANCE_ROTATION)
+        return(Math.abs(this.getLeftExtInches() - ext_pos) <= Constants.ClimbSettings.TOLERANCE_LENGTH 
+               && (Math.abs(this.getRightExtInches() - ext_pos) <= Constants.ClimbSettings.TOLERANCE_LENGTH)
+               && (Math.abs(this.getLeftRotation() - rot_pos) <= Constants.ClimbSettings.TOLERANCE_ROTATION)
+               && (Math.abs(this.getRightRotation() - rot_pos) <= Constants.ClimbSettings.TOLERANCE_ROTATION)
         );
     }
 }
@@ -337,6 +163,7 @@ class ArmRotation {
         nte_curr_current_limit_amp.setDouble(0);
 
         CONVERSION_FACTOR = motor_rot.getEncoder().getPositionConversionFactor();
+        ClimbSettings.rotatePID.copyTo(motor_rot.getPIDController(), 0);
     }
     public void periodic() {
         double motor_curr_deg = motor_rot.getEncoder().getPosition();
@@ -348,22 +175,36 @@ class ArmRotation {
         
     }
 
-    public void set(double degrees) {
-        // TODO: use conversion factor variable?
-        double counts = (42*174.9*degrees)/(360*20); //42 and 20 are the tooth pullies, 174.9 is the counts per rot and 360 is the degrees
+    public double DegreesToEncoderCounts(double degrees){
+        return (42*174.9*degrees)/(360*20);
+         //42 and 20 are the tooth pullies, 174.9 is the counts per rot and 360 is the degrees
         // 174.9 counter/rotation on motor
         // Motor is connected to a 20 tooth pulley that drives
         //    a 42 tooth pulley
         // changes the angle of the ? by this many degrees
-        // l_rotator.getPIDController().setReference(degrees, ControlType.kPosition);
-        // r_rotator.getPIDController().setReference(degrees, ControlType.kPosition);
-        // left_Arm.set((float)counts);
-        // right_Arm.set((float)counts);
+    }
+
+    public double encoderCountsToDegrees(double counts){
+        return (counts*(360*20))/(42*174.9);
+    }
+
+    public void set(double degrees) {
+        // TODO: use conversion factor variable?
+        double counts = DegreesToEncoderCounts(degrees);
         pidController_rot.setReference(counts, CANSparkMax.ControlType.kPosition);
         nte_des_pos_deg.setDouble(degrees);
         nte_des_pos_count.setDouble(counts);
     }
+    public double getRotationDegrees(){
+        return encoderCountsToDegrees(motor_rot.getEncoder().getPosition());
+    }
 }
+ /**
+     * Note: there are 3 limit switches --
+     *  1 limit switch to check if extension is at top
+     *  1 limit switch to check if extension is at bottom
+     *  1 limit switch to check if rotation is vertical
+     */
 
 class ArmExtension {
     private NetworkTable network_table;
@@ -386,6 +227,8 @@ class ArmExtension {
 
     public ArmExtension(NetworkTable table, CANSparkMax motor_ext, boolean inverted){
         this.motor_ext = motor_ext;
+        this.motor_ext.clearFaults();
+        this.motor_ext.restoreFactoryDefaults();
         this.motor_ext.setInverted(inverted);
 
         ForwardLimitSwitch = motor_ext.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyClosed);
@@ -405,6 +248,7 @@ class ArmExtension {
         nte_motor_amp_limit.setDouble(0);
         nte_amps_now = this.network_table.getEntry("Amps Now");
         nte_amps_now.setDouble(0);
+        ClimbSettings.extendPID.copyTo(motor_ext.getPIDController(), 0);
     }
 
     public void periodic(){
@@ -419,5 +263,9 @@ class ArmExtension {
         //motor_ext.getPIDController().setReference(count, CANSparkMax.ControlType.kPosition);
         nte_des_pos_in.setDouble(inches);
         nte_des_pos_count.setDouble(count);
+    }
+
+    public double getInches(){
+        return this.motor_ext.getEncoder().getPosition()*conversion_factor;
     }
 }

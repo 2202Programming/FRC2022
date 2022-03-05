@@ -50,7 +50,7 @@ public class climberTest extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        climber.stop();
+        //climber.stop();
     }
     
 }

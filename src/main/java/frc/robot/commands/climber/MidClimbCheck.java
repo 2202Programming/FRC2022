@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.climber;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -26,10 +26,6 @@ public class MidClimbCheck extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return ((Math.abs(climber.getLeftExtEncoder().getPosition()) <= Constants.ClimbSettings.TOLERANCE_LENGTH)
-               && (Math.abs(climber.getRightExtEncoder().getPosition()) <= Constants.ClimbSettings.TOLERANCE_LENGTH)
-               && (Math.abs(climber.getLeftRotEncoder().getPosition()) <= Constants.ClimbSettings.TOLERANCE_ROTATION)
-               && (Math.abs(climber.getRightRotEncoder().getPosition()) <= Constants.ClimbSettings.TOLERANCE_ROTATION)
-        );
+        return climber.checkIsFinished(0, 0);
     }
 }

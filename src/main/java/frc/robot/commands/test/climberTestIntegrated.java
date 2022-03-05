@@ -4,10 +4,10 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.commands.HigherClimbExtend;
-import frc.robot.commands.HigherClimbRetract;
-import frc.robot.commands.MidClimbExtend;
-import frc.robot.commands.MidClimbRetract;
+import frc.robot.commands.climber.HigherClimbExtend;
+import frc.robot.commands.climber.HigherClimbRetract;
+import frc.robot.commands.climber.MidClimbExtend;
+import frc.robot.commands.climber.MidClimbRetract;
 import frc.robot.subsystems.Climber;
 
 public class climberTestIntegrated extends CommandBase {
@@ -54,7 +54,7 @@ public class climberTestIntegrated extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        climber.stop();
+        //climber.stop();
     }
 
 }
