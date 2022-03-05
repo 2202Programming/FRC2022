@@ -86,6 +86,8 @@ public class HubCentricDrive extends CommandBase {
     hubCentricTarget = table.getEntry("/hubCentricTarget");
     NTangleError = table.getEntry("/angleError");
 
+    calculate();
+
   }
 
   @Override

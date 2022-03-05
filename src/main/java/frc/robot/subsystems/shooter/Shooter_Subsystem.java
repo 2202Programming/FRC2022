@@ -59,6 +59,7 @@ public class Shooter_Subsystem extends SubsystemBase  {
   private NetworkTableEntry nt_lowerRPM;
   private NetworkTableEntry nt_upperRPMErr;
   private NetworkTableEntry nt_lowerRPMErr;
+  private NetworkTableEntry nt_setpoint;
   
   // Flywheels 
   final FlyWheel  upper_shooter; 
@@ -130,6 +131,7 @@ public class Shooter_Subsystem extends SubsystemBase  {
     nt_lowerRPM = table.getEntry("LowerRPM/value");
     nt_upperRPMErr = table.getEntry("UpperRPM/err");
     nt_lowerRPMErr = table.getEntry("LowerRPM/err");
+    nt_setpoint = table.getEntry("Setpoint");
     
     // build out matrix to calculate FW RPM from [omega , Vel] for power cell
     VelToRPM.set(0, 0, Shooter.PCEffectiveRadius / Shooter.lowerFWConfig.flywheelRadius);
@@ -189,6 +191,7 @@ public class Shooter_Subsystem extends SubsystemBase  {
     // default setting will shoot from any angle
     s = (s == null) ? Shooter.DefaultSettings : s;
     m_setpoint = s;
+    nt_setpoint.setDouble(m_setpoint.vel);
   }
   
   public ShooterSettings getShooterSettings() { 

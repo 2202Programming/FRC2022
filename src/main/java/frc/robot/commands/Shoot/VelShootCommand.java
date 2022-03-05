@@ -12,7 +12,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.subsystems.shooter.Shooter_Subsystem;
 import frc.robot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
 import frc.robot.util.PoseMath;
-
+import static frc.robot.Constants.FTperM;
 
 
 public class VelShootCommand extends CommandBase{ 
@@ -27,12 +27,15 @@ public class VelShootCommand extends CommandBase{
 
     int ballCount = 999;
     int backupCounter = 0;
+    double currentDistance = 0;
 
     NetworkTable table;
     NetworkTableEntry ntUpperRPM;   //FW speeds (output)
     NetworkTableEntry ntLowerRPM;
     NetworkTableEntry ntBallVel;    // ball physics (input) 
     NetworkTableEntry shooterState;
+    NetworkTableEntry distance;
+    public final String NT_Name = "VelShoot"; // expose data under Drive Controller table
 
     ShooterSettings specialSettings;
     
@@ -76,14 +79,15 @@ public class VelShootCommand extends CommandBase{
         specialSettings = shooterSettings;
         BackupPeriod = backupFrameCount;  //number of frames to move mag back slowly 5-20
         addRequirements(magazine,shooter);
+
+        table = NetworkTableInstance.getDefault().getTable(NT_Name);
+        ntBallVel = table.getEntry("/BallVel");
+        shooterState = table.getEntry("/ShooterState");
+        distance = table.getEntry("/Distance");
     }
 
     @Override
     public void initialize(){
-        table = NetworkTableInstance.getDefault().getTable("ShootCommand");
-        ntBallVel = table.getEntry("BallVel");
-        shooterState = table.getEntry("ShooterState");
-
         cmdSS = specialSettings; //defaultShooterSettings SUS 
         prevSS = new ShooterSettings(cmdSS);
         stage = Stage.DoNothing;
@@ -96,7 +100,7 @@ public class VelShootCommand extends CommandBase{
         NTupdates();
         calculateVelocity();
         if(calculatedVel != cmdSS.vel){
-            cmdSS = new ShooterSettings(calculatedVel, cmdSS.rps, cmdSS.angle, cmdSS.velTol);
+            cmdSS = new ShooterSettings(calculatedVel, 0);
             shooter.spinup(cmdSS);
         }
 
@@ -124,10 +128,10 @@ public class VelShootCommand extends CommandBase{
             break;
 
             case WaitingForSolution:
-                if(solution){
+                // if(solution){
                     stage = Stage.Shooting;
                     magazine.driveWheelOn(1.0);
-                }
+               // }
                 break;
 
             case Shooting:
@@ -158,13 +162,14 @@ public class VelShootCommand extends CommandBase{
     }
 
     private void calculateVelocity(){
-        double currentDistance = PoseMath.poseDistance(RobotContainer.RC().drivetrain.getPose(), Autonomous.hubPose);
-        calculatedVel = 10.545 * Math.pow(Math.E, 0.446*currentDistance); //distnce vs. velocity trendline is y = 10.545e0.0446x
+        currentDistance = PoseMath.poseDistance(RobotContainer.RC().drivetrain.getPose(), Autonomous.hubPose);
+        calculatedVel = 11.866 * Math.pow(Math.E, 0.1464*currentDistance); //distnce vs. velocity trendline is y = 10.545e0.0446x
     }
 
     private void NTupdates(){
         ntBallVel.setDouble(calculatedVel);
         shooterState.setString(stage.toString());
+        distance.setDouble(currentDistance);
     }
 
     public boolean getSolution() {

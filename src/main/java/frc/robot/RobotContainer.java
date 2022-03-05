@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.DriverPrefs;
@@ -15,6 +17,7 @@ import frc.robot.commands.MagazineCommand;
 import frc.robot.commands.MagazineCommand.MagazineMode;
 import frc.robot.commands.MovePositioner.PositionerMode;
 import frc.robot.commands.MovePositioner;
+import frc.robot.commands.ResetPosition;
 import frc.robot.commands.Shoot.BasicShootCommand;
 import frc.robot.commands.auto.auto_cmd_group2;
 import frc.robot.commands.auto.auto_pathPlanner_cmd;
@@ -30,6 +33,7 @@ import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.hid.HID_Xbox_Subsystem;
 import frc.robot.subsystems.hid.XboxAxis;
 import frc.robot.subsystems.hid.XboxButton;
+import frc.robot.subsystems.hid.SideboardController.SBButton;
 import frc.robot.subsystems.ifx.DriverControls.Id;
 import frc.robot.subsystems.shooter.Shooter_Subsystem;
 import frc.robot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
@@ -125,7 +129,7 @@ public class RobotContainer {
     if (Constants.HAS_DRIVETRAIN) {
       driverControls.bind(Id.Driver, XboxButton.X)
           //.whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
-          .whenPressed(new auto_pathPlanner_cmd(drivetrain, "Straight5"));
+          .whenPressed(new auto_pathPlanner_cmd(drivetrain, "AutoPath4"));
       driverControls.bind(Id.Driver, XboxButton.LB)
            //.whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
            .whenPressed(new auto_pathPlanner_cmd(drivetrain, "Straight1"));
@@ -154,6 +158,8 @@ public class RobotContainer {
     // B  - spin intake while held (to intake the ball)
     // A  - spin intake while held (in reverse to expell the ball)
     // RT - spin shooter and index while held
+    driverControls.bind(Id.SwitchBoard, SBButton.Sw13).whenActive(new ResetPosition(Constants.Autonomous.startPose3, drivetrain, "None"));
+
     if(Constants.HAS_INTAKE) {
       driverControls.bind(Id.Assistant, XboxButton.LB).whenPressed(new MoveIntake(DeployMode.Toggle));
       // IntakeCommand takes a DoubleSupplier f() which could be tied to our UX instead of const f() given here.
@@ -170,6 +176,8 @@ public class RobotContainer {
       driverControls.bind(Id.Assistant, XboxButton.X).whileHeld(new MagazineCommand((()-> 1.0), MagazineMode.LoadCargo) );
       driverControls.bind(Id.Assistant, XboxButton.Y).whileHeld(new MagazineCommand((()-> 1.0), MagazineMode.ExpellCargo) );
     }
+
+    
 
     if(Constants.HAS_SHOOTER){
       driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_RIGHT).whileHeld(new BasicShootCommand(new ShooterSettings(20, 0.0), 20 ));
