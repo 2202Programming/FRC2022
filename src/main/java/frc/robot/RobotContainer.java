@@ -159,7 +159,7 @@ public class RobotContainer {
     // B  - spin intake while held (to intake the ball)
     // A  - spin intake while held (in reverse to expell the ball)
     // RT - spin shooter and index while held
-    driverControls.bind(Id.SwitchBoard, SBButton.Sw13).whenActive(new ResetPosition(Autonomous.startPose3, drivetrain));
+    driverControls.bind(Id.SwitchBoard, SBButton.Sw13).whenActive(new ResetPosition(Autonomous.startPose3));
 
     if(Constants.HAS_INTAKE) {
       driverControls.bind(Id.Assistant, XboxButton.LB).whenPressed(new MoveIntake(DeployMode.Toggle));
@@ -184,8 +184,13 @@ public class RobotContainer {
       driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_RIGHT).whileHeld(new BasicShootCommand(new ShooterSettings(20, 0.0), 20 ));
     }  
        // Y - reset Pose
-       if (Constants.HAS_DRIVETRAIN) driverControls.bind(Id.Assistant, XboxButton.Y).whenPressed(new InstantCommand(drivetrain::resetPose));
-
+       if (Constants.HAS_DRIVETRAIN) {
+          //driverControls.bind(Id.Assistant, XboxButton.Y).whenPressed(new InstantCommand(drivetrain::resetPose));
+          driverControls.bind(Id.Assistant, XboxButton.Y).whenPressed(new InstantCommand( ()-> 
+          {
+            drivetrain.setPose(Autonomous.startPose3);
+          }));
+        }
   }
 
   public Command getAutonomousCommand() {

@@ -168,12 +168,10 @@ public class DriveController extends CommandBase {
   }
 
   public void turnOnShootingMode(){
-    System.out.println("***SHOOTING MODE REQUESTED***");
     shootingRequested = true;
   }
 
   public void turnOffShootingMode(){
-    System.out.println("***SHOOTING MODE DISABLED***");
     shootingRequested = false;
   }
 

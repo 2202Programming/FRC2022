@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.SwerveDrivetrain;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
@@ -15,10 +16,10 @@ public class ResetPosition extends InstantCommand {
   private Pose2d newPose;
   private SwerveDrivetrain m_drivetrain;
   
-  public ResetPosition(Pose2d newPose, SwerveDrivetrain m_drivetrain) {
+  public ResetPosition(Pose2d newPose) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.newPose = newPose;
-    this.m_drivetrain = m_drivetrain;
+    this.m_drivetrain = RobotContainer.RC().drivetrain;
   }
 
   // Called when the command is initially scheduled.
