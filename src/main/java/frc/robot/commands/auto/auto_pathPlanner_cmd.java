@@ -33,7 +33,7 @@ public class auto_pathPlanner_cmd extends CommandBase {
         // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(drive);
 
-    path = PathPlanner.loadPath(pathname, 3, 3); //last two parameters are max velocity and max accelleration
+    path = PathPlanner.loadPath(pathname, 1, 1); //last two parameters are max velocity and max accelleration
   }
 
   // Called when the command is initially scheduled.
