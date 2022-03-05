@@ -70,7 +70,7 @@ public final class Constants {
         public static final int SHOOTER_LOWER_TALON = 11;
 
         //Intake CAN
-        public static final int INTAKE_TALON = 14;
+        public static final int INTAKE_MTR = 14;
 
         // Magazine motors
         public static final int MAG_TOP_WHEEL = 16;

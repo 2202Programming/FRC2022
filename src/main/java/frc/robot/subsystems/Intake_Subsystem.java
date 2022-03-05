@@ -3,9 +3,6 @@ package frc.robot.subsystems;
 import static frc.robot.Constants.CAN;
 import static frc.robot.Constants.PCM1;
 
-import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-
 import static frc.robot.Constants.DigitalIO;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -31,7 +28,7 @@ public class Intake_Subsystem extends SubsystemBase {
     int slot = 0;
 
     //Instantiations
-    final TalonSRX intake_mtr = new TalonSRX(CAN.INTAKE_TALON);
+    final CANSparkMax intake_mtr = new CANSparkMax(CAN.INTAKE_MTR, CANSparkMax.MotorType.kBrushless);
     final DoubleSolenoid intake_solenoid = new DoubleSolenoid(CAN.PCM1,
                 PneumaticsModuleType.REVPH, 
                 PCM1.INTAKE_UP_SOLENOID_PCM, 
@@ -58,7 +55,7 @@ public class Intake_Subsystem extends SubsystemBase {
 
     //Turn Intake Motor On by sending a double value
     public void on(double intakeMotorStrength, double sideMotorStrength) {
-        intake_mtr.set(TalonSRXControlMode.PercentOutput, intakeMotorStrength);
+        intake_mtr.set(intakeMotorStrength);
         r_side_mtr.set(sideMotorStrength);
         l_side_mtr.set(sideMotorStrength);
     }
@@ -66,14 +63,14 @@ public class Intake_Subsystem extends SubsystemBase {
     public void defaultOn(){
         double intakeMotorStrength = 0.47;
         double sideMotorStrength = 0.2;
-        intake_mtr.set(TalonSRXControlMode.PercentOutput, intakeMotorStrength);
+        intake_mtr.set(intakeMotorStrength);
         r_side_mtr.set(sideMotorStrength);
         l_side_mtr.set(sideMotorStrength);
     }
 
     //Turn Intake Motor Off by setting a double value
     public void off() {
-        intake_mtr.set(TalonSRXControlMode.PercentOutput, 0.0);
+        intake_mtr.set(0.0);
         r_side_mtr.set(0);
         l_side_mtr.set(0);
     }
