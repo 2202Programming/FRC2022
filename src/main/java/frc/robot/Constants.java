@@ -257,6 +257,7 @@ public final class Constants {
        */
       public static final double kRPM2Counts = 4096.0/600.0; // MU-100 (no gearing)
       public static final double kMaxMO = 1023;  // max Motor output
+      public static final double kMaxFPS = 28; //max FPS
 
       // Flywheel info
       // Flywheel maxOpenLoopRPM and gear ratio are used to calculate kFF in shooter

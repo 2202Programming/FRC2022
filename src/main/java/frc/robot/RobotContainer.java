@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.Constants.Autonomous;
 import frc.robot.Constants.DriverPrefs;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.IntakeCommand.IntakeMode;
@@ -158,7 +159,7 @@ public class RobotContainer {
     // B  - spin intake while held (to intake the ball)
     // A  - spin intake while held (in reverse to expell the ball)
     // RT - spin shooter and index while held
-    driverControls.bind(Id.SwitchBoard, SBButton.Sw13).whenActive(new ResetPosition(Constants.Autonomous.startPose3, drivetrain, "None"));
+    driverControls.bind(Id.SwitchBoard, SBButton.Sw13).whenActive(new ResetPosition(Autonomous.startPose3, drivetrain));
 
     if(Constants.HAS_INTAKE) {
       driverControls.bind(Id.Assistant, XboxButton.LB).whenPressed(new MoveIntake(DeployMode.Toggle));
