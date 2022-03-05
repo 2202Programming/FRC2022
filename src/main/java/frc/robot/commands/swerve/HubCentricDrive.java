@@ -19,7 +19,6 @@ import frc.robot.Constants.Shooter;
 import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.ifx.DriverControls;
-import frc.robot.util.PoseMath;
 
 /* Current driving behavior:
   Starts in field centric
@@ -63,12 +62,14 @@ public class HubCentricDrive extends CommandBase {
   NetworkTable table;
   private NetworkTableEntry hubCentricTarget;
   private NetworkTableEntry NTangleError;
+  private NetworkTableEntry NTvelocityCorrectionAngle;
   public final String NT_Name = "DC"; // expose data under Drive Controller table
 
   double log_counter = 0;
   Rotation2d currentAngle;
   Rotation2d angleError;
   Rotation2d targetAngle;
+  Rotation2d velocityCorrectionAngle;
 
   public HubCentricDrive(SwerveDrivetrain drivetrain, DriverControls dc, Limelight_Subsystem limelight) {
     this.drivetrain = drivetrain;
@@ -84,6 +85,7 @@ public class HubCentricDrive extends CommandBase {
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
     hubCentricTarget = table.getEntry("/hubCentricTarget");
     NTangleError = table.getEntry("/angleError");
+    NTvelocityCorrectionAngle = table.getEntry("/VelCorrectionAngle");
 
     calculate();
 
@@ -113,12 +115,14 @@ public class HubCentricDrive extends CommandBase {
     currentAngle = drivetrain.getPose().getRotation(); // from -pi to pi
     angleError = targetAngle;
     angleError.minus(currentAngle);
-    anglePid.setSetpoint(velCorrectOdometerSetpoint()); //PID was tuned in degrees already
+    velocityCorrectionAngle = velCorrectOdometerAngle();
+    targetAngle.minus(velocityCorrectionAngle); //might need to be plus, depending on direction of travel??
+    anglePid.setSetpoint(targetAngle.getDegrees()); //PID was tuned in degrees already
     rot = anglePid.calculate(currentAngle.getDegrees());
 
     if (limelight.getTarget() && limelight.getLEDStatus()) {
       // if limelight is available, override rotation input from odometery to limelight
-      limelightPid.setSetpoint(velCorrectLimelightSetpoint()); // always go towards the light.
+      limelightPid.setSetpoint(velocityCorrectionAngle.getDegrees()*Shooter.degPerPixel); // 0 is towards target, adjust based on velocity
       limelightPidOutput = limelightPid.calculate(limelight.getFilteredX());
       angleError = Rotation2d.fromDegrees(limelight.getFilteredX()*Shooter.degPerPixel); //approximation of degrees off center
       // update rotation and calulate new output-states
@@ -129,18 +133,13 @@ public class HubCentricDrive extends CommandBase {
         .toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, currentAngle));
   }
 
-  private double velCorrectOdometerSetpoint(){
+  //return Rot2d of correction to original target angle based on velocity and hangtime
+  private Rotation2d velCorrectOdometerAngle(){
     //distance to target is PoseMath.poseDistance(RobotContainer.RC().drivetrain.getPose(), Autonomous.hubPose);
     //drivetrain has getBearing and getVelocity methods
     //local method getHeading2Target(drivetrain.getPose(), Autonomous.hubPose);
     //estimate hangtime a 1.5s for now, later will look up based on distance
-    return targetAngle.getDegrees(); //do something fancier based on robot motion
-  }
-
-  private double velCorrectLimelightSetpoint(){
-    //Constant for limelight pixel to angle conversion at Shooter.degPerPixel
-    //probably can just take difference between heading2target and the angle corrected by velCorrectOdometerSetpoint and multiple by conversion constant.
-    return 0; //do something fancier based on robot motion
+    return new Rotation2d(0); //do something fancier based on robot motion
   }
 
   @Override
@@ -168,6 +167,7 @@ public class HubCentricDrive extends CommandBase {
     // update network tables
     hubCentricTarget.setDouble(targetAngle.getDegrees());
     NTangleError.setDouble(angleError.getDegrees());
+    NTvelocityCorrectionAngle.setDouble(velocityCorrectionAngle.getDegrees());
     }
   }
 
