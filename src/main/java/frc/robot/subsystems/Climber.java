@@ -21,7 +21,7 @@ public class Climber extends SubsystemBase {
     private NetworkTable table;
     // PIDSlot used
     int slot = 0;
-
+    
  
     
 
@@ -64,9 +64,10 @@ public class Climber extends SubsystemBase {
     }
     // @param inches from extender absolute position
     public void setExtension(double inches) {
-
+        
         left_Arm_ext.set(inches);
         right_Arm_ext.set(inches);
+
 
     }
 
@@ -75,7 +76,7 @@ public class Climber extends SubsystemBase {
         right_Arm_rot.set(rotationDegrees);
     }
 
-
+    
     public void setSpeed(double left, double right) 
     {
         //TODO implement arms with speed control
@@ -84,6 +85,7 @@ public class Climber extends SubsystemBase {
     
     
     public void periodic() {
+        
         left_Arm_ext.periodic();
         right_Arm_ext.periodic();
         left_Arm_rot.periodic();
@@ -224,6 +226,7 @@ class ArmExtension {
         // //   Connected to a 36:1 gearbox that could change
         // //   Gearbox connected to a 24 tooth pulley that is connected to a linear belt
         // //   Need to ask mechs to do analysis to convert 24 tooth pulley to linear distance;
+    private boolean calibrate = true;
 
     public ArmExtension(NetworkTable table, CANSparkMax motor_ext, boolean inverted){
         this.motor_ext = motor_ext;
@@ -252,17 +255,34 @@ class ArmExtension {
     }
 
     public void periodic(){
+        if (calibrate){
+            if(isLowerLimitHit()){
+                setPercentOutput(0);
+                calibrate = false;
+            } else {
+                setPercentOutput(-.1);
+            }
+        }
         nte_curr_pos_in.setDouble(motor_ext.getEncoder().getPosition()/conversion_factor);
         nte_curr_pos_count.setDouble(motor_ext.getEncoder().getPosition());
         motor_ext.setSmartCurrentLimit((int) nte_motor_amp_limit.getDouble(5));
         nte_amps_now.getDouble(motor_ext.getOutputCurrent());
     }
     public void set(double inches) {
+        if (calibrate) return;
         double count = inches*conversion_factor;
         pidController_ext.setReference(count, CANSparkMax.ControlType.kPosition);
         //motor_ext.getPIDController().setReference(count, CANSparkMax.ControlType.kPosition);
         nte_des_pos_in.setDouble(inches);
         nte_des_pos_count.setDouble(count);
+    }
+
+    public void setPercentOutput(double percentOutput){
+        motor_ext.set(percentOutput);
+    }
+
+    public boolean isLowerLimitHit(){
+        return ReverseLimitSwitch.isPressed();
     }
 
     public double getInches(){
