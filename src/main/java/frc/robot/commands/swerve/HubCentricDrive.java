@@ -13,6 +13,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
+import frc.robot.Constants.Autonomous;
 import frc.robot.Constants.DriveTrain;
 import frc.robot.Constants.Shooter;
 import frc.robot.subsystems.Limelight_Subsystem;
@@ -53,10 +54,6 @@ public class HubCentricDrive extends CommandBase {
   double limelight_kD = 0.0;
   double limelightPidOutput = 0.0;
   
-  private Pose2d centerField = new Pose2d(27, 13.5, new Rotation2d()); //actual
-  // hub location?
-  //private Pose2d centerField = new Pose2d(10, 0, new Rotation2d()); // close point for testing to max rotation obvious
-
   // Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
   final SlewRateLimiter xspeedLimiter = new SlewRateLimiter(3);
   final SlewRateLimiter yspeedLimiter = new SlewRateLimiter(3);
@@ -111,7 +108,7 @@ public class HubCentricDrive extends CommandBase {
 
     // set goal of angle PID to be heading (in rad) from current position to
     // centerfield
-    targetAngle = getHeading2Target(drivetrain.getPose(), centerField);
+    targetAngle = getHeading2Target(drivetrain.getPose(), Autonomous.hubPose);
     targetAngle.plus(new Rotation2d(Math.PI)); // flip since shooter is on "back" of robot, bound to -pi to +pi
     currentAngle = drivetrain.getPose().getRotation(); // from -pi to pi
     angleError = targetAngle;
@@ -135,12 +132,14 @@ public class HubCentricDrive extends CommandBase {
   private double velCorrectOdometerSetpoint(){
     //distance to target is PoseMath.poseDistance(RobotContainer.RC().drivetrain.getPose(), Autonomous.hubPose);
     //drivetrain has getBearing and getVelocity methods
-    //local method getHeading2Target(drivetrain.getPose(), centerField);
+    //local method getHeading2Target(drivetrain.getPose(), Autonomous.hubPose);
+    //estimate hangtime a 1.5s for now, later will look up based on distance
     return targetAngle.getDegrees(); //do something fancier based on robot motion
   }
 
   private double velCorrectLimelightSetpoint(){
     //Constant for limelight pixel to angle conversion at Shooter.degPerPixel
+    //probably can just take difference between heading2target and the angle corrected by velCorrectOdometerSetpoint and multiple by conversion constant.
     return 0; //do something fancier based on robot motion
   }
 
