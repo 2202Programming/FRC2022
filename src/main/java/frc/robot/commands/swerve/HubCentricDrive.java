@@ -132,6 +132,7 @@ public class HubCentricDrive extends CommandBase {
   }
 
   private double velCorrectOdometerSetpoint(){
+    //distance to target is PoseMath.poseDistance(RobotContainer.RC().drivetrain.getPose(), Autonomous.hubPose);
     return targetAngle.getDegrees(); //do something fancier based on robot motion
   }
 
