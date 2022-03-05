@@ -18,6 +18,7 @@ import frc.robot.Constants.Shooter;
 import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.ifx.DriverControls;
+import frc.robot.util.PoseMath;
 
 /* Current driving behavior:
   Starts in field centric
@@ -133,6 +134,8 @@ public class HubCentricDrive extends CommandBase {
 
   private double velCorrectOdometerSetpoint(){
     //distance to target is PoseMath.poseDistance(RobotContainer.RC().drivetrain.getPose(), Autonomous.hubPose);
+    //drivetrain has getBearing and getVelocity methods
+    //local method getHeading2Target(drivetrain.getPose(), centerField);
     return targetAngle.getDegrees(); //do something fancier based on robot motion
   }
 
