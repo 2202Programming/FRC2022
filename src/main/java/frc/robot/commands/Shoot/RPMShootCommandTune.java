@@ -91,7 +91,7 @@ public class RPMShootCommandTune extends CommandBase{
         checkDashboard();
         getPID();
         checkPID();
-        distanceToTarget = PoseMath.poseDistance(RobotContainer.RC().drivetrain.getPose(), centerField);
+        distanceToTarget = PoseMath.poseDistance(RobotContainer.RC().drivetrain.getPose(), Autonomous.hubPose);
     }
 
     private void getPID(){
