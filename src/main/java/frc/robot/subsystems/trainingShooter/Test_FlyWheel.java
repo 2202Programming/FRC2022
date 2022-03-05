@@ -28,13 +28,15 @@ public class Test_FlyWheel {
 
   public FlyWheelConfig cfg;
 
-  FlyWheel(int CAN_ID, FlyWheelConfig cfg) {
+  Test_FlyWheel(int CAN_ID, FlyWheelConfig cfg) {
     //TALONSRXCONFIGURATION
     //WPI_TALONSRX
     //FLYWHEELCONFIGURATION
     srxconfig = new TalonSRXConfiguration(); 
     motor = new WPI_TalonSRX(CAN_ID);
     motor.setInverted(cfg.inverted);
+    this.cfg = cfg;
+
     // flywheel constants RPM given motor-unit counts (f(gear, meas-period))
      // motor counts are bigger, motor spins faster than FW
   // motor units (counts/100ms) to FW RPM
@@ -57,7 +59,7 @@ public class Test_FlyWheel {
 
   //write a function to set the RPM
   public void setRPM(double RPM ){
-    motor.set(ControlMode.velocity,RPM);
+    motor.set(ControlMode.Velocity,RPM);
 
   }
   //write a function to motor to percent

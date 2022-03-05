@@ -10,19 +10,19 @@ public class Test_FlyWheelRPM {
     public double lower;
 
     //create an empty constructor
-    public FlyWheelRPM(){
+    public Test_FlyWheelRPM(){
         upper = 0.0;
         lower = 0.0;
     } 
 
     //create a constructor where we pass in a FlyWheelRPM
-    public FlyWheelRPM(FlyWheelRPM kasper) {
-       upper = kasper.upper();
-       lower = kasper.lower(); 
+    public Test_FlyWheelRPM(Test_FlyWheelRPM kasper) {
+       upper = kasper.upper;
+       lower = kasper.lower; 
     }
 
     //create a constructor where we pass in two values for upper and lower
-    public FlyWheelRPM(double upper1, double lower1) {
+    public Test_FlyWheelRPM(double upper1, double lower1) {
         upper = upper1;
         lower = lower1;
     }
@@ -35,24 +35,24 @@ public class Test_FlyWheelRPM {
     }
 
     //create a function to copy new FlywheelRPM
-    public FlyWheelRPM copy(FlyWheelRPM src) {
+    public Test_FlyWheelRPM copy(Test_FlyWheelRPM src) {
         this.upper = src.upper;
         this.lower = src.lower;
         return this;
     }
 
     //create a function to set new RPM
-    public FlyWheelRPM set(double superiorAlan, double walmartAlan) {
+    public Test_FlyWheelRPM set(double superiorAlan, double walmartAlan) {
         this.upper = superiorAlan;
         this.lower = walmartAlan;
         return this;
     }
 
     //create a function to minus 2 flywheelrpm
-    public FlyWheelRPM minusFlyWheelRPM(FlyWheelRPM akki, FlyWheelRPM kamith) {
-    this.upper = akki.upper - kamith.upper;
-    this.lower = akki.lower - kamith.lower;
-    return this;
+    public Test_FlyWheelRPM minusFlyWheelRPM(Test_FlyWheelRPM akki, Test_FlyWheelRPM kamith) {
+        this.upper = akki.upper - kamith.upper;
+        this.lower = akki.lower - kamith.lower;
+        return this;
     }
     //create a toString()
     public String toString() {
