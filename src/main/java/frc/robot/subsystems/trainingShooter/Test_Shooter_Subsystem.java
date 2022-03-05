@@ -1,4 +1,4 @@
-package frc.robot.subsystems.shooter;
+package frc.robot.subsystems.trainingShooter;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -91,9 +91,9 @@ public class Test_Shooter_Subsystem extends SubsystemBase{
     * Stuff for our Shooter Subsystem
     */
     // All RPM are in Flywheel-RPM, not motor.
-    FlyWheelRPM actualRPM = new FlyWheelRPM();
-    FlyWheelRPM targetRPM = new FlyWheelRPM();
-    FlyWheelRPM error = new FlyWheelRPM();
+    Test_FlyWheelRPM actualRPM = new Test_FlyWheelRPM();
+    Test_FlyWheelRPM targetRPM = new Test_FlyWheelRPM();
+    Test_FlyWheelRPM error = new Test_FlyWheelRPM();
 
     //Transfrom from [ w, V] [W_lower, W_upper]
     final Matrix<N2,N2> VelocityToRPM = new Matrix<>(Nat.N2(), Nat.N2() );
@@ -108,7 +108,7 @@ public class Test_Shooter_Subsystem extends SubsystemBase{
     //Constructor
     public Test_Shooter_Subsystem(){
         //Define new shooter wheels of type FlyWheel
-
+        
 
         //Network table stuff
         table = NetworkTableInstance.getDefault().getTable("Test Shooter");
