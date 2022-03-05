@@ -107,7 +107,6 @@ public class HubCentricDrive extends CommandBase {
     ySpeed = MathUtil.clamp(ySpeed, -Constants.DriveTrain.kMaxSpeed, Constants.DriveTrain.kMaxSpeed);
     rot = MathUtil.clamp(rot, -Constants.DriveTrain.kMaxAngularSpeed, Constants.DriveTrain.kMaxAngularSpeed);
 
-    rot = 0;
     // set goal of angle PID to be heading (in rad) from current position to
     // centerfield
     targetAngle = getHeading2Target(drivetrain.getPose(), centerField);
@@ -115,12 +114,12 @@ public class HubCentricDrive extends CommandBase {
     currentAngle = drivetrain.getPose().getRotation(); // from -pi to pi
     angleError = targetAngle;
     angleError.minus(currentAngle);
-    anglePid.setSetpoint(targetAngle.getDegrees()); //PID was tuned in degrees already
+    anglePid.setSetpoint(velCorrectOdometerSetpoint()); //PID was tuned in degrees already
     rot = anglePid.calculate(currentAngle.getDegrees());
 
     if (limelight.getTarget() && limelight.getLEDStatus()) {
       // if limelight is available, override rotation input from odometery to limelight
-      limelightPid.setSetpoint(0); // always go towards the light.
+      limelightPid.setSetpoint(velCorrectLimelightSetpoint()); // always go towards the light.
       limelightPidOutput = limelightPid.calculate(limelight.getFilteredX());
       angleError = Rotation2d.fromDegrees(limelight.getFilteredX()); //approximation of degrees off center
       // update rotation and calulate new output-states
@@ -129,6 +128,15 @@ public class HubCentricDrive extends CommandBase {
 
     output_states = kinematics
         .toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, currentAngle));
+  }
+
+  private double velCorrectOdometerSetpoint(){
+    return targetAngle.getDegrees(); //do something fancier based on robot motion
+  }
+
+  private double velCorrectLimelightSetpoint(){
+    double degPerPixel = 59.6 / 320;
+    return 0; //do something fancier based on robot motion
   }
 
   @Override
