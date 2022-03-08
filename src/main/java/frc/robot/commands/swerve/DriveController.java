@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.RobotContainer;
+import frc.robot.Constants.Shooter;
 import frc.robot.commands.Shoot.VelShootCommand;
 import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.Magazine_Subsystem;
@@ -53,7 +54,6 @@ public class DriveController extends CommandBase {
   boolean currentlyShooting = false;
   boolean shootingRequested = false;
   boolean hasSolution = false;
-  double angleErrorTolerance = 5.0;
 
   NetworkTable table;
   private NetworkTableEntry driveMode;
@@ -108,7 +108,7 @@ public class DriveController extends CommandBase {
       CommandScheduler.getInstance().cancel(m_velShootCommand);
     } 
     if (currentlyShooting) { //if angle error is small, set solution to be true to allow shooter to shoot
-        if (Math.abs(m_hubCentricDrive.getAngleError().getDegrees()) > angleErrorTolerance){
+        if (Math.abs(m_hubCentricDrive.getAngleError().getDegrees()) > Shooter.angleErrorTolerance){
           m_velShootCommand.setSolution(false);
           NThasSolution.setBoolean(false);
         } else {
@@ -133,18 +133,22 @@ public class DriveController extends CommandBase {
       switch (currentDriveMode){
         case robotCentric:
           currentCmd = m_robotCentricDrive;
+          m_velShootCommand.setFreeShootingMode(true);
           break;
   
         case fieldCentric:
           currentCmd = m_fieldCentricDrive;
+          m_velShootCommand.setFreeShootingMode(true);
           break;    
 
         case hubCentric:
           currentCmd = m_hubCentricDrive;
+          m_velShootCommand.setFreeShootingMode(false);
           break;      
         
         case intakeCentric:
           currentCmd = m_intakeCentricDrive;
+          m_velShootCommand.setFreeShootingMode(true);
           break;
       }
       CommandScheduler.getInstance().schedule(currentCmd);

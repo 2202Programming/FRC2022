@@ -50,7 +50,8 @@ public class VelShootCommand extends CommandBase{
     private boolean solution = true;
     private boolean shooterAngleLongRange;
     private boolean outOfRange = false;
-
+    private boolean freeShootingMode = false;
+    double log_counter = 0;
 
     final static ShooterSettings defaultShooterSettings = new ShooterSettings(20.0, 0.0, USE_CURRENT_ANGLE, 0.01);
 
@@ -136,10 +137,15 @@ public class VelShootCommand extends CommandBase{
             break;
 
             case WaitingForSolution:
-                // if(solution){
+                if(!freeShootingMode) { //only check for a solution in guided shooting mode
+                    if(solution){
+                        stage = Stage.Shooting;
+                        magazine.driveWheelOn(1.0);
+                    }
+                } else {
                     stage = Stage.Shooting;
                     magazine.driveWheelOn(1.0);
-               // }
+                }
                 break;
 
             case Shooting:
@@ -201,10 +207,13 @@ public class VelShootCommand extends CommandBase{
     }
 
     private void NTupdates(){
-        ntBallVel.setDouble(calculatedVel);
-        shooterState.setString(stage.toString());
-        distance.setDouble(currentDistance);
-        NToutOfRange.setBoolean(outOfRange);
+        log_counter++;
+        if ((log_counter%20)==0) {
+            ntBallVel.setDouble(calculatedVel);
+            shooterState.setString(stage.toString());
+            distance.setDouble(currentDistance);
+            NToutOfRange.setBoolean(outOfRange);
+        }
     }
 
     public boolean getSolution() {
@@ -213,5 +222,9 @@ public class VelShootCommand extends CommandBase{
 
     public void setSolution(boolean solution) {
         this.solution = solution;
+    }
+
+    public void setFreeShootingMode(boolean freeShootingMode) {
+        this.freeShootingMode = freeShootingMode;
     }
 }
