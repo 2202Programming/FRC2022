@@ -55,10 +55,10 @@ public class RobotContainer {
     dashboard = new Dashboard(this);
 
     climber = new Climber();
-    climber.setDefaultCommand(new SequentialCommandGroup(
+    //climber.setDefaultCommand(new SequentialCommandGroup(
       // new CalibrateClimber(climber),
-      new climberTest(climber)
-    ));
+      //new climberTest(climber)
+    //));
 
     setDriverButtons();
     setAssistantButtons();
@@ -78,7 +78,7 @@ public class RobotContainer {
   * </ul>
   */
   void setDriverButtons(){
-
+    driverControls.bind(Id, sw)
     //B - Toggle drive mode
     //driverControls.bind(Id.Driver, XboxButton.B).whenPressed(new InstantCommand( drivetrain::driveModeCycle ));
   

@@ -1,16 +1,9 @@
 package frc.robot.subsystems;
 
-import java.util.concurrent.PriorityBlockingQueue;
-
-import javax.print.attribute.standard.NumberUp;
-
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.SparkMaxLimitSwitch.Type;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.SparkMaxRelativeEncoder;
 import com.revrobotics.SparkMaxLimitSwitch;
+import com.revrobotics.SparkMaxPIDController;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -19,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.ClimbSettings;
+import frc.robot.subsystems.climber.ArmRotation;
 
 public class Climber extends SubsystemBase {
     // NTs
@@ -43,7 +37,7 @@ public class Climber extends SubsystemBase {
         nte_calibrate = table.getEntry("calibrate");
         nte_calibrate.setBoolean(false);
 
-        left_Arm_rot = new ArmRotation(table.getSubTable("left_arm_rotation"), left_motor_rot, false);
+        left_Arm_rot = new ArmRotation(table.getSubTable("left_arm_rotation"), left_motor_rot, true);
         right_Arm_rot = new ArmRotation(table.getSubTable("right_arm_rotation"), right_motor_rot, true);
         right_Arm_ext = new ArmExtension(table.getSubTable("right_arm_extension"), right_motor_ext, false);
         left_Arm_ext = new ArmExtension(table.getSubTable("left_arm_extension"), left_motor_ext, true);
@@ -138,126 +132,17 @@ public class Climber extends SubsystemBase {
                 && (Math.abs(this.getLeftRotation() - rot_pos) <= Constants.ClimbSettings.TOLERANCE_ROTATION)
                 && (Math.abs(this.getRightRotation() - rot_pos) <= Constants.ClimbSettings.TOLERANCE_ROTATION));
     }
-}
 
-class ArmRotation {
-    // motors n stuff
-    private CANSparkMax motor_rot;
-    private SparkMaxPIDController pidController_rot;
-    private SparkMaxLimitSwitch ForwardLimitSwitch;
-    private SparkMaxLimitSwitch ReverseLimitSwitch;
-
-    private RelativeEncoder encoder;
-
-    // nts
-    private NetworkTable network_table;
-    private NetworkTableEntry nte_curr_pos_deg;
-    private NetworkTableEntry nte_curr_pos_count;
-    private NetworkTableEntry nte_des_pos_deg;
-    private NetworkTableEntry nte_des_pos_count;
-
-    private NetworkTableEntry nte_lower_limt;
-    private NetworkTableEntry nte_upper_limt;
-
-    // calibration
-    private boolean calibrate = true;
-    private NetworkTableEntry nte_calibrate;
-
-    public ArmRotation(NetworkTable table, CANSparkMax motor_rot, boolean inverted) {
-
-        // motors
-        this.motor_rot = motor_rot;
-        this.motor_rot.restoreFactoryDefaults();
-        this.motor_rot.clearFaults();
-        this.motor_rot.setInverted(inverted);
-        setPercentOutput(0);
-
-        ForwardLimitSwitch = motor_rot.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
-        ReverseLimitSwitch = motor_rot.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
-        this.pidController_rot = motor_rot.getPIDController();
-
-        // NTs
-        this.network_table = table;
-        nte_curr_pos_deg = network_table.getEntry("Current Arm Rotation (degrees)");
-        nte_curr_pos_deg.setDouble(0);
-        nte_curr_pos_count = network_table.getEntry("Current Arm Rotation (counts)");
-        nte_curr_pos_count.setDouble(0);
-        nte_des_pos_deg = network_table.getEntry("Desired Arm Rotation (degrees)");
-        nte_des_pos_deg.setDouble(0);
-        nte_des_pos_count = network_table.getEntry("Desired Arm Rotation (counts)");
-        nte_des_pos_count.setDouble(0);
-
-        nte_calibrate = this.network_table.getEntry("Calibrate");
-        nte_calibrate.setBoolean(calibrate);
-
-        nte_lower_limt = network_table.getEntry("Lower Limit");
-        nte_lower_limt.setBoolean(false);
-        nte_upper_limt = network_table.getEntry("Upper Limit");
-        nte_upper_limt.setBoolean(false);
-
-        encoder = motor_rot.getEncoder(com.revrobotics.SparkMaxRelativeEncoder.Type.kQuadrature, 1);
-        ClimbSettings.rotatePID.copyTo(motor_rot.getPIDController(), 0);
+    public ArmRotation getLeftArmRotation(){
+        return left_Arm_rot;
     }
 
-    public void periodic() {
-        
-        double motor_curr_deg = encoder.getPosition();
-
-        nte_curr_pos_count.setDouble(motor_curr_deg);
-        nte_curr_pos_deg.setDouble(DegreesToEncoderCounts(motor_curr_deg));
-        
-        // current limit n stuff
-        // motor_rot.setSmartCurrentLimit((int) nte_curr_current_limit_amp.getDouble(5));
-        nte_lower_limt.setBoolean(ReverseLimitSwitch.isPressed());
-        nte_upper_limt.setBoolean(ForwardLimitSwitch.isPressed());
-
-        if (calibrate) {
-            if (isLowerLimitHit()) {
-                setPercentOutput(0);
-                calibrate = false;
-                nte_calibrate.setBoolean(calibrate);
-                encoder.setPosition(0);
-            } else {
-                setPercentOutput(-.5);
-            }
-        }
-
-    }
-
-    public double DegreesToEncoderCounts(double degrees) {
-        return (42 * 174.9 * degrees) / (360 * 20);
-        // 42 and 20 are the tooth pullies, 174.9 is the counts per rot and 360 is the
-        // degrees
-        // 174.9 counter/rotation on motor
-        // Motor is connected to a 20 tooth pulley that drives
-        // a 42 tooth pulley
-        // changes the angle of the ? by this many degrees
-    }
-
-    public double encoderCountsToDegrees(double counts) {
-        return (counts * (360 * 20)) / (42 * 174.9);
-    }
-
-    public void set(double degrees) {
-        // TODO: use conversion factor variable?
-        double counts = DegreesToEncoderCounts(degrees);
-        pidController_rot.setReference(counts, CANSparkMax.ControlType.kPosition);
-        nte_des_pos_deg.setDouble(degrees);
-        nte_des_pos_count.setDouble(counts);
-    }
-
-    public void setPercentOutput(double percentOutput) {
-        motor_rot.set(percentOutput);
-    }
-
-    public boolean isLowerLimitHit() {
-        return ReverseLimitSwitch.isPressed();
-    }
-
-    public double getRotationDegrees() {
-        return encoderCountsToDegrees(encoder.getPosition());
+    public ArmRotation getRightArmRotation(){
+        return right_Arm_rot;
     }
 }
+
+
 
 /**
  * Note: there are 3 limit switches --
