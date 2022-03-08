@@ -30,8 +30,8 @@ public class Intake_Subsystem extends SubsystemBase {
     //Instantiations
     final CANSparkMax intake_mtr = new CANSparkMax(CAN.INTAKE_MTR, CANSparkMax.MotorType.kBrushless);
     final DoubleSolenoid intake_solenoid = new DoubleSolenoid(CAN.PCM1,
-                PneumaticsModuleType.REVPH, 
-                PCM1.INTAKE_UP_SOLENOID_PCM, 
+                PneumaticsModuleType.CTREPCM,
+                PCM1.INTAKE_UP_SOLENOID_PCM,
                 PCM1.INTAKE_DOWN_SOLENOID_PCM);
     final DigitalInput intake_lightGate = new DigitalInput(DigitalIO.INTAKE_GATE);
 
