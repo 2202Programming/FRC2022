@@ -45,8 +45,8 @@ public final class Constants {
         // Climber Arms - L/R left/right I/O inner/outer
         public static final int CMB_LEFT_Rotate = 16;
         public static final int CMB_RIGHT_Rotate = 17;
-        public static final int CMB_RIGHT_Extend = 14;
-        public static final int CMB_LEFT_Extend = 15;
+        public static final int CMB_RIGHT_Extend = 15;
+        public static final int CMB_LEFT_Extend = 14;
         
         
         // drive train drive / angle motors - sparkmax neo
@@ -65,14 +65,6 @@ public final class Constants {
 
         // Whether to burn flash or not
         public static final boolean BURN_FLASH = false;
-
-        public static final int RAISE1 = 0; //fake
-        public static final int LOWER1 = 0; //fake
-        public static final int RAISE2 = 0; //fake
-        public static final int LOWER2 = 0; //fake
-        public static final int ANGLE1 = 0; //fake
-        public static final int ANGLE2 = 0; //fake
-
 
     }
 

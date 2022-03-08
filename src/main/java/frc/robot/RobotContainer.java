@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 // import java.util.List;
@@ -12,6 +13,8 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.DriverPrefs;
 import frc.robot.commands.MecanumDriveCmd;
 import frc.robot.commands.climber.CalibrateClimber;
+import frc.robot.commands.climber.SetArmExtension;
+import frc.robot.commands.climber.SetArmRotation;
 import frc.robot.commands.test.climberTest;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.MecanumDrivetrain;
@@ -78,7 +81,11 @@ public class RobotContainer {
   * </ul>
   */
   void setDriverButtons(){
-    driverControls.bind(Id, sw)
+    driverControls.bind(Id.Driver, XboxButton.START).whenPressed(new InstantCommand(climber::startCalibration));
+    driverControls.bind(Id.Driver, XboxButton.X).whileHeld(new SetArmRotation(driverControls, climber, 0.5));
+    driverControls.bind(Id.Driver, XboxButton.B).whileHeld(new SetArmRotation(driverControls, climber, -0.5));
+    driverControls.bind(Id.Driver, XboxButton.Y).whileHeld(new SetArmExtension(driverControls, climber, 0.2));
+    driverControls.bind(Id.Driver, XboxButton.A).whileHeld(new SetArmExtension(driverControls, climber, -0.2));
     //B - Toggle drive mode
     //driverControls.bind(Id.Driver, XboxButton.B).whenPressed(new InstantCommand( drivetrain::driveModeCycle ));
   

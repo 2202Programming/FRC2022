@@ -33,7 +33,7 @@ public class ArmRotation {
   private NetworkTableEntry nte_upper_limt;
 
   // calibration
-  private boolean calibrate = true;
+  private boolean calibrate = false;
   private NetworkTableEntry nte_calibrate;
 
   public ArmRotation(NetworkTable table, CANSparkMax motor_rot, boolean inverted) {
@@ -124,7 +124,7 @@ public class ArmRotation {
   }
 
   public boolean isLowerLimitHit() {
-      return ReverseLimitSwitch.isPressed();
+      return ForwardLimitSwitch.isPressed();
   }
 
   public double getRotationDegrees() {
