@@ -56,10 +56,13 @@ public class DriveController extends CommandBase {
   boolean hasSolution = false;
 
   NetworkTable table;
+  NetworkTable shooterTable;
   private NetworkTableEntry driveMode;
   private NetworkTableEntry shootingMode;
   private NetworkTableEntry NThasSolution;
-  public final String NT_Name = "DC"; // expose data under Drive Controller table
+  public final String NT_Name = "DC"; 
+  public final String NT_ShooterName = "Shooter"; 
+  
   int log_counter = 0;
 
   public DriveController() {
@@ -77,9 +80,10 @@ public class DriveController extends CommandBase {
     m_velShootCommand = new VelShootCommand(new ShooterSettings(20,0), 15); //ft/s,rot, backupcount
 
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
-    driveMode = table.getEntry("/driveMode");
-    shootingMode = table.getEntry("/shootingModeOn");
-    NThasSolution = table.getEntry("/HasSolution");
+    shooterTable = NetworkTableInstance.getDefault().getTable(NT_ShooterName);
+    driveMode = table.getEntry("/DriveController/driveMode");
+    shootingMode = shooterTable.getEntry("/DriveController/shootingModeOn");
+    NThasSolution = shooterTable.getEntry("/DriveController/HasSolution");
   }
 
   @Override

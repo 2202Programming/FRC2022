@@ -31,6 +31,7 @@ public class VelShootCommand extends CommandBase{
     double currentDistance = 0;
 
     NetworkTable table;
+    NetworkTable drivetrainTable;
     NetworkTableEntry ntUpperRPM;   //FW speeds (output)
     NetworkTableEntry ntLowerRPM;
     NetworkTableEntry ntBallVel;    // ball physics (input) 
@@ -38,6 +39,7 @@ public class VelShootCommand extends CommandBase{
     NetworkTableEntry distance;
     NetworkTableEntry NToutOfRange;
     public final String NT_Name = "Shooter"; 
+
 
     ShooterSettings specialSettings;
     
@@ -86,10 +88,11 @@ public class VelShootCommand extends CommandBase{
         addRequirements(magazine,shooter,positioner);
 
         table = NetworkTableInstance.getDefault().getTable(NT_Name);
-        ntBallVel = table.getEntry("/BallVel");
-        shooterState = table.getEntry("/ShooterState");
-        distance = table.getEntry("/Distance");
-        NToutOfRange = table.getEntry("/OutOfRange");
+
+        ntBallVel = table.getEntry("/VelShootCmd/BallVel");
+        shooterState = table.getEntry("/VelShootCmd/ShooterState");
+        distance = table.getEntry("/VelShootCmd/Distance");
+        NToutOfRange = table.getEntry("/VelShootCmd/OutOfRange");
     }
 
     @Override

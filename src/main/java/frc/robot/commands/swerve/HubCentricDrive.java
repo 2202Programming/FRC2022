@@ -63,7 +63,7 @@ public class HubCentricDrive extends CommandBase {
   private NetworkTableEntry hubCentricTarget;
   private NetworkTableEntry NTangleError;
   private NetworkTableEntry NTvelocityCorrectionAngle;
-  public final String NT_Name = "DC"; // expose data under Drive Controller table
+  public final String NT_Name = "Shooter"; 
 
   double log_counter = 0;
   Rotation2d currentAngle;
@@ -83,9 +83,9 @@ public class HubCentricDrive extends CommandBase {
     limelightPid = new PIDController(limelight_kP, limelight_kI, limelight_kD);
 
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
-    hubCentricTarget = table.getEntry("/hubCentricTarget");
-    NTangleError = table.getEntry("/angleError");
-    NTvelocityCorrectionAngle = table.getEntry("/VelCorrectionAngle");
+    hubCentricTarget = table.getEntry("/HubCentric/hubCentricTarget");
+    NTangleError = table.getEntry("/HubCentric/angleError");
+    NTvelocityCorrectionAngle = table.getEntry("/HubCentric/VelCorrectionAngle");
 
     calculate();
 
