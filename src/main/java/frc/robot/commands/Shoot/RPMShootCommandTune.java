@@ -62,7 +62,7 @@ public class RPMShootCommandTune extends CommandBase{
         this.intake = RobotContainer.RC().intake;
         this.shooter = RobotContainer.RC().shooter;
         this.magazine = RobotContainer.RC().magazine;
-        ShooterSettings target = new ShooterSettings(requestedVelocity, 0.0, USE_CURRENT_ANGLE, 0.20;
+        ShooterSettings target = new ShooterSettings(requestedVelocity, 0.0, USE_CURRENT_ANGLE, 0.20);
         this.cmdSS = target;
     }
     
