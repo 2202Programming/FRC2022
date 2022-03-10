@@ -96,7 +96,7 @@ public class ArmExtension {
                 setPercentOutput(-.2);
             }
         }
-        setPercentOutput(0);
+//        setPercentOutput(0);
         nte_lower_limt.setBoolean(ReverseLimitSwitch.isPressed());
         nte_upper_limt.setBoolean(ForwardLimitSwitch.isPressed());
 

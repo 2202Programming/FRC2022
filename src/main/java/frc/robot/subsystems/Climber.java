@@ -75,9 +75,11 @@ public class Climber extends SubsystemBase {
     }
 
     public void startCalibration() {
+        System.out.println("started calibration");
         left_Arm_ext.startCalibration();
         right_Arm_ext.startCalibration();
-        System.out.println("started calibration");
+        left_Arm_rot.startCalibration();
+        right_Arm_rot.startCalibration();
     }
 
     @Override
