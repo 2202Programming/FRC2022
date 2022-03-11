@@ -31,7 +31,7 @@ public class PoseMath {
 
   //return angle between virtual target and actual target, from point of view of robot pose
   public static Rotation2d angleVirtualTarget(Pose2d robotPose, Pose2d actualTarget, Pose2d virtualTarget)
-  { //law of cosines
+  { //law of cosines γ=cos-1(a2+b2﹣c2)/2ab)
     Rotation2d offsetAngle = Rotation2d.fromDegrees(Math.acos(
       (Math.pow(poseDistance(robotPose, virtualTarget),2)
        + Math.pow(poseDistance(robotPose, actualTarget),2)
