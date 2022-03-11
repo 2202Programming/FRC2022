@@ -276,6 +276,10 @@ public class SwerveDrivetrain extends SubsystemBase {
     return kinematics;
   }
 
+  public ChassisSpeeds  getChassisSpeeds() {
+      return  kinematics.toChassisSpeeds(meas_states);
+  }
+
   /**
    * stop() - zero the current state's velocity component and leave angles as they are
    */

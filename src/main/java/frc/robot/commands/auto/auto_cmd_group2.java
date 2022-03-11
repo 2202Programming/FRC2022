@@ -59,7 +59,7 @@ public class auto_cmd_group2 extends SequentialCommandGroup {
       new ParallelDeadlineGroup( //all run at same time; group ends when 1st command ends
         finalAuto,
         new IntakeCommand((()-> 0.55), ()-> 0.20,  IntakeMode.LoadCargo),
-        new MagazineCommand((()-> 1.0), MagazineMode.LoadCargo)
+        new MagazineCommand((()-> 0.1), MagazineMode.LoadCargo)
       ),
       //new MoveIntake(DeployMode.Retract),
     //   new ParallelDeadlineGroup( //all run at same time; group ends when 1st command ends
