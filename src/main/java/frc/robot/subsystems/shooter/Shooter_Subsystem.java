@@ -16,8 +16,6 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.numbers.N2;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.Shooter;
-import frc.robot.subsystems.shooter.FlyWheel.FlyWheelConfig;
-import frc.robot.util.PIDFController;
 
 
 public class Shooter_Subsystem extends SubsystemBase  {
@@ -127,11 +125,11 @@ public class Shooter_Subsystem extends SubsystemBase  {
     lower_shooter = new FlyWheel(CAN.SHOOTER_LOWER_TALON, Shooter.lowerFWConfig);
 
     table = NetworkTableInstance.getDefault().getTable("Shooter");
-    nt_upperRPM = table.getEntry("UpperRPM/value");
-    nt_lowerRPM = table.getEntry("LowerRPM/value");
-    nt_upperRPMErr = table.getEntry("UpperRPM/err");
-    nt_lowerRPMErr = table.getEntry("LowerRPM/err");
-    nt_setpoint = table.getEntry("Setpoint");
+    nt_upperRPM = table.getEntry("/UpperRPM/value");
+    nt_lowerRPM = table.getEntry("/LowerRPM/value");
+    nt_upperRPMErr = table.getEntry("/UpperRPM/err");
+    nt_lowerRPMErr = table.getEntry("/LowerRPM/err");
+    nt_setpoint = table.getEntry("/TargetVel");
     
     // build out matrix to calculate FW RPM from [omega , Vel] for power cell
     VelToRPM.set(0, 0, Shooter.PCEffectiveRadius / Shooter.lowerFWConfig.flywheelRadius);

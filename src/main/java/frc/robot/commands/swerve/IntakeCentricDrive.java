@@ -54,7 +54,7 @@ public class IntakeCentricDrive extends CommandBase {
   NetworkTable table;
   private NetworkTableEntry NTangleError;
   private NetworkTableEntry NTTargetAngle;
-  public final String NT_Name = "DC"; 
+  public final String NT_Name = "Shooter"; 
 
   double log_counter = 0;
   Rotation2d m_targetAngle;
@@ -76,8 +76,8 @@ public class IntakeCentricDrive extends CommandBase {
     intakeAnglePid.enableContinuousInput(-180, 180);
 
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
-    NTangleError = table.getEntry("/angleError");
-    NTTargetAngle = table.getEntry("/TargetAngle");
+    NTangleError = table.getEntry("/IntakeCentric/angleError");
+    NTTargetAngle = table.getEntry("/IntakeCentric/TargetAngle");
 
     lastBearing = new Rotation2d(0);
   }

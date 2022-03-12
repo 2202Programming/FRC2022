@@ -1,5 +1,6 @@
 package frc.robot.commands.Shoot;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants;
@@ -51,9 +52,9 @@ public class RPMShootCommandTune extends CommandBase{
 
     ShooterSettings  cmdSS;         // instance the shooter sees
 
-    final ShooterSettings defaultShooterSettings = new ShooterSettings(requestedVelocity, 0.0, USE_CURRENT_ANGLE, 0.01);
+    final ShooterSettings defaultShooterSettings = new ShooterSettings(requestedVelocity, 0.0, USE_CURRENT_ANGLE, 0.20);
 
-    private BasicShootCommand currentShooterCommand;
+    private VelShootCommand currentShooterCommand;
     private Pose2d centerField = Constants.Autonomous.hubPose;
     private double distanceToTarget = 0;
     
@@ -61,7 +62,7 @@ public class RPMShootCommandTune extends CommandBase{
         this.intake = RobotContainer.RC().intake;
         this.shooter = RobotContainer.RC().shooter;
         this.magazine = RobotContainer.RC().magazine;
-        ShooterSettings target = new ShooterSettings(requestedVelocity, 0.0, USE_CURRENT_ANGLE, 0.01);
+        ShooterSettings target = new ShooterSettings(requestedVelocity, 0.0, USE_CURRENT_ANGLE, 0.20);
         this.cmdSS = target;
     }
     
@@ -76,14 +77,14 @@ public class RPMShootCommandTune extends CommandBase{
     public void initialize(){
         table = NetworkTableInstance.getDefault().getTable("ShootCommand");
 
-        currentShooterCommand = new BasicShootCommand(new ShooterSettings(10, 0.0) , 20);
+        currentShooterCommand = new VelShootCommand(new ShooterSettings(10, 0.0) , 20);
         CommandScheduler.getInstance().schedule(currentShooterCommand);
         RobotContainer.RC().drivetrain.setPose(Autonomous.startPose1);
 
         SmartDashboard.putNumber("Requested Flywheel P", r_upperP);
         SmartDashboard.putNumber("Requested Flywheel I", r_upperI);
         SmartDashboard.putNumber("Requested Flywheel D", r_upperD);
-        CommandScheduler.getInstance().schedule(new IntakeCommand((()-> 0.47), ()-> 0.20,  IntakeMode.LoadCargo));
+        CommandScheduler.getInstance().schedule(new IntakeCommand((()-> 0.47), ()-> 0.30,  IntakeMode.LoadCargo));
     }
 
     @Override
@@ -91,7 +92,7 @@ public class RPMShootCommandTune extends CommandBase{
         checkDashboard();
         getPID();
         checkPID();
-        distanceToTarget = PoseMath.poseDistance(RobotContainer.RC().drivetrain.getPose(), centerField);
+        distanceToTarget = PoseMath.poseDistance(RobotContainer.RC().drivetrain.getPose(), Autonomous.hubPose);
     }
 
     private void getPID(){
@@ -133,7 +134,7 @@ public class RPMShootCommandTune extends CommandBase{
         cmdSS = new ShooterSettings(requestedVelocity, 0.0, USE_CURRENT_ANGLE, 0.01);
         if(requestedVelocity != previousVelocity){
             currentShooterCommand.setFinished();
-            currentShooterCommand = new BasicShootCommand(new ShooterSettings(requestedVelocity, 0.0), 20 ); // backup count frames 
+            currentShooterCommand = new VelShootCommand(new ShooterSettings(requestedVelocity, 0.0), 20 ); // backup count frames 
             CommandScheduler.getInstance().schedule(currentShooterCommand);
         }
         previousVelocity = requestedVelocity;

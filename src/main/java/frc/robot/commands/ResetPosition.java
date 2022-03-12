@@ -15,19 +15,16 @@ import frc.robot.subsystems.SwerveDrivetrain;
 public class ResetPosition extends InstantCommand {
   private Pose2d newPose;
   private SwerveDrivetrain m_drivetrain;
-  private String auto_path_name;
   
-  public ResetPosition(Pose2d newPose, SwerveDrivetrain m_drivetrain, String auto_path_name) {
+  public ResetPosition(Pose2d newPose) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.newPose = newPose;
-    this.m_drivetrain = m_drivetrain;
-    this.auto_path_name = auto_path_name;
+    this.m_drivetrain = RobotContainer.RC().drivetrain;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     m_drivetrain.setPose(newPose);
-    RobotContainer.auto_path_name = this.auto_path_name;
   }
 }

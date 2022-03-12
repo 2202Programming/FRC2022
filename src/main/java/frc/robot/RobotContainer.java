@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.Constants.Autonomous;
 import frc.robot.Constants.DriverPrefs;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.IntakeCommand.IntakeMode;
@@ -129,10 +130,10 @@ public class RobotContainer {
     if (Constants.HAS_DRIVETRAIN) {
       driverControls.bind(Id.Driver, XboxButton.X)
           //.whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
-          .whenPressed(new auto_pathPlanner_cmd(drivetrain, "AutoPath4"));
+          .whenPressed(auto_pathPlanner_cmd.PathFactory(drivetrain, "AutoPath4").andThen(m_driveController));
       driverControls.bind(Id.Driver, XboxButton.LB)
            //.whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
-           .whenPressed(new auto_pathPlanner_cmd(drivetrain, "Straight1"));
+           .whenPressed(auto_pathPlanner_cmd.PathFactory(drivetrain, "Straight1").andThen(m_driveController));
 
     }
 
@@ -158,7 +159,7 @@ public class RobotContainer {
     // B  - spin intake while held (to intake the ball)
     // A  - spin intake while held (in reverse to expell the ball)
     // RT - spin shooter and index while held
-    driverControls.bind(Id.SwitchBoard, SBButton.Sw13).whenActive(new ResetPosition(Constants.Autonomous.startPose3, drivetrain, "None"));
+    driverControls.bind(Id.SwitchBoard, SBButton.Sw13).whenActive(new ResetPosition(Autonomous.startPose3));
 
     if(Constants.HAS_INTAKE) {
       driverControls.bind(Id.Assistant, XboxButton.LB).whenPressed(new MoveIntake(DeployMode.Toggle));
@@ -181,8 +182,15 @@ public class RobotContainer {
 
     if(Constants.HAS_SHOOTER){
       driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_RIGHT).whileHeld(new BasicShootCommand(new ShooterSettings(20, 0.0), 20 ));
-    }
-
+    }  
+       // Y - reset Pose
+       if (Constants.HAS_DRIVETRAIN) {
+          //driverControls.bind(Id.Assistant, XboxButton.Y).whenPressed(new InstantCommand(drivetrain::resetPose));
+          driverControls.bind(Id.Assistant, XboxButton.Y).whenPressed(new InstantCommand( ()-> 
+          {
+            drivetrain.setPose(Autonomous.startPose3);
+          }));
+        }
   }
 
   public Command getAutonomousCommand() {

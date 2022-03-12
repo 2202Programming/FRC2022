@@ -257,7 +257,12 @@ public final class Constants {
        */
       public static final double kRPM2Counts = 4096.0/600.0; // MU-100 (no gearing)
       public static final double kMaxMO = 1023;  // max Motor output
-
+      public static final double kMaxFPS = 28; //max FPS
+      public static final double maxLongRage = 10; //maximum range in long distance shooting mode
+      public static final double minLongRange = 1; //minimum range in long distance shooting mode
+      public static final double maxShortRange = 2; //maximum range in short distance shooting mode
+      public static final double degPerPixel = 59.6 / 320; //limelight conversion
+      public static final double angleErrorTolerance = 5.0; //allowed angle error to shoot in guided shooting modes
       // Flywheel info
       // Flywheel maxOpenLoopRPM and gear ratio are used to calculate kFF in shooter
       public static FlyWheelConfig upperFWConfig = new FlyWheelConfig();
@@ -266,7 +271,7 @@ public final class Constants {
         upperFWConfig.gearRatio = 3.0;        // upper is 5:1 (motor:fw)
         upperFWConfig.sensorPhase = true;
         upperFWConfig.inverted = false;
-        upperFWConfig.flywheelRadius = 2.0 / 12.0; // feet
+        upperFWConfig.flywheelRadius = 1.4375 / 12.0; // feet
         upperFWConfig.pid = new PIDFController(0.15, 0.0, 2.0, 0); // kP kI kD kFF
         upperFWConfig.pid.setIzone(1800);
       }
@@ -277,7 +282,7 @@ public final class Constants {
         lowerFWConfig.gearRatio = 3.0;         // lower fw gear 3:1  (motor:flywheel)
         lowerFWConfig.sensorPhase = false;
         lowerFWConfig.inverted = false; 
-        lowerFWConfig.flywheelRadius = 2.0 / 12.0;   //feet 
+        lowerFWConfig.flywheelRadius = 2 / 12.0;   //feet 
         lowerFWConfig.pid = new PIDFController(0.15, 0.0, 2.0, 0); // kP kI kD kFF
         lowerFWConfig.pid.setIzone(1800);
       }

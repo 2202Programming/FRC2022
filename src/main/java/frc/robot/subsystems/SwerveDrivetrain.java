@@ -22,6 +22,7 @@ import frc.robot.RobotContainer;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.DriveTrain;
 import frc.robot.subsystems.Sensors_Subsystem.EncoderID;
+import frc.robot.util.PoseMath;
 
 public class SwerveDrivetrain extends SubsystemBase {
   /**
@@ -76,6 +77,7 @@ public class SwerveDrivetrain extends SubsystemBase {
   private NetworkTableEntry posFR;
   private NetworkTableEntry posBL;
   private NetworkTableEntry posBR;
+  private NetworkTableEntry robotVel;
   
   double drive_kP = DriveTrain.drivePIDF.getP();
   double drive_kI = DriveTrain.drivePIDF.getI();
@@ -91,11 +93,13 @@ public class SwerveDrivetrain extends SubsystemBase {
   private int timer;
   private double currentBearing = 0;
   private double filteredBearing = 0;
+  private double filteredVelocity = 0;
 
   // Creates a new Single-Pole IIR filter
   // Time constant is 0.1 seconds
   // Period is 0.02 seconds - this is the standard FRC main loop period
   private LinearFilter bearingFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
+  private LinearFilter velocityFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
 
   public SwerveDrivetrain() {
     sensors = RobotContainer.RC().sensors;
@@ -137,6 +141,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     posFR = table.getEntry("/POS FR");
     posBL = table.getEntry("/POS BL");
     posBR = table.getEntry("/POS BR");
+    robotVel = table.getEntry("/RobotVel");
 
 
     // display PID coefficients on SmartDashboard if tuning drivetrain
@@ -195,6 +200,9 @@ public class SwerveDrivetrain extends SubsystemBase {
     //run bearing through low pass filter
     filteredBearing = bearingFilter.calculate(currentBearing);
 
+    // velocity assuming period is 0.02 seconds - this is the standard FRC main loop period
+    filteredVelocity = velocityFilter.calculate(PoseMath.poseDistance(m_pose, old_pose)/0.02);
+
     // updates CAN status data every 4 cycles
     timer++;
     if (timer == 5) {
@@ -212,6 +220,7 @@ public class SwerveDrivetrain extends SubsystemBase {
       posBR.setDouble(modules[3].getPosition());
       
       nt_currentBearing.setDouble(filteredBearing);
+      robotVel.setDouble(filteredVelocity);
       timer = 0;
 
       //if Drivetrain tuning
@@ -259,8 +268,16 @@ public class SwerveDrivetrain extends SubsystemBase {
     return filteredBearing;
   }
 
+  public double getVelocity(){
+    return filteredVelocity;
+  }
+
   public SwerveDriveKinematics getKinematics() {
     return kinematics;
+  }
+
+  public ChassisSpeeds  getChassisSpeeds() {
+      return  kinematics.toChassisSpeeds(meas_states);
   }
 
   /**
