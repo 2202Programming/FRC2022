@@ -105,6 +105,12 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         this(shooterSettings, backupFrameCount, null);
     }
 
+    public VelShootCommand()
+    {
+        this(defaultShooterSettings, 20, null);
+    }
+
+
     @Override
     public void initialize(){
         cmdSS = specialSettings; //defaultShooterSettings SUS 
@@ -121,7 +127,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         calculateDistance();
         setPositioner();
         calculateVelocity();
-        calculatedVel = cmdSS.vel;
+        calculatedVel = cmdSS.vel; //get rid of this when calculated Velocity is working
         if(calculatedVel != cmdSS.vel){
             cmdSS = new ShooterSettings(calculatedVel, 0);
             shooter.spinup(cmdSS);

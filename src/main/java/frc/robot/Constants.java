@@ -243,7 +243,7 @@ public final class Constants {
 
     public static final class Shooter {
       public static final double DefaultRPMTolerance = .05;  // percent of RPM
-      public static final ShooterSettings DefaultSettings = new ShooterSettings(10.0, 0.0);  //ft/s, rot/s
+      public static final ShooterSettings DefaultSettings = new ShooterSettings(20.0, 0.0);  //ft/s, rot/s
 
       // Power Cell info
       // public static final double PowerCellMass = 3.0 / 16.0; // lbs
