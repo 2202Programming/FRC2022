@@ -263,7 +263,7 @@ public final class Constants {
       // Flywheel maxOpenLoopRPM and gear ratio are used to calculate kFF in shooter
       public static FlyWheelConfig upperFWConfig = new FlyWheelConfig();
       static {
-        upperFWConfig.maxOpenLoopRPM = 12000;  // estimated from 2000 RPM test
+        upperFWConfig.maxOpenLoopRPM = 4000;  // estimated from 2000 RPM test
         upperFWConfig.gearRatio = 1.0;         // upper encoder:fw is 1:1 
         upperFWConfig.sensorPhase = true;
         upperFWConfig.inverted = false;
@@ -274,7 +274,7 @@ public final class Constants {
 
       public static FlyWheelConfig lowerFWConfig = new FlyWheelConfig();
       static {
-        lowerFWConfig.maxOpenLoopRPM = 12000;
+        lowerFWConfig.maxOpenLoopRPM = 4000;
         lowerFWConfig.gearRatio = 1.0;         // lower encoder:fw is 1:1
         lowerFWConfig.sensorPhase = false;
         lowerFWConfig.inverted = false; 

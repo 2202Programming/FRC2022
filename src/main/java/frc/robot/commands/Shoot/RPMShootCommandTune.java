@@ -43,9 +43,13 @@ public class RPMShootCommandTune extends CommandBase{
     private double upperI;
     private double upperD;
 
+    private double FF;
+
     private double r_upperP = 0.2;
     private double r_upperI = 0.000005;
     private double r_upperD = 0.0;
+
+    private double r_FF = 0;
 
     private double requestedVelocity = 25;
     private double previousVelocity = 25;
@@ -84,6 +88,7 @@ public class RPMShootCommandTune extends CommandBase{
         SmartDashboard.putNumber("Requested Flywheel P", r_upperP);
         SmartDashboard.putNumber("Requested Flywheel I", r_upperI);
         SmartDashboard.putNumber("Requested Flywheel D", r_upperD);
+        SmartDashboard.putNumber("requested FF", r_FF);
         CommandScheduler.getInstance().schedule(new IntakeCommand((()-> 0.47), ()-> 0.30,  IntakeMode.LoadCargo));
     }
 
@@ -99,9 +104,12 @@ public class RPMShootCommandTune extends CommandBase{
         upperP = shooter.getUpperP();
         upperI = shooter.getUpperI();
         upperD = shooter.getUpperD();
+    
         SmartDashboard.putNumber("Current Flywheel P", upperP);
         SmartDashboard.putNumber("Current Flywheel I", upperI);
         SmartDashboard.putNumber("Current Flywheel D", upperD);
+        SmartDashboard.putNumber("Current FF", FF);
+
 
         SmartDashboard.putNumber("Velocity Requested", requestedVelocity);
         FlyWheelRPM flyWheelRPM = new FlyWheelRPM();
@@ -115,6 +123,7 @@ public class RPMShootCommandTune extends CommandBase{
         r_upperP = SmartDashboard.getNumber("Requested Flywheel P", upperP);
         r_upperI = SmartDashboard.getNumber("Requested Flywheel I", upperI);
         r_upperD = SmartDashboard.getNumber("Requested Flywheel D", upperD);
+        r_FF = SmartDashboard.getNumber("Requested FF", FF);
         if (upperP != r_upperP){
             shooter.setPIDUpper(r_upperP, upperI, upperD);
             shooter.setPIDLower(r_upperP, upperI, upperD);
