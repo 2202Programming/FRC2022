@@ -271,7 +271,7 @@ public final class Constants {
         upperFWConfig.gearRatio = 3.0;        // upper is 5:1 (motor:fw)
         upperFWConfig.sensorPhase = true;
         upperFWConfig.inverted = false;
-        upperFWConfig.flywheelRadius = 1.4375 / 12.0; // feet
+        upperFWConfig.flywheelRadius = 2 / 12.0; // feet
         upperFWConfig.pid = new PIDFController(0.15, 0.0, 2.0, 0); // kP kI kD kFF
         upperFWConfig.pid.setIzone(1800);
       }

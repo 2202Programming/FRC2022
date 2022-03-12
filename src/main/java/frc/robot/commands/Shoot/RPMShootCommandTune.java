@@ -130,11 +130,10 @@ public class RPMShootCommandTune extends CommandBase{
     }
 
     private void checkDashboard(){
-        requestedVelocity = SmartDashboard.getNumber("Velocity Requested", 10);
-        cmdSS = new ShooterSettings(requestedVelocity, 0.0, USE_CURRENT_ANGLE, 0.01);
+        requestedVelocity = SmartDashboard.getNumber("Velocity Requested", 10);  
         if(requestedVelocity != previousVelocity){
             currentShooterCommand.setFinished();
-            currentShooterCommand = new VelShootCommand(new ShooterSettings(requestedVelocity, 0.0), 20 ); // backup count frames 
+            currentShooterCommand = new VelShootCommand(new ShooterSettings(requestedVelocity, 0.0, USE_CURRENT_ANGLE, 0.01), 20 ); // backup count frames 
             CommandScheduler.getInstance().schedule(currentShooterCommand);
         }
         previousVelocity = requestedVelocity;

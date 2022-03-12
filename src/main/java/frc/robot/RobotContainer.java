@@ -127,15 +127,15 @@ public class RobotContainer {
     if (Constants.HAS_DRIVETRAIN) driverControls.bind(Id.Driver, XboxButton.Y).whenPressed(new InstantCommand(drivetrain::resetAnglePose));
 
     // X - follow path off chooser
-    if (Constants.HAS_DRIVETRAIN) {
-      driverControls.bind(Id.Driver, XboxButton.X)
-          //.whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
-          .whenPressed(auto_pathPlanner_cmd.PathFactory(drivetrain, "AutoPath4").andThen(m_driveController));
-      driverControls.bind(Id.Driver, XboxButton.LB)
-           //.whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
-           .whenPressed(auto_pathPlanner_cmd.PathFactory(drivetrain, "Straight1").andThen(m_driveController));
+    // if (Constants.HAS_DRIVETRAIN) {
+    //   driverControls.bind(Id.Driver, XboxButton.X)
+    //       //.whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
+    //       .whenPressed(auto_pathPlanner_cmd.PathFactory(drivetrain, "AutoPath4").andThen(m_driveController));
+    //   driverControls.bind(Id.Driver, XboxButton.LB)
+    //        //.whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
+    //        .whenPressed(auto_pathPlanner_cmd.PathFactory(drivetrain, "Straight1").andThen(m_driveController));
 
-    }
+    //}
 
     //RB limelight toggle
     driverControls.bind(Id.Driver, XboxButton.RB).whenPressed(new InstantCommand( limelight::toggleLED ));
