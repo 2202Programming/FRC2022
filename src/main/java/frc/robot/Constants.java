@@ -253,7 +253,7 @@ public final class Constants {
       public static final double PCEffectiveRadius = 8 / 2.0 / 12.0; // feet - compressed radius
       
       // constraints
-      public static final double kMaxFPS = 28;      //max FPS
+      public static final double kMaxFPS = 80;      //max FPS
       public static final double maxLongRage = 10; //maximum range in long distance shooting mode
       public static final double minLongRange = 1; //minimum range in long distance shooting mode
       public static final double maxShortRange = 2; //maximum range in short distance shooting mode
@@ -268,7 +268,7 @@ public final class Constants {
         upperFWConfig.sensorPhase = true;
         upperFWConfig.inverted = false;
         upperFWConfig.flywheelRadius = 2 / 12.0; // feet
-        upperFWConfig.pid = new PIDFController(0.2, 0.000005, 2.0, 0); // kP kI kD kFF
+        upperFWConfig.pid = new PIDFController(0.12, 0.0, 4.0, 0.034); // kP kI kD kFF
         upperFWConfig.pid.setIzone(1800);
       }
 
@@ -279,7 +279,7 @@ public final class Constants {
         lowerFWConfig.sensorPhase = false;
         lowerFWConfig.inverted = false; 
         lowerFWConfig.flywheelRadius = 2 / 12.0;   //feet 
-        lowerFWConfig.pid = new PIDFController(0.2, 0.000005, 2.0, 0); // kP kI kD kFF
+        lowerFWConfig.pid = new PIDFController(0.12, 0.0, 4.0, 0.034); // kP kI kD kFF
         lowerFWConfig.pid.setIzone(1800);
       }
 

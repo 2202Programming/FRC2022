@@ -112,6 +112,7 @@ public class PIDFController extends PIDController {
       dest.config_kI(slot,this.getI());
       dest.config_kD(slot, this.getD());
       dest.config_kF(slot, this.getF());
+      System.out.println("***Putting kF of: "+this.getF());
       dest.config_IntegralZone(slot, this.getIzone());
     }
 
