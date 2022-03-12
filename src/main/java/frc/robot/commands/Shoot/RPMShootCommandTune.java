@@ -45,8 +45,8 @@ public class RPMShootCommandTune extends CommandBase{
 
     private double FF;
 
-    private double r_upperP = 0.2;
-    private double r_upperI = 0.000005;
+    private double r_upperP = 0.0;
+    private double r_upperI = 0.0;
     private double r_upperD = 0.0;
 
     private double r_FF = 0;
@@ -104,6 +104,7 @@ public class RPMShootCommandTune extends CommandBase{
         upperP = shooter.getUpperP();
         upperI = shooter.getUpperI();
         upperD = shooter.getUpperD();
+        FF = shooter.getUpperF();
     
         SmartDashboard.putNumber("Current Flywheel P", upperP);
         SmartDashboard.putNumber("Current Flywheel I", upperI);
@@ -125,16 +126,20 @@ public class RPMShootCommandTune extends CommandBase{
         r_upperD = SmartDashboard.getNumber("Requested Flywheel D", upperD);
         r_FF = SmartDashboard.getNumber("Requested FF", FF);
         if (upperP != r_upperP){
-            shooter.setPIDUpper(r_upperP, upperI, upperD);
-            shooter.setPIDLower(r_upperP, upperI, upperD);
+            shooter.setPIDUpper(r_upperP, upperI, upperD, FF);
+            shooter.setPIDLower(r_upperP, upperI, upperD, FF);
         }
         if (upperI != r_upperI){
-            shooter.setPIDUpper(upperP, r_upperI, upperD);
-            shooter.setPIDLower(upperP, r_upperI, upperD);
+            shooter.setPIDUpper(upperP, r_upperI, upperD, FF);
+            shooter.setPIDLower(upperP, r_upperI, upperD, FF);
         }
         if (upperD != r_upperD){
-            shooter.setPIDUpper(upperP, upperI, r_upperD);
-            shooter.setPIDLower(upperP, upperI, r_upperD);
+            shooter.setPIDUpper(upperP, upperI, r_upperD, FF);
+            shooter.setPIDLower(upperP, upperI, r_upperD, FF);
+        }
+        if (FF != r_FF){
+            shooter.setPIDUpper(upperP, upperI, upperD, r_FF);
+            shooter.setPIDLower(upperP, upperI, upperD, r_FF);
         }
     }
 

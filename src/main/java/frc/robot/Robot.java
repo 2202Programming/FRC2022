@@ -76,7 +76,7 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().cancelAll();
     if(RobotContainer.m_driveController != null){
       CommandScheduler.getInstance().schedule(RobotContainer.m_driveController);
-      //CommandScheduler.getInstance().schedule(new RPMShootCommandTune());
+      CommandScheduler.getInstance().schedule(new RPMShootCommandTune());
     }
   }
 
