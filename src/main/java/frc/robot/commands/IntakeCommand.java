@@ -19,6 +19,7 @@ public class IntakeCommand extends CommandBase {
   Intake_Subsystem intake;
   DoubleSupplier intakeSpeed;
   DoubleSupplier sideIntakeSpeed;
+  boolean finished = false;
 
   public enum IntakeMode {
     LoadCargo, ExpellCargo
@@ -71,11 +72,15 @@ public class IntakeCommand extends CommandBase {
     intake.off();
   }
 
+  public void setFinished(){
+    finished = true;
+  }
+
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
 
     //Possible TODO - may want to finish or reset on Cargo COUNT
-    return false;  // never finishes, this can be a default command
+    return finished;  // never finishes, this can be a default command
   }
 }

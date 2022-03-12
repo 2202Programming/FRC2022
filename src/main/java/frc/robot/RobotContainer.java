@@ -18,6 +18,7 @@ import frc.robot.commands.MagazineCommand.MagazineMode;
 import frc.robot.commands.MovePositioner.PositionerMode;
 import frc.robot.commands.MovePositioner;
 import frc.robot.commands.ResetPosition;
+import frc.robot.commands.Shoot.SuperDuperDumbShooter;
 import frc.robot.commands.Shoot.VelShootCommand;
 import frc.robot.commands.auto.auto_cmd_group2;
 import frc.robot.commands.auto.auto_pathPlanner_cmd;
@@ -187,7 +188,8 @@ public class RobotContainer {
     }
 
     if(Constants.HAS_SHOOTER){
-      driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_RIGHT).whileHeld(new VelShootCommand(Shooter.DefaultSettings, 20));
+      driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_RIGHT).whileHeld(new VelShootCommand(Shooter.DefaultSettings, 20)); //our smart shooting command, use this one
+      driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_LEFT).whileHeld(new SuperDuperDumbShooter(1)); //runs intake, magazine at default intake speeds, and shooter and full output - failsafe
     }
   }
 

@@ -18,6 +18,7 @@ public class MagazineCommand extends CommandBase {
     //Defintions
     private final Magazine_Subsystem magazine;
     DoubleSupplier magazineSpeed;
+    boolean finished = false;
 
     final Intake_Subsystem intake;
     //MagazineMode to either Load or Expell cargo on driver input
@@ -61,8 +62,12 @@ public class MagazineCommand extends CommandBase {
         }
     }
 
+    public void setFinished(){
+        finished = true;
+    }
+    
     public boolean isFinished() {
-        return false;
+        return finished;
     }
     @Override
     public void end(boolean interrupted) {
