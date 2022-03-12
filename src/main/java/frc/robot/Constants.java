@@ -131,15 +131,15 @@ public final class Constants {
 
         // TODO: Chec
         // Extension length and rotation needed to hit bars
-        public static final double MID_EXTENSION_LENGTH = 60;
+        public static final double MID_EXTENSION_LENGTH = 10;
         public static final double MID_EXTENSION_ROTATION = 0;
         //TODO: Fix numbers
-        public static final double HIGHER_EXTENSION_LENGTH = 30;
-        public static final double HIGHER_EXTENSION_ROTATION = 30;
+        public static final double HIGHER_EXTENSION_LENGTH = 10;
+        public static final double HIGHER_EXTENSION_ROTATION = -30;
 
         // TODO: change to expected values
-        public static final double TOLERANCE_LENGTH = 0;
-        public static final double TOLERANCE_ROTATION = 0;
+        public static final double TOLERANCE_LENGTH = 0.3;
+        public static final double TOLERANCE_ROTATION = 0.3;
 
         // TODO: Change to actual amperage values
         public static final int MAX_AMPERAGE = 1;

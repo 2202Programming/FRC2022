@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.DriverPrefs;
 import frc.robot.commands.MecanumDriveCmd;
 import frc.robot.commands.climber.CalibrateClimber;
+import frc.robot.commands.climber.*;
 import frc.robot.commands.climber.SetArmExtension;
 import frc.robot.commands.climber.SetArmRotation;
 import frc.robot.commands.test.climberTest;
@@ -81,7 +82,7 @@ public class RobotContainer {
   * </ul>
   */
   void setDriverButtons(){
-    driverControls.bind(Id.Driver, XboxButton.START).whenPressed(new InstantCommand(climber::startCalibration));
+    driverControls.bind(Id.Driver, XboxButton.START).whenPressed(new CalibrateClimber(climber));
     driverControls.bind(Id.Driver, XboxButton.X).whileHeld(new SetArmRotation(driverControls, climber, 0.5));
     driverControls.bind(Id.Driver, XboxButton.B).whileHeld(new SetArmRotation(driverControls, climber, -0.5));
     driverControls.bind(Id.Driver, XboxButton.Y).whileHeld(new SetArmExtension(driverControls, climber, 0.2));

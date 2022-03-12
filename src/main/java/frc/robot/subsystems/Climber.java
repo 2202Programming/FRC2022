@@ -18,10 +18,9 @@ import frc.robot.subsystems.climber.ArmExtension;
 public class Climber extends SubsystemBase {
     // NTs
     private NetworkTable table;
-    private NetworkTableEntry nte_calibrate;
     // PIDSlot used
     int slot = 0;
-    boolean calibrate = false;
+    
 
     private CANSparkMax left_motor_rot = new CANSparkMax(CAN.CMB_LEFT_Rotate, MotorType.kBrushed);
     private CANSparkMax right_motor_rot = new CANSparkMax(CAN.CMB_RIGHT_Rotate, MotorType.kBrushed);
@@ -35,8 +34,6 @@ public class Climber extends SubsystemBase {
 
     public Climber() {
         table = NetworkTableInstance.getDefault().getTable("Climber");
-        nte_calibrate = table.getEntry("calibrate");
-        nte_calibrate.setBoolean(false);
 
         left_Arm_rot = new ArmRotation(table.getSubTable("left_arm_rotation"), left_motor_rot, true);
         right_Arm_rot = new ArmRotation(table.getSubTable("right_arm_rotation"), right_motor_rot, false);
@@ -64,9 +61,9 @@ public class Climber extends SubsystemBase {
     }
 
     public void setRotation(double rotationDegrees) {
-        if (left_Arm_rot != null)
+    //    if (left_Arm_rot != null)
             left_Arm_rot.set(rotationDegrees);
-        if (right_Arm_rot != null)
+    //    if (right_Arm_rot != null)
             right_Arm_rot.set(rotationDegrees);
     }
 
@@ -74,20 +71,8 @@ public class Climber extends SubsystemBase {
         // TODO implement arms with speed control
     }
 
-    public void startCalibration() {
-        System.out.println("started calibration");
-        left_Arm_ext.startCalibration();
-        right_Arm_ext.startCalibration();
-        left_Arm_rot.startCalibration();
-        right_Arm_rot.startCalibration();
-    }
-
     @Override
     public void periodic() {
-        if (nte_calibrate.getBoolean(calibrate) != calibrate && calibrate == false) {
-            startCalibration();
-            calibrate = true;
-        }
         
         left_Arm_ext.periodic();
         right_Arm_ext.periodic();
@@ -101,10 +86,6 @@ public class Climber extends SubsystemBase {
 
     public double getRightExtInches() {
         return right_Arm_ext.getInches();
-    }
-
-    public boolean isCalibrated() {
-        return left_Arm_ext.isCalibrated() && right_Arm_ext.isCalibrated();
     }
 
     public double getLeftRotation() {

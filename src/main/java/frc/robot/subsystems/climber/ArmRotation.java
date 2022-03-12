@@ -33,10 +33,6 @@ public class ArmRotation {
     private NetworkTableEntry nte_backward_limit;
     private NetworkTableEntry nte_forward_limit;
 
-    // calibration
-    private boolean calibrate = false;
-    private NetworkTableEntry nte_calibrate;
-
     public ArmRotation(NetworkTable table, CANSparkMax motor_rot, boolean inverted) {
 
         // motors
@@ -61,9 +57,6 @@ public class ArmRotation {
         nte_des_pos_count = network_table.getEntry("Desired Arm Rotation (counts)");
         nte_des_pos_count.setDouble(0);
 
-        nte_calibrate = this.network_table.getEntry("Calibrate");
-        nte_calibrate.setBoolean(calibrate);
-
         nte_backward_limit = network_table.getEntry("Backward Limit");
         nte_backward_limit.setBoolean(false);
         nte_forward_limit = network_table.getEntry("Forward Limit");
@@ -74,18 +67,9 @@ public class ArmRotation {
         ClimbSettings.rotatePID.copyTo(motor_rot.getPIDController(), 0);
     }
 
-    public void startCalibration() {
-        calibrate = true;
-        nte_calibrate.setBoolean(calibrate);
-    }
-
-    public boolean isCalibrated() {
-        return !calibrate;
-    }
-
     public void periodic() {
 
-        double encoder_curr_counts = encoder.getPosition() * 4096;
+        double encoder_curr_counts = encoder.getPosition() * 8192;
         
 
         nte_curr_pos_count.setDouble(encoder_curr_counts);
@@ -97,40 +81,27 @@ public class ArmRotation {
         nte_backward_limit.setBoolean(BackwardLimitSwitch.isPressed());
         nte_forward_limit.setBoolean(ForwardLimitSwitch.isPressed());
 
-        // TODO: Move all calibration logic to a command
-        if (calibrate) {
-            if (isForwardLimitHit()) {
-                setPercentOutput(0);
-                calibrate = false;
-                nte_calibrate.setBoolean(calibrate);
-                REVLibError ret = encoder.setPosition(0);
-                System.out.println("Calibration complete, setPos return " + ret + " position (deg): " + encoderCountsToDegrees(encoder.getPosition()*8192));
-            } else {
-                setPercentOutput(.25);
-            }
-        }
-
     }
 
-    // TODO: update with new encoders
-    public double DegreesToEncoderCounts(double degrees) {
-        return ((42 * 174.9) / (360 * 20)) * degrees;
-        // 42 and 20 are the tooth pullies, 174.9 is the counts per rot and 360 is the
-        // degrees
-        // 174.9 counter/rotation on motor
-        // Motor is connected to a 20 tooth pulley that drives
-        // a 42 tooth pulley
-        // changes the angle of the ? by this many degrees
+    public void setEncoderPos(double pos) {
+        encoder.setPosition(pos);
     }
 
-    // TODO: fix
+    public double degreesToEncoderCounts(double degrees) {
+        return degrees / 360 * 13 / 6 * 8192;
+        // 360 degrees per rev
+        // 6 motor revs = 13 arm revs
+        // 8192 counts per rev
+    }
     public double encoderCountsToDegrees(double counts) {
-        return 1 / DegreesToEncoderCounts(counts);
+        return counts / 8192 * 6 / 13 * 360;
+        // 8192 counts per rev
+        // 6 motor revs = 13 arm revs
+        // 360 dgrees per rev
     }
 
     public void set(double degrees) {
-        // TODO: use conversion factor variable?
-        double counts = DegreesToEncoderCounts(degrees);
+        double counts = degreesToEncoderCounts(degrees);
         pidController_rot.setReference(counts, CANSparkMax.ControlType.kPosition);
         nte_des_pos_deg.setDouble(degrees);
         nte_des_pos_count.setDouble(counts);

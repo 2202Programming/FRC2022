@@ -10,6 +10,7 @@ public class MidClimbExtend extends CommandBase {
     
     public MidClimbExtend(Climber climber) {
         this.climber = climber;
+        addRequirements(climber);
     }
     
     @Override

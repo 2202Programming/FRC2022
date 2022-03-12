@@ -11,6 +11,7 @@ import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import frc.robot.Constants.ClimbSettings;
+
 /**
  * Note: there are 3 limit switches --
  * 1 limit switch to check if extension is at top
@@ -30,19 +31,8 @@ public class ArmExtension {
     private NetworkTableEntry nte_des_pos_count;
     private NetworkTableEntry nte_motor_amp_limit;
     private NetworkTableEntry nte_amps_now;
-    private NetworkTableEntry nte_calibrate;
     private NetworkTableEntry nte_lower_limt;
     private NetworkTableEntry nte_upper_limt;
-
-    private final int conversion_factor = (90 / (14 + (3 / 4))); // really dumb measured math probably not accurate
-    // //double count = ((25.4*36*42)/(5*24))*inches; //25.4 is mm per inch, 36 is
-    // revs per 1 pev with gearbox, 42 is counts per rev and 5 is mm per 1 tooth
-    // // 42 Counts per rev, but SmartMotion was showing rotations not counts
-    // // Connected to a 36:1 gearbox that could change
-    // // Gearbox connected to a 24 tooth pulley that is connected to a linear belt
-    // // Need to ask mechs to do analysis to convert 24 tooth pulley to linear
-    // distance;
-    private boolean calibrate = false;
 
     public ArmExtension(NetworkTable table, CANSparkMax motor_ext, boolean inverted) {
         this.motor_ext = motor_ext;
@@ -68,53 +58,46 @@ public class ArmExtension {
         nte_motor_amp_limit.setDouble(40);
         nte_amps_now = this.network_table.getEntry("Amps Now");
         nte_amps_now.setDouble(0);
-        nte_calibrate = this.network_table.getEntry("Calibrate");
-        nte_calibrate.setBoolean(calibrate);
 
         nte_lower_limt = this.network_table.getEntry("Lower Limit");
         nte_upper_limt = this.network_table.getEntry("Upper Limit");
         ClimbSettings.extendPID.copyTo(motor_ext.getPIDController(), 0);
     }
 
-    public void startCalibration() {
-        calibrate = true;
-        nte_calibrate.setBoolean(calibrate);
-    }
-
-    public boolean isCalibrated() {
-        return !calibrate;
-    }
-
     public void periodic() {
-        if (calibrate) {
-            if (isLowerLimitHit()) {
-                setPercentOutput(0);
-                calibrate = false;
-                nte_calibrate.setBoolean(calibrate);
-                motor_ext.getEncoder().setPosition(0);
-            } else {
-                setPercentOutput(-.2);
-            }
-        }
-//        setPercentOutput(0);
+        // setPercentOutput(0);
         nte_lower_limt.setBoolean(ReverseLimitSwitch.isPressed());
         nte_upper_limt.setBoolean(ForwardLimitSwitch.isPressed());
 
-        nte_curr_pos_in.setDouble(motor_ext.getEncoder().getPosition() / conversion_factor);
+        nte_curr_pos_in.setDouble(encoderCountsToInches(motor_ext.getEncoder().getPosition()));
         nte_curr_pos_count.setDouble(motor_ext.getEncoder().getPosition());
         motor_ext.setSmartCurrentLimit((int) nte_motor_amp_limit.getDouble(5));
         nte_amps_now.getDouble(motor_ext.getOutputCurrent());
     }
 
     public void set(double inches) {
-        if (calibrate)
-            return;
-        double count = inches * conversion_factor;
+        double count = inchesToEncoderCounts(inches);
         pidController_ext.setReference(count, CANSparkMax.ControlType.kPosition);
         // motor_ext.getPIDController().setReference(count,
         // CANSparkMax.ControlType.kPosition);
         nte_des_pos_in.setDouble(inches);
         nte_des_pos_count.setDouble(count);
+    }
+
+    public void setMotorPos(double pos) {
+        motor_ext.getEncoder().setPosition(pos);
+    }
+
+    public double inchesToEncoderCounts(double inches) {
+        return inches / (22 * 0.25) * 42;
+        // 1 rev = 5.5 in circunference
+        // 42 counts per rev
+    }
+
+    public double encoderCountsToInches(double counts) {
+        return counts / 42 * (22 * 0.25);
+        // 42 counts per rev
+        // 1 rev = 5.5 in circumference
     }
 
     public void setPercentOutput(double percentOutput) {
@@ -126,6 +109,6 @@ public class ArmExtension {
     }
 
     public double getInches() {
-        return this.motor_ext.getEncoder().getPosition() * conversion_factor;
+        return encoderCountsToInches(this.motor_ext.getEncoder().getPosition());
     }
 }
