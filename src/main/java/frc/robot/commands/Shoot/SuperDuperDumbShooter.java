@@ -35,8 +35,8 @@ public class SuperDuperDumbShooter extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    CommandScheduler.getInstance().schedule(intakeCommand);
-    CommandScheduler.getInstance().schedule(magazineCommand);
+    //CommandScheduler.getInstance().schedule(intakeCommand);
+    //CommandScheduler.getInstance().schedule(magazineCommand);
     shooter.onPercent(percent, percent);
   }
 
