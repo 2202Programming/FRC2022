@@ -175,4 +175,32 @@ public class HubCentricDrive extends CommandBase {
     return this.angleError;
   }
 
+  //returns a position for the hub adjusted for robot movement
+  public Pose2d adjustHubPosition(){
+    final double HANGTIME = 1.5;
+    double[] u = {drivetrain.getChassisSpeeds().vxMetersPerSecond, drivetrain.getChassisSpeeds().vxMetersPerSecond}; //robot's direction vector
+    double robotX = drivetrain.getPose().getX(); //x position of robot
+    double robotY = drivetrain.getPose().getY(); //y position of robot
+    double hubX = Constants.Autonomous.hubPose.getX(); //real hub x
+    double hubY = Constants.Autonomous.hubPose.getY(); //real hub y
+    double[] v = {hubY-robotY, robotX-hubX}; //tangent vector to hub
+    Rotation2d oneAndTwo = Rotation2d.fromDegrees(drivetrain.getBearing()).plus(getHeading2Target(drivetrain.getPose(), Constants.Autonomous.hubPose));
+    Rotation2d angle3 = new Rotation2d(90).minus(oneAndTwo); //angle in degrees
+
+    /*find projection of u onto v*/
+    double projectionMagnitude = (u[0]*v[0]+u[1]*v[1]) / (Math.pow(v[0], 2) + Math.pow(v[1],2));
+    double[] tangentVector = {projectionMagnitude*v[0], projectionMagnitude*v[1]};
+
+    double offsetDistance = Math.sqrt(Math.pow(tangentVector[0], 2) + Math.pow(tangentVector[1], 2)) * HANGTIME;
+
+    Rotation2d temp = angle3.plus(new Rotation2d(180));
+    double xOffset = Math.cos(temp.getDegrees())*offsetDistance; 
+    double yOffset = Math.sin(temp.getDegrees())*offsetDistance;
+
+    double newX = xOffset + hubX;
+    double newY = yOffset + hubY;
+
+    return new Pose2d(newX, newY, new Rotation2d());
+  }
+
 }
