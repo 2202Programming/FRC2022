@@ -127,10 +127,10 @@ public class RobotContainer {
 
     if (Constants.HAS_DRIVETRAIN) {
       //reset angle only
-      driverControls.bind(Id.Assistant, XboxButton.X).whenPressed(new InstantCommand(drivetrain::resetAnglePose));
+      driverControls.bind(Id.Driver, XboxButton.X).whenPressed(new InstantCommand(drivetrain::resetAnglePose));
       
       //reset angle and X,Y to start pose3
-      driverControls.bind(Id.Assistant, XboxButton.Y).whenPressed(new InstantCommand( ()-> 
+      driverControls.bind(Id.Driver, XboxButton.Y).whenPressed(new InstantCommand( ()-> 
       {
         drivetrain.setPose(Autonomous.startPose3);
       }));
