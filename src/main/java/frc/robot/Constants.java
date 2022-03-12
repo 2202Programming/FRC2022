@@ -249,8 +249,7 @@ public final class Constants {
       // public static final double PowerCellMass = 3.0 / 16.0; // lbs
       public static final double PCNominalRadius = 10 / 2.0 / 12.0; // feet - power cell
       public static final double PCEffectiveRadius = 8 / 2.0 / 12.0; // feet - compressed radius
-      public static final double FlyWheelGearRatio = 1;
-
+      
       /**
        * Convert Target RPM to [motor-units/100ms] 4096 Units/Rev * Target RPM * 600 =
        * velocity setpoint is in units/100ms
@@ -267,23 +266,23 @@ public final class Constants {
       // Flywheel maxOpenLoopRPM and gear ratio are used to calculate kFF in shooter
       public static FlyWheelConfig upperFWConfig = new FlyWheelConfig();
       static {
-        upperFWConfig.maxOpenLoopRPM = 1330;  // estimated from 2000 RPM test
-        upperFWConfig.gearRatio = 3.0;        // upper is 5:1 (motor:fw)
+        upperFWConfig.maxOpenLoopRPM = 12000;  // estimated from 2000 RPM test
+        upperFWConfig.gearRatio = 3.0;        // upper is 3:1 (motor:fw)
         upperFWConfig.sensorPhase = true;
         upperFWConfig.inverted = false;
         upperFWConfig.flywheelRadius = 2 / 12.0; // feet
-        upperFWConfig.pid = new PIDFController(0.15, 0.0, 2.0, 0); // kP kI kD kFF
+        upperFWConfig.pid = new PIDFController(0.2, 0.000005, 2.0, 0); // kP kI kD kFF
         upperFWConfig.pid.setIzone(1800);
       }
 
       public static FlyWheelConfig lowerFWConfig = new FlyWheelConfig();
       static {
-        lowerFWConfig.maxOpenLoopRPM = 1330;
-        lowerFWConfig.gearRatio = 3.0;         // lower fw gear 3:1  (motor:flywheel)
+        lowerFWConfig.maxOpenLoopRPM = 12000;
+        lowerFWConfig.gearRatio = 3.0;         // lower fw gear 3:1 (motor:flywheel)
         lowerFWConfig.sensorPhase = false;
         lowerFWConfig.inverted = false; 
         lowerFWConfig.flywheelRadius = 2 / 12.0;   //feet 
-        lowerFWConfig.pid = new PIDFController(0.15, 0.0, 2.0, 0); // kP kI kD kFF
+        lowerFWConfig.pid = new PIDFController(0.2, 0.000005, 2.0, 0); // kP kI kD kFF
         lowerFWConfig.pid.setIzone(1800);
       }
 

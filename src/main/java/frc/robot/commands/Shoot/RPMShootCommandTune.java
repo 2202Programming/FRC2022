@@ -43,8 +43,8 @@ public class RPMShootCommandTune extends CommandBase{
     private double upperI;
     private double upperD;
 
-    private double r_upperP = 0.1;
-    private double r_upperI = 0.0;
+    private double r_upperP = 0.2;
+    private double r_upperI = 0.000005;
     private double r_upperD = 0.0;
 
     private double requestedVelocity = 25;
@@ -133,7 +133,7 @@ public class RPMShootCommandTune extends CommandBase{
         requestedVelocity = SmartDashboard.getNumber("Velocity Requested", 10);  
         if(requestedVelocity != previousVelocity){
             currentShooterCommand.setFinished();
-            currentShooterCommand = new VelShootCommand(new ShooterSettings(requestedVelocity, 0.0, USE_CURRENT_ANGLE, 0.01), 20 ); // backup count frames 
+            currentShooterCommand = new VelShootCommand(new ShooterSettings(requestedVelocity, 0.0, USE_CURRENT_ANGLE, 0.1), 20 ); // backup count frames 
             System.out.println("**Requested velocity: " + requestedVelocity);
             CommandScheduler.getInstance().schedule(currentShooterCommand);
         }

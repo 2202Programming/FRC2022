@@ -175,7 +175,7 @@ public class RobotContainer {
 
       //MagazineCommand to intake or expell ball
       driverControls.bind(Id.Assistant, XboxButton.X).whileHeld(new MagazineCommand((()-> 1.0), MagazineMode.LoadCargo) );
-      driverControls.bind(Id.Assistant, XboxButton.Y).whileHeld(new MagazineCommand((()-> 1.0), MagazineMode.ExpellCargo) );
+      //driverControls.bind(Id.Assistant, XboxButton.Y).whileHeld(new MagazineCommand((()-> 1.0), MagazineMode.ExpellCargo) );
     }
 
     

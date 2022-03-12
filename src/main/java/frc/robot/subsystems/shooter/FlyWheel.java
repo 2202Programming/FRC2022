@@ -69,7 +69,7 @@ public class FlyWheel {
     this.cfg = cfg;
 
     // flywheel constants RPM given motor-unit counts (f(gear, meas-period))
-    FWrpm2Counts = Shooter.kRPM2Counts * cfg.gearRatio; // motor counts are bigger, motor spins faster than FW
+    FWrpm2Counts = Shooter.kRPM2Counts / cfg.gearRatio; // motor counts are bigger, motor spins faster than FW
     MUCounts2FWrpm = 1.0 / FWrpm2Counts; // motor units (counts/100ms) to FW RPM
 
     // use max rpm and max motor out to calculate kff
