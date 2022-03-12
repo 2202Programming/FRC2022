@@ -19,6 +19,7 @@ import frc.robot.Constants.Shooter;
 import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.ifx.DriverControls;
+import frc.robot.util.PoseMath;
 
 /* Current driving behavior:
   Starts in field centric
@@ -101,27 +102,33 @@ public class HubCentricDrive extends CommandBase {
     // negative values when we push forward.
     xSpeed = xspeedLimiter.calculate(dc.getVelocityX()) * DriveTrain.kMaxSpeed;
     ySpeed = yspeedLimiter.calculate(dc.getVelocityY()) * DriveTrain.kMaxSpeed;
-    rot = rotLimiter.calculate(dc.getXYRotation()) * DriveTrain.kMaxAngularSpeed;
 
     // Clamp speeds/rot from the Joysticks
     xSpeed = MathUtil.clamp(xSpeed, -Constants.DriveTrain.kMaxSpeed, Constants.DriveTrain.kMaxSpeed);
     ySpeed = MathUtil.clamp(ySpeed, -Constants.DriveTrain.kMaxSpeed, Constants.DriveTrain.kMaxSpeed);
-    rot = MathUtil.clamp(rot, -Constants.DriveTrain.kMaxAngularSpeed, Constants.DriveTrain.kMaxAngularSpeed);
 
     // set goal of angle PID to be heading (in rad) from current position to
     // centerfield
-    targetAngle = getHeading2Target(drivetrain.getPose(), Autonomous.hubPose);
+    targetAngle = PoseMath.getHeading2Target(drivetrain.getPose(), Autonomous.hubPose);
     targetAngle.plus(new Rotation2d(Math.PI)); // flip since shooter is on "back" of robot, bound to -pi to +pi
     currentAngle = drivetrain.getPose().getRotation(); // from -pi to pi
-    angleError = targetAngle;
-    angleError.minus(currentAngle);
-    velocityCorrectionAngle = velCorrectOdometerAngle();
+
+    //get correction angle for velocity based on our velocity vector to hub
+    velocityCorrectionAngle = PoseMath.angleVirtualTarget(drivetrain.getPose(), Autonomous.hubPose, adjustHubPosition());
+
     targetAngle.minus(velocityCorrectionAngle); //might need to be plus, depending on direction of travel??
+    //Also, this correction angle is probably for the intake side ("front of robot") and may need a PI inversion so the shooter is pointing to hub
+
     anglePid.setSetpoint(targetAngle.getDegrees()); //PID was tuned in degrees already
     rot = anglePid.calculate(currentAngle.getDegrees());
 
+    //angleError is just for reporting
+    angleError = targetAngle;
+    angleError.minus(currentAngle);
+
     if (limelight.getTarget() && limelight.getLEDStatus()) {
       // if limelight is available, override rotation input from odometery to limelight
+      // limelight is on the shooter side, so we don't need to worry about flipping target angles
       limelightPid.setSetpoint(velocityCorrectionAngle.getDegrees()*Shooter.degPerPixel); // 0 is towards target, adjust based on velocity
       limelightPidOutput = limelightPid.calculate(limelight.getFilteredX());
       angleError = Rotation2d.fromDegrees(limelight.getFilteredX()*Shooter.degPerPixel); //approximation of degrees off center
@@ -131,15 +138,6 @@ public class HubCentricDrive extends CommandBase {
 
     output_states = kinematics
         .toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, currentAngle));
-  }
-
-  //return Rot2d of correction to original target angle based on velocity and hangtime
-  private Rotation2d velCorrectOdometerAngle(){
-    //distance to target is PoseMath.poseDistance(RobotContainer.RC().drivetrain.getPose(), Autonomous.hubPose);
-    //drivetrain has getBearing and getVelocity methods
-    //local method getHeading2Target(drivetrain.getPose(), Autonomous.hubPose);
-    //estimate hangtime a 1.5s for now, later will look up based on distance
-    return new Rotation2d(0); //do something fancier based on robot motion
   }
 
   @Override
@@ -153,13 +151,6 @@ public class HubCentricDrive extends CommandBase {
   public void end(boolean interrupted) {
     drivetrain.stop();
   }
-
-  // takes 2 positions, gives heading from current point to target (in degrees)
-  Rotation2d getHeading2Target(Pose2d current, Pose2d target) {
-    // from -PI to +PI
-    return new Rotation2d(Math.atan2(target.getY() - current.getY(), target.getX() - current.getX()));
-  }
-
 
   void updateNT() {
     log_counter++;
@@ -177,14 +168,14 @@ public class HubCentricDrive extends CommandBase {
 
   //returns a position for the hub adjusted for robot movement
   public Pose2d adjustHubPosition(){
-    final double HANGTIME = 1.5;
+    final double HANGTIME = 1.5; //needs to be measured, probably a trendline equation
     double[] u = {drivetrain.getChassisSpeeds().vxMetersPerSecond, drivetrain.getChassisSpeeds().vxMetersPerSecond}; //robot's direction vector
     double robotX = drivetrain.getPose().getX(); //x position of robot
     double robotY = drivetrain.getPose().getY(); //y position of robot
     double hubX = Constants.Autonomous.hubPose.getX(); //real hub x
     double hubY = Constants.Autonomous.hubPose.getY(); //real hub y
     double[] v = {hubY-robotY, robotX-hubX}; //tangent vector to hub
-    Rotation2d oneAndTwo = Rotation2d.fromDegrees(drivetrain.getBearing()).plus(getHeading2Target(drivetrain.getPose(), Constants.Autonomous.hubPose));
+    Rotation2d oneAndTwo = Rotation2d.fromDegrees(drivetrain.getBearing()).plus(PoseMath.getHeading2Target(drivetrain.getPose(), Constants.Autonomous.hubPose));
     Rotation2d angle3 = new Rotation2d(90).minus(oneAndTwo); //angle in degrees
 
     /*find projection of u onto v*/

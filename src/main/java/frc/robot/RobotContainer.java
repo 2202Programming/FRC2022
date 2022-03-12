@@ -122,18 +122,28 @@ public class RobotContainer {
         //.whenPressed(new SwerveDriveTest(drivetrain, 1, 0).withTimeout(8));
 
     // Y - reset Pose
-    if (Constants.HAS_DRIVETRAIN) driverControls.bind(Id.Driver, XboxButton.Y).whenPressed(new InstantCommand(drivetrain::resetAnglePose));
+    //if (Constants.HAS_DRIVETRAIN) driverControls.bind(Id.Driver, XboxButton.Y).whenPressed(new InstantCommand(drivetrain::resetAnglePose));
 
-    // X - follow path off chooser
-    // if (Constants.HAS_DRIVETRAIN) {
-    //   driverControls.bind(Id.Driver, XboxButton.X)
-    //       //.whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
-    //       .whenPressed(auto_pathPlanner_cmd.PathFactory(drivetrain, "AutoPath4").andThen(m_driveController));
-    //   driverControls.bind(Id.Driver, XboxButton.LB)
-    //        //.whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
-    //        .whenPressed(auto_pathPlanner_cmd.PathFactory(drivetrain, "Straight1").andThen(m_driveController));
-
-    //}
+    if (Constants.HAS_DRIVETRAIN) {
+      //reset angle only
+      driverControls.bind(Id.Assistant, XboxButton.X).whenPressed(new InstantCommand(drivetrain::resetAnglePose));
+      
+      //reset angle and X,Y to start pose3
+      driverControls.bind(Id.Assistant, XboxButton.Y).whenPressed(new InstantCommand( ()-> 
+      {
+        drivetrain.setPose(Autonomous.startPose3);
+      }));
+    }
+    
+    //X - follow path off chooser
+    if (Constants.HAS_DRIVETRAIN) {
+      driverControls.bind(Id.Driver, XboxButton.START)
+          //.whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
+          .whenPressed(auto_pathPlanner_cmd.PathFactory(drivetrain, "AutoPath4").andThen(m_driveController));
+      driverControls.bind(Id.Driver, XboxButton.BACK)
+           //.whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
+           .whenPressed(auto_pathPlanner_cmd.PathFactory(drivetrain, "Straight1").andThen(m_driveController));
+    }
 
     //RB limelight toggle
     driverControls.bind(Id.Driver, XboxButton.RB).whenPressed(new InstantCommand( limelight::toggleLED ));
@@ -173,22 +183,12 @@ public class RobotContainer {
 
       //MagazineCommand to intake or expell ball
       driverControls.bind(Id.Assistant, XboxButton.X).whileHeld(new MagazineCommand((()-> 1.0), MagazineMode.LoadCargo) );
-      //driverControls.bind(Id.Assistant, XboxButton.Y).whileHeld(new MagazineCommand((()-> 1.0), MagazineMode.ExpellCargo) );
+      driverControls.bind(Id.Assistant, XboxButton.Y).whileHeld(new MagazineCommand((()-> 1.0), MagazineMode.ExpellCargo) );
     }
-
-    
 
     if(Constants.HAS_SHOOTER){
       driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_RIGHT).whileHeld(new VelShootCommand(Shooter.DefaultSettings, 20));
-    }  
-       // Y - reset Pose
-       if (Constants.HAS_DRIVETRAIN) {
-          //driverControls.bind(Id.Assistant, XboxButton.Y).whenPressed(new InstantCommand(drivetrain::resetPose));
-          driverControls.bind(Id.Assistant, XboxButton.Y).whenPressed(new InstantCommand( ()-> 
-          {
-            drivetrain.setPose(Autonomous.startPose3);
-          }));
-        }
+    }
   }
 
   public Command getAutonomousCommand() {

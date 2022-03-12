@@ -25,6 +25,12 @@ public class PoseMath {
           (Math.pow(pose1.getY() - pose2.getY(),2)));
   }
 
+  // takes 2 positions, gives heading from current point to target (in degrees)
+  public static Rotation2d getHeading2Target(Pose2d current, Pose2d target) {
+    // from -PI to +PI
+    return new Rotation2d(Math.atan2(target.getY() - current.getY(), target.getX() - current.getX()));
+  }
+
   public static Pose2d convertMetersToFeet(Pose2d pose){
     return new Pose2d(pose.getX()*metersToFeet, pose.getY()*metersToFeet, pose.getRotation());
   }
