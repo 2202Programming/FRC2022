@@ -134,6 +134,7 @@ public class RPMShootCommandTune extends CommandBase{
         if(requestedVelocity != previousVelocity){
             currentShooterCommand.setFinished();
             currentShooterCommand = new VelShootCommand(new ShooterSettings(requestedVelocity, 0.0, USE_CURRENT_ANGLE, 0.01), 20 ); // backup count frames 
+            System.out.println("**Requested velocity: " + requestedVelocity);
             CommandScheduler.getInstance().schedule(currentShooterCommand);
         }
         previousVelocity = requestedVelocity;
