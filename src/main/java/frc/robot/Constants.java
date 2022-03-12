@@ -238,7 +238,9 @@ public final class Constants {
     } 
     
     public final static class MagazineSettings {
-     
+      public final static double defaultFrontIntakeSpeed = 0.5; 
+      public final static double defaultSideIntakeSpeed = 0.3; 
+      public final static double defaultMagazineSpeed = 1.0;
     }
 
     public static final class Shooter {

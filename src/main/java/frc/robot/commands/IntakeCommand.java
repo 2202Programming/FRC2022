@@ -7,6 +7,7 @@ package frc.robot.commands;
 import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
+import frc.robot.Constants.MagazineSettings;
 import frc.robot.subsystems.Intake_Subsystem;
 
 public class IntakeCommand extends CommandBase {
@@ -36,6 +37,10 @@ public class IntakeCommand extends CommandBase {
       this.sideIntakeSpeed = sideIntakeSpeedFunction;
 
       //addRequirements(intake);
+  }
+
+  public IntakeCommand(IntakeMode mode) {
+    this(()->MagazineSettings.defaultFrontIntakeSpeed, ()->MagazineSettings.defaultSideIntakeSpeed, mode);
   }
 
   // Called when the command is initially scheduled.
