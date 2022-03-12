@@ -252,13 +252,8 @@ public final class Constants {
       public static final double PCNominalRadius = 10 / 2.0 / 12.0; // feet - power cell
       public static final double PCEffectiveRadius = 8 / 2.0 / 12.0; // feet - compressed radius
       
-      /**
-       * Convert Target RPM to [motor-units/100ms] 4096 Units/Rev * Target RPM * 600 =
-       * velocity setpoint is in units/100ms
-       */
-      public static final double kRPM2Counts = 4096.0/600.0; // MU-100 (no gearing)
-      public static final double kMaxMO = 1023;  // max Motor output
-      public static final double kMaxFPS = 28; //max FPS
+      // constraints
+      public static final double kMaxFPS = 28;      //max FPS
       public static final double maxLongRage = 10; //maximum range in long distance shooting mode
       public static final double minLongRange = 1; //minimum range in long distance shooting mode
       public static final double maxShortRange = 2; //maximum range in short distance shooting mode
@@ -269,7 +264,7 @@ public final class Constants {
       public static FlyWheelConfig upperFWConfig = new FlyWheelConfig();
       static {
         upperFWConfig.maxOpenLoopRPM = 12000;  // estimated from 2000 RPM test
-        upperFWConfig.gearRatio = 3.0;        // upper is 3:1 (motor:fw)
+        upperFWConfig.gearRatio = 1.0;         // upper encoder:fw is 1:1 
         upperFWConfig.sensorPhase = true;
         upperFWConfig.inverted = false;
         upperFWConfig.flywheelRadius = 2 / 12.0; // feet
@@ -280,7 +275,7 @@ public final class Constants {
       public static FlyWheelConfig lowerFWConfig = new FlyWheelConfig();
       static {
         lowerFWConfig.maxOpenLoopRPM = 12000;
-        lowerFWConfig.gearRatio = 3.0;         // lower fw gear 3:1 (motor:flywheel)
+        lowerFWConfig.gearRatio = 1.0;         // lower encoder:fw is 1:1
         lowerFWConfig.sensorPhase = false;
         lowerFWConfig.inverted = false; 
         lowerFWConfig.flywheelRadius = 2 / 12.0;   //feet 
