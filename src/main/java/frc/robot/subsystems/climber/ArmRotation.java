@@ -69,7 +69,7 @@ public class ArmRotation {
         nte_forward_limit = network_table.getEntry("Forward Limit");
         nte_forward_limit.setBoolean(false);
 
-        encoder = motor_rot.getEncoder(com.revrobotics.SparkMaxRelativeEncoder.Type.kQuadrature, 4096);
+        encoder = motor_rot.getEncoder(com.revrobotics.SparkMaxRelativeEncoder.Type.kQuadrature, 8192);
         encoder.setInverted(inverted);
         ClimbSettings.rotatePID.copyTo(motor_rot.getPIDController(), 0);
     }
@@ -104,7 +104,7 @@ public class ArmRotation {
                 calibrate = false;
                 nte_calibrate.setBoolean(calibrate);
                 REVLibError ret = encoder.setPosition(0);
-                System.out.println("Calibration complete, setPos return " + ret + " position (deg): " + encoderCountsToDegrees(encoder.getPosition()*4096));
+                System.out.println("Calibration complete, setPos return " + ret + " position (deg): " + encoderCountsToDegrees(encoder.getPosition()*8192));
             } else {
                 setPercentOutput(.25);
             }
