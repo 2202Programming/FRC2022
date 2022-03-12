@@ -283,12 +283,12 @@ public class Shooter_Subsystem extends SubsystemBase  {
     nt_upperRPMErr.setDouble(error.upper);
   }
 
-  public void setPIDUpper(double kP, double kI, double kD){
-    upper_shooter.setPID(kP, kI, kD);
+  public void setPIDUpper(double kP, double kI, double kD, double kF){
+    upper_shooter.setPID(kP, kI, kD, kF);
   }
 
-  public void setPIDLower(double kP, double kI, double kD){
-    lower_shooter.setPID(kP, kI, kD);
+  public void setPIDLower(double kP, double kI, double kD, double kF){
+    lower_shooter.setPID(kP, kI, kD, kF);
   }
 
   public double getlowerP(){
@@ -314,6 +314,14 @@ public class Shooter_Subsystem extends SubsystemBase  {
   public double getUpperD(){
     return upper_shooter.getD();
   }
+
+  public double getUpperF(){
+    return upper_shooter.getF();
+  }
+  public double getLowerF(){
+    return upper_shooter.getF();
+  }
+
 
 }
 

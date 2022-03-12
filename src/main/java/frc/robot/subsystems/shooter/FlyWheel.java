@@ -96,7 +96,7 @@ public class FlyWheel {
     motor.configFactoryDefault();
 
     // use the config to set all values at once
-    cfg.pid.copyTo(srxconfig.slot0);
+    cfg.pid.copyTo(motor, kPIDLoopIdx );
 
     srxconfig.slot1 = srxconfig.slot0;
     motor.configAllSettings(srxconfig);
@@ -137,14 +137,10 @@ public class FlyWheel {
     motor.set(ControlMode.PercentOutput, pct);
   }
 
-  public void setPID(double kP, double kI, double kD){
-    cfg.pid.setPID(kP, kI, kD);
-    cfg.pid.copyTo(srxconfig.slot0);
-    motor.config_kP(0, kP);
-    motor.config_kI(0, kI);
-    motor.config_kD(0, kD);
-  
-
+  // This API is for testing/tuning only.
+  public void setPID(double kP, double kI, double kD, double kF){
+    cfg.pid.setPIDF(kP, kI, kD, kF);
+    cfg.pid.copyTo(motor, kPIDLoopIdx);
   }
 
   public double getP(){
@@ -158,6 +154,8 @@ public class FlyWheel {
   public double getD(){
     return cfg.pid.getD();
   }
-
+  public double getF() {
+    return cfg.pid.getF(); 
+  } 
 
 } // FlyWheel
