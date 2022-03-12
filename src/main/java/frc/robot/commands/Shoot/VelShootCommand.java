@@ -15,13 +15,16 @@ import frc.robot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
 import frc.robot.util.PoseMath;
 
 
-public class VelShootCommand extends CommandBase{ 
+public class VelShootCommand extends CommandBase implements SolutionProvider{ 
+
+   
     public static final double USE_CURRENT_ANGLE = 0.0;
 
     final Magazine_Subsystem magazine;
     final Intake_Subsystem intake;
     final Shooter_Subsystem shooter;
     final Positioner_Subsystem positioner;
+    final SolutionProvider solutionProvider;  
     final double TESTANGLE = 0.0;
     final double TESTTOL = 0.02;
     final int BackupPeriod;
@@ -52,7 +55,7 @@ public class VelShootCommand extends CommandBase{
     private boolean solution = true;
     private boolean shooterAngleLongRange;
     private boolean outOfRange = false;
-    private boolean freeShootingMode = false;
+
     double log_counter = 0;
 
     final static ShooterSettings defaultShooterSettings = new ShooterSettings(20.0, 0.0, USE_CURRENT_ANGLE, 0.01);
@@ -78,11 +81,13 @@ public class VelShootCommand extends CommandBase{
     
     Stage stage;
     
-    public VelShootCommand(ShooterSettings shooterSettings, int backupFrameCount){
+    public VelShootCommand(ShooterSettings shooterSettings, int backupFrameCount, SolutionProvider solutionProvider){
         this.intake = RobotContainer.RC().intake;
         this.shooter = RobotContainer.RC().shooter;
         this.magazine = RobotContainer.RC().magazine;
         this.positioner = RobotContainer.RC().positioner;
+        // the default solution provider is always true
+        this.solutionProvider = (solutionProvider ==null) ? this : solutionProvider;
         specialSettings = shooterSettings;
         BackupPeriod = backupFrameCount;  //number of frames to move mag back slowly 5-20
         addRequirements(magazine,shooter,positioner);
@@ -93,6 +98,11 @@ public class VelShootCommand extends CommandBase{
         shooterState = table.getEntry("/VelShootCmd/ShooterState");
         distance = table.getEntry("/VelShootCmd/Distance");
         NToutOfRange = table.getEntry("/VelShootCmd/OutOfRange");
+    }
+
+    public VelShootCommand(ShooterSettings shooterSettings, int backupFrameCount)
+    {
+        this(shooterSettings, backupFrameCount, null);
     }
 
     @Override
@@ -127,33 +137,30 @@ public class VelShootCommand extends CommandBase{
             case BackingMagazine:                
                 backupCounter++;
                 if (backupCounter > BackupPeriod) {
-                    backupCounter = 0;
-                    magazine.driveWheelOff();
+                    // issues commands for next stage 
                     stage = Stage.WaitingForFlyWheel;
-                    shooter.spinup(cmdSS);
+                    backupCounter = 0;
+                    magazine.driveWheelOff();           // balls are off the flywheels
+                    shooter.spinup(cmdSS);              // spin shooter up
+                    //here we could trigger a drive-sys/Limelight command that responds to WaitingForSoln
                 }                
             break;
 
             case WaitingForFlyWheel:
-                if(shooter.isReadyToShoot()){
+                if (shooter.isReadyToShoot()) {
                     stage = Stage.WaitingForSolution;
                 }
             break;
 
             case WaitingForSolution:
-                if(!freeShootingMode) { //only check for a solution in guided shooting mode
-                    if(solution){
-                        stage = Stage.Shooting;
-                        magazine.driveWheelOn(1.0);
-                    }
-                } else {
+                if (solutionProvider.isOnTarget()) {
                     stage = Stage.Shooting;
                     magazine.driveWheelOn(1.0);
                 }
                 break;
 
             case Shooting:
-                if(!shooter.isReadyToShoot()){
+                if (!shooter.isReadyToShoot()){
                     magazine.driveWheelOff();
                     stage = Stage.WaitingForFlyWheel;
                 }
@@ -192,7 +199,6 @@ public class VelShootCommand extends CommandBase{
         } else if ((currentDistance > Shooter.maxShortRange) && !shooterAngleLongRange) { //above short trange, switch to long range
             positioner.retract();
         }
-    
     }
 
     private void calculateVelocity(){       
@@ -220,15 +226,15 @@ public class VelShootCommand extends CommandBase{
         }
     }
 
-    public boolean getSolution() {
-        return this.solution;
-    }
+    // public boolean getSolution() {
+    //     return this.solution;
+    // }
 
-    public void setSolution(boolean solution) {
-        this.solution = solution;
-    }
+    // public void setSolution(boolean solution) {
+    //     this.solution = solution;
+    // }
 
-    public void setFreeShootingMode(boolean freeShootingMode) {
-        this.freeShootingMode = freeShootingMode;
-    }
+    // public void setFreeShootingMode(boolean freeShootingMode) {
+    //     this.freeShootingMode = freeShootingMode;
+    // }
 }

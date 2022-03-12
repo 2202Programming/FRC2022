@@ -4,12 +4,11 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.Autonomous;
 import frc.robot.Constants.DriverPrefs;
+import frc.robot.Constants.Shooter;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.IntakeCommand.IntakeMode;
 import static frc.robot.commands.MoveIntake.DeployMode;
@@ -19,7 +18,7 @@ import frc.robot.commands.MagazineCommand.MagazineMode;
 import frc.robot.commands.MovePositioner.PositionerMode;
 import frc.robot.commands.MovePositioner;
 import frc.robot.commands.ResetPosition;
-import frc.robot.commands.Shoot.BasicShootCommand;
+import frc.robot.commands.Shoot.VelShootCommand;
 import frc.robot.commands.auto.auto_cmd_group2;
 import frc.robot.commands.auto.auto_pathPlanner_cmd;
 import frc.robot.commands.swerve.DriveController;
@@ -37,7 +36,6 @@ import frc.robot.subsystems.hid.XboxButton;
 import frc.robot.subsystems.hid.SideboardController.SBButton;
 import frc.robot.subsystems.ifx.DriverControls.Id;
 import frc.robot.subsystems.shooter.Shooter_Subsystem;
-import frc.robot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
 import frc.robot.ux.Dashboard;
 
 public class RobotContainer {
@@ -181,7 +179,7 @@ public class RobotContainer {
     
 
     if(Constants.HAS_SHOOTER){
-      driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_RIGHT).whileHeld(new BasicShootCommand(new ShooterSettings(20, 0.0), 20 ));
+      driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_RIGHT).whileHeld(new VelShootCommand(Shooter.DefaultSettings, 20));
     }  
        // Y - reset Pose
        if (Constants.HAS_DRIVETRAIN) {
