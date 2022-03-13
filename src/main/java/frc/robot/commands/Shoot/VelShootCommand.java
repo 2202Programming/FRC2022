@@ -105,6 +105,10 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         this(shooterSettings, backupFrameCount, null);
     }
 
+    public VelShootCommand(double requestedVelocity){  //velocity only overload
+        this(new ShooterSettings(requestedVelocity, 0.0, 0.0, 0.1), 20, null);
+    }
+
     public VelShootCommand()
     {
         this(defaultShooterSettings, 20, null);
