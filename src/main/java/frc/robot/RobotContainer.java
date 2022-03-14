@@ -24,6 +24,7 @@ import frc.robot.commands.auto.auto_cmd_group2;
 import frc.robot.commands.auto.auto_pathPlanner_cmd;
 import frc.robot.commands.swerve.DriveController;
 import frc.robot.commands.swerve.LimelightDriveCmd;
+import frc.robot.commands.test.LightGateTest;
 import frc.robot.commands.test.getTrajectoryFollowTest;
 import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.subsystems.Limelight_Subsystem;
@@ -185,6 +186,8 @@ public class RobotContainer {
       //MagazineCommand to intake or expell ball
       driverControls.bind(Id.Assistant, XboxButton.X).whileHeld(new MagazineCommand((()-> 1.0), MagazineMode.LoadCargo) );
       driverControls.bind(Id.Assistant, XboxButton.Y).whileHeld(new MagazineCommand((()-> 1.0), MagazineMode.ExpellCargo) );
+
+      driverControls.bind(Id.SwitchBoard, SBButton.Sw21).whileHeld(new LightGateTest());
     }
 
     if(Constants.HAS_SHOOTER){
