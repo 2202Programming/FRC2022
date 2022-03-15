@@ -5,7 +5,6 @@
 package frc.robot.subsystems.climber;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.SparkMaxPIDController;
@@ -15,6 +14,12 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import frc.robot.Constants.ClimbSettings;
 
 public class ArmRotation {
+    // encoder is 1:1 with motor and drives small-gear (12 tooth)
+    // small-gear drives 26 tooth large gear
+    final double kGR = 26.0 / 12.0;   // motor rotations to arm rot[deg]
+    final double kCounts2Degrees = 360 / (kGR*8192);   // 360[deg]  / gr* encoder counts/rot
+    final double kDegrees2Counts = 1.0 / kCounts2Degrees;
+
     // motors n stuff
     private CANSparkMax motor_rot;
     private SparkMaxPIDController pidController_rot;
@@ -65,48 +70,30 @@ public class ArmRotation {
         encoder = motor_rot.getEncoder(com.revrobotics.SparkMaxRelativeEncoder.Type.kQuadrature, 8192);
         encoder.setInverted(inverted);
         ClimbSettings.rotatePID.copyTo(motor_rot.getPIDController(), 0);
+        //TODO:    motor_ext.setSmartCurrentLimit((int) nte_motor_amp_limit.getDouble(5)); // pick a good number for current limit
     }
 
     public void periodic() {
-
-        double encoder_curr_counts = encoder.getPosition() * 8192;
+        double encoder_curr_counts = encoder.getPosition();
         
-
         nte_curr_pos_count.setDouble(encoder_curr_counts);
-        nte_curr_pos_deg.setDouble(encoderCountsToDegrees(encoder_curr_counts));
-
-        // current limit n stuff
-        // motor_rot.setSmartCurrentLimit((int)
-        // nte_curr_current_limit_amp.getDouble(5));
+        nte_curr_pos_deg.setDouble(kCounts2Degrees*encoder_curr_counts);
         nte_backward_limit.setBoolean(BackwardLimitSwitch.isPressed());
         nte_forward_limit.setBoolean(ForwardLimitSwitch.isPressed());
-
     }
 
     public void setEncoderPos(double pos) {
         encoder.setPosition(pos);
     }
 
-    public double degreesToEncoderCounts(double degrees) {
-        return degrees / 360 * 13 / 6 * 8192;
-        // 360 degrees per rev
-        // 6 motor revs = 13 arm revs
-        // 8192 counts per rev
-    }
-    public double encoderCountsToDegrees(double counts) {
-        return counts / 8192 * 6 / 13 * 360;
-        // 8192 counts per rev
-        // 6 motor revs = 13 arm revs
-        // 360 dgrees per rev
-    }
-
     public void set(double degrees) {
-        double counts = degreesToEncoderCounts(degrees);
+        double counts = kDegrees2Counts*degrees;
         pidController_rot.setReference(counts, CANSparkMax.ControlType.kPosition);
         nte_des_pos_deg.setDouble(degrees);
         nte_des_pos_count.setDouble(counts);
     }
 
+    // calibration and testing only
     public void setPercentOutput(double percentOutput) {
         motor_rot.set(percentOutput);
     }
@@ -121,6 +108,6 @@ public class ArmRotation {
 
 
     public double getRotationDegrees() {
-        return encoderCountsToDegrees(encoder.getPosition());
+        return kCounts2Degrees*encoder.getPosition();
     }
 }

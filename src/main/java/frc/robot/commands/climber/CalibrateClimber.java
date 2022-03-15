@@ -10,8 +10,7 @@ import frc.robot.subsystems.climber.ArmExtension;
 import frc.robot.subsystems.climber.ArmRotation;
 
 public class CalibrateClimber extends CommandBase {
-  private Climber climber;
-
+  
   private ArmExtension leftExt;
   private ArmExtension rightExt;
   private ArmRotation leftRot;
@@ -19,7 +18,6 @@ public class CalibrateClimber extends CommandBase {
 
   /** Creates a new CalibrateClimber. */
   public CalibrateClimber(Climber climber) {
-    this.climber = climber;
     leftExt = climber.getLeftArmExtension();
     rightExt = climber.getRightArmExtension();
     leftRot = climber.getLeftArmRotation();
@@ -31,15 +29,21 @@ public class CalibrateClimber extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    //move EVERYTHING slowly until the limit switches are hit
     leftExt.setPercentOutput(-0.2);
     rightExt.setPercentOutput(-0.2);
+
+    // Rotation only has a forward limit switch
     leftRot.setPercentOutput(0.25);
     rightRot.setPercentOutput(0.25);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    // in a perfect world we would monitor stuff here...
+
+  }
 
   // Called once the command ends or is interrupted.
   @Override
@@ -59,6 +63,10 @@ public class CalibrateClimber extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (leftExt.isLowerLimitHit() && rightExt.isLowerLimitHit() && leftRot.isForwardLimitHit() && rightRot.isForwardLimitHit());
+    // done when all limit switches are hit
+    // Note: this relies on the motor controller stopping the motors because 
+    // this command drives each motor at a constant power.
+    return (leftExt.isLowerLimitHit() && rightExt.isLowerLimitHit() && 
+            leftRot.isForwardLimitHit() && rightRot.isForwardLimitHit());
   }
 }

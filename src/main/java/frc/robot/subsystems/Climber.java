@@ -2,16 +2,12 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.SparkMaxLimitSwitch;
-import com.revrobotics.SparkMaxPIDController;
-
 import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.CAN;
-import frc.robot.Constants.ClimbSettings;
+//import frc.robot.Constants.ClimbSettings;
 import frc.robot.subsystems.climber.ArmRotation;
 import frc.robot.subsystems.climber.ArmExtension;
 
@@ -56,8 +52,8 @@ public class Climber extends SubsystemBase {
 
     // @param inches from extender absolute position
     public void setExtension(double inches) {
-        left_Arm_ext.set(inches);
-        right_Arm_ext.set(inches);
+        left_Arm_ext.setInches(inches);
+        right_Arm_ext.setInches(inches);
     }
 
     public void setRotation(double rotationDegrees) {

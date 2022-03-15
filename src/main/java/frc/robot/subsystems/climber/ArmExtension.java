@@ -20,6 +20,10 @@ import frc.robot.Constants.ClimbSettings;
  */
 
 public class ArmExtension {
+    final double kGR = 36;   // neo rotations to extenion
+    final double kCounts2Inches = 5.5/(kGR*42.0);             // 5.5 inch ext / 42 counts [Neo Rotation]
+    final double kInches2Counts = 1.0 / kCounts2Inches;
+
     private NetworkTable network_table;
     private SparkMaxPIDController pidController_ext;
     private SparkMaxLimitSwitch ForwardLimitSwitch;
@@ -35,6 +39,7 @@ public class ArmExtension {
     private NetworkTableEntry nte_upper_limt;
 
     public ArmExtension(NetworkTable table, CANSparkMax motor_ext, boolean inverted) {
+       
         this.motor_ext = motor_ext;
         this.motor_ext.clearFaults();
         this.motor_ext.restoreFactoryDefaults();
@@ -62,44 +67,39 @@ public class ArmExtension {
         nte_lower_limt = this.network_table.getEntry("Lower Limit");
         nte_upper_limt = this.network_table.getEntry("Upper Limit");
         ClimbSettings.extendPID.copyTo(motor_ext.getPIDController(), 0);
+
+        motor_ext.setSmartCurrentLimit((int) nte_motor_amp_limit.getDouble(5));  // likey needs to be done only once
+
     }
 
     public void periodic() {
-        // setPercentOutput(0);
         nte_lower_limt.setBoolean(ReverseLimitSwitch.isPressed());
         nte_upper_limt.setBoolean(ForwardLimitSwitch.isPressed());
-
-        nte_curr_pos_in.setDouble(encoderCountsToInches(motor_ext.getEncoder().getPosition()));
+        nte_curr_pos_in.setDouble(kCounts2Inches * motor_ext.getEncoder().getPosition());
         nte_curr_pos_count.setDouble(motor_ext.getEncoder().getPosition());
-        motor_ext.setSmartCurrentLimit((int) nte_motor_amp_limit.getDouble(5));
         nte_amps_now.getDouble(motor_ext.getOutputCurrent());
     }
 
-    public void set(double inches) {
-        double count = inchesToEncoderCounts(inches);
+    public void setInches(double inches) {
+        double count = kInches2Counts*inches;
         pidController_ext.setReference(count, CANSparkMax.ControlType.kPosition);
-        // motor_ext.getPIDController().setReference(count,
-        // CANSparkMax.ControlType.kPosition);
         nte_des_pos_in.setDouble(inches);
         nte_des_pos_count.setDouble(count);
     }
 
+    /**
+     * Tell the motor controller where we think the extension is
+     * Used during calibration or whenever a limit is hit, we set it
+     * to a known location.
+     */
     public void setMotorPos(double pos) {
-        motor_ext.getEncoder().setPosition(pos);
+         motor_ext.getEncoder().setPosition(pos);
     }
 
-    public double inchesToEncoderCounts(double inches) {
-        return inches / (22 * 0.25) * 42;
-        // 1 rev = 5.5 in circunference
-        // 42 counts per rev
-    }
-
-    public double encoderCountsToInches(double counts) {
-        return counts / 42 * (22 * 0.25);
-        // 42 counts per rev
-        // 1 rev = 5.5 in circumference
-    }
-
+    /**
+     * used only for calibration modes and testing.
+     * @param percentOutput
+     */
     public void setPercentOutput(double percentOutput) {
         motor_ext.set(percentOutput);
     }
@@ -109,6 +109,6 @@ public class ArmExtension {
     }
 
     public double getInches() {
-        return encoderCountsToInches(this.motor_ext.getEncoder().getPosition());
+        return this.motor_ext.getEncoder().getPosition() * kCounts2Inches;
     }
 }
