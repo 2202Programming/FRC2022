@@ -31,9 +31,8 @@ public class ArmRotation {
     // nts
     private NetworkTable network_table;
     private NetworkTableEntry nte_curr_pos_deg;
-    private NetworkTableEntry nte_curr_pos_count;
     private NetworkTableEntry nte_des_pos_deg;
-    private NetworkTableEntry nte_des_pos_count;
+
 
     private NetworkTableEntry nte_backward_limit;
     private NetworkTableEntry nte_forward_limit;
@@ -55,20 +54,19 @@ public class ArmRotation {
         this.network_table = table;
         nte_curr_pos_deg = network_table.getEntry("Current Arm Rotation (degrees)");
         nte_curr_pos_deg.setDouble(0);
-        nte_curr_pos_count = network_table.getEntry("Current Arm Rotation (counts)");
-        nte_curr_pos_count.setDouble(0);
         nte_des_pos_deg = network_table.getEntry("Desired Arm Rotation (degrees)");
         nte_des_pos_deg.setDouble(0);
-        nte_des_pos_count = network_table.getEntry("Desired Arm Rotation (counts)");
-        nte_des_pos_count.setDouble(0);
-
         nte_backward_limit = network_table.getEntry("Backward Limit");
         nte_backward_limit.setBoolean(false);
         nte_forward_limit = network_table.getEntry("Forward Limit");
         nte_forward_limit.setBoolean(false);
 
+        // Encoder setup - use native units everywhere.
         encoder = motor_rot.getEncoder(com.revrobotics.SparkMaxRelativeEncoder.Type.kQuadrature, 8192);
         encoder.setInverted(inverted);
+        encoder.setPositionConversionFactor(kCounts2Degrees);
+        encoder.setPosition(0.0);
+
         ClimbSettings.rotatePID.copyTo(motor_rot.getPIDController(), 0);
         //TODO:    motor_ext.setSmartCurrentLimit((int) nte_motor_amp_limit.getDouble(5)); // pick a good number for current limit
     }
@@ -76,8 +74,7 @@ public class ArmRotation {
     public void periodic() {
         double encoder_curr_counts = encoder.getPosition();
         
-        nte_curr_pos_count.setDouble(encoder_curr_counts);
-        nte_curr_pos_deg.setDouble(kCounts2Degrees*encoder_curr_counts);
+        nte_curr_pos_deg.setDouble(encoder_curr_counts);
         nte_backward_limit.setBoolean(BackwardLimitSwitch.isPressed());
         nte_forward_limit.setBoolean(ForwardLimitSwitch.isPressed());
     }
@@ -87,10 +84,8 @@ public class ArmRotation {
     }
 
     public void set(double degrees) {
-        double counts = kDegrees2Counts*degrees;
-        pidController_rot.setReference(counts, CANSparkMax.ControlType.kPosition);
+        pidController_rot.setReference(degrees, CANSparkMax.ControlType.kPosition);
         nte_des_pos_deg.setDouble(degrees);
-        nte_des_pos_count.setDouble(counts);
     }
 
     // calibration and testing only
@@ -108,6 +103,6 @@ public class ArmRotation {
 
 
     public double getRotationDegrees() {
-        return kCounts2Degrees*encoder.getPosition();
+        return encoder.getPosition();
     }
 }
