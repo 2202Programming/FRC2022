@@ -77,7 +77,7 @@ public class ArmExtension {
         nte_upper_limt.setBoolean(ForwardLimitSwitch.isPressed());
         nte_curr_pos_in.setDouble(kCounts2Inches * motor_ext.getEncoder().getPosition());
         nte_curr_pos_count.setDouble(motor_ext.getEncoder().getPosition());
-        nte_amps_now.getDouble(motor_ext.getOutputCurrent());
+        nte_amps_now.setDouble(motor_ext.getOutputCurrent());
     }
 
     public void setInches(double inches) {
