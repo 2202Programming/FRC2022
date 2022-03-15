@@ -116,7 +116,8 @@ public class HubCentricDrive extends CommandBase {
     //get correction angle for velocity based on our velocity vector to hub
     velocityCorrectionAngle = PoseMath.angleVirtualTarget(drivetrain.getPose(), Autonomous.hubPose, adjustHubPosition());
 
-    targetAngle.minus(velocityCorrectionAngle); //might need to be plus, depending on direction of travel??
+    //uncomment this when ready to test velocity correction
+    //targetAngle.minus(velocityCorrectionAngle); //might need to be plus, depending on direction of travel??
     //Also, this correction angle is probably for the intake side ("front of robot") and may need a PI inversion so the shooter is pointing to hub
 
     anglePid.setSetpoint(targetAngle.getDegrees()); //PID was tuned in degrees already
@@ -129,7 +130,9 @@ public class HubCentricDrive extends CommandBase {
     if (limelight.getTarget() && limelight.getLEDStatus()) {
       // if limelight is available, override rotation input from odometery to limelight
       // limelight is on the shooter side, so we don't need to worry about flipping target angles
-      limelightPid.setSetpoint(velocityCorrectionAngle.getDegrees()*Shooter.degPerPixel); // 0 is towards target, adjust based on velocity
+      limelightPid.setSetpoint(0);
+      //uncomment this below and comment line above when ready to test velocity correction
+      //limelightPid.setSetpoint(velocityCorrectionAngle.getDegrees()*Shooter.degPerPixel); // 0 is towards target, adjust based on velocity
       limelightPidOutput = limelightPid.calculate(limelight.getFilteredX());
       angleError = Rotation2d.fromDegrees(limelight.getFilteredX()*Shooter.degPerPixel); //approximation of degrees off center
       // update rotation and calulate new output-states
