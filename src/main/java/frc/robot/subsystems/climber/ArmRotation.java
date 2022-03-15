@@ -17,9 +17,8 @@ public class ArmRotation {
     // encoder is 1:1 with motor and drives small-gear (12 tooth)
     // small-gear drives 26 tooth large gear
     final double kGR = 26.0 / 12.0;   // motor rotations to arm rot[deg]
-    final double kCounts2Degrees = 360 / (kGR*8192);   // 360[deg]  / gr* encoder counts/rot
-    final double kDegrees2Counts = 1.0 / kCounts2Degrees;
-
+    final double kCounts2Degrees = 360 / kGR;   // 360[deg]  / gr* encoder counts/rot
+   
     // motors n stuff
     private CANSparkMax motor_rot;
     private SparkMaxPIDController pidController_rot;
