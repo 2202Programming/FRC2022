@@ -18,10 +18,14 @@ public class ArmRotation {
     // small-gear drives 26 tooth large gear
     final double kGR = 26.0 / 12.0;   // motor rotations to arm rot[deg]
     final double kCounts2Degrees = 360 / kGR;   // 360[deg]  / gr* encoder counts/rot
-   
+    
+    // vel and pos have their own pid values in constants and on the controller
+    final int vel_pid = 0;
+    final int pos_pid = 1;
+
     // motors n stuff
     private CANSparkMax motor_rot;
-    private SparkMaxPIDController pidController_rot;
+    private SparkMaxPIDController pidController;
     private SparkMaxLimitSwitch ForwardLimitSwitch;
     private SparkMaxLimitSwitch BackwardLimitSwitch;
 
@@ -47,7 +51,7 @@ public class ArmRotation {
 
         ForwardLimitSwitch = motor_rot.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
         BackwardLimitSwitch = motor_rot.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
-        this.pidController_rot = motor_rot.getPIDController();
+        pidController = motor_rot.getPIDController();
 
         // NTs
         this.network_table = table;
@@ -64,9 +68,13 @@ public class ArmRotation {
         encoder = motor_rot.getEncoder(com.revrobotics.SparkMaxRelativeEncoder.Type.kQuadrature, 8192);
         encoder.setInverted(inverted);
         encoder.setPositionConversionFactor(kCounts2Degrees);
+        encoder.setVelocityConversionFactor(kCounts2Degrees/60.0);
         encoder.setPosition(0.0);
 
-        ClimbSettings.rotatePID.copyTo(motor_rot.getPIDController(), 0);
+        //Set PIDF values on the controller for vel and pos closed loop
+        ClimbSettings.rotatePID_pos.copyTo(pidController, pos_pid);
+        ClimbSettings.rotatePID_vel.copyTo(pidController, vel_pid);
+
         //TODO:    motor_ext.setSmartCurrentLimit((int) nte_motor_amp_limit.getDouble(5)); // pick a good number for current limit
     }
 
@@ -83,8 +91,16 @@ public class ArmRotation {
     }
 
     public void set(double degrees) {
-        pidController_rot.setReference(degrees, CANSparkMax.ControlType.kPosition);
+        pidController.setReference(degrees, CANSparkMax.ControlType.kPosition, pos_pid);
         nte_des_pos_deg.setDouble(degrees);
+    }
+
+    /**
+     * 
+     * @param rate [deg/s]
+     */
+    public void setRotRate(double rate) {
+        pidController.setReference(rate, CANSparkMax.ControlType.kVelocity, vel_pid);
     }
 
     // calibration and testing only

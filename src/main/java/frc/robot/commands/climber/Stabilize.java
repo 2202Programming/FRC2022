@@ -1,13 +1,11 @@
 package frc.robot.commands.climber;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.climber.Climber;
 
 public class Stabilize extends CommandBase {
     
     private final Climber climber;
-
-
     private long startTime;
 
     // How long to sleep for to allow stabilization
@@ -21,8 +19,9 @@ public class Stabilize extends CommandBase {
     @Override
     public void initialize() {
         startTime = System.currentTimeMillis();
-        climber.setSpeed(0, 0);
-        // TODO: Add something siilar for rotations
+        //use velocity mode and cmd of 0 to hold our positions
+        climber.setExtSpeed(0, 0);
+        climber.setRotSpeed(0, 0);
     }
 
     @Override

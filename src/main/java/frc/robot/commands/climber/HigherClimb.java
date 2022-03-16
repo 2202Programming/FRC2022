@@ -1,7 +1,7 @@
 package frc.robot.commands.climber;
 
-import frc.robot.subsystems.Climber;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.subsystems.climber.Climber;
 
 public class HigherClimb extends SequentialCommandGroup {
     

@@ -125,10 +125,12 @@ public final class Constants {
     // }
 
     public static final class ClimbSettings {
-        //TODO example pid init, climber may have a few - DPL  1/15/22
-        public static PIDFController rotatePID = new PIDFController(1, 0, 0, 0);
-        public static PIDFController extendPID = new PIDFController(.05, 0, 0, 0);
-
+        // Controller constants for velocity and position modes, each gets a slot on the brick
+        public static PIDFController rotatePID_vel = new PIDFController(0.0, 0.0, 0.0, 0.05);  //[deg/s] - slot 0
+        public static PIDFController rotatePID_pos = new PIDFController(0.0, 0.0, 0.0, 0.0);   //[deg]   - slot 1
+        public static PIDFController extendPID_vel = new PIDFController(0.0, 0.0, 0.0, .05);   //[in/s]  - slot 0
+        public static PIDFController extendPID_pos = new PIDFController(0.05, 0.0, 0.0, 0.0);  //[in]    - slot 1
+        
         // TODO: Chec
         // Extension length and rotation needed to hit bars
         public static final double MID_EXTENSION_LENGTH = 10;

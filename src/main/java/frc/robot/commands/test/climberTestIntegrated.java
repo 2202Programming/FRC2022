@@ -8,7 +8,7 @@ import frc.robot.commands.climber.HigherClimbExtend;
 import frc.robot.commands.climber.HigherClimbRetract;
 import frc.robot.commands.climber.MidClimbExtend;
 import frc.robot.commands.climber.MidClimbRetract;
-import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.climber.Climber;
 
 public class climberTestIntegrated extends CommandBase {
 

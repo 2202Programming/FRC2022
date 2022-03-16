@@ -5,9 +5,9 @@
 package frc.robot.commands.climber;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.climber.ArmExtension;
 import frc.robot.subsystems.climber.ArmRotation;
+import frc.robot.subsystems.climber.Climber;
 
 public class CalibrateClimber extends CommandBase {
   
@@ -49,9 +49,9 @@ public class CalibrateClimber extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     leftExt.setPercentOutput(0);
-    leftExt.setMotorPos(0);
+    leftExt.setEncoderPos(0);
     rightExt.setPercentOutput(0);
-    rightExt.setMotorPos(0);
+    rightExt.setEncoderPos(0);
 
     leftRot.setPercentOutput(0);
     leftRot.setEncoderPos(0);
