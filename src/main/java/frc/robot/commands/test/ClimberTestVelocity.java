@@ -36,7 +36,6 @@ public class ClimberTestVelocity extends CommandBase {
   public void initialize() {
     delay_l = 0;
     delay_r = 0;
-    climber.setStartingPos();   //assume zero
     climber.setExtSpeed(speed_l, speed_r);
     climber.setArmSync(syncMode);
   }

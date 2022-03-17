@@ -47,7 +47,10 @@ public class SetArmExtension extends CommandBase {
   public void end(boolean interrupted) {
     climber.getLeftArmExtension().setPercentOutput(0);
     climber.getRightArmExtension().setPercentOutput(0);
+    climber.getRightArmExtension().setEncoderPos(0.0);
+    climber.getLeftArmExtension().setEncoderPos(0.0);
   }
+  
 
   // Returns true when the command should end.
   @Override

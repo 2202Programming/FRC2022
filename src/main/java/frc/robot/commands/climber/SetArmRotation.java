@@ -45,6 +45,8 @@ public class SetArmRotation extends CommandBase {
   public void end(boolean interrupted) {
     climber.getLeftArmRotation().setPercentOutput(0);
     climber.getRightArmRotation().setPercentOutput(0);
+    climber.getRightArmRotation().setEncoderPos(0.0);
+    climber.getLeftArmRotation().setEncoderPos(0.0);
   }
 
   // Returns true when the command should end.
