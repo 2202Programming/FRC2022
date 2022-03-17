@@ -21,9 +21,9 @@ public class Climber extends SubsystemBase {
     double diff_rot_err = 0.0;
     double diff_ext_err = 0.0;
     double ext_compensation = 0.0;                        // [in/s] from extPID
-    PIDController extPID = new PIDController(.1, 0, 0);   // input [in], output [in/s] Kp=[(in/s)/in-err]
+    PIDController extPID = new PIDController(0.05, 0, 0);   // input [in], output [in/s] Kp=[(in/s)/in-err]
         double rot_compensation = 0.0;                    // [deg/s] from rotPID
-    PIDController rotPID = new PIDController(.1, 0, 0);   // input [deg], output [deg/s] Kp=[(deg/s)/deg-err]
+    PIDController rotPID = new PIDController(0.05, 0, 0);   // input [deg], output [deg/s] Kp=[(deg/s)/deg-err]
     
     private CANSparkMax left_motor_rot = new CANSparkMax(CAN.CMB_LEFT_Rotate, MotorType.kBrushed);
     private CANSparkMax right_motor_rot = new CANSparkMax(CAN.CMB_RIGHT_Rotate, MotorType.kBrushed);
