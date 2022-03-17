@@ -105,7 +105,7 @@ public class Climber extends SubsystemBase {
      * @param rot_spd [deg/s]
      */
     public void setRotSpeed(double rot_spd) { 
-        setExtSpeed(rot_spd, rot_spd);
+        setRotSpeed(rot_spd, rot_spd);
     }
     public void setRotSpeed(double rot_spd_lt, double rot_spd_rt) {
         double rt_comp = (sync_arms) ? rot_compensation : 0.0 ;
