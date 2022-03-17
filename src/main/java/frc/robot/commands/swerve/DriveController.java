@@ -14,6 +14,7 @@ import frc.robot.RobotContainer;
 import frc.robot.Constants.Shooter;
 import frc.robot.commands.Shoot.SolutionProvider;
 import frc.robot.commands.Shoot.VelShootCommand;
+import frc.robot.commands.swerve.DriveCmd.DriveModeTypes;
 import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.Magazine_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
@@ -81,7 +82,7 @@ public class DriveController  extends CommandBase implements SolutionProvider {
     m_fieldCentricDrive = new FieldCentricDrive(drivetrain, dc);
     m_hubCentricDrive = new HubCentricDrive(drivetrain, dc, limelight);
     m_intakeCentricDrive = new IntakeCentricDrive(drivetrain, dc);
-    m_balanceDrive = new BalanceDrive(drivetrain, dc);
+    m_balanceDrive = new BalanceDrive(drivetrain);
     m_velShootCommand = new VelShootCommand( Shooter.DefaultSettings, 15, this); //ft/s,rot, backupcount, SolutionProvider
 
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
@@ -100,7 +101,7 @@ public class DriveController  extends CommandBase implements SolutionProvider {
   @Override
   public void execute() {
     checkTip();
-    checkShooter();
+    if(currentDriveMode != DriveModes.autoBalance) checkShooter();
     checkDropout();
     checkRequests();
     updateNT();
@@ -161,6 +162,10 @@ public class DriveController  extends CommandBase implements SolutionProvider {
         case intakeCentric:
           currentCmd = m_intakeCentricDrive;
           break;
+
+        case autoBalance:
+          currentCmd = m_balanceDrive;
+          break;
       }
       CommandScheduler.getInstance().schedule(currentCmd);
     }
@@ -210,14 +215,26 @@ public class DriveController  extends CommandBase implements SolutionProvider {
   }
 
   private void checkTip(){
-    double kOffBalanceAngleThresholdDegrees = 1;
+    double kOffBalanceAngleThresholdDegrees = 10;
+    double kOnBalanceAngleThresholdDegrees = 5;
     double pitchAngleDegrees = RobotContainer.RC().sensors.getAHRS().getPitch();    
     double rollAngleDegrees = RobotContainer.RC().sensors.getAHRS().getRoll();
     if (Math.abs(pitchAngleDegrees)>kOffBalanceAngleThresholdDegrees){
-      System.out.println("***PITCH WARNING***");
+      System.out.println("***PITCH WARNING: Pitch angle:"+pitchAngleDegrees);
     }
     if (Math.abs(rollAngleDegrees)>kOffBalanceAngleThresholdDegrees){
-      System.out.println("***ROLL WARNING***");
+      System.out.println("***ROLL WARNING: Roll Angle:"+rollAngleDegrees);
     }
+
+    //if not in autobalance mode and either pitch or roll is above threshold
+    if (currentDriveMode != DriveModes.autoBalance && 
+    (Math.abs(pitchAngleDegrees)>kOffBalanceAngleThresholdDegrees || Math.abs(rollAngleDegrees)>kOffBalanceAngleThresholdDegrees)){
+      requestedDriveMode = DriveModes.autoBalance;
+    } 
+    else if(currentDriveMode == DriveModes.autoBalance && //if in autobalance mode and both pitch AND roll are below threshold
+    (Math.abs(pitchAngleDegrees)<kOnBalanceAngleThresholdDegrees && Math.abs(rollAngleDegrees)<kOnBalanceAngleThresholdDegrees)){
+      requestedDriveMode = lastDriveMode;
+    }
+
   }
 }
