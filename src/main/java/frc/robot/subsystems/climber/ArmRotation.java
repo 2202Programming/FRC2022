@@ -34,6 +34,7 @@ public class ArmRotation {
     // nts
     private NetworkTable network_table;
     private NetworkTableEntry nte_curr_pos_deg;
+    private NetworkTableEntry nte_curr_vel_deg;
     private NetworkTableEntry nte_des_pos_deg;
 
 
@@ -56,6 +57,7 @@ public class ArmRotation {
         // NTs
         this.network_table = table;
         nte_curr_pos_deg = network_table.getEntry("Current Arm Rotation (degrees)");
+        nte_curr_vel_deg = network_table.getEntry("Current Arm RotRate (degree/s)");
         nte_curr_pos_deg.setDouble(0);
         nte_des_pos_deg = network_table.getEntry("Desired Arm Rotation (degrees)");
         nte_des_pos_deg.setDouble(0);
@@ -79,9 +81,8 @@ public class ArmRotation {
     }
 
     public void periodic() {
-        double encoder_curr_counts = encoder.getPosition();
-        
-        nte_curr_pos_deg.setDouble(encoder_curr_counts);
+        nte_curr_pos_deg.setDouble(encoder.getPosition());
+        nte_curr_vel_deg.setDouble(encoder.getVelocity());
         nte_backward_limit.setBoolean(BackwardLimitSwitch.isPressed());
         nte_forward_limit.setBoolean(ForwardLimitSwitch.isPressed());
     }
