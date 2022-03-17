@@ -155,6 +155,10 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
     this.c_yaw_type = type;
   }
 
+  public AHRS getAHRS(){
+    return m_ahrs;
+  }
+
   @Override
   public void calibrate() {
     if (m_gyro450.isConnected()) {

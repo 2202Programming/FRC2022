@@ -97,6 +97,7 @@ public class DriveController  extends CommandBase implements SolutionProvider {
 
   @Override
   public void execute() {
+    checkTip();
     checkShooter();
     checkDropout();
     checkRequests();
@@ -203,6 +204,18 @@ public class DriveController  extends CommandBase implements SolutionProvider {
       // update network tables
       driveMode.setString(currentDriveMode.toString());
       shootingMode.setBoolean(currentlyShooting);
+    }
+  }
+
+  private void checkTip(){
+    double kOffBalanceAngleThresholdDegrees = 1;
+    double pitchAngleDegrees = RobotContainer.RC().sensors.getAHRS().getPitch();    
+    double rollAngleDegrees = RobotContainer.RC().sensors.getAHRS().getRoll();
+    if (Math.abs(pitchAngleDegrees)>kOffBalanceAngleThresholdDegrees){
+      System.out.println("***PITCH WARNING***");
+    }
+    if (Math.abs(rollAngleDegrees)>kOffBalanceAngleThresholdDegrees){
+      System.out.println("***ROLL WARNING***");
     }
   }
 }
