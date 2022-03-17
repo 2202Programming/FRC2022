@@ -57,6 +57,8 @@ public class auto_cmd_group2 extends SequentialCommandGroup {
         new IntakeCommand(IntakeMode.LoadCargo),
         new MagazineCommand(MagazineMode.LoadCargo)
       ),
+      new MoveIntake(DeployMode.Retract),
+      new MagazineCommand((()->0.1), MagazineMode.ExpellCargo).withTimeout(0.1),
       //new MoveIntake(DeployMode.Retract),
     //   new ParallelDeadlineGroup( //all run at same time; group ends when 1st command ends
     //     new LimelightAim(1.0).withTimeout(3),
