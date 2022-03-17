@@ -16,6 +16,7 @@ import frc.robot.commands.climber.CalibrateClimber;
 import frc.robot.commands.climber.*;
 import frc.robot.commands.climber.SetArmExtension;
 import frc.robot.commands.climber.SetArmRotation;
+import frc.robot.commands.test.ClimberTestRotRate;
 import frc.robot.commands.test.ClimberTestVelocity;
 import frc.robot.commands.test.climberTest;
 import frc.robot.subsystems.MecanumDrivetrain;
@@ -83,7 +84,7 @@ public class RobotContainer {
   * </ul>
   */
   void setDriverButtons(){
-    driverControls.bind(Id.Driver, XboxButton.START).whileHeld(new ClimberTestVelocity(climber, 3, -6, 6));
+    driverControls.bind(Id.Driver, XboxButton.START).whileHeld(new ClimberTestRotRate(climber, 18, -30, 30));
     driverControls.bind(Id.Driver, XboxButton.X).whileHeld(new SetArmRotation(driverControls, climber, 0.5));
     driverControls.bind(Id.Driver, XboxButton.B).whileHeld(new SetArmRotation(driverControls, climber, -0.5));
     driverControls.bind(Id.Driver, XboxButton.Y).whileHeld(new SetArmExtension(driverControls, climber, 0.2));

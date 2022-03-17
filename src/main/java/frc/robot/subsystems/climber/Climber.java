@@ -22,8 +22,8 @@ public class Climber extends SubsystemBase {
     double diff_ext_err = 0.0;
     double ext_compensation = 0.0;                        // [in/s] from extPID
     PIDController extPID = new PIDController(0.05, 0, 0);   // input [in], output [in/s] Kp=[(in/s)/in-err]
-        double rot_compensation = 0.0;                    // [deg/s] from rotPID
-    PIDController rotPID = new PIDController(0.05, 0, 0);   // input [deg], output [deg/s] Kp=[(deg/s)/deg-err]
+    double rot_compensation = 0.0;                    // [deg/s] from rotPID
+    PIDController rotPID = new PIDController(1.00, 0, 0);   // input [deg], output [deg/s] Kp=[(deg/s)/deg-err]
     
     private CANSparkMax left_motor_rot = new CANSparkMax(CAN.CMB_LEFT_Rotate, MotorType.kBrushed);
     private CANSparkMax right_motor_rot = new CANSparkMax(CAN.CMB_RIGHT_Rotate, MotorType.kBrushed);
@@ -40,7 +40,7 @@ public class Climber extends SubsystemBase {
         nte_sync_arms = table.getEntry("sync_arms");
         nte_sync_arms.setBoolean(sync_arms);
 
-        left_Arm_rot = new ArmRotation(table.getSubTable("left_arm_rotation"), left_motor_rot, true, 0.1);
+        left_Arm_rot = new ArmRotation(table.getSubTable("left_arm_rotation"), left_motor_rot, true, 0.3);
         right_Arm_rot = new ArmRotation(table.getSubTable("right_arm_rotation"), right_motor_rot, false, 0.1);
         right_Arm_ext = new ArmExtension(table.getSubTable("right_arm_extension"), right_motor_ext, false);
         left_Arm_ext = new ArmExtension(table.getSubTable("left_arm_extension"), left_motor_ext, true);

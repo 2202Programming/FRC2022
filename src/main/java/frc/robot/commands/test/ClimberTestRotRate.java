@@ -19,8 +19,8 @@ public class ClimberTestRotRate extends CommandBase {
   double max_ext;
   int delay_l;
   int delay_r;
-  boolean syncMode = true;
-  final double delayCount = 10;
+  boolean syncMode = false;
+  final double delayCount = 20;
 
   public ClimberTestRotRate(Climber climber, double spd, double min_ext, double max_ext) {
     this.climber = climber;
