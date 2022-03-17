@@ -41,7 +41,7 @@ public final class Constants {
       //path coordinates are in meters - utility only works in meters
       public static final Pose2d startPose1 = new Pose2d(7.67,1.82,new Rotation2d(-180)); //Bottom, furthest from terminal
       public static final Pose2d startPose2 = new Pose2d(6.86,2.63,new Rotation2d(-180)); //Middle
-      public static final Pose2d startPose3 = new Pose2d(6.7,5.47,new Rotation2d(-180)); //Top
+      public static final Pose2d startPose3 = new Pose2d(6.7,5.47,Rotation2d.fromDegrees(-180)); //Top
       public static final Pose2d hubPose =    new Pose2d(8.27,4.12,new Rotation2d(0)); //Center of Hub
       public static final Pose2d testStartPose = new Pose2d(5,5,new Rotation2d(-180));
     }
@@ -254,8 +254,8 @@ public final class Constants {
       
       // constraints
       public static final double kMaxFPS = 80;      //max FPS
-      public static final double maxLongRage = 10; //maximum range in long distance shooting mode
-      public static final double minLongRange = 1; //minimum range in long distance shooting mode
+      public static final double maxLongRage = 8; //maximum range in long distance shooting mode
+      public static final double minLongRange = 1.8; //minimum range in long distance shooting mode
       public static final double maxShortRange = 2; //maximum range in short distance shooting mode
       public static final double degPerPixel = 59.6 / 320; //limelight conversion
       public static final double angleErrorTolerance = 5.0; //allowed angle error to shoot in guided shooting modes

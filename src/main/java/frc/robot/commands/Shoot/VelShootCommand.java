@@ -131,7 +131,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         calculateDistance();
         setPositioner();
         calculateVelocity();
-        calculatedVel = cmdSS.vel; //get rid of this when calculated Velocity is working
+        //calculatedVel = cmdSS.vel; //get rid of this when calculated Velocity is working
         if(calculatedVel != cmdSS.vel){
             cmdSS = new ShooterSettings(calculatedVel, 0);
             shooter.spinup(cmdSS);
@@ -206,16 +206,20 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         shooterAngleLongRange = !positioner.isDeployed(); //check positioner angle from subsystem
         if ((currentDistance < Shooter.minLongRange) && shooterAngleLongRange) { //below long range, switch to short range
             positioner.deploy();
+            System.out.println("***Deploying");
         } else if ((currentDistance > Shooter.maxShortRange) && !shooterAngleLongRange) { //above short trange, switch to long range
             positioner.retract();
+            System.out.println("***Retracting")
+            ;
         }
+        shooterAngleLongRange = !positioner.isDeployed(); //check positioner angle from subsystem
     }
 
     private void calculateVelocity(){       
         if (shooterAngleLongRange) {
-            calculatedVel = 11.866 * Math.pow(Math.E, 0.1464*currentDistance); //distnce vs. velocity trendline for long range positioner
+            calculatedVel = 4.64*currentDistance + 26.8; //distnce vs. velocity trendline for long range positioner
         } else {
-            calculatedVel = 11.866 * Math.pow(Math.E, 0.1464*currentDistance); //distnce vs. velocity trendline for short range positioner
+            calculatedVel = 8.5 *currentDistance + 26.5; //distnce vs. velocity trendline for short range positioner
         }
 
         if (calculatedVel > Shooter.kMaxFPS){
