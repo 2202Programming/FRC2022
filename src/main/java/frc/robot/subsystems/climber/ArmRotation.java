@@ -18,6 +18,8 @@ public class ArmRotation {
     // small-gear drives 26 tooth large gear
     final double kGR = 26.0 / 12.0;   // motor rotations to arm rot[deg]
     final double kCounts2Degrees = 360 / kGR;   // 360[deg]  / gr* encoder counts/rot
+
+    final double kAff;
     
     // vel and pos have their own pid values in constants and on the controller
     final int vel_pid = 0;
@@ -41,8 +43,8 @@ public class ArmRotation {
     private NetworkTableEntry nte_backward_limit;
     private NetworkTableEntry nte_forward_limit;
 
-    public ArmRotation(NetworkTable table, CANSparkMax motor_rot, boolean inverted) {
-
+    public ArmRotation(NetworkTable table, CANSparkMax motor_rot, boolean inverted, double kAff) {
+        this.kAff = kAff;
         // motors
         this.motor_rot = motor_rot;
         this.motor_rot.restoreFactoryDefaults();
@@ -101,7 +103,8 @@ public class ArmRotation {
      * @param rate [deg/s]
      */
     public void setRotRate(double rate) {
-        pidController.setReference(rate, CANSparkMax.ControlType.kVelocity, vel_pid);
+        double arbFF = kAff * Math.signum(rate);
+        pidController.setReference(rate, CANSparkMax.ControlType.kVelocity, vel_pid, arbFF);
     }
 
     // calibration and testing only

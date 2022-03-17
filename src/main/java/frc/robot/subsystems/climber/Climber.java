@@ -40,8 +40,8 @@ public class Climber extends SubsystemBase {
         nte_sync_arms = table.getEntry("sync_arms");
         nte_sync_arms.setBoolean(sync_arms);
 
-        left_Arm_rot = new ArmRotation(table.getSubTable("left_arm_rotation"), left_motor_rot, true);
-        right_Arm_rot = new ArmRotation(table.getSubTable("right_arm_rotation"), right_motor_rot, false);
+        left_Arm_rot = new ArmRotation(table.getSubTable("left_arm_rotation"), left_motor_rot, true, 0.1);
+        right_Arm_rot = new ArmRotation(table.getSubTable("right_arm_rotation"), right_motor_rot, false, 0.1);
         right_Arm_ext = new ArmExtension(table.getSubTable("right_arm_extension"), right_motor_ext, false);
         left_Arm_ext = new ArmExtension(table.getSubTable("left_arm_extension"), left_motor_ext, true);
 
