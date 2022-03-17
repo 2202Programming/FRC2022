@@ -11,10 +11,8 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
-import com.ctre.phoenix.motorcontrol.can.TalonSRXPIDSetConfiguration;
+//import com.ctre.phoenix.motorcontrol.can.TalonSRXPIDSetConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-
-import frc.robot.Constants.Shooter;
 import frc.robot.util.PIDFController;
 
 /**
@@ -34,8 +32,7 @@ public class FlyWheel {
    * short
    * 2000 RPM * 34.133 [MU-100ms]/[FW-RPM] = 68267 MU/FW-RPM
    * 
-   * New Flywheels - need new KF. Compromise between 1000 and 2000 Open-loop
-   * Kf = .00934 as measured/calculated 12/19/2020 DPL/Alek O.
+   * NOTE: if gearing is before the encoder, [MU-100] must account for gearing.
    * 
    * 2/6/21 Kff now calcualted from max FW RPM
    */
@@ -49,6 +46,15 @@ public class FlyWheel {
     public double flywheelRadius;
     public double FWrpe2MU; // FlywheelRPM to Motor-Units (includes gearing)
   };
+
+/**
+ * Encoder & controler details
+ * Convert Target RPM to [motor-units/100ms] 4096 Units/Rev * Target RPM * 600 =
+ * velocity setpoint is in units/100ms
+ */
+  final double kEncoder = 4096.0;   // encoder counts/rotation 
+  final double kRP100 = 1.0/600.0;  // RPM to rev-per-100mS
+  final double kMaxMO = 1023.0;     // max Motor output
 
   // Talon Slot stuff, we just use slot 0
   final int kPIDLoopIdx = 0;
@@ -68,12 +74,13 @@ public class FlyWheel {
     motor.setInverted(cfg.inverted);
     this.cfg = cfg;
 
-    // flywheel constants RPM given motor-unit counts (f(gear, meas-period))
-    FWrpm2Counts = Shooter.kRPM2Counts * cfg.gearRatio; // motor counts are bigger, motor spins faster than FW
-    MUCounts2FWrpm = 1.0 / FWrpm2Counts; // motor units (counts/100ms) to FW RPM
+    // flywheel constants RPM given encoder-unit counts (f(gear, meas-period))
+    double FWCountsPerRot = kEncoder / cfg.gearRatio;     // encoder : fw shaft 
+    FWrpm2Counts = FWCountsPerRot * kRP100;   // (counts/100mS)/RPM
+    MUCounts2FWrpm = 1.0 / FWrpm2Counts;      // encoder units (counts/100mS) to FW RPM
 
     // use max rpm and max motor out to calculate kff
-    double kff = Shooter.kMaxMO / (cfg.maxOpenLoopRPM * FWrpm2Counts);
+    double kff = kMaxMO / (cfg.maxOpenLoopRPM * FWrpm2Counts);
     cfg.pid.setF(kff);
 
     ErrorCode lasterr = motorConfig(cfg);
@@ -87,7 +94,8 @@ public class FlyWheel {
     motor.configFactoryDefault();
 
     // use the config to set all values at once
-    cfg.pid.copyTo(srxconfig.slot0);
+    cfg.pid.copyTo(motor, kPIDLoopIdx );
+    motor.getAllConfigs(srxconfig);
 
     srxconfig.slot1 = srxconfig.slot0;
     motor.configAllSettings(srxconfig);
@@ -128,13 +136,10 @@ public class FlyWheel {
     motor.set(ControlMode.PercentOutput, pct);
   }
 
-  public void setPID(double kP, double kI, double kD){
-    cfg.pid.setPID(kP, kI, kD);
-    cfg.pid.copyTo(srxconfig.slot0);
-    motor.config_kP(0, kP);
-    motor.config_kI(0, kI);
-    motor.config_kD(0, kD);
-
+  // This API is for testing/tuning only.
+  public void setPID(double kP, double kI, double kD, double kF){
+    cfg.pid.setPIDF(kP, kI, kD, kF);
+    cfg.pid.copyTo(motor, kPIDLoopIdx);
   }
 
   public double getP(){
@@ -148,6 +153,8 @@ public class FlyWheel {
   public double getD(){
     return cfg.pid.getD();
   }
-
+  public double getF() {
+    return cfg.pid.getF(); 
+  } 
 
 } // FlyWheel

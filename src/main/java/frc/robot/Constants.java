@@ -41,7 +41,7 @@ public final class Constants {
       //path coordinates are in meters - utility only works in meters
       public static final Pose2d startPose1 = new Pose2d(7.67,1.82,new Rotation2d(-180)); //Bottom, furthest from terminal
       public static final Pose2d startPose2 = new Pose2d(6.86,2.63,new Rotation2d(-180)); //Middle
-      public static final Pose2d startPose3 = new Pose2d(6.7,5.47,new Rotation2d(-180)); //Top
+      public static final Pose2d startPose3 = new Pose2d(6.7,5.47,Rotation2d.fromDegrees(-180)); //Top
       public static final Pose2d hubPose =    new Pose2d(8.27,4.12,new Rotation2d(0)); //Center of Hub
       public static final Pose2d testStartPose = new Pose2d(5,5,new Rotation2d(-180));
     }
@@ -238,47 +238,48 @@ public final class Constants {
     } 
     
     public final static class MagazineSettings {
-     
+      public final static double defaultFrontIntakeSpeed = 0.5; 
+      public final static double defaultSideIntakeSpeed = 0.3; 
+      public final static double defaultMagazineSpeed = 1.0;
     }
 
     public static final class Shooter {
       public static final double DefaultRPMTolerance = .05;  // percent of RPM
-      public static final ShooterSettings DefaultSettings = new ShooterSettings(10.0, 0.0);  //ft/s, rot/s
+      public static final ShooterSettings DefaultSettings = new ShooterSettings(20.0, 0.0);  //ft/s, rot/s
 
       // Power Cell info
       // public static final double PowerCellMass = 3.0 / 16.0; // lbs
       public static final double PCNominalRadius = 10 / 2.0 / 12.0; // feet - power cell
       public static final double PCEffectiveRadius = 8 / 2.0 / 12.0; // feet - compressed radius
-      public static final double FlyWheelGearRatio = 1;
-
-      /**
-       * Convert Target RPM to [motor-units/100ms] 4096 Units/Rev * Target RPM * 600 =
-       * velocity setpoint is in units/100ms
-       */
-      public static final double kRPM2Counts = 4096.0/600.0; // MU-100 (no gearing)
-      public static final double kMaxMO = 1023;  // max Motor output
-
+      
+      // constraints
+      public static final double kMaxFPS = 80;      //max FPS
+      public static final double maxLongRage = 8; //maximum range in long distance shooting mode
+      public static final double minLongRange = 1.8; //minimum range in long distance shooting mode
+      public static final double maxShortRange = 2; //maximum range in short distance shooting mode
+      public static final double degPerPixel = 59.6 / 320; //limelight conversion
+      public static final double angleErrorTolerance = 5.0; //allowed angle error to shoot in guided shooting modes
       // Flywheel info
       // Flywheel maxOpenLoopRPM and gear ratio are used to calculate kFF in shooter
       public static FlyWheelConfig upperFWConfig = new FlyWheelConfig();
       static {
-        upperFWConfig.maxOpenLoopRPM = 1870;  // estimated from 2000 RPM test
-        upperFWConfig.gearRatio = 3.0;        // upper is 5:1 (motor:fw)
+        upperFWConfig.maxOpenLoopRPM = 4000;  // estimated from 2000 RPM test
+        upperFWConfig.gearRatio = 1.0;         // upper encoder:fw is 1:1 
         upperFWConfig.sensorPhase = true;
         upperFWConfig.inverted = false;
-        upperFWConfig.flywheelRadius = 1.4375 / 12.0; // feet
-        upperFWConfig.pid = new PIDFController(0.15, 0.0, 2.0, 0); // kP kI kD kFF
+        upperFWConfig.flywheelRadius = 2 / 12.0; // feet
+        upperFWConfig.pid = new PIDFController(0.12, 0.0, 4.0, 0.034); // kP kI kD kFF
         upperFWConfig.pid.setIzone(1800);
       }
 
       public static FlyWheelConfig lowerFWConfig = new FlyWheelConfig();
       static {
-        lowerFWConfig.maxOpenLoopRPM = 1870;
-        lowerFWConfig.gearRatio = 3.0;         // lower fw gear 3:1  (motor:flywheel)
+        lowerFWConfig.maxOpenLoopRPM = 4000;
+        lowerFWConfig.gearRatio = 1.0;         // lower encoder:fw is 1:1
         lowerFWConfig.sensorPhase = false;
         lowerFWConfig.inverted = false; 
         lowerFWConfig.flywheelRadius = 2 / 12.0;   //feet 
-        lowerFWConfig.pid = new PIDFController(0.15, 0.0, 2.0, 0); // kP kI kD kFF
+        lowerFWConfig.pid = new PIDFController(0.12, 0.0, 4.0, 0.034); // kP kI kD kFF
         lowerFWConfig.pid.setIzone(1800);
       }
 

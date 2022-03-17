@@ -4,11 +4,11 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.Constants.Autonomous;
 import frc.robot.Constants.DriverPrefs;
+import frc.robot.Constants.Shooter;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.IntakeCommand.IntakeMode;
 import static frc.robot.commands.MoveIntake.DeployMode;
@@ -18,7 +18,8 @@ import frc.robot.commands.MagazineCommand.MagazineMode;
 import frc.robot.commands.MovePositioner.PositionerMode;
 import frc.robot.commands.MovePositioner;
 import frc.robot.commands.ResetPosition;
-import frc.robot.commands.Shoot.BasicShootCommand;
+import frc.robot.commands.Shoot.SuperDuperDumbShooter;
+import frc.robot.commands.Shoot.VelShootCommand;
 import frc.robot.commands.auto.auto_cmd_group2;
 import frc.robot.commands.auto.auto_pathPlanner_cmd;
 import frc.robot.commands.swerve.DriveController;
@@ -36,7 +37,6 @@ import frc.robot.subsystems.hid.XboxButton;
 import frc.robot.subsystems.hid.SideboardController.SBButton;
 import frc.robot.subsystems.ifx.DriverControls.Id;
 import frc.robot.subsystems.shooter.Shooter_Subsystem;
-import frc.robot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
 import frc.robot.ux.Dashboard;
 
 public class RobotContainer {
@@ -123,18 +123,28 @@ public class RobotContainer {
         //.whenPressed(new SwerveDriveTest(drivetrain, 1, 0).withTimeout(8));
 
     // Y - reset Pose
-    if (Constants.HAS_DRIVETRAIN) driverControls.bind(Id.Driver, XboxButton.Y).whenPressed(new InstantCommand(drivetrain::resetAnglePose));
+    //if (Constants.HAS_DRIVETRAIN) driverControls.bind(Id.Driver, XboxButton.Y).whenPressed(new InstantCommand(drivetrain::resetAnglePose));
 
-    // X - follow path off chooser
     if (Constants.HAS_DRIVETRAIN) {
-      driverControls.bind(Id.Driver, XboxButton.X)
-          //.whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
-          .whenPressed(new auto_pathPlanner_cmd(drivetrain, "AutoPath4"));
-      driverControls.bind(Id.Driver, XboxButton.LB)
-           //.whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
-           .whenPressed(new auto_pathPlanner_cmd(drivetrain, "Straight1"));
-
+      //reset angle only
+      driverControls.bind(Id.Driver, XboxButton.X).whenPressed(new InstantCommand(drivetrain::resetAnglePose));
+      
+      //reset angle and X,Y to start pose3
+      driverControls.bind(Id.Driver, XboxButton.Y).whenPressed(new InstantCommand( ()-> 
+      {
+        drivetrain.setPose(Autonomous.startPose3);
+      }));
     }
+    
+    //X - follow path off chooser
+    // if (Constants.HAS_DRIVETRAIN) {
+    //   driverControls.bind(Id.Driver, XboxButton.START)
+    //       //.whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
+    //       .whenPressed(auto_pathPlanner_cmd.PathFactory(drivetrain, "AutoPath4").andThen(m_driveController));
+    //   // driverControls.bind(Id.Driver, XboxButton.BACK)
+      //      //.whenPressed(new auto_drivePath_cmd(drivetrain, dashboard.getTrajectoryChooser()));
+      //      .whenPressed(auto_pathPlanner_cmd.PathFactory(drivetrain, "Straight1").andThen(m_driveController));
+    //}
 
     //RB limelight toggle
     driverControls.bind(Id.Driver, XboxButton.RB).whenPressed(new InstantCommand( limelight::toggleLED ));
@@ -158,7 +168,7 @@ public class RobotContainer {
     // B  - spin intake while held (to intake the ball)
     // A  - spin intake while held (in reverse to expell the ball)
     // RT - spin shooter and index while held
-    driverControls.bind(Id.SwitchBoard, SBButton.Sw13).whenActive(new ResetPosition(Constants.Autonomous.startPose3, drivetrain, "None"));
+    driverControls.bind(Id.SwitchBoard, SBButton.Sw13).whenActive(new ResetPosition(Autonomous.startPose3));
 
     if(Constants.HAS_INTAKE) {
       driverControls.bind(Id.Assistant, XboxButton.LB).whenPressed(new MoveIntake(DeployMode.Toggle));
@@ -177,12 +187,10 @@ public class RobotContainer {
       driverControls.bind(Id.Assistant, XboxButton.Y).whileHeld(new MagazineCommand((()-> 1.0), MagazineMode.ExpellCargo) );
     }
 
-    
-
     if(Constants.HAS_SHOOTER){
-      driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_RIGHT).whileHeld(new BasicShootCommand(new ShooterSettings(20, 0.0), 20 ));
+      driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_RIGHT).whileHeld(new VelShootCommand(Shooter.DefaultSettings, 20)); //our smart shooting command, use this one
+      driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_LEFT).whileHeld(new SuperDuperDumbShooter(1)); //runs intake, magazine at default intake speeds, and shooter and full output - failsafe
     }
-
   }
 
   public Command getAutonomousCommand() {

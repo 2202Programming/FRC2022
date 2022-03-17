@@ -43,12 +43,19 @@ public class RPMShootCommandTune extends CommandBase{
     private double upperI;
     private double upperD;
 
-    private double r_upperP = 0.1;
-    private double r_upperI = 0.0;
-    private double r_upperD = 0.0;
+    private double upperFF;
+    private double lowerFF;
 
-    private double requestedVelocity = 25;
-    private double previousVelocity = 25;
+    private double r_upperP = 0.12;
+    private double r_upperI = 0.0;
+    private double r_upperD = 4.0;
+
+    private double r_upperFF = 0.034;
+    private double r_lowerFF = 0.034;
+
+    private double requestedVelocity = 80;
+    private double previousVelocity = 80;
+    final String FFID = "Requested upperFF";
 
     ShooterSettings  cmdSS;         // instance the shooter sees
 
@@ -84,6 +91,21 @@ public class RPMShootCommandTune extends CommandBase{
         SmartDashboard.putNumber("Requested Flywheel P", r_upperP);
         SmartDashboard.putNumber("Requested Flywheel I", r_upperI);
         SmartDashboard.putNumber("Requested Flywheel D", r_upperD);
+        SmartDashboard.putNumber("Requested upperFF", r_upperFF);
+        SmartDashboard.putNumber("Requested lowerFF", r_lowerFF);
+
+        upperP = shooter.getUpperP();
+        upperI = shooter.getUpperI();
+        upperD = shooter.getUpperD();
+        upperFF = shooter.getUpperF();
+        lowerFF = shooter.getLowerF();
+    
+        SmartDashboard.putNumber("Current Flywheel P", upperP);
+        SmartDashboard.putNumber("Current Flywheel I", upperI);
+        SmartDashboard.putNumber("Current Flywheel D", upperD);
+        SmartDashboard.putNumber("Current upperFF", upperFF);
+        SmartDashboard.putNumber("Current lowerFF", lowerFF);
+
         CommandScheduler.getInstance().schedule(new IntakeCommand((()-> 0.47), ()-> 0.30,  IntakeMode.LoadCargo));
     }
 
@@ -92,16 +114,22 @@ public class RPMShootCommandTune extends CommandBase{
         checkDashboard();
         getPID();
         checkPID();
-        distanceToTarget = PoseMath.poseDistance(RobotContainer.RC().drivetrain.getPose(), centerField);
+        distanceToTarget = PoseMath.poseDistance(RobotContainer.RC().drivetrain.getPose(), Autonomous.hubPose);
     }
 
     private void getPID(){
         upperP = shooter.getUpperP();
         upperI = shooter.getUpperI();
         upperD = shooter.getUpperD();
+        upperFF = shooter.getUpperF();
+        lowerFF = shooter.getLowerF();
+    
         SmartDashboard.putNumber("Current Flywheel P", upperP);
         SmartDashboard.putNumber("Current Flywheel I", upperI);
         SmartDashboard.putNumber("Current Flywheel D", upperD);
+        SmartDashboard.putNumber("Current upperFF", upperFF);
+        SmartDashboard.putNumber("Current lowerFF", lowerFF);
+
 
         SmartDashboard.putNumber("Velocity Requested", requestedVelocity);
         FlyWheelRPM flyWheelRPM = new FlyWheelRPM();
@@ -115,26 +143,36 @@ public class RPMShootCommandTune extends CommandBase{
         r_upperP = SmartDashboard.getNumber("Requested Flywheel P", upperP);
         r_upperI = SmartDashboard.getNumber("Requested Flywheel I", upperI);
         r_upperD = SmartDashboard.getNumber("Requested Flywheel D", upperD);
+        r_upperFF = SmartDashboard.getNumber("Requested upperFF", upperFF);
+        r_lowerFF = SmartDashboard.getNumber("Requested lowerFF", lowerFF);
+
         if (upperP != r_upperP){
-            shooter.setPIDUpper(r_upperP, upperI, upperD);
-            shooter.setPIDLower(r_upperP, upperI, upperD);
+            shooter.setPIDUpper(r_upperP, upperI, upperD, upperFF);
+            shooter.setPIDLower(r_upperP, upperI, upperD, lowerFF);
         }
         if (upperI != r_upperI){
-            shooter.setPIDUpper(upperP, r_upperI, upperD);
-            shooter.setPIDLower(upperP, r_upperI, upperD);
+            shooter.setPIDUpper(upperP, r_upperI, upperD, upperFF);
+            shooter.setPIDLower(upperP, r_upperI, upperD, lowerFF);
         }
         if (upperD != r_upperD){
-            shooter.setPIDUpper(upperP, upperI, r_upperD);
-            shooter.setPIDLower(upperP, upperI, r_upperD);
+            shooter.setPIDUpper(upperP, upperI, r_upperD, upperFF);
+            shooter.setPIDLower(upperP, upperI, r_upperD, lowerFF);
+        }
+        if (upperFF != r_upperFF){
+            shooter.setPIDUpper(upperP, upperI, upperD, r_upperFF);
+            shooter.setPIDLower(upperP, upperI, upperD, lowerFF);
+        }
+        if (lowerFF != r_lowerFF){
+            shooter.setPIDUpper(upperP, upperI, upperD, upperFF);
+            shooter.setPIDLower(upperP, upperI, upperD, r_lowerFF);
         }
     }
 
     private void checkDashboard(){
-        requestedVelocity = SmartDashboard.getNumber("Velocity Requested", 10);
-        cmdSS = new ShooterSettings(requestedVelocity, 0.0, USE_CURRENT_ANGLE, 0.01);
+        requestedVelocity = SmartDashboard.getNumber("Velocity Requested", 10);  
         if(requestedVelocity != previousVelocity){
             currentShooterCommand.setFinished();
-            currentShooterCommand = new VelShootCommand(new ShooterSettings(requestedVelocity, 0.0), 20 ); // backup count frames 
+            currentShooterCommand = new VelShootCommand(requestedVelocity); 
             CommandScheduler.getInstance().schedule(currentShooterCommand);
         }
         previousVelocity = requestedVelocity;

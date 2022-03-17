@@ -11,15 +11,18 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.RobotContainer;
+import frc.robot.Constants.Shooter;
+import frc.robot.commands.Shoot.SolutionProvider;
 import frc.robot.commands.Shoot.VelShootCommand;
 import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.Magazine_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.ifx.DriverControls;
 import frc.robot.subsystems.shooter.Shooter_Subsystem;
-import frc.robot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
+//import frc.robot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
 
-public class DriveController extends CommandBase {
+
+public class DriveController  extends CommandBase implements SolutionProvider {
 
   public enum DriveModes {
     robotCentric("Robot Centric"),
@@ -53,16 +56,18 @@ public class DriveController extends CommandBase {
   boolean currentlyShooting = false;
   boolean shootingRequested = false;
   boolean hasSolution = false;
-  double angleErrorTolerance = 5.0;
 
   NetworkTable table;
+  NetworkTable shooterTable;
   private NetworkTableEntry driveMode;
   private NetworkTableEntry shootingMode;
   private NetworkTableEntry NThasSolution;
-  public final String NT_Name = "DC"; // expose data under Drive Controller table
+  public final String NT_Name = "DC"; 
+  public final String NT_ShooterName = "Shooter"; 
+  
   int log_counter = 0;
 
-  public DriveController() {
+  public DriveController()  {
     System.out.println("Drive Controller Constructed");
     this.drivetrain = RobotContainer.RC().drivetrain;
     this.dc = RobotContainer.RC().driverControls;
@@ -74,12 +79,13 @@ public class DriveController extends CommandBase {
     m_fieldCentricDrive = new FieldCentricDrive(drivetrain, dc);
     m_hubCentricDrive = new HubCentricDrive(drivetrain, dc, limelight);
     m_intakeCentricDrive = new IntakeCentricDrive(drivetrain, dc);
-    m_velShootCommand = new VelShootCommand(new ShooterSettings(20,0), 15); //ft/s,rot, backupcount
+    m_velShootCommand = new VelShootCommand( Shooter.DefaultSettings, 15, this); //ft/s,rot, backupcount, SolutionProvider
 
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
-    driveMode = table.getEntry("/driveMode");
-    shootingMode = table.getEntry("/shootingModeOn");
-    NThasSolution = table.getEntry("/HasSolution");
+    shooterTable = NetworkTableInstance.getDefault().getTable(NT_ShooterName);
+    driveMode = table.getEntry("/DriveController/driveMode");
+    shootingMode = shooterTable.getEntry("/DriveController/shootingModeOn");
+    NThasSolution = shooterTable.getEntry("/DriveController/HasSolution");
   }
 
   @Override
@@ -108,14 +114,20 @@ public class DriveController extends CommandBase {
       CommandScheduler.getInstance().cancel(m_velShootCommand);
     } 
     if (currentlyShooting) { //if angle error is small, set solution to be true to allow shooter to shoot
-        if (Math.abs(m_hubCentricDrive.getAngleError().getDegrees()) > angleErrorTolerance){
-          m_velShootCommand.setSolution(false);
-          NThasSolution.setBoolean(false);
-        } else {
-          m_velShootCommand.setSolution(true);
-          NThasSolution.setBoolean(true);
-        }
+        NThasSolution.setBoolean(Math.abs(m_hubCentricDrive.getAngleError().getDegrees()) > Shooter.angleErrorTolerance);
     }
+  }
+
+
+  /**
+   * isOnTarget provides feedback to shoot command being run.
+   */
+  @Override
+  public boolean isOnTarget(){
+    // free shoot mode - just return true 
+    if (currentDriveMode == DriveModes.hubCentric)
+      return (Math.abs(m_hubCentricDrive.getAngleError().getDegrees()) > Shooter.angleErrorTolerance);
+    return true;   //all other modes driver is the targeting solution
   }
 
   private void checkDropout(){
@@ -168,12 +180,10 @@ public class DriveController extends CommandBase {
   }
 
   public void turnOnShootingMode(){
-    System.out.println("***SHOOTING MODE REQUESTED***");
     shootingRequested = true;
   }
 
   public void turnOffShootingMode(){
-    System.out.println("***SHOOTING MODE DISABLED***");
     shootingRequested = false;
   }
 

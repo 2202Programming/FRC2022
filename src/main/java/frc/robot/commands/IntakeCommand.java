@@ -7,6 +7,7 @@ package frc.robot.commands;
 import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
+import frc.robot.Constants.MagazineSettings;
 import frc.robot.subsystems.Intake_Subsystem;
 
 public class IntakeCommand extends CommandBase {
@@ -18,6 +19,7 @@ public class IntakeCommand extends CommandBase {
   Intake_Subsystem intake;
   DoubleSupplier intakeSpeed;
   DoubleSupplier sideIntakeSpeed;
+  boolean finished = false;
 
   public enum IntakeMode {
     LoadCargo, ExpellCargo
@@ -36,6 +38,10 @@ public class IntakeCommand extends CommandBase {
       this.sideIntakeSpeed = sideIntakeSpeedFunction;
 
       //addRequirements(intake);
+  }
+
+  public IntakeCommand(IntakeMode mode) {
+    this(()->MagazineSettings.defaultFrontIntakeSpeed, ()->MagazineSettings.defaultSideIntakeSpeed, mode);
   }
 
   // Called when the command is initially scheduled.
@@ -66,11 +72,15 @@ public class IntakeCommand extends CommandBase {
     intake.off();
   }
 
+  public void setFinished(){
+    finished = true;
+  }
+
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
 
     //Possible TODO - may want to finish or reset on Cargo COUNT
-    return false;  // never finishes, this can be a default command
+    return finished;  // never finishes, this can be a default command
   }
 }

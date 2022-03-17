@@ -4,6 +4,7 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
+import frc.robot.Constants.MagazineSettings;
 import frc.robot.commands.Shoot.BasicShootCommand.Stage;
 import frc.robot.subsystems.Magazine_Subsystem;
 import frc.robot.subsystems.Intake_Subsystem;
@@ -17,6 +18,7 @@ public class MagazineCommand extends CommandBase {
     //Defintions
     private final Magazine_Subsystem magazine;
     DoubleSupplier magazineSpeed;
+    boolean finished = false;
 
     final Intake_Subsystem intake;
     //MagazineMode to either Load or Expell cargo on driver input
@@ -36,6 +38,10 @@ public class MagazineCommand extends CommandBase {
         addRequirements(magazine);
     }
     
+    public MagazineCommand(MagazineMode mode){
+        this(()->MagazineSettings.defaultMagazineSpeed, mode);
+    }
+
     // TODO: think about what if anything is needed for the commands life-cycle
     
     public void initialize() {
@@ -56,8 +62,12 @@ public class MagazineCommand extends CommandBase {
         }
     }
 
+    public void setFinished(){
+        finished = true;
+    }
+    
     public boolean isFinished() {
-        return false;
+        return finished;
     }
     @Override
     public void end(boolean interrupted) {
