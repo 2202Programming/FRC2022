@@ -2,12 +2,14 @@ package frc.robot.commands.swerve;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -43,9 +45,9 @@ public class HubCentricDrive extends CommandBase {
 
   // PID for odometery-based heading to a target
   private PIDController anglePid;
-  private double angle_kp = 0.075;
-  private double angle_ki = 0.004;
-  private double angle_kd = 0.005;
+  private double angle_kp = 4.0;
+  private double angle_ki = 0;
+  private double angle_kd = 0.001;
 
   // PID for limelight-based heading to a target
   PIDController limelightPid;
@@ -79,6 +81,7 @@ public class HubCentricDrive extends CommandBase {
     this.kinematics = drivetrain.getKinematics();
     this.limelight = limelight;
 
+    // anglePid = new PIDController(angle_kp, angle_ki, angle_kd);
     anglePid = new PIDController(angle_kp, angle_ki, angle_kd);
     anglePid.enableContinuousInput(-Math.PI, Math.PI);
     limelightPid = new PIDController(limelight_kP, limelight_kI, limelight_kD);
@@ -110,29 +113,30 @@ public class HubCentricDrive extends CommandBase {
     // set goal of angle PID to be heading (in rad) from current position to
     // centerfield
     targetAngle = PoseMath.getHeading2Target(drivetrain.getPose(), Autonomous.hubPose);
-    targetAngle.plus(new Rotation2d(Math.PI)); // flip since shooter is on "back" of robot, bound to -pi to +pi
+    targetAngle = targetAngle.plus(new Rotation2d(Math.PI)); // flip since shooter is on "back" of robot, bound to -pi to +pi
     currentAngle = drivetrain.getPose().getRotation(); // from -pi to pi
 
     //get correction angle for velocity based on our velocity vector to hub
-    velocityCorrectionAngle = PoseMath.angleVirtualTarget(drivetrain.getPose(), Autonomous.hubPose, adjustHubPosition());
+    // velocityCorrectionAngle = PoseMath.angleVirtualTarget(drivetrain.getPose(), Autonomous.hubPose, adjustHubPosition());
 
     //uncomment this when ready to test velocity correction
     //targetAngle.minus(velocityCorrectionAngle); //might need to be plus, depending on direction of travel??
     //Also, this correction angle is probably for the intake side ("front of robot") and may need a PI inversion so the shooter is pointing to hub
 
-    anglePid.setSetpoint(targetAngle.getDegrees()); //PID was tuned in degrees already
-    rot = anglePid.calculate(currentAngle.getDegrees());
+    anglePid.setSetpoint(targetAngle.getRadians()); 
+    rot = anglePid.calculate(currentAngle.getRadians());
 
     //angleError is just for reporting
     angleError = targetAngle;
-    angleError.minus(currentAngle);
+    angleError = angleError.minus(currentAngle);
 
     if (limelight.getTarget() && limelight.getLEDStatus()) {
       // if limelight is available, override rotation input from odometery to limelight
       // limelight is on the shooter side, so we don't need to worry about flipping target angles
       limelightPid.setSetpoint(0);
       //uncomment this below and comment line above when ready to test velocity correction
-      //limelightPid.setSetpoint(velocityCorrectionAngle.getDegrees()*Shooter.degPerPixel); // 0 is towards target, adjust based on velocity
+      //limelightPid.setSetpoint(velocityCorrectionAngle.getDegrees()*Shooter.degPerPixel); // 0 is towards target, 
+      //adjust based on velocity
       limelightPidOutput = limelightPid.calculate(limelight.getFilteredX());
       angleError = Rotation2d.fromDegrees(limelight.getFilteredX()*Shooter.degPerPixel); //approximation of degrees off center
       // update rotation and calulate new output-states
@@ -161,7 +165,7 @@ public class HubCentricDrive extends CommandBase {
     // update network tables
     hubCentricTarget.setDouble(targetAngle.getDegrees());
     NTangleError.setDouble(angleError.getDegrees());
-    NTvelocityCorrectionAngle.setDouble(velocityCorrectionAngle.getDegrees());
+    // NTvelocityCorrectionAngle.setDouble(velocityCorrectionAngle.getDegrees());
     }
   }
 
