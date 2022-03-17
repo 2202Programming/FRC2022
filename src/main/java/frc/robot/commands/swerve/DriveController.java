@@ -212,10 +212,10 @@ public class DriveController  extends CommandBase implements SolutionProvider {
     double pitchAngleDegrees = RobotContainer.RC().sensors.getAHRS().getPitch();    
     double rollAngleDegrees = RobotContainer.RC().sensors.getAHRS().getRoll();
     if (Math.abs(pitchAngleDegrees)>kOffBalanceAngleThresholdDegrees){
-      System.out.println("***PITCH WARNING***");
+      System.out.println("***PITCH WARNING: Pitch angle:"+pitchAngleDegrees);
     }
     if (Math.abs(rollAngleDegrees)>kOffBalanceAngleThresholdDegrees){
-      System.out.println("***ROLL WARNING***");
+      System.out.println("***ROLL WARNING: Roll Angle:"+rollAngleDegrees);
     }
   }
 }
