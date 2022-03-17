@@ -172,6 +172,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
             case Shooting:
                 if (!shooter.isReadyToShoot()){
                     magazine.driveWheelOff();
+                    shooter.spinup(cmdSS); //in case a new velocity has been set due to a new distance
                     stage = Stage.WaitingForFlyWheel;
                 }
             break;
@@ -206,10 +207,8 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         shooterAngleLongRange = !positioner.isDeployed(); //check positioner angle from subsystem
         if ((currentDistance < Shooter.minLongRange) && shooterAngleLongRange) { //below long range, switch to short range
             positioner.deploy();
-            System.out.println("***Deploying");
         } else if ((currentDistance > Shooter.maxShortRange) && !shooterAngleLongRange) { //above short trange, switch to long range
             positioner.retract();
-            System.out.println("***Retracting")
             ;
         }
         shooterAngleLongRange = !positioner.isDeployed(); //check positioner angle from subsystem

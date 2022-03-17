@@ -51,7 +51,7 @@ public class auto_cmd_group2 extends SequentialCommandGroup {
 
     addCommands(
       new MoveIntake(DeployMode.Deploy),
-      new InstantCommand( RobotContainer.RC().limelight::enableLED ),
+      //new InstantCommand( RobotContainer.RC().limelight::enableLED ),
       new ParallelDeadlineGroup( //all run at same time; group ends when 1st command ends
         finalAuto,
         new IntakeCommand(IntakeMode.LoadCargo),
