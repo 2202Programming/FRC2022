@@ -28,7 +28,8 @@ public class DriveController  extends CommandBase implements SolutionProvider {
     robotCentric("Robot Centric"),
     fieldCentric("Field Centric"),
     hubCentric("Hub Centric"),
-    intakeCentric("Intake Centric");
+    intakeCentric("Intake Centric"),
+    autoBalance("Auto Balance");
     private String name;
     private DriveModes(String name) {
       this.name = name;
@@ -48,6 +49,7 @@ public class DriveController  extends CommandBase implements SolutionProvider {
   HubCentricDrive m_hubCentricDrive;
   IntakeCentricDrive m_intakeCentricDrive;
   VelShootCommand m_velShootCommand;
+  BalanceDrive m_balanceDrive;
 
   Command currentCmd;
   DriveModes requestedDriveMode = DriveModes.fieldCentric;
@@ -79,6 +81,7 @@ public class DriveController  extends CommandBase implements SolutionProvider {
     m_fieldCentricDrive = new FieldCentricDrive(drivetrain, dc);
     m_hubCentricDrive = new HubCentricDrive(drivetrain, dc, limelight);
     m_intakeCentricDrive = new IntakeCentricDrive(drivetrain, dc);
+    m_balanceDrive = new BalanceDrive(drivetrain, dc);
     m_velShootCommand = new VelShootCommand( Shooter.DefaultSettings, 15, this); //ft/s,rot, backupcount, SolutionProvider
 
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
@@ -90,7 +93,6 @@ public class DriveController  extends CommandBase implements SolutionProvider {
 
   @Override
   public void initialize() {
-    System.out.println("Drive Controller Initialized");
     currentCmd = m_fieldCentricDrive;
     CommandScheduler.getInstance().schedule(currentCmd); // start default drive mode
   }
