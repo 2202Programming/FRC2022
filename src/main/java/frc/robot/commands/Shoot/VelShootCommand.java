@@ -12,6 +12,7 @@ import frc.robot.subsystems.hid.SideboardController.SBButton;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.shooter.Shooter_Subsystem;
 import frc.robot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
 import frc.robot.util.PoseMath;
@@ -266,15 +267,5 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         }
     }
 
-    // public boolean getSolution() {
-    //     return this.solution;
-    // }
 
-    // public void setSolution(boolean solution) {
-    //     this.solution = solution;
-    // }
-
-    // public void setFreeShootingMode(boolean freeShootingMode) {
-    //     this.freeShootingMode = freeShootingMode;
-    // }
 }
