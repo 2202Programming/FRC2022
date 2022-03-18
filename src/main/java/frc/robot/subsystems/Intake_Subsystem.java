@@ -49,6 +49,8 @@ public class Intake_Subsystem extends SubsystemBase {
         l_side_mtr.clearFaults();
         l_side_mtr.restoreFactoryDefaults();
         l_side_mtr.setInverted(false);
+
+        off(); // Stops intake from running after auto ends
     }
 
     //Set the Intake Mode
