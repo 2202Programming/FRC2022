@@ -57,6 +57,7 @@ public class auto_cmd_group2 extends SequentialCommandGroup {
         new IntakeCommand(IntakeMode.LoadCargo),
         new MagazineCommand(MagazineMode.LoadCargo)
       ),
+      new IntakeCommand(IntakeMode.Stop),
       new MoveIntake(DeployMode.Retract),
       new MagazineCommand((()->0.1), MagazineMode.ExpellCargo).withTimeout(0.1),
       //new MoveIntake(DeployMode.Retract),
