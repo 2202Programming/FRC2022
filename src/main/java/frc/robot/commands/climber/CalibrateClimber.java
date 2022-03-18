@@ -11,6 +11,7 @@ import frc.robot.subsystems.climber.Climber;
 
 public class CalibrateClimber extends CommandBase {
   
+  final Climber climber;
   private ArmExtension leftExt;
   private ArmExtension rightExt;
   private ArmRotation leftRot;
@@ -18,6 +19,7 @@ public class CalibrateClimber extends CommandBase {
 
   /** Creates a new CalibrateClimber. */
   public CalibrateClimber(Climber climber) {
+    this.climber = climber;
     leftExt = climber.getLeftArmExtension();
     rightExt = climber.getRightArmExtension();
     leftRot = climber.getLeftArmRotation();
@@ -34,8 +36,8 @@ public class CalibrateClimber extends CommandBase {
     rightExt.setPercentOutput(-0.2);
 
     // Rotation only has a forward limit switch
-    leftRot.setPercentOutput(0.25);
-    rightRot.setPercentOutput(0.25);
+    leftRot.setPercentOutput(0.15);
+    rightRot.setPercentOutput(0.15);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -48,16 +50,7 @@ public class CalibrateClimber extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    leftExt.setPercentOutput(0);
-    leftExt.setEncoderPos(0);
-    rightExt.setPercentOutput(0);
-    rightExt.setEncoderPos(0);
-
-    leftRot.setPercentOutput(0);
-    leftRot.setEncoderPos(0);
-    rightRot.setPercentOutput(0);
-    rightRot.setEncoderPos(0);
-
+    // this isn't the starting POSITION  climber.setStartingPos();
   }
 
   // Returns true when the command should end.
