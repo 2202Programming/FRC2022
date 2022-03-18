@@ -55,6 +55,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
     private boolean solution = true;
     private boolean shooterAngleLongRange;
     private boolean outOfRange = false;
+    private boolean autoVelocity = false;
 
     double log_counter = 0;
 
@@ -81,7 +82,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
     
     Stage stage;
     
-    public VelShootCommand(ShooterSettings shooterSettings, int backupFrameCount, SolutionProvider solutionProvider){
+    public VelShootCommand(ShooterSettings shooterSettings, int backupFrameCount, SolutionProvider solutionProvider, boolean autoVelocity){
         this.intake = RobotContainer.RC().intake;
         this.shooter = RobotContainer.RC().shooter;
         this.magazine = RobotContainer.RC().magazine;
@@ -90,6 +91,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         this.solutionProvider = (solutionProvider ==null) ? this : solutionProvider;
         specialSettings = shooterSettings;
         BackupPeriod = backupFrameCount;  //number of frames to move mag back slowly 5-20
+        this.autoVelocity = autoVelocity;
         addRequirements(magazine,shooter,positioner);
 
         table = NetworkTableInstance.getDefault().getTable(NT_Name);
@@ -102,16 +104,26 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
 
     public VelShootCommand(ShooterSettings shooterSettings, int backupFrameCount)
     {
-        this(shooterSettings, backupFrameCount, null);
+        this(shooterSettings, backupFrameCount, null, false);
+    }
+
+    public VelShootCommand(ShooterSettings shooterSettings, int backupFrameCount, boolean autoVelocity)
+    {
+        this(shooterSettings, backupFrameCount, null, autoVelocity);
+    }
+
+    public VelShootCommand(ShooterSettings shooterSettings, int backupFrameCount, SolutionProvider solutionProvider)
+    {
+        this(shooterSettings, backupFrameCount, solutionProvider, false);
     }
 
     public VelShootCommand(double requestedVelocity){  //velocity only overload
-        this(new ShooterSettings(requestedVelocity, 0.0, 0.0, 0.1), 20, null);
+        this(new ShooterSettings(requestedVelocity, 0.0, 0.0, 0.1), 20, null, false);
     }
 
     public VelShootCommand()
     {
-        this(defaultShooterSettings, 20, null);
+        this(defaultShooterSettings, 20, null, false);
     }
 
 
@@ -132,12 +144,12 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         setPositioner();
         calculateVelocity();
         //calculatedVel = cmdSS.vel; //get rid of this when calculated Velocity is working
-        /*
-        if(calculatedVel != cmdSS.vel){
-            cmdSS = new ShooterSettings(calculatedVel, 0);
-            shooter.spinup(cmdSS);
+        if (autoVelocity) {
+            if(calculatedVel != cmdSS.vel){
+                cmdSS = new ShooterSettings(calculatedVel, 0);
+                shooter.spinup(cmdSS);
+            }
         }
-        */
         shooter.spinup(cmdSS);
 
         switch(stage){
@@ -191,6 +203,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         stage = Stage.DoNothing;
         magazine.driveWheelOff();
         shooter.off();
+        this.autoVelocity = false;
     }
 
     public void setFinished(){
