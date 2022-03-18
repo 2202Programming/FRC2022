@@ -10,8 +10,8 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.RobotContainer;
 import frc.robot.Constants.Shooter;
+import frc.robot.RobotContainer;
 import frc.robot.commands.Shoot.SolutionProvider;
 import frc.robot.commands.Shoot.VelShootCommand;
 import frc.robot.subsystems.Limelight_Subsystem;
@@ -165,19 +165,36 @@ public class DriveController  extends CommandBase implements SolutionProvider {
   }
 
   public void cycleDriveMode() {
-    //Current use case is only to allow toggling between field and intake centric
-    //Make sure if in hubcentric (trigger held) that toggling drops back to default fieldcentric
     switch (currentDriveMode) {
       case robotCentric:
-      case hubCentric:
-      case fieldCentric:
-        requestedDriveMode = DriveModes.intakeCentric;
+        requestRobotCentric();
         break;
-
+      case hubCentric:
+        requestHubCentric();
+        break;
+      case fieldCentric:
+        requestFieldCentric();
+        break;
       case intakeCentric:
-        requestedDriveMode = DriveModes.fieldCentric;
+        requestIntakeCentric();
         break;
     }
+  }
+
+  public void requestRobotCentric() {
+    requestedDriveMode = DriveModes.robotCentric;
+  }
+
+  public void requestFieldCentric() {
+    requestedDriveMode = DriveModes.fieldCentric;
+  }
+
+  public void requestIntakeCentric() {
+    requestedDriveMode = DriveModes.intakeCentric;
+  }
+
+  public void requestHubCentric() {
+    requestedDriveMode = DriveModes.hubCentric;
   }
 
   public void turnOnShootingMode(){

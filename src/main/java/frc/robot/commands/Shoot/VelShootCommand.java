@@ -132,10 +132,13 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         setPositioner();
         calculateVelocity();
         //calculatedVel = cmdSS.vel; //get rid of this when calculated Velocity is working
+        /*
         if(calculatedVel != cmdSS.vel){
             cmdSS = new ShooterSettings(calculatedVel, 0);
             shooter.spinup(cmdSS);
         }
+        */
+        shooter.spinup(cmdSS);
 
         switch(stage){
             case DoNothing:
@@ -165,6 +168,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
             case WaitingForSolution:
                 if (solutionProvider.isOnTarget()) {
                     stage = Stage.Shooting;
+                    intake.off();
                     magazine.driveWheelOn(1.0);
                 }
                 break;
@@ -172,6 +176,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
             case Shooting:
                 if (!shooter.isReadyToShoot()){
                     magazine.driveWheelOff();
+                    intake.on(0, 0.1);
                     shooter.spinup(cmdSS); //in case a new velocity has been set due to a new distance
                     stage = Stage.WaitingForFlyWheel;
                 }

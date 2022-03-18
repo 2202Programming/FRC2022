@@ -34,6 +34,7 @@ import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.hid.HID_Xbox_Subsystem;
 import frc.robot.subsystems.hid.XboxAxis;
 import frc.robot.subsystems.hid.XboxButton;
+import frc.robot.subsystems.hid.XboxPOV;
 import frc.robot.subsystems.hid.SideboardController.SBButton;
 import frc.robot.subsystems.ifx.DriverControls.Id;
 import frc.robot.subsystems.shooter.Shooter_Subsystem;
@@ -113,9 +114,12 @@ public class RobotContainer {
    * </ul>
    */
   void setDriverButtons() {
-    // B - Toggle drive mode
     if (Constants.HAS_DRIVETRAIN) {
-      driverControls.bind(Id.Driver, XboxButton.B).whenPressed(m_driveController::cycleDriveMode);
+      //driverControls.bind(Id.Driver, XboxButton.B).whenPressed(m_driveController::cycleDriveMode);
+      // Make picking up cargo using intake camera easier
+      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_LEFT).whenPressed(m_driveController::requestRobotCentric);
+      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_LEFT).whenReleased(m_driveController::requestFieldCentric);
+
     }
     // A - Trajectory Test
     if (Constants.HAS_DRIVETRAIN) 
@@ -151,9 +155,9 @@ public class RobotContainer {
    
 
     if(Constants.HAS_DRIVETRAIN){
-      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_RIGHT).whenPressed(m_driveController::turnOnShootingMode);
-      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_RIGHT).whenReleased(m_driveController::turnOffShootingMode);
-      
+      // TODO: Make this not shoot cargo, the assistant should have full control over flywheels.
+      //driverControls.bind(Id.Driver, XboxAxis.TRIGGER_RIGHT).whenPressed(m_driveController::turnOnShootingMode);
+      //driverControls.bind(Id.Driver, XboxAxis.TRIGGER_RIGHT).whenReleased(m_driveController::turnOffShootingMode);
     }
   }
 
@@ -188,8 +192,8 @@ public class RobotContainer {
     }
 
     if(Constants.HAS_SHOOTER){
-      driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_RIGHT).whileHeld(new VelShootCommand(Shooter.DefaultSettings, 20)); //our smart shooting command, use this one
-      driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_LEFT).whileHeld(new SuperDuperDumbShooter(1)); //runs intake, magazine at default intake speeds, and shooter and full output - failsafe
+      driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_RIGHT).whileHeld(new VelShootCommand(Shooter.NearSettings, 20));
+      driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_LEFT).whileHeld(new VelShootCommand(Shooter.FarSettings, 40));
     }
   }
 
