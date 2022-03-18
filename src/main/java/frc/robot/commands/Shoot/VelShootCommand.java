@@ -221,6 +221,11 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
 
     private void calculateDistance(){
         currentDistance = PoseMath.poseDistance(RobotContainer.RC().drivetrain.getPose(), Autonomous.hubPose);
+        if (RobotContainer.RC().limelight.getTarget() && RobotContainer.RC().limelight.getLEDStatus()){
+            //calculate current distance with limelight area instead of odometery
+            currentDistance = RobotContainer.RC().limelight.getArea(); //need actual fit equation of limelight area vs. distance
+        }
+
     }
 
     //Low shooting mode = long range = retracted
