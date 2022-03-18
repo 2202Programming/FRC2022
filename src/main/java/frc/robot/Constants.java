@@ -237,6 +237,10 @@ public final class Constants {
         public static final double kDriveGR = 8.14;      // [mo-turn to 1 drive wheel turn]  //New mk4 is 8.14:1; old swerve bot was 8.16:1
     } 
     
+    public final static class NTStrings {
+      public final static String NT_Name_Position = "Position";
+    }
+
     public final static class MagazineSettings {
       public final static double defaultFrontIntakeSpeed = 0.5; 
       public final static double defaultSideIntakeSpeed = 0.3; 

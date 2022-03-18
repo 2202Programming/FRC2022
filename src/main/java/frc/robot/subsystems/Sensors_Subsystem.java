@@ -27,6 +27,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CAN;
+import frc.robot.Constants.NTStrings;
 
 public class Sensors_Subsystem extends SubsystemBase implements Gyro {
 
@@ -48,6 +49,7 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
   final double Kgyro = -1.0; // ccw is positive, just like geometry class
 
   private NetworkTable table;
+  private NetworkTable positionTable;
   private NetworkTableEntry nt_accelX;
   private NetworkTableEntry nt_accelY;
   private NetworkTableEntry nt_accelZ;
@@ -65,6 +67,9 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
   private NetworkTableEntry nt_cancoder_br;
   private NetworkTableEntry nt_cancoder_fl;
   private NetworkTableEntry nt_cancoder_fr;
+
+  private NetworkTableEntry nt_roll;
+  private NetworkTableEntry nt_pitch;
 
   static final byte update_hz = 100;
   // Sensors
@@ -127,6 +132,7 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
 
     // setup network table
     table = NetworkTableInstance.getDefault().getTable("Sensors");
+    positionTable = NetworkTableInstance.getDefault().getTable(NTStrings.NT_Name_Position);
     nt_accelX = table.getEntry("x_dd");
     nt_accelY = table.getEntry("y_dd");
     nt_accelZ = table.getEntry("z_dd");
@@ -146,6 +152,9 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
     nt_cancoder_br = table.getEntry("cc_br");
     nt_cancoder_fl = table.getEntry("cc_fl");
     nt_cancoder_fr = table.getEntry("cc_fr");
+
+    nt_pitch = positionTable.getEntry("Pitch");
+    nt_roll = positionTable.getEntry("Roll");
 
     calibrate();
     log(20);
@@ -240,6 +249,9 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
       nt_cancoder_br.setDouble(m_rot.back_right);
       nt_cancoder_fl.setDouble(m_rot.front_left);
       nt_cancoder_fr.setDouble(m_rot.front_right);
+
+      nt_roll.setDouble(m_ahrs.getRoll());
+      nt_pitch.setDouble(m_ahrs.getPitch());
     }
   }
 

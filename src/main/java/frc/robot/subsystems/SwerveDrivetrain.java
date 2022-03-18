@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.DriveTrain;
+import frc.robot.Constants.NTStrings;
 import frc.robot.subsystems.Sensors_Subsystem.EncoderID;
 import frc.robot.util.PoseMath;
 
@@ -64,6 +65,7 @@ public class SwerveDrivetrain extends SubsystemBase {
   private final SwerveModuleMK3[] modules;
 
   private NetworkTable table;
+  private NetworkTable postionTable;
   private NetworkTableEntry currentX;
   private NetworkTableEntry currentY;
   private NetworkTableEntry currentHeading;
@@ -129,10 +131,11 @@ public class SwerveDrivetrain extends SubsystemBase {
 
     // for updating CAN status in periodic
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
-    currentX = table.getEntry("/Current X");
-    currentY = table.getEntry("/Current Y");
-    currentHeading = table.getEntry("/Current Heading");
-    nt_currentBearing = table.getEntry("/Current Bearing");
+    postionTable = NetworkTableInstance.getDefault().getTable(NTStrings.NT_Name_Position);
+    currentX = postionTable.getEntry("/Current X");
+    currentY = postionTable.getEntry("/Current Y");
+    currentHeading = postionTable.getEntry("/Current Heading");
+    nt_currentBearing = postionTable.getEntry("/Current Bearing");
     velocityFL = table.getEntry("/Velocity Front Left");
     velocityFR = table.getEntry("/Velocity Front Right");
     velocityBL = table.getEntry("/Velocity Back Left");
@@ -141,7 +144,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     posFR = table.getEntry("/POS FR");
     posBL = table.getEntry("/POS BL");
     posBR = table.getEntry("/POS BR");
-    robotVel = table.getEntry("/RobotVel");
+    robotVel = postionTable.getEntry("/RobotVel");
 
 
     // display PID coefficients on SmartDashboard if tuning drivetrain
