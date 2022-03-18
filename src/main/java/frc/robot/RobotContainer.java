@@ -34,6 +34,7 @@ import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.hid.HID_Xbox_Subsystem;
 import frc.robot.subsystems.hid.XboxAxis;
 import frc.robot.subsystems.hid.XboxButton;
+import frc.robot.subsystems.hid.XboxPOV;
 import frc.robot.subsystems.hid.SideboardController.SBButton;
 import frc.robot.subsystems.ifx.DriverControls.Id;
 import frc.robot.subsystems.shooter.Shooter_Subsystem;
@@ -189,7 +190,9 @@ public class RobotContainer {
 
     if(Constants.HAS_SHOOTER){
       driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_RIGHT).whileHeld(new VelShootCommand(Shooter.DefaultSettings, 20)); //our smart shooting command, use this one
-      driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_LEFT).whileHeld(new VelShootCommand(false)); //velocity shooter using sideboard manual velocities - failsafe
+      driverControls.bind(Id.Assistant, XboxPOV.POV_LEFT).whileHeld(new VelShootCommand(Shooter.shortVelocity, false));
+      driverControls.bind(Id.Assistant, XboxPOV.POV_DOWN).whileHeld(new VelShootCommand(Shooter.mediumVelocity, false));
+      driverControls.bind(Id.Assistant, XboxPOV.POV_RIGHT).whileHeld(new VelShootCommand(Shooter.longVelocity, false));
     }
   }
 

@@ -46,7 +46,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
     public final String NT_Name = "Shooter"; 
 
 
-    ShooterSettings specialSettings;
+    ShooterSettings m_shooterSettings;
     
     ShooterSettings  cmdSS;         // instance the shooter sees
     ShooterSettings  prevSS;        // instance for prev State
@@ -91,7 +91,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         this.positioner = RobotContainer.RC().positioner;
         // the default solution provider is always true
         this.solutionProvider = (solutionProvider ==null) ? this : solutionProvider;
-        specialSettings = shooterSettings;
+        m_shooterSettings = shooterSettings;
         BackupPeriod = backupFrameCount;  //number of frames to move mag back slowly 5-20
         addRequirements(magazine,shooter,positioner);
 
@@ -117,6 +117,11 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         this.autoVelocity = autoVelocity;        
     }
 
+    public VelShootCommand(double requestedVelocity, boolean autoVelocity){
+        this(new ShooterSettings(requestedVelocity, 0.0, 0.0, 0.1), 20, null);
+        this.autoVelocity = autoVelocity;        
+    }
+
     public VelShootCommand()
     {
         this(defaultShooterSettings, 20, null);
@@ -125,7 +130,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
 
     @Override
     public void initialize(){
-        cmdSS = specialSettings; //defaultShooterSettings SUS 
+        cmdSS = m_shooterSettings; 
         prevSS = new ShooterSettings(cmdSS);
         stage = Stage.DoNothing;
         shooter.off();
@@ -145,9 +150,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
                 cmdSS = new ShooterSettings(calculatedVel, 0);
                 shooter.spinup(cmdSS);
             }
-        } else{
-            cmdSS = new ShooterSettings(getManualVelocity(), 0);
-        }
+        } 
 
         switch(stage){
             case DoNothing:
