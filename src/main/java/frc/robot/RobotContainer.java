@@ -189,7 +189,7 @@ public class RobotContainer {
 
     if(Constants.HAS_SHOOTER){
       driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_RIGHT).whileHeld(new VelShootCommand(Shooter.DefaultSettings, 20)); //our smart shooting command, use this one
-      driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_LEFT).whileHeld(new SuperDuperDumbShooter(1)); //runs intake, magazine at default intake speeds, and shooter and full output - failsafe
+      driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_LEFT).whileHeld(new VelShootCommand(false)); //velocity shooter using sideboard manual velocities - failsafe
     }
   }
 

@@ -1,12 +1,14 @@
 package frc.robot.commands.Shoot;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.Autonomous;
 import frc.robot.Constants.Shooter;
 import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.subsystems.Magazine_Subsystem;
 import frc.robot.subsystems.Positioner_Subsystem;
+import frc.robot.subsystems.hid.SideboardController.SBButton;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -55,6 +57,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
     private boolean solution = true;
     private boolean shooterAngleLongRange;
     private boolean outOfRange = false;
+    private boolean autoVelocity = true;
 
     double log_counter = 0;
 
@@ -109,6 +112,11 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         this(new ShooterSettings(requestedVelocity, 0.0, 0.0, 0.1), 20, null);
     }
 
+    public VelShootCommand(boolean autoVelocity){
+        this(defaultShooterSettings, 20, null);
+        this.autoVelocity = autoVelocity;        
+    }
+
     public VelShootCommand()
     {
         this(defaultShooterSettings, 20, null);
@@ -132,9 +140,13 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         setPositioner();
         calculateVelocity();
         //calculatedVel = cmdSS.vel; //get rid of this when calculated Velocity is working
-        if(calculatedVel != cmdSS.vel){
-            cmdSS = new ShooterSettings(calculatedVel, 0);
-            shooter.spinup(cmdSS);
+        if (autoVelocity) {
+            if(calculatedVel != cmdSS.vel){
+                cmdSS = new ShooterSettings(calculatedVel, 0);
+                shooter.spinup(cmdSS);
+            }
+        } else{
+            cmdSS = new ShooterSettings(getManualVelocity(), 0);
         }
 
         switch(stage){
@@ -192,6 +204,13 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         finished = true;
     }
     
+    private double getManualVelocity(){
+        double velocity = Shooter.mediumVelocity;
+        if(RobotContainer.RC().driverControls.readSideboard(SBButton.Sw21)) velocity = Shooter.shortVelocity;
+        else if(RobotContainer.RC().driverControls.readSideboard(SBButton.Sw23)) velocity = Shooter.longVelocity;
+        return velocity;
+    }
+
     @Override
     public boolean isFinished(){
         return finished;

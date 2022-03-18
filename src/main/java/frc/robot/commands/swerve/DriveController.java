@@ -208,7 +208,7 @@ public class DriveController  extends CommandBase implements SolutionProvider {
   }
 
   private void checkTip(){
-    double kOffBalanceAngleThresholdDegrees = 1;
+    double kOffBalanceAngleThresholdDegrees = 5;
     double pitchAngleDegrees = RobotContainer.RC().sensors.getAHRS().getPitch();    
     double rollAngleDegrees = RobotContainer.RC().sensors.getAHRS().getRoll();
     if (Math.abs(pitchAngleDegrees)>kOffBalanceAngleThresholdDegrees){

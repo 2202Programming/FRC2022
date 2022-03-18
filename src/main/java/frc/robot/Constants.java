@@ -252,6 +252,10 @@ public final class Constants {
       public static final double PCNominalRadius = 10 / 2.0 / 12.0; // feet - power cell
       public static final double PCEffectiveRadius = 8 / 2.0 / 12.0; // feet - compressed radius
       
+      public static final double shortVelocity = 30;
+      public static final double mediumVelocity = 50;
+      public static final double longVelocity = 70;
+
       // constraints
       public static final double kMaxFPS = 80;      //max FPS
       public static final double maxLongRage = 8; //maximum range in long distance shooting mode
