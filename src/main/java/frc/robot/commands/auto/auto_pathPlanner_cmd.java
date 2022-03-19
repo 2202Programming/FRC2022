@@ -139,7 +139,7 @@ public class auto_pathPlanner_cmd extends CommandBase {
   }
 
   public static Command PathFactory2(SwerveDrivetrain m_robotDrive, String pathname){
-    var path = PathPlanner.loadPath(pathname, 2, 2); //last two parameters are max velocity and max accelleration
+    var path = PathPlanner.loadPath(pathname, 2.5, 2); //last two parameters are max velocity and max accelleration
 
     if (path == null) {
       return new InstantCommand();  // no path selected
