@@ -38,6 +38,8 @@ public class PitAlignClimber extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    climber.setArmSync(false);
+    climber.setOuterLoop(false); //using velocity
   }
 
   // Called every time the scheduler runs while the command is scheduled.
