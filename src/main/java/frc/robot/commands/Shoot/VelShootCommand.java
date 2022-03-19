@@ -1,7 +1,6 @@
 package frc.robot.commands.Shoot;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.Autonomous;
 import frc.robot.Constants.Shooter;
@@ -12,7 +11,6 @@ import frc.robot.subsystems.hid.SideboardController.SBButton;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.shooter.Shooter_Subsystem;
 import frc.robot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
 import frc.robot.util.PoseMath;
@@ -55,7 +53,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
     double calculatedVel = 20;
 
     private boolean finished = false;
-    private boolean solution = true;
+    //private boolean solution = true;
     private boolean shooterAngleLongRange;
     private boolean outOfRange = false;
     private boolean autoVelocity = true;

@@ -8,7 +8,6 @@ import frc.robot.subsystems.Magazine_Subsystem;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.AddressableLED;
 import frc.robot.subsystems.shooter.Shooter_Subsystem;
 import frc.robot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
 

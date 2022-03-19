@@ -10,9 +10,6 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.subsystems.shooter.FlyWheelRPM;
 import frc.robot.subsystems.shooter.Shooter_Subsystem;
-import frc.robot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
-
-
 
 public class RPMShootCommand extends CommandBase{ 
     public static final double USE_CURRENT_ANGLE = 0.0;

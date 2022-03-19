@@ -9,11 +9,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.Intake_Subsystem;
-import frc.robot.subsystems.Magazine_Subsystem;
-import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.hid.SideboardController.SBButton;
-import frc.robot.subsystems.ifx.DriverControls;
 
 public class auto_cmd extends SequentialCommandGroup {
 
