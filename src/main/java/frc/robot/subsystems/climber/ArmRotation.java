@@ -58,10 +58,10 @@ public class ArmRotation {
 
         // NTs
         this.network_table = table;
-        nte_curr_pos_deg = network_table.getEntry("Current Arm Rotation (degrees)");
-        nte_curr_vel_deg = network_table.getEntry("Current Arm RotRate (degree/s)");
+        nte_curr_pos_deg = network_table.getEntry("Arm Rotation");
+        nte_curr_vel_deg = network_table.getEntry("Arm RotRate");
         nte_curr_pos_deg.setDouble(0);
-        nte_des_pos_deg = network_table.getEntry("Desired Arm Rotation (degrees)");
+        nte_des_pos_deg = network_table.getEntry("Desired Arm Rotation");
         nte_des_pos_deg.setDouble(0);
         nte_backward_limit = network_table.getEntry("Backward Limit");
         nte_backward_limit.setBoolean(false);
@@ -78,8 +78,6 @@ public class ArmRotation {
         //Set PIDF values on the controller for vel and pos closed loop
         ClimbSettings.rotatePID_pos.copyTo(pidController, pos_pid);
         ClimbSettings.rotatePID_vel.copyTo(pidController, vel_pid);
-
-        //TODO:    motor_ext.setSmartCurrentLimit((int) nte_motor_amp_limit.getDouble(5)); // pick a good number for current limit
     }
 
     public void periodic() {
