@@ -12,10 +12,18 @@ public class MidClimb extends SequentialCommandGroup {
 
     public MidClimb(Climber climber) {
         super();
+        double midext = 15;
+        double midrot = -25;
+        double pullupext = -2;
         this.addCommands(
-            new MoveArmsTo(climber, ClimbSettings.MID_EXTENSION_LENGTH, ClimbSettings.MID_EXTENSION_ROTATION, true, true),
-            new MoveArmsTo(climber, ClimbSettings.MID_EXTENSION_LENGTH, 15, true, true), 
-            new WaitCommand(2.0),
+            new MoveArmsTo(climber, midext, 0, true, true),
+            new MoveArmsTo(climber, midext, midrot, true, true).withTimeout(5),
+            new MoveArmsTo(climber, pullupext, midrot, true, true),
+            new MoveArmsTo(climber, pullupext, 10, true, true),
+            new MoveArmsTo(climber, pullupext, 0, true, true),
+            
+            new MoveArmsTo(climber, 15, 0, true, true),
+            new WaitCommand(60),
             new MoveArmsTo(climber, 0.0 , 0.0, true, true)
      );
     }

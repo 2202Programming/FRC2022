@@ -134,8 +134,8 @@ public final class Constants {
     public static final double TOLERANCE_ROT_RATE = 0.25;    //[deg/s]
 
     // Software outer loop rate limits
-    public static final double MAX_VELOCITY_EXT = 4;  //[in/s]
-    public static final double MAX_VELOCITY_ROT = 8;  //[deg/s]
+    public static final double MAX_VELOCITY_EXT = 8;  //[in/s]
+    public static final double MAX_VELOCITY_ROT = 10;  //[deg/s]
     
     // Maybe move these to the commands...
     // TODO: Chec
@@ -148,7 +148,7 @@ public final class Constants {
 
 
     // TODO: Change to actual amperage values
-    public static final int MAX_AMPERAGE = 1;
+    public static final int MAX_AMPERAGE =25;
 
    
 
