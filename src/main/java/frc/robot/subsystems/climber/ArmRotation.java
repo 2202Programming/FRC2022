@@ -83,8 +83,8 @@ public class ArmRotation {
     }
 
     public void periodic() {
-        nte_curr_pos_deg.setDouble(encoder.getPosition());
-        nte_curr_vel_deg.setDouble(encoder.getVelocity());
+        nte_curr_pos_deg.setDouble(-encoder.getPosition());
+        nte_curr_vel_deg.setDouble(-encoder.getVelocity());
         nte_backward_limit.setBoolean(BackwardLimitSwitch.isPressed());
         nte_forward_limit.setBoolean(ForwardLimitSwitch.isPressed());
     }

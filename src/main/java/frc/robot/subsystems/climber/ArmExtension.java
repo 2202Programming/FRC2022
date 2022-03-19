@@ -81,8 +81,8 @@ public class ArmExtension {
     public void periodic() {
         nte_lower_limt.setBoolean(ReverseLimitSwitch.isPressed());
         nte_upper_limt.setBoolean(ForwardLimitSwitch.isPressed());
-        nte_velocity.setDouble(encoder.getVelocity());
-        nte_position.setDouble(encoder.getPosition());
+        nte_velocity.setDouble(-encoder.getVelocity());
+        nte_position.setDouble(-encoder.getPosition());
         nte_duty_cycle.setDouble(motor_ext.getAppliedOutput());
     }
 

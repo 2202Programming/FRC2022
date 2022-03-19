@@ -20,9 +20,15 @@ public class MidClimbExtend extends CommandBase {
     
     @Override
     public void initialize() {
+        climber.setArmSync(true);
         climber.setAmperageLimit(Constants.ClimbSettings.MAX_AMPERAGE);
         climber.setExtension(ext);
         climber.setRotation(rot);
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        climber.setArmSync(false);
     }
 
 

@@ -138,14 +138,14 @@ public final class Constants {
 
     // TODO: change to expected values
     public static final double TOLERANCE_LENGTH = 0.3;
-    public static final double TOLERANCE_ROTATION = 0.3;
+    public static final double TOLERANCE_ROTATION = 0.5;
 
     // TODO: Change to actual amperage values
     public static final int MAX_AMPERAGE = 1;
 
     // TODO: change to actual max vel
-    public static final int MAX_VELOCITY_EXT = 10;
-    public static final int MAX_VELOCITY_ROT = 10;
+    public static final double MAX_VELOCITY_EXT = 2;
+    public static final double MAX_VELOCITY_ROT = 5;
 
   }
 

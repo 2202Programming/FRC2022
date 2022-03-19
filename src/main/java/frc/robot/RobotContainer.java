@@ -83,13 +83,13 @@ public class RobotContainer {
   */
   void setDriverButtons(){
     driverControls.bind(Id.Driver, XboxButton.START).whileHeld(new ClimberTestRotRate(climber, 18, -30, 30));
-    driverControls.bind(Id.Driver, XboxButton.X).whileHeld(new MidClimb(climber));
+    driverControls.bind(Id.Driver, XboxButton.X).whenPressed(new MidClimb(climber));
     //driverControls.bind(Id.Driver, XboxButton.B).whileHeld(new SetArmRotation(driverControls, climber, -0.5));
     //driverControls.bind(Id.Driver, XboxButton.Y).whileHeld(new SetArmExtension(driverControls, climber, 0.2));
     //driverControls.bind(Id.Driver, XboxButton.A).whileHeld(new SetArmExtension(driverControls, climber, -0.2));
   
     //this shouold be on the sideboard
-    driverControls.bind(Id.Driver, XboxButton.B ).toggleWhenPressed(new PitAlignClimber(driverControls, Id.Driver, climber, .5, 3.0 ));
+    driverControls.bind(Id.Driver, XboxButton.B ).toggleWhenPressed(new PitAlignClimber(driverControls, Id.Driver, climber, 2.0, 10.0 ));
 
     //B - Toggle drive mod
     //driverControls.bind(Id.Driver, XboxButton.B).whenPressed(new InstantCommand( drivetrain::driveModeCycle ));
