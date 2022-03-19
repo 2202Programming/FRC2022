@@ -64,8 +64,8 @@ public class Climber extends SubsystemBase {
         setOuterLoop(false);
         setStartingPos();
         // finish hardware limits
-        setAmperageExtLimit(ClimbSettings.MAX_AMPERAGE);
-        setAmperageRotLimit(25);
+        setAmperageExtLimit(ClimbSettings.MAX_EXT_AMPS);
+        setAmperageRotLimit(ClimbSettings.MAX_ROT_AMPS);
     }
 
     public void setStartingPos() {
@@ -217,8 +217,12 @@ public class Climber extends SubsystemBase {
     }
 
     public void setAmperageRotLimit(int limit) {
-        right_motor_rot.setSmartCurrentLimit(limit);
-        left_motor_rot.setSmartCurrentLimit(limit);
+        // brushless only
+        //right_motor_rot.setSmartCurrentLimit(limit);
+        //left_motor_rot.setSmartCurrentLimit(limit);
+        // brushed
+        right_motor_rot.setSecondaryCurrentLimit(limit);
+        left_motor_rot.setSecondaryCurrentLimit(limit);
     }
 
     public void setOuterLoop(boolean enable) {

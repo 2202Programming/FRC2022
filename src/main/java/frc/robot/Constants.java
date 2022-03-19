@@ -42,11 +42,11 @@ public final class Constants {
     public static final int DT_FR_CANCODER = 7;
     public static final int DT_FL_CANCODER = 8;
 
-    // Climber Arms - L/R left/right I/O inner/outer
-    public static final int CMB_LEFT_Rotate = 16;
-    public static final int CMB_RIGHT_Rotate = 17;
-    public static final int CMB_RIGHT_Extend = 15;
-    public static final int CMB_LEFT_Extend = 14;
+    // Climber Arms 
+    public static final int CMB_LEFT_Extend  = 34;
+    public static final int CMB_RIGHT_Extend = 35;
+    public static final int CMB_LEFT_Rotate  = 36;
+    public static final int CMB_RIGHT_Rotate = 37;
 
     // drive train drive / angle motors - sparkmax neo
     public static final int DT_FL_DRIVE = 20;
@@ -147,11 +147,9 @@ public final class Constants {
     public static final double HIGHER_EXTENSION_ROTATION = -30;
 
 
-    // TODO: Change to actual amperage values
-    public static final int MAX_AMPERAGE =25;
-
-   
-
+    // SmartCurrent limit for brushless
+    public static final int MAX_EXT_AMPS =25;
+    public static final int MAX_ROT_AMPS = 25;
   }
 
   public static final class DriverPrefs {

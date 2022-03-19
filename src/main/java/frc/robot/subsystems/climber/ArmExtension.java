@@ -65,14 +65,12 @@ public class ArmExtension {
         nte_motor_amp_limit = this.network_table.getEntry("Motor Amp Limit");
         nte_motor_amp_limit.setDouble(40);
         nte_duty_cycle = this.network_table.getEntry("Duty Cycle");
-
         nte_lower_limt = this.network_table.getEntry("Lower Limit");
         nte_upper_limt = this.network_table.getEntry("Upper Limit");
 
         //Set PIDF values on the controller for vel and pos closed loop
         ClimbSettings.extendPID_pos.copyTo(pidController, pos_pid);
         ClimbSettings.extendPID_vel.copyTo(pidController, vel_pid);
-        encoder.setPosition(0.0); 
     }
 
     public void periodic() {
