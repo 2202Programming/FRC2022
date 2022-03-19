@@ -35,7 +35,7 @@ public class climberTestIntegrated extends CommandBase {
         chosenNumber = table.getEntry("Stage").getDouble(0);
         if (chosenNumber != previousNumber) {
             if (chosenNumber == 1)
-                new MidClimbExtend(climber).schedule();
+                new MidClimbExtend(climber, 0.0, 0.0).schedule();
             else if (chosenNumber == 2)
                 new MidClimbRetract(climber).schedule();
             else if (chosenNumber == 3)

@@ -7,8 +7,6 @@ package frc.robot.commands.climber;
 import frc.robot.subsystems.hid.XboxPOV;
 import frc.robot.subsystems.hid.XboxButton;
 import frc.robot.subsystems.ifx.DriverControls;
-import frc.robot.subsystems.ifx.DriverControls.Id;
-
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.subsystems.climber.Climber;
@@ -18,17 +16,19 @@ public class PitAlignClimber extends CommandBase {
   DriverControls dc;
   double extRate;
   double rotRate;
+  DriverControls.Id id;
   POVButton up;
   POVButton down, left, right;
 
   /** Creates a new PitAlignClimber. */
-  public PitAlignClimber(DriverControls dc, Climber climber, double extRate, double rotRate) {
+  public PitAlignClimber(DriverControls dc, DriverControls.Id id, Climber climber, double extRate, double rotRate) {
     this.climber = climber;
     this.dc = dc;
-    up = dc.bind(Id.Driver, XboxPOV.POV_UP);
-    down = dc.bind(Id.Driver, XboxPOV.POV_DOWN);
-    left = dc.bind(Id.Driver, XboxPOV.POV_LEFT);
-    right = dc.bind(Id.Driver, XboxPOV.POV_RIGHT);
+    this.id = id;
+    up = dc.bind(this.id, XboxPOV.POV_UP);
+    down = dc.bind(this.id, XboxPOV.POV_DOWN);
+    left = dc.bind(this.id, XboxPOV.POV_LEFT);
+    right = dc.bind(this.id, XboxPOV.POV_RIGHT);
     this.extRate = extRate;
     this.rotRate = rotRate;
 
@@ -49,21 +49,21 @@ public class PitAlignClimber extends CommandBase {
     double rot_rt = 0.0;
 
     if (up.get()) {
-      v_lt = dc.bind(Id.Driver, XboxButton.LB).get() ? extRate : 0.0;
-      v_rt = dc.bind(Id.Driver, XboxButton.RB).get() ? extRate : 0.0;
+      v_lt = dc.bind(this.id, XboxButton.LB).get() ? extRate : 0.0;
+      v_rt = dc.bind(this.id, XboxButton.RB).get() ? extRate : 0.0;
     }
     if (down.get()) {
-      v_lt = dc.bind(Id.Driver, XboxButton.LB).get() ? -extRate : 0.0;
-      v_rt = dc.bind(Id.Driver, XboxButton.RB).get() ? -extRate : 0.0;
+      v_lt = dc.bind(this.id, XboxButton.LB).get() ? -extRate : 0.0;
+      v_rt = dc.bind(this.id, XboxButton.RB).get() ? -extRate : 0.0;
     }
 
     if (left.get()) {
-      rot_lt = dc.bind(Id.Driver, XboxButton.LB).get() ? rotRate : 0.0;
-      rot_rt = dc.bind(Id.Driver, XboxButton.RB).get() ? rotRate : 0.0;
+      rot_lt = dc.bind(this.id, XboxButton.LB).get() ? rotRate : 0.0;
+      rot_rt = dc.bind(this.id, XboxButton.RB).get() ? rotRate : 0.0;
     }
     if (right.get()) {
-      rot_lt = dc.bind(Id.Driver, XboxButton.LB).get() ? -rotRate : 0.0;
-      rot_rt = dc.bind(Id.Driver, XboxButton.RB).get() ? -rotRate : 0.0;
+      rot_lt = dc.bind(this.id, XboxButton.LB).get() ? -rotRate : 0.0;
+      rot_rt = dc.bind(this.id, XboxButton.RB).get() ? -rotRate : 0.0;
     }
     climber.setExtSpeed(v_lt, v_rt);
     climber.setRotSpeed(rot_lt, rot_rt);

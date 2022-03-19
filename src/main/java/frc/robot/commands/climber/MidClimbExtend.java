@@ -7,27 +7,28 @@ import frc.robot.subsystems.climber.Climber;
 public class MidClimbExtend extends CommandBase {
 
     private final Climber climber;
+    //Positions we want to get to
+    double ext;   
+    double rot;
     
-    public MidClimbExtend(Climber climber) {
+    public MidClimbExtend(Climber climber, double ext_pos, double rot_pos) {
         this.climber = climber;
+        this.ext = ext_pos;
+        this.rot = rot_pos;
         addRequirements(climber);
     }
     
     @Override
     public void initialize() {
         climber.setAmperageLimit(Constants.ClimbSettings.MAX_AMPERAGE);
+        climber.setExtension(ext);
+        climber.setRotation(rot);
     }
 
-    @Override
-    public void execute() {
-        climber.setExtension(Constants.ClimbSettings.MID_EXTENSION_LENGTH);
-        climber.setRotation(Constants.ClimbSettings.MID_EXTENSION_ROTATION);
-    }
 
     @Override
     public boolean isFinished() {
-        return climber.checkIsFinished(Constants.ClimbSettings.MID_EXTENSION_LENGTH, Constants.ClimbSettings.MID_EXTENSION_ROTATION);
+        return climber.checkIsFinished(ext, rot);
     }
-
 
 }

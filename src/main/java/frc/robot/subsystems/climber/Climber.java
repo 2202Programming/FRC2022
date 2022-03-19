@@ -3,6 +3,7 @@ package frc.robot.subsystems.climber;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -10,6 +11,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.CAN;
+import frc.robot.Constants.ClimbSettings;
 
 public class Climber extends SubsystemBase {
     // NTs
@@ -24,6 +26,12 @@ public class Climber extends SubsystemBase {
     PIDController extPID = new PIDController(0.05, 0, 0); // input [in], output [in/s] Kp=[(in/s)/in-err]
     double rot_compensation = 0.0; // [deg/s] from rotPID
     PIDController rotPID = new PIDController(1.00, 0, 0); // input [deg], output [deg/s] Kp=[(deg/s)/deg-err]
+
+    //postion goals
+    double ext_target;
+    double rot_target;
+    PIDController rotPos = new PIDController(0.5, 0.0, 0.0);    //in degs-err  out: vel deg/s
+    PIDController extPos = new PIDController(.5, 0.0, 0.0);    //in inch-err  out vel in/s
 
     private CANSparkMax left_motor_rot = new CANSparkMax(CAN.CMB_LEFT_Rotate, MotorType.kBrushed);
     private CANSparkMax right_motor_rot = new CANSparkMax(CAN.CMB_RIGHT_Rotate, MotorType.kBrushed);
@@ -62,6 +70,8 @@ public class Climber extends SubsystemBase {
         // always zero setpoint because we want no difference between L and R
         extPID.setSetpoint(0.0);
         rotPID.setSetpoint(0.0);
+        rot_target = 0.0;
+        ext_target = 0.0;
     }
 
     public boolean readyToClimb() {
@@ -79,13 +89,17 @@ public class Climber extends SubsystemBase {
 
     // @param inches from extender absolute position
     public void setExtension(double inches) {
-        left_Arm_ext.setInches(inches);
-        right_Arm_ext.setInches(inches);
+        ext_target = -inches;
+        extPos.setSetpoint(ext_target);
+        //left_Arm_ext.setInches(inches);
+        //right_Arm_ext.setInches(inches);
     }
 
     public void setRotation(double rotationDegrees) {
-        left_Arm_rot.set(rotationDegrees);
-        right_Arm_rot.set(rotationDegrees);
+        //left_Arm_rot.set(rotationDegrees);
+        //right_Arm_rot.set(rotationDegrees);
+        rot_target = -rotationDegrees;
+        rotPos.setSetpoint(rot_target);
     }
 
     /**
@@ -123,18 +137,28 @@ public class Climber extends SubsystemBase {
 
     @Override
     public void periodic() {
+        // control left with PIDs, rt will follow
+        double ext_vel = extPos.calculate(left_Arm_ext.getInches());
+        double rot_vel = rotPos.calculate(left_Arm_rot.getRotationDegrees());
 
-        left_Arm_ext.periodic();
-        right_Arm_ext.periodic();
-        left_Arm_rot.periodic();
-        right_Arm_rot.periodic();
-
+        ext_vel = MathUtil.clamp(ext_vel, -ClimbSettings.MAX_VELOCITY_EXT, ClimbSettings.MAX_VELOCITY_EXT);
+        rot_vel = MathUtil.clamp(rot_vel, -ClimbSettings.MAX_VELOCITY_ROT, ClimbSettings.MAX_VELOCITY_ROT);
+        
         // form position error (left - right) to compensate commanded velocity
         diff_rot_err = left_Arm_rot.getRotationDegrees() - right_Arm_rot.getRotationDegrees();
         diff_ext_err = left_Arm_ext.getInches() - right_Arm_ext.getInches();
 
         ext_compensation = extPID.calculate(diff_ext_err);
         rot_compensation = extPID.calculate(diff_rot_err);
+        
+        // output new speed settings
+        setExtSpeed(ext_vel);
+        setRotSpeed(rot_vel);
+        left_Arm_ext.periodic();
+        right_Arm_ext.periodic();
+        left_Arm_rot.periodic();
+        right_Arm_rot.periodic();
+
     }
 
     public double getLeftExtInches() {
