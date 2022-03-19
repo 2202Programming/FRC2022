@@ -20,6 +20,8 @@ import frc.robot.commands.MovePositioner;
 import frc.robot.commands.ResetPosition;
 import frc.robot.commands.Shoot.VelShootCommand;
 import frc.robot.commands.auto.auto_cmd;
+import frc.robot.commands.climber.MidClimb;
+import frc.robot.commands.climber.PitAlignClimber;
 import frc.robot.commands.swerve.DriveController;
 import frc.robot.commands.swerve.LimelightDriveCmd;
 import frc.robot.commands.test.getTrajectoryFollowTest;
@@ -71,8 +73,6 @@ public class RobotContainer {
   public RobotContainer() {
     RobotContainer.rc = this;
 
-    // create our subsystems
-
     // these can get created on any hardware setup
     sensors = new Sensors_Subsystem();
     dashboard = new Dashboard(rc);
@@ -106,6 +106,13 @@ public class RobotContainer {
 
     setDriverButtons();
     setAssistantButtons();
+    
+    // Sideboard 
+    if (Constants.HAS_CLIMBER) {
+      // warning - PitAlign command use Driver's DPAD, RB and, LB. DPL-can we run this in TEST mode?
+      driverControls.bind(Id.SwitchBoard, SBButton.Sw21).whileHeld(new PitAlignClimber(driverControls, Id.Driver, climber, 2.0, 5.0)); //[in/s] [deg/s]
+      driverControls.bind(Id.SwitchBoard, SBButton.Sw22).whenPressed(new MidClimb(climber));
+    }
   }
 
   /**
@@ -120,38 +127,21 @@ public class RobotContainer {
   void setDriverButtons() {
     // B - Toggle drive mode
     if (Constants.HAS_DRIVETRAIN) {
-      driverControls.bind(Id.Driver, XboxButton.B).whenPressed(m_driveController::cycleDriveMode);
-      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_LEFT).whenPressed(m_driveController::setRobotCentric);
-      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_LEFT).whenReleased(m_driveController::setFieldCentric);
-    }
-    // A - Trajectory Test
-    if (Constants.HAS_DRIVETRAIN)
       driverControls.bind(Id.Driver, XboxButton.A).whenPressed(new getTrajectoryFollowTest(sensors, drivetrain));
-    // .whenPressed(new SwerveDriveTest(drivetrain, 1, 0).withTimeout(8));
-
-    // Y - reset Pose
-    // if (Constants.HAS_DRIVETRAIN) driverControls.bind(Id.Driver,
-    // XboxButton.Y).whenPressed(new InstantCommand(drivetrain::resetAnglePose));
-
-    if (Constants.HAS_DRIVETRAIN) {
-      // reset angle only
+      driverControls.bind(Id.Driver, XboxButton.B).whenPressed(m_driveController::cycleDriveMode);
       driverControls.bind(Id.Driver, XboxButton.X).whenPressed(new InstantCommand(drivetrain::resetAnglePose));
-
-      // reset angle and X,Y to start pose3
       driverControls.bind(Id.Driver, XboxButton.Y).whenPressed(new InstantCommand(() -> { drivetrain.setPose(Autonomous.startPose3); }));
+      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_LEFT).whenPressed(m_driveController::setRobotCentric);
+      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_LEFT).whenReleased(m_driveController::setFieldCentric);   
     }
 
     // X - follow path off chooser
-    // if (Constants.HAS_DRIVETRAIN) {    // driverControls.bind(Id.Driver, XboxButton.START)
-    // //.whenPressed(new auto_drivePath_cmd(drivetrain,
+    // if (Constants.HAS_DRIVETRAIN) { 
+    //    driverControls.bind(Id.Driver, XboxButton.START).whenPressed(new auto_drivePath_cmd(drivetrain,  dashboard.getTrajectoryChooser()));
+    // .whenPressed(auto_pathPlanner_cmd.PathFactory(drivetrain, "AutoPath4").andThen(m_driveController));
+    // // driverControls.bind(Id.Driver, XboxButton.BACK).whenPressed(new auto_drivePath_cmd(drivetrain,
     // dashboard.getTrajectoryChooser()));
-    // .whenPressed(auto_pathPlanner_cmd.PathFactory(drivetrain,
-    // "AutoPath4").andThen(m_driveController));
-    // // driverControls.bind(Id.Driver, XboxButton.BACK)
-    // //.whenPressed(new auto_drivePath_cmd(drivetrain,
-    // dashboard.getTrajectoryChooser()));
-    // .whenPressed(auto_pathPlanner_cmd.PathFactory(drivetrain,
-    // "Straight1").andThen(m_driveController));
+    // .whenPressed(auto_pathPlanner_cmd.PathFactory(drivetrain, "Straight1").andThen(m_driveController));
     // }
 
     // RB limelight toggle
