@@ -143,10 +143,10 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
     public void execute(){
         NTupdates();
         calculateDistance();
-        setPositioner();
         calculateVelocity();
         //calculatedVel = cmdSS.vel; //get rid of this when calculated Velocity is working
         if (autoVelocity) {
+            setPositioner();
             if(calculatedVel != cmdSS.vel){
                 cmdSS = new ShooterSettings(calculatedVel, 0);
                 shooter.spinup(cmdSS);
