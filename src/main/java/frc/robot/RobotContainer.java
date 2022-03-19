@@ -18,10 +18,8 @@ import frc.robot.commands.MagazineCommand.MagazineMode;
 import frc.robot.commands.MovePositioner.PositionerMode;
 import frc.robot.commands.MovePositioner;
 import frc.robot.commands.ResetPosition;
-import frc.robot.commands.Shoot.SuperDuperDumbShooter;
 import frc.robot.commands.Shoot.VelShootCommand;
-import frc.robot.commands.auto.auto_cmd_group2;
-import frc.robot.commands.auto.auto_pathPlanner_cmd;
+import frc.robot.commands.auto.auto_cmd;
 import frc.robot.commands.swerve.DriveController;
 import frc.robot.commands.swerve.LimelightDriveCmd;
 import frc.robot.commands.test.getTrajectoryFollowTest;
@@ -197,7 +195,7 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-      return new auto_cmd_group2(drivetrain, magazine, intake, driverControls); 
+      return new auto_cmd();
   }
   
 }
