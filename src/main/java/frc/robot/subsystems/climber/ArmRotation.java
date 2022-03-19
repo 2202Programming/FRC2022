@@ -97,6 +97,7 @@ public class ArmRotation {
     public void set(double degrees) {
         pidController.setReference(degrees, CANSparkMax.ControlType.kPosition, pos_pid);
         nte_des_pos_deg.setDouble(degrees);
+        System.out.println("warning closed loop Rot position given - not expected");
     }
 
     /**
@@ -107,7 +108,7 @@ public class ArmRotation {
         //account for the sign convention here 
         double arbFF = kAff * Math.signum(-rate);
         pidController.setReference(-rate, CANSparkMax.ControlType.kVelocity, vel_pid, arbFF);
-        System.out.println("warning closed loop position given - not expected");
+        
     }
 
     // calibration and testing only

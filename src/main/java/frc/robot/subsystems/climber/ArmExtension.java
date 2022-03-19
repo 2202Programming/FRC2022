@@ -84,6 +84,7 @@ public class ArmExtension {
     public void setInches(double inches) {
         pidController.setReference(inches, CANSparkMax.ControlType.kPosition, pos_pid);
         nte_des_pos_in.setDouble(inches);
+        System.out.println("warning closed loop ext position given - not expected");
     }
 
     /**
