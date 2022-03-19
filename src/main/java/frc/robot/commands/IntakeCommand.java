@@ -65,6 +65,7 @@ public class IntakeCommand extends CommandBase {
         break;
       case Stop:
         intake.off();
+        finished = true;
         break;
     }
 

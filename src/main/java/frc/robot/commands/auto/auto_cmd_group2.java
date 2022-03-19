@@ -6,9 +6,11 @@ package frc.robot.commands.auto;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotContainer;
+import frc.robot.Constants.Shooter;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.MagazineCommand;
 import frc.robot.commands.MoveIntake;
@@ -39,13 +41,13 @@ public class auto_cmd_group2 extends SequentialCommandGroup {
     Command finalAuto;
 
     if(m_controls.readSideboard(SBButton.Sw11)){
-      finalAuto = auto_pathPlanner_cmd.PathFactory(m_drivetrain, "AutoPath6");
+      finalAuto = auto_pathPlanner_cmd.PathFactory(m_drivetrain, "AutoPath1");
     }
     else if(m_controls.readSideboard(SBButton.Sw12)){
-      finalAuto = auto_pathPlanner_cmd.PathFactory(m_drivetrain, "AutoPath5");
+      finalAuto = auto_pathPlanner_cmd.PathFactory(m_drivetrain, "AutoPath2");
     }
     else{
-      finalAuto = auto_pathPlanner_cmd.PathFactory(m_drivetrain, "AutoPath4");
+      finalAuto = auto_pathPlanner_cmd.PathFactory(m_drivetrain, "AutoPath3");
     }
     
 
@@ -54,12 +56,17 @@ public class auto_cmd_group2 extends SequentialCommandGroup {
       //new InstantCommand( RobotContainer.RC().limelight::enableLED ),
       new ParallelDeadlineGroup( //all run at same time; group ends when 1st command ends
         finalAuto,
-        new IntakeCommand(IntakeMode.LoadCargo),
-        new MagazineCommand(MagazineMode.LoadCargo)
+        new IntakeCommand(IntakeMode.LoadCargo)
       ),
+      // new ParallelCommandGroup(
+      //   new IntakeCommand(IntakeMode.LoadCargo),
+      //   new MagazineCommand(MagazineMode.LoadCargo)
+      // ).withTimeout(1),
+      // new IntakeCommand(IntakeMode.LoadCargo).withTimeout(1),
       new IntakeCommand(IntakeMode.Stop),
       new MoveIntake(DeployMode.Retract),
-      new MagazineCommand((()->0.1), MagazineMode.ExpellCargo).withTimeout(0.1),
+      // new MagazineCommand((()->0.5), MagazineMode.ExpellCargo).withTimeout(0.2),
+      new VelShootCommand().withTimeout(10)
       //new MoveIntake(DeployMode.Retract),
     //   new ParallelDeadlineGroup( //all run at same time; group ends when 1st command ends
     //     new LimelightAim(1.0).withTimeout(3),
@@ -67,11 +74,11 @@ public class auto_cmd_group2 extends SequentialCommandGroup {
     //     new MagazineCommand((()-> 1.0), MagazineMode.LoadCargo)
     // ),
       //new MagazineCommand((()-> 1.0), MagazineMode.ExpellCargo).withTimeout(.75),
-      new ParallelDeadlineGroup(
-        new VelShootCommand().withTimeout(10)
+      // new ParallelDeadlineGroup(
+      //   new VelShootCommand().withTimeout(10)
        // new MagazineCommand((()-> 1.0), MagazineMode.LoadCargo),
        // new IntakeCommand((()-> 0.55), ()-> 0.20,  IntakeMode.LoadCargo)
-      )
+     // )
     );
   }
 
