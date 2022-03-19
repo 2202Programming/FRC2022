@@ -39,6 +39,7 @@ public class auto_cmd_group2 extends SequentialCommandGroup {
     this.m_controls = m_controls;
 
     Command finalAuto;
+    Command goToTerminal;
 
     if(m_controls.readSideboard(SBButton.Sw11)){
       finalAuto = auto_pathPlanner_cmd.PathFactory(m_drivetrain, "AutoPath1");
@@ -49,8 +50,9 @@ public class auto_cmd_group2 extends SequentialCommandGroup {
     else{
       finalAuto = auto_pathPlanner_cmd.PathFactory(m_drivetrain, "AutoPath3");
     }
-    
 
+    //goToTerminal = auto_pathPlanner_cmd.PathFactory(m_drivetrain, "AutoPath3");
+    
     addCommands(
       new MoveIntake(DeployMode.Deploy),
       //new InstantCommand( RobotContainer.RC().limelight::enableLED ),
@@ -66,7 +68,7 @@ public class auto_cmd_group2 extends SequentialCommandGroup {
       new IntakeCommand(IntakeMode.Stop),
       new MoveIntake(DeployMode.Retract),
       // new MagazineCommand((()->0.5), MagazineMode.ExpellCargo).withTimeout(0.2),
-      new VelShootCommand().withTimeout(10)
+      new VelShootCommand().withTimeout(5)
       //new MoveIntake(DeployMode.Retract),
     //   new ParallelDeadlineGroup( //all run at same time; group ends when 1st command ends
     //     new LimelightAim(1.0).withTimeout(3),
@@ -80,6 +82,38 @@ public class auto_cmd_group2 extends SequentialCommandGroup {
        // new IntakeCommand((()-> 0.55), ()-> 0.20,  IntakeMode.LoadCargo)
      // )
     );
+
+    // goToTerminal = auto_pathPlanner_cmd.PathFactory(m_drivetrain, "AutoPath3");
+
+    // addCommands(
+    //   new MoveIntake(DeployMode.Deploy),
+    //   //new InstantCommand( RobotContainer.RC().limelight::enableLED ),
+    //   new ParallelDeadlineGroup( //all run at same time; group ends when 1st command ends
+    //     goToTerminal,
+    //     new IntakeCommand(IntakeMode.LoadCargo)
+    //   ),
+    //   // new ParallelCommandGroup(
+    //   //   new IntakeCommand(IntakeMode.LoadCargo),
+    //   //   new MagazineCommand(MagazineMode.LoadCargo)
+    //   // ).withTimeout(1),
+    //   // new IntakeCommand(IntakeMode.LoadCargo).withTimeout(1),
+    //   new IntakeCommand(IntakeMode.Stop),
+    //   new MoveIntake(DeployMode.Retract),
+    //   // new MagazineCommand((()->0.5), MagazineMode.ExpellCargo).withTimeout(0.2),
+    //   new VelShootCommand().withTimeout(5)
+    //   //new MoveIntake(DeployMode.Retract),
+    // //   new ParallelDeadlineGroup( //all run at same time; group ends when 1st command ends
+    // //     new LimelightAim(1.0).withTimeout(3),
+    // //     new IntakeCommand((()-> 0.55), ()-> 0.20,  IntakeMode.LoadCargo),
+    // //     new MagazineCommand((()-> 1.0), MagazineMode.LoadCargo)
+    // // ),
+    //   //new MagazineCommand((()-> 1.0), MagazineMode.ExpellCargo).withTimeout(.75),
+    //   // new ParallelDeadlineGroup(
+    //   //   new VelShootCommand().withTimeout(10)
+    //    // new MagazineCommand((()-> 1.0), MagazineMode.LoadCargo),
+    //    // new IntakeCommand((()-> 0.55), ()-> 0.20,  IntakeMode.LoadCargo)
+    //  // )
+    // );
   }
 
 }
