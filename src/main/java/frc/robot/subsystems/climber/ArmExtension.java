@@ -97,7 +97,8 @@ public class ArmExtension {
      * @param v_ext  [in/s]
      */
     public void setSpeed(double v_ext) {
-        pidController.setReference(v_ext, CANSparkMax.ControlType.kVelocity, vel_pid);
+        //account for the sign convention here 
+        pidController.setReference(-v_ext, CANSparkMax.ControlType.kVelocity, vel_pid);
     }
 
     /**
@@ -123,6 +124,7 @@ public class ArmExtension {
     }
 
     public double getInches() {
-        return this.encoder.getPosition();
+        //account for sign here
+        return -this.encoder.getPosition();
     }
 }

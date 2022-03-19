@@ -103,8 +103,9 @@ public class ArmRotation {
      * @param rate [deg/s]
      */
     public void setRotRate(double rate) {
-        double arbFF = kAff * Math.signum(rate);
-        pidController.setReference(rate, CANSparkMax.ControlType.kVelocity, vel_pid, arbFF);
+        //account for the sign convention here 
+        double arbFF = kAff * Math.signum(-rate);
+        pidController.setReference(-rate, CANSparkMax.ControlType.kVelocity, vel_pid, arbFF);
     }
 
     // calibration and testing only
@@ -120,8 +121,8 @@ public class ArmRotation {
         return ForwardLimitSwitch.isPressed();
     }
 
-
     public double getRotationDegrees() {
-        return encoder.getPosition();
+        // account for sign convention here
+        return -encoder.getPosition();
     }
 }

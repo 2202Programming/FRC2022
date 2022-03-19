@@ -9,7 +9,7 @@ import frc.robot.subsystems.climber.ArmExtension;
 import frc.robot.subsystems.climber.ArmRotation;
 import frc.robot.subsystems.climber.Climber;
 
-public class CalibrateClimber extends CommandBase {
+public class CalibrateClimberPwr extends CommandBase {
   
   final Climber climber;
   private ArmExtension leftExt;
@@ -18,7 +18,7 @@ public class CalibrateClimber extends CommandBase {
   private ArmRotation rightRot;
 
   /** Creates a new CalibrateClimber. */
-  public CalibrateClimber(Climber climber) {
+  public CalibrateClimberPwr(Climber climber) {
     this.climber = climber;
     leftExt = climber.getLeftArmExtension();
     rightExt = climber.getRightArmExtension();

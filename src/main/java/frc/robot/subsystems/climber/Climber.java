@@ -19,23 +19,20 @@ public class Climber extends SubsystemBase {
     private NetworkTableEntry nte_sync_arms;
 
     // command fixes
-    private boolean posCmdActiveExt;
-    private boolean posCmdActiveRot;
+    boolean outerLoopEnabled = false;   // use sw position pids to control velocity
 
-    // sync values
-    boolean sync_arms = false; // when true uses diff_x_errs to synchronize
-    double diff_rot_err = 0.0;
-    double diff_ext_err = 0.0;
-    double ext_compensation = 0.0; // [in/s] from extPID
-    PIDController extPID = new PIDController(2.0, 0, 0); // input [in], output [in/s] Kp=[(in/s)/in-err]
-    double rot_compensation = 0.0; // [deg/s] from rotPID
-    PIDController rotPID = new PIDController(1.00, 0, 0); // input [deg], output [deg/s] Kp=[(deg/s)/deg-err]
-
-    // postion goals
-    double ext_target;
-    double rot_target;
-    PIDController rotPos = new PIDController(0.5, 0.0, 0.0); // in degs-err out: vel deg/s
-    PIDController extPos = new PIDController(5.0, 0.0, 0.0); // in inch-err out vel in/s
+    // Compensation "syncArms" 
+    boolean syncArmsEnabled;                // when true uses differential pos err to compensate
+    PIDController extCompPID = new PIDController(2.0, 0, 0);    // input [in], output [in/s] Kp=[(in/s)/in-err]  
+    PIDController rotCompPID = new PIDController(1.00, 0, 0);   // input [deg], output [deg/s] Kp=[(deg/s)/deg-err]
+    double rot_compensation = 0.0;                              // [deg/s] from rotCompPID
+    double ext_compensation = 0.0;                              // [in/s] from extCompPID
+    
+    // postion goals - software outer loops for position
+    PIDController rotPosL = new PIDController(0.5, 0.0, 0.0); // in degs-err out: vel deg/s
+    PIDController rotPosR = new PIDController(0.5, 0.0, 0.0); // in degs-err out: vel deg/s
+    PIDController extPosL = new PIDController(5.0, 0.0, 0.0); // in inch-err out vel in/s
+    PIDController extPosR = new PIDController(5.0, 0.0, 0.0); // in inch-err out vel in/s
 
     private CANSparkMax left_motor_rot = new CANSparkMax(CAN.CMB_LEFT_Rotate, MotorType.kBrushed);
     private CANSparkMax right_motor_rot = new CANSparkMax(CAN.CMB_RIGHT_Rotate, MotorType.kBrushed);
@@ -49,20 +46,25 @@ public class Climber extends SubsystemBase {
 
     public Climber() {
         table = NetworkTableInstance.getDefault().getTable("Climber");
-        nte_sync_arms = table.getEntry("sync_arms");
-        nte_sync_arms.setBoolean(sync_arms);
+        nte_sync_arms = table.getEntry("syncArms");
+        nte_sync_arms.setBoolean(syncArmsEnabled);
 
         left_Arm_rot = new ArmRotation(table.getSubTable("left_arm_rotation"), left_motor_rot, true, 0.9);
         right_Arm_rot = new ArmRotation(table.getSubTable("right_arm_rotation"), right_motor_rot, false, 0.5);
         right_Arm_ext = new ArmExtension(table.getSubTable("right_arm_extension"), right_motor_ext, false);
         left_Arm_ext = new ArmExtension(table.getSubTable("left_arm_extension"), left_motor_ext, true);
 
-        posCmdActiveExt = false;
-        posCmdActiveRot = false;
+        //Outer loop position tolerance
+        rotPosL.setTolerance(ClimbSettings.TOLERANCE_ROT, ClimbSettings.TOLERANCE_ROT_RATE);
+        rotPosR.setTolerance(ClimbSettings.TOLERANCE_ROT, ClimbSettings.TOLERANCE_ROT_RATE);
+        extPosL.setTolerance(ClimbSettings.TOLERANCE_EXT, ClimbSettings.TOLERANCE_EXT_VEL);
+        extPosR.setTolerance(ClimbSettings.TOLERANCE_EXT, ClimbSettings.TOLERANCE_EXT_VEL);
 
-        // TODO -pull from constants setAmperageLimit(limit);
-
+        setArmSync(false);
+        setOuterLoop(false);
         setStartingPos();
+        // finish hardware limits
+        setAmperageExtLimit(ClimbSettings.MAX_AMPERAGE);
     }
 
     public void setStartingPos() {
@@ -74,11 +76,8 @@ public class Climber extends SubsystemBase {
         left_Arm_rot.setEncoderPos(0.0);
         right_Arm_rot.setEncoderPos(0.0);
 
-        // always zero setpoint because we want no difference between L and R
-        extPID.setSetpoint(0.0);
-        rotPID.setSetpoint(0.0);
-        rot_target = 0.0;
-        ext_target = 0.0;
+        extCompPID.setSetpoint(0.0);
+        rotCompPID.setSetpoint(0.0);
     }
 
     public boolean readyToClimb() {
@@ -96,34 +95,28 @@ public class Climber extends SubsystemBase {
 
     // @param inches from extender absolute position
     public void setExtension(double inches) {
-        ext_target = inches;
-        extPos.setSetpoint(ext_target);
-        posCmdActiveExt = true;
-        
-        // left_Arm_ext.setInches(inches);
-        // right_Arm_ext.setInches(inches);
+        extPosL.setSetpoint(inches);
+        extPosR.setSetpoint(inches);
     }
 
     public void setRotation(double rotationDegrees) {
-        // left_Arm_rot.set(rotationDegrees);
-        // right_Arm_rot.set(rotationDegrees);
-        rot_target = rotationDegrees;
-        rotPos.setSetpoint(rot_target);
-        posCmdActiveRot = true;
+        rotPosL.setSetpoint(rotationDegrees);
+        rotPosR.setSetpoint(rotationDegrees);
     }
 
     /**
      * 
-     * @param spd [in/s]
+     * @param ext_spd [in/s]
      */
-    public void setExtSpeed(double spd) {
-        setExtSpeed(spd, spd);
+    public void setExtSpeed(double ext_spd) {
+        setExtSpeed(ext_spd, ext_spd);
     }
 
-    public void setExtSpeed(double v_lt, double v_rt) {
-        double rt_comp = (sync_arms) ? ext_compensation : 0.0;
-        left_Arm_ext.setSpeed(-v_lt);
-        right_Arm_ext.setSpeed(-v_rt - rt_comp);
+    public void setExtSpeed(double ext_spdlt, double ext_spdrt) {
+        //split the sync comp and remove/add a bit
+        double comp = (syncArmsEnabled) ? ext_compensation/2.0 : 0.0;
+        left_Arm_ext.setSpeed(ext_spdlt - comp);
+        right_Arm_ext.setSpeed(ext_spdrt + comp);
     }
 
     /**
@@ -135,74 +128,126 @@ public class Climber extends SubsystemBase {
     }
 
     public void setRotSpeed(double rot_spd_lt, double rot_spd_rt) {
-        double rt_comp = (sync_arms) ? rot_compensation : 0.0;
-        left_Arm_rot.setRotRate(-rot_spd_lt);
-        right_Arm_rot.setRotRate(-rot_spd_rt - rt_comp);
+        double comp = (syncArmsEnabled) ? rot_compensation/2.0 : 0.0;
+        left_Arm_rot.setRotRate(rot_spd_lt - comp);
+        right_Arm_rot.setRotRate(rot_spd_rt + comp);
     }
 
     public void setArmSync(boolean sync) {
-        sync_arms = sync;
-        nte_sync_arms.setBoolean(sync_arms);
+        syncArmsEnabled = sync;
+        nte_sync_arms.setBoolean(syncArmsEnabled);
     }
+
+
+    public void hold() {
+        //hardware stop
+        setExtSpeed(0.0);
+        setRotSpeed(0.0);
+
+        //clear sw pid states
+        extPosR.reset();
+        extPosL.reset();
+        rotPosL.reset();
+        rotPosR.reset();
+
+        //command where we are, update setpoints with current position
+        extPosL.setSetpoint(left_Arm_ext.getInches());
+        extPosR.setSetpoint(right_Arm_ext.getInches());
+        rotPosL.setSetpoint(left_Arm_rot.getRotationDegrees());
+        rotPosR.setSetpoint(right_Arm_rot.getRotationDegrees());
+
+        //outerloop & syncArms as controled by command
+    }
+
 
     @Override
     public void periodic() {
-        
         // control left with PIDs, rt will follow
-        double ext_vel = extPos.calculate(getLeftExtInches());
-        double rot_vel = rotPos.calculate(getLeftRotation());
+        double ext_velL = extPosL.calculate(getLeftExtInches());
+        double rot_velL = rotPosL.calculate(getLeftRotation());
+        double ext_velR = extPosR.calculate(getRightExtInches());
+        double rot_velR = rotPosR.calculate(getRightRotation());
 
-        ext_vel = MathUtil.clamp(ext_vel, -ClimbSettings.MAX_VELOCITY_EXT, ClimbSettings.MAX_VELOCITY_EXT);
-        rot_vel = MathUtil.clamp(rot_vel, -ClimbSettings.MAX_VELOCITY_ROT, ClimbSettings.MAX_VELOCITY_ROT);
+        ext_velL = MathUtil.clamp(ext_velL, -ClimbSettings.MAX_VELOCITY_EXT, ClimbSettings.MAX_VELOCITY_EXT);
+        rot_velL = MathUtil.clamp(rot_velL, -ClimbSettings.MAX_VELOCITY_ROT, ClimbSettings.MAX_VELOCITY_ROT);
+        ext_velR = MathUtil.clamp(ext_velR, -ClimbSettings.MAX_VELOCITY_EXT, ClimbSettings.MAX_VELOCITY_EXT);
+        rot_velR = MathUtil.clamp(rot_velR, -ClimbSettings.MAX_VELOCITY_ROT, ClimbSettings.MAX_VELOCITY_ROT);
 
-        extPID.setSetpoint(getLeftExtInches());
-        rotPID.setSetpoint(getLeftRotation());
-        ext_compensation = extPID.calculate(getRightExtInches());
-        rot_compensation = rotPID.calculate(getRightRotation());
-
+        //c
+        ext_compensation = 0.0;
+        ext_compensation = 0.0;
+        if (syncArmsEnabled) {
+            extCompPID.setSetpoint(getLeftExtInches());
+            rotCompPID.setSetpoint(getLeftRotation());
+            ext_compensation = extCompPID.calculate(getRightExtInches());
+            rot_compensation = rotCompPID.calculate(getRightRotation());
+        }
+      
         // output new speed settings
-        if (posCmdActiveExt) setExtSpeed(ext_vel);
-        if (posCmdActiveRot) setRotSpeed(rot_vel);
+        if (outerLoopEnabled) { 
+            setExtSpeed(ext_velL, ext_velR);
+            setRotSpeed(rot_velL, rot_velR);
+        }
         left_Arm_ext.periodic();
         right_Arm_ext.periodic();
         left_Arm_rot.periodic();
         right_Arm_rot.periodic();
-
     }
 
     public double getLeftExtInches() {
-        return -left_Arm_ext.getInches();
+        return left_Arm_ext.getInches();
     }
 
     public double getRightExtInches() {
-        return -right_Arm_ext.getInches();
+        return right_Arm_ext.getInches();
     }
 
     public double getLeftRotation() {
-        if (left_Arm_rot == null)
-            return 0;
-        return -left_Arm_rot.getRotationDegrees();
+        return left_Arm_rot.getRotationDegrees();
     }
 
     public double getRightRotation() {
-        if (right_Arm_rot == null)
-            return 0;
-        return -right_Arm_rot.getRotationDegrees();
+        return right_Arm_rot.getRotationDegrees();
     }
 
-    public void setAmperageLimit(int limit) {
+    public void setAmperageExtLimit(int limit) {
         right_motor_ext.setSmartCurrentLimit(limit);
         left_motor_ext.setSmartCurrentLimit(limit);
     }
 
+    public void setOuterLoop(boolean enable) {
+        outerLoopEnabled = enable;
+    }
+
+    /**
+     * outerLoopDone checks for rotation,extension, and combined when using
+     * the software pids for positon control.
+     * @return
+     */
+    public boolean outerLoopExtDone() {
+        return extPosL.atSetpoint() && extPosR.atSetpoint();
+    }
+    public boolean outerLoopRotDone() {
+        return rotPosL.atSetpoint() && rotPosR.atSetpoint();
+    }
+    public boolean outerLoopDone() {
+        return outerLoopExtDone() && outerLoopRotDone();
+    }
+
+    /**
+     *   Note - this doesn't check the velocity of the actuatorators.
+     *   Consider using the outerLoop softare pid tests.
+     *
+     * @param ext_pos   target extension
+     * @param rot_pos   target rotation
+     * @return
+     */
     public boolean checkIsFinished(double ext_pos, double rot_pos) {
-        boolean extDone = (Math.abs(this.getLeftExtInches() - ext_pos) <= ClimbSettings.TOLERANCE_LENGTH)
-                && (Math.abs(this.getRightExtInches() - ext_pos) <= ClimbSettings.TOLERANCE_LENGTH);
+        boolean extDone = (Math.abs(this.getLeftExtInches() - ext_pos) <= ClimbSettings.TOLERANCE_EXT)
+                && (Math.abs(this.getRightExtInches() - ext_pos) <= ClimbSettings.TOLERANCE_EXT);
         boolean rotDone = 
-                (Math.abs(this.getLeftRotation() - rot_pos) <= Constants.ClimbSettings.TOLERANCE_ROTATION)
-                && (Math.abs(this.getRightRotation() - rot_pos) <= Constants.ClimbSettings.TOLERANCE_ROTATION);
-        if (extDone) posCmdActiveExt = false;
-        if (rotDone) posCmdActiveRot = false;
+                (Math.abs(this.getLeftRotation() - rot_pos) <= Constants.ClimbSettings.TOLERANCE_ROT)
+                && (Math.abs(this.getRightRotation() - rot_pos) <= Constants.ClimbSettings.TOLERANCE_ROT);
         return (extDone && rotDone);
     }
 

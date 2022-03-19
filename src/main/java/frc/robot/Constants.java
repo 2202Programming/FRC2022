@@ -121,13 +121,23 @@ public final class Constants {
   // }
 
   public static final class ClimbSettings {
-    // Controller constants for velocity and position modes, each gets a slot on the
-    // brick
+    // Hardware Controller constants for velocity and position modes, each gets hw slot
     public static PIDFController rotatePID_vel = new PIDFController(0.003, 0.0, 0.05, 0.0215); // [deg/s] - slot 0
-    public static PIDFController rotatePID_pos = new PIDFController(0.0, 0.0, 0.0, 0.0); // [deg] - slot 1
-    public static PIDFController extendPID_vel = new PIDFController(0.015, 0.0, 0.05, 0.08); // [in/s] - slot 0
-    public static PIDFController extendPID_pos = new PIDFController(0.05, 0.0, 0.0, 0.0); // [in] - slot 1
+    public static PIDFController rotatePID_pos = new PIDFController(0.0, 0.0, 0.0, 0.0);       // [deg] - slot 1
+    public static PIDFController extendPID_vel = new PIDFController(0.015, 0.0, 0.05, 0.08);   // [in/s] - slot 0
+    public static PIDFController extendPID_pos = new PIDFController(0.05, 0.0, 0.0, 0.0);      // [in] - slot 1
 
+    // Position/vel tolerance for outer position loops
+    public static final double TOLERANCE_EXT      = 0.25;   //[in]
+    public static final double TOLERANCE_EXT_VEL  = 0.02;   //[in/s]
+    public static final double TOLERANCE_ROT      = 1.0;    //[deg]
+    public static final double TOLERANCE_ROT_RATE = 0.5;    //[deg/s]
+
+    // Software outer loop rate limits
+    public static final double MAX_VELOCITY_EXT = 2;  //[in/s]
+    public static final double MAX_VELOCITY_ROT = 5;  //[deg/s]
+    
+    // Maybe move these to the commands...
     // TODO: Chec
     // Extension length and rotation needed to hit bars
     public static final double MID_EXTENSION_LENGTH = 10;
@@ -136,16 +146,11 @@ public final class Constants {
     public static final double HIGHER_EXTENSION_LENGTH = 10;
     public static final double HIGHER_EXTENSION_ROTATION = -30;
 
-    // TODO: change to expected values
-    public static final double TOLERANCE_LENGTH = 0.3;
-    public static final double TOLERANCE_ROTATION = 0.5;
 
     // TODO: Change to actual amperage values
     public static final int MAX_AMPERAGE = 1;
 
-    // TODO: change to actual max vel
-    public static final double MAX_VELOCITY_EXT = 2;
-    public static final double MAX_VELOCITY_ROT = 5;
+   
 
   }
 

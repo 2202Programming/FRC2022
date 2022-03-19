@@ -3,27 +3,13 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
-
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-
-// import java.util.List;
-
-
 import frc.robot.Constants.DriverPrefs;
-import frc.robot.commands.MecanumDriveCmd;
 import frc.robot.commands.climber.*;
 import frc.robot.commands.test.ClimberTestRotRate;
-import frc.robot.commands.test.ClimberTestVelocity;
-import frc.robot.commands.test.climberTest;
-import frc.robot.subsystems.MecanumDrivetrain;
-import frc.robot.subsystems.Sensors_Subsystem;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.hid.HID_Xbox_Subsystem;
 import frc.robot.subsystems.hid.XboxButton;
-import frc.robot.subsystems.ifx.MecanumDriveIfx;
 import frc.robot.subsystems.ifx.DriverControls.Id;
-// import frc.robot.subsystems.ifx.DriverControls.Id;
 import frc.robot.ux.Dashboard;
 
 /**

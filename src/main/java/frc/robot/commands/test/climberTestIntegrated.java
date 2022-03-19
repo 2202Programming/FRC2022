@@ -4,10 +4,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.commands.climber.HigherClimbExtend;
-import frc.robot.commands.climber.HigherClimbRetract;
-import frc.robot.commands.climber.MidClimbExtend;
-import frc.robot.commands.climber.MidClimbRetract;
+import frc.robot.commands.climber.MoveArmsTo;
 import frc.robot.subsystems.climber.Climber;
 
 public class climberTestIntegrated extends CommandBase {
@@ -30,18 +27,19 @@ public class climberTestIntegrated extends CommandBase {
 
     }
 
+    //TODO: just random positions, make it real or delete this cmd
     @Override
     public void execute() {
         chosenNumber = table.getEntry("Stage").getDouble(0);
         if (chosenNumber != previousNumber) {
             if (chosenNumber == 1)
-                new MidClimbExtend(climber, 0.0, 0.0).schedule();
+                new MoveArmsTo(climber, 0.0, 0.0).schedule();
             else if (chosenNumber == 2)
-                new MidClimbRetract(climber).schedule();
+                new MoveArmsTo(climber, 10, 10).schedule();
             else if (chosenNumber == 3)
-                new HigherClimbExtend(climber).schedule();
+                new MoveArmsTo(climber, 15, 5).schedule();
             else if (chosenNumber == 4)
-                new HigherClimbRetract(climber).schedule();
+                new MoveArmsTo(climber, 19, 0).schedule();
             previousNumber = chosenNumber;
         }
 
@@ -54,7 +52,8 @@ public class climberTestIntegrated extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        //climber.stop();
+        // since we are scheduling other climb commands we expect this to be interrupted
+        // so do nothing - dpl
     }
 
 }
