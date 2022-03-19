@@ -5,21 +5,29 @@ import frc.robot.subsystems.climber.Climber;
 
 public class MoveArmsTo extends CommandBase {
 
-    private final Climber climber;
+    final Climber climber;
     //Positions we want to get to
-    double ext;   
-    double rot;
+    final double ext;   
+    final double rot;
+    final boolean syncArms;
+    final boolean endOuterLoop;
     
-    public MoveArmsTo(Climber climber, double ext_pos, double rot_pos) {
+    public MoveArmsTo(Climber climber, double ext_pos, double rot_pos, boolean syncArms, boolean endOuterLoop)  {
         this.climber = climber;
         this.ext = ext_pos;
         this.rot = rot_pos;
+        this.syncArms = syncArms;
+        this.endOuterLoop = endOuterLoop;
         addRequirements(climber);
     }
-    
+
+    public MoveArmsTo(Climber climber, double ext_pos, double rot_pos) {
+         this(climber, ext_pos, rot_pos, false, true);
+     }
+
     @Override
     public void initialize() {
-        climber.setArmSync(true);
+        climber.setArmSync(syncArms);
         climber.setOuterLoop(true);
         climber.setExtension(ext);
         climber.setRotation(rot);
@@ -27,9 +35,9 @@ public class MoveArmsTo extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        climber.setArmSync(false);
-        climber.setOuterLoop(false);
         climber.hold();
+        climber.setArmSync(syncArms);
+        climber.setOuterLoop(endOuterLoop);
     }
 
 
