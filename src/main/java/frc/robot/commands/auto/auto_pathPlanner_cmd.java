@@ -165,9 +165,17 @@ public class auto_pathPlanner_cmd extends CommandBase {
       );
 
         // Reset odometry to the starting pose of the trajectory.
-        m_robotDrive.setPose(path.getInitialPose());
+        //m_robotDrive.setPose(path.getInitialPose());
 
     // Run path following command, then stop at the end.
-    return swerveControllerCommand.andThen(() -> m_robotDrive.stop()).withTimeout(20);
+    return new SequentialCommandGroup(
+      new InstantCommand(()-> {
+        m_robotDrive.setPose(path.getInitialPose());
+      }),
+      new autoPrint("***Running Path " + pathname),
+      swerveControllerCommand,
+      new InstantCommand(m_robotDrive::stop),
+      new autoPrint("***Done Running Path " + pathname)
+      );
   }
 }
