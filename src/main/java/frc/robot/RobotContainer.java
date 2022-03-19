@@ -89,9 +89,9 @@ public class RobotContainer {
     //driverControls.bind(Id.Driver, XboxButton.A).whileHeld(new SetArmExtension(driverControls, climber, -0.2));
   
     //this shouold be on the sideboard
-    //driverControls.bind(Id.Driver, XboxButton.X ).toggleWhenPressed(new PitAlignClimber(driverControls, climber, .5, 3.0 ));
+    driverControls.bind(Id.Driver, XboxButton.B ).toggleWhenPressed(new PitAlignClimber(driverControls, Id.Driver, climber, .5, 3.0 ));
 
-    //B - Toggle drive mode
+    //B - Toggle drive mod
     //driverControls.bind(Id.Driver, XboxButton.B).whenPressed(new InstantCommand( drivetrain::driveModeCycle ));
   
     //A - Trajectory Test
