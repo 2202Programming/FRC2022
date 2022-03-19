@@ -257,8 +257,8 @@ public final class Constants {
       public static final double PCEffectiveRadius = 8 / 2.0 / 12.0; // feet - compressed radius
       
       public static final double shortVelocity = 40;
-      public static final double mediumVelocity = 47;
-      public static final double longVelocity = 55;
+      public static final double mediumVelocity = 48;
+      public static final double longVelocity = 60;
 
       // constraints
       public static final double kMaxFPS = 80;      //max FPS
