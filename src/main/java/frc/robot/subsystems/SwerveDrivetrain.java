@@ -268,6 +268,10 @@ public class SwerveDrivetrain extends SubsystemBase {
     return m_pose;
   }
 
+  public void printPose(){
+    System.out.println("***POSE X:" + m_pose.getX() + ", Y:" + m_pose.getY() + ", Rot:" + m_pose.getRotation().getDegrees());
+  }
+
   public double getBearing(){
     return filteredBearing;
   }

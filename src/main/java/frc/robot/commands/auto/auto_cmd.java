@@ -5,7 +5,9 @@
 package frc.robot.commands.auto;
 
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.subsystems.Magazine_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
@@ -22,10 +24,14 @@ public class auto_cmd extends SequentialCommandGroup {
    
     addCommands(
       //run first path and shoot
+      new InstantCommand(RobotContainer.RC().drivetrain::printPose),
       new auto_cmd_group2(),
-      
+      new InstantCommand(RobotContainer.RC().drivetrain::printPose),
+      new auto_cmd_terminal(),
+      new InstantCommand(RobotContainer.RC().drivetrain::printPose)
+      //new ConditionalCommand(new auto_pathPlanner_cmd(m_drivetrain, "AutoPath1"), new WaitCommand(0), this::isRedPath1),
       // if any 2nd row sideboards are pressed, run second path and shoot
-      new ConditionalCommand(new auto_cmd_terminal(), null, ()->(m_controls.readSideboard(SBButton.Sw21)||m_controls.readSideboard(SBButton.Sw22)||m_controls.readSideboard(SBButton.Sw23)))
+      //new ConditionalCommand(new auto_cmd_terminal(), null, ()->(m_controls.readSideboard(SBButton.Sw21)||m_controls.readSideboard(SBButton.Sw22)||m_controls.readSideboard(SBButton.Sw23)))
     );
   }
 

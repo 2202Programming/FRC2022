@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.SwerveDrivetrain;
 
 public class auto_pathPlanner_cmd extends CommandBase {
@@ -82,9 +83,14 @@ public class auto_pathPlanner_cmd extends CommandBase {
 
         // Reset odometry to the starting pose of the trajectory.
         m_robotDrive.setPose(path.getInitialPose());
-
+        
     // Run path following command, then stop at the end.
-    return swerveControllerCommand.andThen(() -> m_robotDrive.stop()).withTimeout(20);
+    return new SequentialCommandGroup(
+      new autoPrint("***Running Path " + pathname),
+      swerveControllerCommand,
+      new InstantCommand(m_robotDrive::stop),
+      new autoPrint("***Done Running Path " + pathname)
+      );
 
   }
 
@@ -95,6 +101,44 @@ public class auto_pathPlanner_cmd extends CommandBase {
   }
 
   public static Command PathFactory(SwerveDrivetrain m_robotDrive, String pathname){
+    var path = PathPlanner.loadPath(pathname, 1, 1); //last two parameters are max velocity and max accelleration
+
+    if (path == null) {
+      return new InstantCommand();  // no path selected
+    }
+      
+      PIDController xController = new PIDController(4.0, 0.0, 0.0);
+      PIDController yController = new PIDController(4.0, 0.0, 0.0);
+      ProfiledPIDController thetaController = new ProfiledPIDController(4, 0, 0, new TrapezoidProfile.Constraints(3, 3));
+      //Units are radians for thetaController; PPSwerveController is using radians internally.
+      thetaController.enableContinuousInput(-Math.PI, Math.PI); //prevent piroutte paths over continuity
+
+      PPSwerveControllerCommand swerveControllerCommand =
+      new PPSwerveControllerCommand(
+          path,
+          m_robotDrive::getPose, // Functional interface to feed supplier
+          m_robotDrive.getKinematics(),
+          // Position controllers 
+          xController,
+          yController,
+          thetaController,
+          m_robotDrive::drive,
+          m_robotDrive
+      );
+
+        // Reset odometry to the starting pose of the trajectory.
+        m_robotDrive.setPose(path.getInitialPose());
+
+    // Run path following command, then stop at the end.
+    return new SequentialCommandGroup(
+      new autoPrint("***Running Path " + pathname),
+      swerveControllerCommand,
+      new InstantCommand(m_robotDrive::stop),
+      new autoPrint("***Done Running Path " + pathname)
+      );
+  }
+
+  public static Command PathFactory2(SwerveDrivetrain m_robotDrive, String pathname){
     var path = PathPlanner.loadPath(pathname, 1, 1); //last two parameters are max velocity and max accelleration
 
     if (path == null) {

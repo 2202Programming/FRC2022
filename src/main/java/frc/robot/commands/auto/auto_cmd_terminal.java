@@ -34,22 +34,23 @@ public class auto_cmd_terminal extends SequentialCommandGroup {
 
     Command finalAuto;
 
-    if(m_controls.readSideboard(SBButton.Sw21)){
-      finalAuto = auto_pathPlanner_cmd.PathFactory(m_drivetrain, "AutoPath4");
+    if(m_controls.readSideboard(SBButton.Sw11)){
+      finalAuto = new auto_pathPlanner_cmd(RobotContainer.RC().drivetrain, "Auto22");
     }
-    else if(m_controls.readSideboard(SBButton.Sw22)){
-      finalAuto = auto_pathPlanner_cmd.PathFactory(m_drivetrain, "AutoPath5");
+    else if(m_controls.readSideboard(SBButton.Sw12)){
+      finalAuto = new auto_pathPlanner_cmd(RobotContainer.RC().drivetrain, "Auto22");
     }
     else{
-      finalAuto = auto_pathPlanner_cmd.PathFactory(m_drivetrain, "AutoPath6");
+      finalAuto = new auto_pathPlanner_cmd(RobotContainer.RC().drivetrain, "Auto22");
     }
     
     addCommands(
       new MoveIntake(DeployMode.Deploy),
-      new ParallelDeadlineGroup( //all run at same time; group ends when 1st command ends
-        finalAuto,
-        new IntakeCommand(IntakeMode.LoadCargo)
-      ),
+      finalAuto,
+      // new ParallelDeadlineGroup( //all run at same time; group ends when 1st command ends
+      //   finalAuto,
+      //   new IntakeCommand(IntakeMode.LoadCargo)
+      // ),
       new IntakeCommand(IntakeMode.Stop),
       new MoveIntake(DeployMode.Retract),
       new VelShootCommand().withTimeout(5)

@@ -52,7 +52,7 @@ public class auto_cmd_group2 extends SequentialCommandGroup {
       ),
       new IntakeCommand(IntakeMode.Stop),
       new MoveIntake(DeployMode.Retract),
-      new VelShootCommand().withTimeout(5)
+      new VelShootCommand().withTimeout(4)
     );
   }
 
