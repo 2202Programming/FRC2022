@@ -38,7 +38,8 @@ public class ArmRotation {
     private NetworkTableEntry nte_curr_pos_deg;
     private NetworkTableEntry nte_curr_vel_deg;
     private NetworkTableEntry nte_des_pos_deg;
-
+    private NetworkTableEntry nte_duty_cycle;
+    private NetworkTableEntry nte_amps;
 
     private NetworkTableEntry nte_backward_limit;
     private NetworkTableEntry nte_forward_limit;
@@ -50,7 +51,6 @@ public class ArmRotation {
         this.motor_rot.restoreFactoryDefaults();
         this.motor_rot.clearFaults();
         this.motor_rot.setInverted(inverted);
-        setPercentOutput(0);
 
         ForwardLimitSwitch = motor_rot.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
         BackwardLimitSwitch = motor_rot.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
@@ -61,8 +61,10 @@ public class ArmRotation {
         nte_curr_pos_deg = network_table.getEntry("Arm Rotation");
         nte_curr_vel_deg = network_table.getEntry("Arm RotRate");
         nte_curr_pos_deg.setDouble(0);
-        nte_des_pos_deg = network_table.getEntry("Desired Arm Rotation");
-        nte_des_pos_deg.setDouble(0);
+        nte_des_pos_deg = network_table.getEntry("PoS-CL Target Rotation");  //not used
+        nte_des_pos_deg.setDouble(99.99);
+        nte_duty_cycle = network_table.getEntry("Duty Cycle");
+        nte_amps = network_table.getEntry("Output Amps");
         nte_backward_limit = network_table.getEntry("Backward Limit");
         nte_backward_limit.setBoolean(false);
         nte_forward_limit = network_table.getEntry("Forward Limit");
@@ -73,7 +75,6 @@ public class ArmRotation {
         encoder.setInverted(inverted);
         encoder.setPositionConversionFactor(kCounts2Degrees);
         encoder.setVelocityConversionFactor(kCounts2Degrees/60.0);
-        encoder.setPosition(0.0);
 
         //Set PIDF values on the controller for vel and pos closed loop
         ClimbSettings.rotatePID_pos.copyTo(pidController, pos_pid);
@@ -81,10 +82,12 @@ public class ArmRotation {
     }
 
     public void periodic() {
-        nte_curr_pos_deg.setDouble(-encoder.getPosition());
+        nte_curr_pos_deg.setDouble(getRotationDegrees());
         nte_curr_vel_deg.setDouble(-encoder.getVelocity());
         nte_backward_limit.setBoolean(BackwardLimitSwitch.isPressed());
         nte_forward_limit.setBoolean(ForwardLimitSwitch.isPressed());
+        nte_duty_cycle.setDouble(motor_rot.getAppliedOutput());
+        nte_amps.setDouble(motor_rot.getOutputCurrent());
     }
 
     public void setEncoderPos(double pos) {
@@ -104,6 +107,7 @@ public class ArmRotation {
         //account for the sign convention here 
         double arbFF = kAff * Math.signum(-rate);
         pidController.setReference(-rate, CANSparkMax.ControlType.kVelocity, vel_pid, arbFF);
+        System.out.println("warning closed loop position given - not expected");
     }
 
     // calibration and testing only

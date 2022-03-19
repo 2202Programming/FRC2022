@@ -65,7 +65,7 @@ public class Climber extends SubsystemBase {
         setStartingPos();
         // finish hardware limits
         setAmperageExtLimit(ClimbSettings.MAX_AMPERAGE);
-        setAmperageRotLimit(10);
+        setAmperageRotLimit(25);
     }
 
     public void setStartingPos() {

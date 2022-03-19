@@ -49,7 +49,6 @@ public class ArmExtension {
         this.motor_ext.clearFaults();
         this.motor_ext.restoreFactoryDefaults();
         this.motor_ext.setInverted(inverted);
-        this.motor_ext.setSmartCurrentLimit(40);
 
         ForwardLimitSwitch = motor_ext.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
         ReverseLimitSwitch = motor_ext.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
@@ -73,8 +72,6 @@ public class ArmExtension {
         //Set PIDF values on the controller for vel and pos closed loop
         ClimbSettings.extendPID_pos.copyTo(pidController, pos_pid);
         ClimbSettings.extendPID_vel.copyTo(pidController, vel_pid);
-
-        motor_ext.setSmartCurrentLimit((int) nte_motor_amp_limit.getDouble(5)); 
         encoder.setPosition(0.0); 
     }
 
