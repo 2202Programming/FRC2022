@@ -17,10 +17,10 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveTrain;
 import frc.robot.util.ModMath;
+import frc.robot.util.PIDFController;
 
 public class SwerveModuleMK3 {
   public final String NT_Name = "DT"; // expose data under DriveTrain table
-
   // Hardware PID settings in Constants.DriveTrain PIDFController
   // PID slot for angle and drive pid on SmartMax controller
   final int kSlot = 0;
@@ -57,17 +57,17 @@ public class SwerveModuleMK3 {
   // tables...
   double m_internalAngle; // measured Neo unbounded [deg]
   double m_externalAngle; // measured CANCoder bounded +/-180 [deg]
-  double m_velocity; // measured velocity [ft/s]
-  double m_angle_target; // desired angle unbounded [deg]
-  double m_vel_target; // desired velocity [ft/s]
-
+  double m_velocity;      // measured velocity [wheel's-units/s] [m/s]
+  double m_position;      // measure wheel positon for calibraiton  [m]
+  double m_angle_target;  // desired angle unbounded [deg]
+  double m_vel_target;    // desired velocity [wheel's-units/s]  [m/s]  
   /**
    * SwerveModuleMK3 -
    * 
    * SmartMax controllers used for angle and velocity motors.
    * 
    * SmartMax Velocity mode is used to close the velocity loop. Units will match
-   * the units of the drive-wheel-diameter. [ft/s]
+   * the units of the drive-wheel-diameter. 
    * 
    * Angle in degrees is controlled using position mode on the SmartMax. The angle
    * positon is not constrainted to +/- 180 degrees because the Neo has 32bit
@@ -85,7 +85,7 @@ public class SwerveModuleMK3 {
    * Batteries will need changing before then.
    * 
    */
-  String myprefix;
+  public String myprefix;
 
   public SwerveModuleMK3(CANSparkMax driveMtr, CANSparkMax angleMtr, double offsetDegrees, CANCoder absEnc,
       boolean invertAngleMtr, boolean invertAngleCmd, boolean invertDrive, String prefix) {
@@ -107,11 +107,9 @@ public class SwerveModuleMK3 {
     driveMotor.setIdleMode(IdleMode.kBrake);
     driveMotorPID = driveMotor.getPIDController();
     driveEncoder = driveMotor.getEncoder();
-    // set driveEncoder to use ft/s
-    driveEncoder.setPositionConversionFactor(Math.PI * DriveTrain.wheelDiameter / DriveTrain.kDriveGR); // mo-rot to ft
-    driveEncoder.setVelocityConversionFactor((Math.PI * DriveTrain.wheelDiameter / DriveTrain.kDriveGR) / 60.0); // mo-rpm
-    // to
-    // ft/s
+    // set driveEncoder to use units of the wheelDiameter, meters
+    driveEncoder.setPositionConversionFactor(Math.PI * DriveTrain.wheelDiameter / DriveTrain.kDriveGR); // mo-rot to wheel units
+    driveEncoder.setVelocityConversionFactor((Math.PI * DriveTrain.wheelDiameter / DriveTrain.kDriveGR) / 60.0); // mo-rpm wheel units 
     sleep(100);
     // Angle Motor config
     angleMotor.setInverted(invertAngleMtr);
@@ -172,6 +170,18 @@ public class SwerveModuleMK3 {
     NTConfig();
 
     calibrate();
+
+  }
+
+  // PID accessor for use in Test/Tune Commands
+  public void setDrivePID(PIDFController temp)
+  {
+    temp.copyTo(driveMotorPID, kSlot); 
+  }
+
+  public void setAnglePID(PIDFController temp)
+  {
+    temp.copyTo(angleMotorPID, kSlot); 
   }
 
   /**
@@ -202,7 +212,11 @@ public class SwerveModuleMK3 {
   void calibrate() {
     // read absEncoder position, set internal angleEncoder to that value adjust for
     // cmd inversion.
+    // Average a couple of samples of the absolute encoder
     double pos_deg = absEncoder.getAbsolutePosition();
+    sleep(10);
+    pos_deg = (pos_deg + absEncoder.getAbsolutePosition())/2.0;
+    
     angleEncoder.setPosition(angleCmdInvert * pos_deg);
     sleep(100); // sparkmax gremlins
     double temp = angleEncoder.getPosition();
@@ -298,6 +312,7 @@ public class SwerveModuleMK3 {
     // measure everything at same time; these get updated every cycle
     m_internalAngle = angleEncoder.getPosition() * angleCmdInvert;
     m_velocity = driveEncoder.getVelocity();
+    m_position = driveEncoder.getPosition();
 
     // these are for human consumption, update slower
     if (frameCounter++ == 10) {
@@ -338,12 +353,22 @@ public class SwerveModuleMK3 {
 
   /**
    * 
-   * @return velocity (ft/s)
+   * @return velocity wheel's units [m] 
    */
   public double getVelocity() {
     return m_velocity;
   }
 
+ /**
+   * 
+   * @return velocity wheel's units [m] 
+   */
+  public double getPosition() {
+    return m_position;
+  }
+
+
+  
   /**
    * Set the speed + rotation of the swerve module from a SwerveModuleState object
    * 
@@ -368,7 +393,7 @@ public class SwerveModuleMK3 {
     // now add that delta to unbounded Neo angle, m_internal isn't range bound
     angleMotorPID.setReference(angleCmdInvert * (m_internalAngle + delta), ControlType.kPosition);
 
-    // use velocity control, in ft/s (ignore variable name)
+    // use velocity control
     driveMotorPID.setReference(m_state.speedMetersPerSecond, ControlType.kVelocity);
   }
 
@@ -383,8 +408,11 @@ public class SwerveModuleMK3 {
   private NetworkTableEntry nte_angle;
   private NetworkTableEntry nte_external_angle;
   private NetworkTableEntry nte_velocity;
+  private NetworkTableEntry nte_position;
   private NetworkTableEntry nte_angle_target;
   private NetworkTableEntry nte_vel_target;
+  private NetworkTableEntry nte_motor_current;
+  private NetworkTableEntry nte_applied_output;
 
   void NTConfig() {
     // direct networktables logging
@@ -394,7 +422,9 @@ public class SwerveModuleMK3 {
     nte_velocity = table.getEntry(NTPrefix + "/velocity");
     nte_angle_target = table.getEntry(NTPrefix + "/angle_target");
     nte_vel_target = table.getEntry(NTPrefix + "/velocity_target");
-
+    nte_position = table.getEntry(NTPrefix + "/position");
+    nte_motor_current = table.getEntry(NTPrefix + "/motor_current");
+    nte_applied_output = table.getEntry(NTPrefix + "/applied_output");
   }
 
   void NTUpdate() {
@@ -403,8 +433,11 @@ public class SwerveModuleMK3 {
     nte_angle.setDouble(m_internalAngle);
     nte_external_angle.setDouble(m_externalAngle);
     nte_velocity.setDouble(m_velocity);
+    nte_position.setDouble(m_position);
     nte_angle_target.setDouble(m_angle_target);
     nte_vel_target.setDouble(m_vel_target);
+    nte_motor_current.setDouble(driveMotor.getOutputCurrent());
+    nte_applied_output.setDouble(driveMotor.getAppliedOutput());
   }
 
   void sleep(long ms) {
@@ -413,5 +446,14 @@ public class SwerveModuleMK3 {
     } catch (Exception e) {
     }
   }
+
+  SparkMaxPIDController getDrivePID(){
+    return driveMotorPID;
+  }
+
+  SparkMaxPIDController getAnglePID(){
+    return angleMotorPID;
+  }
+
 
 }

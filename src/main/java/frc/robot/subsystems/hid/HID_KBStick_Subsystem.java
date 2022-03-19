@@ -9,6 +9,7 @@ package frc.robot.subsystems.hid;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.hid.KBSimStick.Axis;
+import frc.robot.subsystems.hid.SideboardController.SBButton;
 import frc.robot.subsystems.ifx.DriverControls;
 
 public class HID_KBStick_Subsystem extends SubsystemBase implements DriverControls {
@@ -134,6 +135,11 @@ public class HID_KBStick_Subsystem extends SubsystemBase implements DriverContro
   public int getInitialButtons(Id id) {
     if (id == Id.Driver) return initialDriverButtons;
     return  0;
+  }
+
+  @Override
+  public boolean initialSideboard(SBButton buttonId) {
+    return false;
   }
 
 }

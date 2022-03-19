@@ -1,0 +1,29 @@
+{
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/LiveWindow/HID_Xbox_Subsystem": "Subsystem",
+      "/LiveWindow/Intake_Subsystem": "Subsystem",
+      "/LiveWindow/Limelight_Subsystem": "Subsystem",
+      "/LiveWindow/Magazine_Subsystem": "Subsystem",
+      "/LiveWindow/Positioner_Subsystem": "Subsystem",
+      "/LiveWindow/Sensors_Subsystem": "Subsystem",
+      "/LiveWindow/Shooter_Subsystem": "Subsystem",
+      "/LiveWindow/SwerveDrivetrain": "Subsystem",
+      "/LiveWindow/Ungrouped/ADXRS450_Gyro[0]": "Gyro",
+      "/LiveWindow/Ungrouped/DigitalInput[0]": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalInput[1]": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalInput[2]": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalInput[3]": "Digital Input",
+      "/LiveWindow/Ungrouped/PIDController[7]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[8]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[9]": "PIDController",
+      "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/LiveWindow/Ungrouped/Talon SRX [10]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon SRX [11]": "Motor Controller",
+      "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
+      "/Shuffleboard/Match/AutoPath/PathChooser": "String Chooser",
+      "/Shuffleboard/Match/Autonomous Command/AutoChooser": "String Chooser"
+    }
+  }
+}

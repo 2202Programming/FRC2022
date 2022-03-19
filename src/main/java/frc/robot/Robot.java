@@ -5,8 +5,11 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.commands.Shoot.RPMShootCommand;
+import frc.robot.commands.Shoot.RPMShootCommandTune;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -15,9 +18,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * project.
  */
 public class Robot extends TimedRobot {
-  @SuppressWarnings("unused")
   private RobotContainer robotContainer;
-  private Command m_autonomousCommand;
   
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -28,6 +29,8 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
+    // todo() don't use statics
+    robotContainer.limelight.disableLED();
   }
 
   /**
@@ -56,8 +59,9 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    
-    // schedule the autonomous command (example)
+    Command m_autonomousCommand = robotContainer.getAutonomousCommand();
+
+    // schedule the autonomous command
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
@@ -68,7 +72,13 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {}
 
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+    CommandScheduler.getInstance().cancelAll();
+    if(RobotContainer.m_driveController != null){
+      CommandScheduler.getInstance().schedule(RobotContainer.m_driveController);
+      //CommandScheduler.getInstance().schedule(new RPMShootCommandTune());
+    }
+  }
 
   /** This function is called periodically during operator control. */
   @Override
@@ -76,11 +86,16 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testInit() {
+    LiveWindow.setEnabled(false);
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
+    CommandScheduler.getInstance().schedule(new RPMShootCommandTune());
+    CommandScheduler.getInstance().schedule(RobotContainer.m_driveController);
   }
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+    CommandScheduler.getInstance().run();
+  }
 }

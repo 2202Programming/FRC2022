@@ -11,6 +11,7 @@ package frc.robot.subsystems.hid;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.subsystems.hid.SideboardController.SBButton;
 import frc.robot.subsystems.ifx.DriverControls;
 import frc.robot.subsystems.util.MonitoredSubsystemBase;
 
@@ -304,4 +305,12 @@ public class HID_Xbox_Subsystem extends MonitoredSubsystemBase implements Driver
   public void log() {
     SmartDashboard.putBoolean("Controls Inverted", isControlInverted());
   }
+
+@Override
+public boolean initialSideboard(SBButton buttonId) {
+  int switches = getInitialButtons(Id.SwitchBoard);
+  int mask = 1 << (buttonId.value -1);
+  return (switches & mask) !=0 ? true : false ;
+}
+
 }

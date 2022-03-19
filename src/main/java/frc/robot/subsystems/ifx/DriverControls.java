@@ -21,6 +21,7 @@ import frc.robot.subsystems.hid.SideboardController;
 import frc.robot.subsystems.hid.XboxAxis;
 import frc.robot.subsystems.hid.XboxButton;
 import frc.robot.subsystems.hid.XboxPOV;
+import frc.robot.subsystems.hid.SideboardController.SBButton;
 
 /**
  * 
@@ -92,7 +93,26 @@ public interface DriverControls extends Subsystem {
   }
 
   /**
-   * Register each of the controllers the DriverControls will use. Do this in the
+   * readSideboard()
+   *  Reads the current switch settings and decodes a single button's settings.
+   * 
+   * @param buttonId  - switch or button on sideboard to read Sw11, Sw22...
+   * @return true ==> switch is on
+   */
+  public default boolean readSideboard(SBButton buttonId) {
+    int switches = getButtonsRaw(Id.SwitchBoard);
+    int mask = 1 << (buttonId.value -1);
+    return (switches & mask) !=0 ? true : false ;
+  }
+
+  /**
+   * At initialization/powerup switch positions are saved, this will get their values. 
+   * @param buttonId
+   * @return  true --> switch was on at powerup
+   */
+  public boolean initialSideboard(SBButton buttonId);
+
+  /**
    * constructor of the implementing class.
    * 
    * @see HID_Xbox_Subsystem

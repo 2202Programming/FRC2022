@@ -9,11 +9,12 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix.sensors.CANCoderStatusFrame;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 //import com.kauailabs.navx.AHRSProtocol.AHRSUpdate;
 import com.kauailabs.navx.frc.AHRS;
 
-// import edu.wpi.first.util.sendable.Sendable;
+//import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.hal.can.CANJNI;
 import edu.wpi.first.hal.can.CANStatus;
 import edu.wpi.first.networktables.NetworkTable;
@@ -24,10 +25,11 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CAN;
-import frc.robot.subsystems.util.MonitoredSubsystemBase;
+import frc.robot.Constants.NTStrings;
 
-public class Sensors_Subsystem extends MonitoredSubsystemBase implements Gyro {
+public class Sensors_Subsystem extends SubsystemBase implements Gyro {
 
   public enum YawSensor {
     kNavX, kADXRS450, kBlended
@@ -47,6 +49,7 @@ public class Sensors_Subsystem extends MonitoredSubsystemBase implements Gyro {
   final double Kgyro = -1.0; // ccw is positive, just like geometry class
 
   private NetworkTable table;
+  private NetworkTable positionTable;
   private NetworkTableEntry nt_accelX;
   private NetworkTableEntry nt_accelY;
   private NetworkTableEntry nt_accelZ;
@@ -64,6 +67,9 @@ public class Sensors_Subsystem extends MonitoredSubsystemBase implements Gyro {
   private NetworkTableEntry nt_cancoder_br;
   private NetworkTableEntry nt_cancoder_fl;
   private NetworkTableEntry nt_cancoder_fr;
+
+  private NetworkTableEntry nt_roll;
+  private NetworkTableEntry nt_pitch;
 
   static final byte update_hz = 100;
   // Sensors
@@ -106,6 +112,8 @@ public class Sensors_Subsystem extends MonitoredSubsystemBase implements Gyro {
   // configurion setting
   YawSensor c_yaw_type = YawSensor.kNavX;
 
+  double log_counter = 0;
+
   public Sensors_Subsystem() {
 
     // alocate sensors
@@ -116,8 +124,15 @@ public class Sensors_Subsystem extends MonitoredSubsystemBase implements Gyro {
     m_gyro_ahrs = m_ahrs = new AHRS(SPI.Port.kMXP, update_hz);
     m_ahrs.enableLogging(true);
 
+    //set all the CanCoders to 100ms refresh rate to save the can bus
+    rot_encoder_bl.setStatusFramePeriod(CANCoderStatusFrame.SensorData, 100, 100);
+    rot_encoder_br.setStatusFramePeriod(CANCoderStatusFrame.SensorData, 100, 100);
+    rot_encoder_fl.setStatusFramePeriod(CANCoderStatusFrame.SensorData, 100, 100);
+    rot_encoder_fr.setStatusFramePeriod(CANCoderStatusFrame.SensorData, 100, 100);
+
     // setup network table
     table = NetworkTableInstance.getDefault().getTable("Sensors");
+    positionTable = NetworkTableInstance.getDefault().getTable(NTStrings.NT_Name_Position);
     nt_accelX = table.getEntry("x_dd");
     nt_accelY = table.getEntry("y_dd");
     nt_accelZ = table.getEntry("z_dd");
@@ -138,12 +153,19 @@ public class Sensors_Subsystem extends MonitoredSubsystemBase implements Gyro {
     nt_cancoder_fl = table.getEntry("cc_fl");
     nt_cancoder_fr = table.getEntry("cc_fr");
 
+    nt_pitch = positionTable.getEntry("Pitch");
+    nt_roll = positionTable.getEntry("Roll");
+
     calibrate();
-    log();
+    log(20);
   }
 
   public void setSensorType(YawSensor type) {
     this.c_yaw_type = type;
+  }
+
+  public AHRS getAHRS(){
+    return m_ahrs;
   }
 
   @Override
@@ -169,9 +191,15 @@ public class Sensors_Subsystem extends MonitoredSubsystemBase implements Gyro {
   }
 
   @Override
-  public void monitored_periodic() {
+  public void periodic() {
     // This method will be called once per scheduler run
-    m_yaw_navx = m_ahrs.getYaw();
+
+    if(m_ahrs.isMagnetometerCalibrated()){ // We will only get valid fused headings if the magnetometer is calibrated
+      m_yaw_navx = m_ahrs.getFusedHeading(); //returns 0-360 deg
+      m_yaw_navx -= 180; //convert to -180 to 180
+    } else {
+      m_yaw_navx = m_ahrs.getYaw(); //gryo only, returns -180 to 180
+    }
     m_yaw_navx_d = m_ahrs.getRate();
 
     m_yaw_xrs450 = m_gyro450.getAngle();
@@ -182,7 +210,7 @@ public class Sensors_Subsystem extends MonitoredSubsystemBase implements Gyro {
 
     getRotationPositions(m_rot);
 
-    log();
+    log(20);
   }
 
   void setupSimulation() {
@@ -195,30 +223,36 @@ public class Sensors_Subsystem extends MonitoredSubsystemBase implements Gyro {
     // m_gyroSim.setAngle(-m_drivetrainSimulator.getHeading().getDegrees());
   }
 
-  public void log() {
-    nt_accelX.setDouble(m_ahrs.getWorldLinearAccelX());
-    nt_accelY.setDouble(m_ahrs.getWorldLinearAccelY());
-    nt_accelZ.setDouble(m_ahrs.getWorldLinearAccelZ());
+  public void log(double mod) {
 
-    nt_yaw_navx.setDouble(m_yaw_navx);
-    nt_yaw_navx_dot.setDouble(m_yaw_navx_d);
+    log_counter++;
+    if ((log_counter % mod)==0) {
+      nt_accelX.setDouble(m_ahrs.getWorldLinearAccelX());
+      nt_accelY.setDouble(m_ahrs.getWorldLinearAccelY());
+      nt_accelZ.setDouble(m_ahrs.getWorldLinearAccelZ());
 
-    nt_yaw_xrs450.setDouble(m_yaw_xrs450);
-    nt_yaw_xrs450_dot.setDouble(m_yaw_xrs450_d);
+      nt_yaw_navx.setDouble(m_yaw_navx);
+      nt_yaw_navx_dot.setDouble(m_yaw_navx_d);
 
-    nt_yaw_blend.setDouble(m_yaw_blend);
-// CHANGED 2022: For some reason the method name is getCANStatus instead of GetCANStatus
-    CANJNI.getCANStatus(m_canStatus);
-    nt_canUtilization.setDouble(m_canStatus.percentBusUtilization);
-    nt_canRxError.setNumber(m_canStatus.receiveErrorCount);
-    nt_canTxError.setNumber(m_canStatus.transmitErrorCount);
+      nt_yaw_xrs450.setDouble(m_yaw_xrs450);
+      nt_yaw_xrs450_dot.setDouble(m_yaw_xrs450_d);
 
-    getRotationPositions(m_rot);
-    nt_cancoder_bl.setDouble(m_rot.back_left);
-    nt_cancoder_br.setDouble(m_rot.back_right);
-    nt_cancoder_fl.setDouble(m_rot.front_left);
-    nt_cancoder_fr.setDouble(m_rot.front_right);
+      nt_yaw_blend.setDouble(m_yaw_blend);
+  // CHANGED 2022: For some reason the method name is getCANStatus instead of GetCANStatus
+      CANJNI.getCANStatus(m_canStatus);
+      nt_canUtilization.setDouble(m_canStatus.percentBusUtilization);
+      nt_canRxError.setNumber(m_canStatus.receiveErrorCount);
+      nt_canTxError.setNumber(m_canStatus.transmitErrorCount);
 
+      getRotationPositions(m_rot);
+      nt_cancoder_bl.setDouble(m_rot.back_left);
+      nt_cancoder_br.setDouble(m_rot.back_right);
+      nt_cancoder_fl.setDouble(m_rot.front_left);
+      nt_cancoder_fr.setDouble(m_rot.front_right);
+
+      nt_roll.setDouble(m_ahrs.getRoll());
+      nt_pitch.setDouble(m_ahrs.getPitch());
+    }
   }
 
   public void reset() {
