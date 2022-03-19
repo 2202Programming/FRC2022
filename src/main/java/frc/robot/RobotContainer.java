@@ -115,6 +115,8 @@ public class RobotContainer {
     // B - Toggle drive mode
     if (Constants.HAS_DRIVETRAIN) {
       driverControls.bind(Id.Driver, XboxButton.B).whenPressed(m_driveController::cycleDriveMode);
+      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_LEFT).whenPressed(m_driveController::setRobotCentric);
+      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_LEFT).whenReleased(m_driveController::setFieldCentric);
     }
     // A - Trajectory Test
     if (Constants.HAS_DRIVETRAIN) 

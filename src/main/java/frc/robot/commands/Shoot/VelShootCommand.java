@@ -143,10 +143,10 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
     public void execute(){
         NTupdates();
         calculateDistance();
-        setPositioner();
         calculateVelocity();
         //calculatedVel = cmdSS.vel; //get rid of this when calculated Velocity is working
         if (autoVelocity) {
+            setPositioner();
             if(calculatedVel != cmdSS.vel){
                 cmdSS = new ShooterSettings(calculatedVel, 0);
                 shooter.spinup(cmdSS);
@@ -167,6 +167,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
                     stage = Stage.WaitingForFlyWheel;
                     backupCounter = 0;
                     magazine.driveWheelOff();           // balls are off the flywheels
+                    intake.off();
                     shooter.spinup(cmdSS);              // spin shooter up
                     //here we could trigger a drive-sys/Limelight command that responds to WaitingForSoln
                 }                
@@ -182,12 +183,14 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
                 if (solutionProvider.isOnTarget()) {
                     stage = Stage.Shooting;
                     magazine.driveWheelOn(1.0);
+                    intake.on(0.0, 0.2);
                 }
                 break;
 
             case Shooting:
                 if (!shooter.isReadyToShoot()){
                     magazine.driveWheelOff();
+                    intake.off();
                     shooter.spinup(cmdSS); //in case a new velocity has been set due to a new distance
                     stage = Stage.WaitingForFlyWheel;
                 }
@@ -201,6 +204,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
     public void end(boolean interrupted){
         stage = Stage.DoNothing;
         magazine.driveWheelOff();
+        intake.off();
         shooter.off();
     }
 
