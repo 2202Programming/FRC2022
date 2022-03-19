@@ -22,7 +22,7 @@ public class IntakeCommand extends CommandBase {
   boolean finished = false;
 
   public enum IntakeMode {
-    LoadCargo, ExpellCargo
+    LoadCargo, ExpellCargo, Stop
   }
   IntakeMode mode;
 
@@ -56,10 +56,17 @@ public class IntakeCommand extends CommandBase {
   @Override
   public void execute() {
     //Call the double supplier function to get a new speed.
-    if (mode == IntakeMode.LoadCargo){
-      intake.on(intakeSpeed.getAsDouble(),sideIntakeSpeed.getAsDouble());
-    } else if (mode == IntakeMode.ExpellCargo) {
-      intake.on( -intakeSpeed.getAsDouble(),sideIntakeSpeed.getAsDouble());
+    switch(mode){
+      case LoadCargo:
+        intake.on(intakeSpeed.getAsDouble(),sideIntakeSpeed.getAsDouble());
+        break;
+      case ExpellCargo:
+        intake.on( -intakeSpeed.getAsDouble(),sideIntakeSpeed.getAsDouble());
+        break;
+      case Stop:
+        intake.off();
+        finished = true;
+        break;
     }
 
     //Possible TODO - check light gate and count cargo

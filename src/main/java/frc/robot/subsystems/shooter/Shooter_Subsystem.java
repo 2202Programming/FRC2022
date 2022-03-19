@@ -55,6 +55,8 @@ public class Shooter_Subsystem extends SubsystemBase  {
   private NetworkTable table;
   private NetworkTableEntry nt_upperRPM;
   private NetworkTableEntry nt_lowerRPM;
+  private NetworkTableEntry nt_lowerGoal;
+  private NetworkTableEntry nt_upperGoal;
   private NetworkTableEntry nt_upperRPMErr;
   private NetworkTableEntry nt_lowerRPMErr;
   private NetworkTableEntry nt_setpoint;
@@ -127,6 +129,8 @@ public class Shooter_Subsystem extends SubsystemBase  {
     table = NetworkTableInstance.getDefault().getTable("Shooter");
     nt_upperRPM = table.getEntry("/UpperRPM/value");
     nt_lowerRPM = table.getEntry("/LowerRPM/value");
+    nt_lowerGoal = table.getEntry("/LowerRPM/goal");
+    nt_upperGoal = table.getEntry("/UpperRPM/goal");
     nt_upperRPMErr = table.getEntry("/UpperRPM/err");
     nt_lowerRPMErr = table.getEntry("/LowerRPM/err");
     nt_setpoint = table.getEntry("/TargetVel");
@@ -281,6 +285,8 @@ public class Shooter_Subsystem extends SubsystemBase  {
     nt_upperRPM.setDouble(actual.upper);
     nt_lowerRPMErr.setDouble(error.lower);
     nt_upperRPMErr.setDouble(error.upper);
+    nt_upperGoal.setDouble(actual.upper-error.upper);
+    nt_lowerGoal.setDouble(actual.lower-error.lower);
   }
 
   public void setPIDUpper(double kP, double kI, double kD, double kF){

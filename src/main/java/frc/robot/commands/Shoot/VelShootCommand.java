@@ -1,15 +1,18 @@
 package frc.robot.commands.Shoot;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.Autonomous;
 import frc.robot.Constants.Shooter;
 import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.subsystems.Magazine_Subsystem;
 import frc.robot.subsystems.Positioner_Subsystem;
+import frc.robot.subsystems.hid.SideboardController.SBButton;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.shooter.Shooter_Subsystem;
 import frc.robot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
 import frc.robot.util.PoseMath;
@@ -44,7 +47,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
     public final String NT_Name = "Shooter"; 
 
 
-    ShooterSettings specialSettings;
+    ShooterSettings m_shooterSettings;
     
     ShooterSettings  cmdSS;         // instance the shooter sees
     ShooterSettings  prevSS;        // instance for prev State
@@ -55,6 +58,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
     private boolean solution = true;
     private boolean shooterAngleLongRange;
     private boolean outOfRange = false;
+    private boolean autoVelocity = true;
 
     double log_counter = 0;
 
@@ -88,7 +92,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         this.positioner = RobotContainer.RC().positioner;
         // the default solution provider is always true
         this.solutionProvider = (solutionProvider ==null) ? this : solutionProvider;
-        specialSettings = shooterSettings;
+        m_shooterSettings = shooterSettings;
         BackupPeriod = backupFrameCount;  //number of frames to move mag back slowly 5-20
         addRequirements(magazine,shooter,positioner);
 
@@ -109,6 +113,16 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         this(new ShooterSettings(requestedVelocity, 0.0, 0.0, 0.1), 20, null);
     }
 
+    public VelShootCommand(boolean autoVelocity){
+        this(defaultShooterSettings, 20, null);
+        this.autoVelocity = autoVelocity;        
+    }
+
+    public VelShootCommand(double requestedVelocity, boolean autoVelocity){
+        this(new ShooterSettings(requestedVelocity, 0.0, 0.0, 0.1), 20, null);
+        this.autoVelocity = autoVelocity;        
+    }
+
     public VelShootCommand()
     {
         this(defaultShooterSettings, 20, null);
@@ -117,7 +131,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
 
     @Override
     public void initialize(){
-        cmdSS = specialSettings; //defaultShooterSettings SUS 
+        cmdSS = m_shooterSettings; 
         prevSS = new ShooterSettings(cmdSS);
         stage = Stage.DoNothing;
         shooter.off();
@@ -129,13 +143,15 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
     public void execute(){
         NTupdates();
         calculateDistance();
-        setPositioner();
         calculateVelocity();
         //calculatedVel = cmdSS.vel; //get rid of this when calculated Velocity is working
-        if(calculatedVel != cmdSS.vel){
-            cmdSS = new ShooterSettings(calculatedVel, 0);
-            shooter.spinup(cmdSS);
-        }
+        if (autoVelocity) {
+            setPositioner();
+            if(calculatedVel != cmdSS.vel){
+                cmdSS = new ShooterSettings(calculatedVel, 0);
+                shooter.spinup(cmdSS);
+            }
+        } 
 
         switch(stage){
             case DoNothing:
@@ -192,6 +208,13 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         finished = true;
     }
     
+    private double getManualVelocity(){
+        double velocity = Shooter.mediumVelocity;
+        if(RobotContainer.RC().driverControls.readSideboard(SBButton.Sw21)) velocity = Shooter.shortVelocity;
+        else if(RobotContainer.RC().driverControls.readSideboard(SBButton.Sw23)) velocity = Shooter.longVelocity;
+        return velocity;
+    }
+
     @Override
     public boolean isFinished(){
         return finished;
@@ -199,6 +222,11 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
 
     private void calculateDistance(){
         currentDistance = PoseMath.poseDistance(RobotContainer.RC().drivetrain.getPose(), Autonomous.hubPose);
+        if (RobotContainer.RC().limelight.getTarget() && RobotContainer.RC().limelight.getLEDStatus()){
+            //calculate current distance with limelight area instead of odometery
+            currentDistance = RobotContainer.RC().limelight.getArea(); //need actual fit equation of limelight area vs. distance
+        }
+
     }
 
     //Low shooting mode = long range = retracted
@@ -239,15 +267,5 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         }
     }
 
-    // public boolean getSolution() {
-    //     return this.solution;
-    // }
 
-    // public void setSolution(boolean solution) {
-    //     this.solution = solution;
-    // }
-
-    // public void setFreeShootingMode(boolean freeShootingMode) {
-    //     this.freeShootingMode = freeShootingMode;
-    // }
 }

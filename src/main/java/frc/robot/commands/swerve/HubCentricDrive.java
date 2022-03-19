@@ -13,6 +13,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.Constants.Autonomous;
@@ -56,6 +57,10 @@ public class HubCentricDrive extends CommandBase {
   double limelight_kD = 0.0;
   double limelightPidOutput = 0.0;
   
+  double r_limelight_kP = 0.05;
+  double r_limelight_kI = 0.0;
+  double r_limelight_kD = 0.0;
+
   // Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
   final SlewRateLimiter xspeedLimiter = new SlewRateLimiter(3);
   final SlewRateLimiter yspeedLimiter = new SlewRateLimiter(3);
@@ -149,6 +154,8 @@ public class HubCentricDrive extends CommandBase {
 
   @Override
   public void execute() {
+    pidPrint();
+    pidSet();
     calculate();
     drivetrain.drive(output_states);
     updateNT();
@@ -199,6 +206,29 @@ public class HubCentricDrive extends CommandBase {
     double newY = yOffset + hubY;
 
     return new Pose2d(newX, newY, new Rotation2d());
+  }
+
+  private void pidPrint(){
+    SmartDashboard.putNumber("Current Limelight P", limelight_kP);
+    SmartDashboard.putNumber("Current Limelight I", limelight_kI);
+    SmartDashboard.putNumber("Current Limelight D", limelight_kD);
+
+    // SmartDashboard.putNumber("Requested Limelight P", r_limelight_kP);
+    // SmartDashboard.putNumber("Requested Limelight I", r_limelight_kI);
+    // SmartDashboard.putNumber("Requested Limelight D", r_limelight_kD);
+  }
+
+  private void pidSet(){
+    r_limelight_kP = SmartDashboard.getNumber("Requested Limelight P", r_limelight_kP);
+    r_limelight_kI = SmartDashboard.getNumber("Requested Limelight I", r_limelight_kI);
+    r_limelight_kD = SmartDashboard.getNumber("Requested Limelight D", r_limelight_kD);
+    if((r_limelight_kP!=limelight_kP) || (r_limelight_kI!=limelight_kI) || (r_limelight_kD != limelight_kD)){
+      limelight_kP=r_limelight_kP;
+      limelight_kI=r_limelight_kI;
+      limelight_kD=r_limelight_kD;
+      limelightPid.setPID(limelight_kP, limelight_kI, limelight_kD);
+    }
+
   }
 
 }

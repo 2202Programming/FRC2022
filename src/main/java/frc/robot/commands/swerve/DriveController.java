@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.RobotContainer;
+import frc.robot.Constants.NTStrings;
 import frc.robot.Constants.Shooter;
 import frc.robot.commands.Shoot.SolutionProvider;
 import frc.robot.commands.Shoot.VelShootCommand;
@@ -59,8 +60,8 @@ public class DriveController  extends CommandBase implements SolutionProvider {
 
   NetworkTable table;
   NetworkTable shooterTable;
+  NetworkTable positionTable;
   private NetworkTableEntry driveMode;
-  private NetworkTableEntry shootingMode;
   private NetworkTableEntry NThasSolution;
   public final String NT_Name = "DC"; 
   public final String NT_ShooterName = "Shooter"; 
@@ -83,8 +84,8 @@ public class DriveController  extends CommandBase implements SolutionProvider {
 
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
     shooterTable = NetworkTableInstance.getDefault().getTable(NT_ShooterName);
+    positionTable = NetworkTableInstance.getDefault().getTable(NTStrings.NT_Name_Position);
     driveMode = table.getEntry("/DriveController/driveMode");
-    shootingMode = shooterTable.getEntry("/DriveController/shootingModeOn");
     NThasSolution = shooterTable.getEntry("/DriveController/HasSolution");
   }
 
@@ -203,12 +204,11 @@ public class DriveController  extends CommandBase implements SolutionProvider {
     if ((log_counter%20)==0) {
       // update network tables
       driveMode.setString(currentDriveMode.toString());
-      shootingMode.setBoolean(currentlyShooting);
     }
   }
 
   private void checkTip(){
-    double kOffBalanceAngleThresholdDegrees = 1;
+    double kOffBalanceAngleThresholdDegrees = 5;
     double pitchAngleDegrees = RobotContainer.RC().sensors.getAHRS().getPitch();    
     double rollAngleDegrees = RobotContainer.RC().sensors.getAHRS().getRoll();
     if (Math.abs(pitchAngleDegrees)>kOffBalanceAngleThresholdDegrees){
