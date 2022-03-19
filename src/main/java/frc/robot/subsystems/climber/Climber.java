@@ -16,15 +16,15 @@ public class Climber extends SubsystemBase {
     private NetworkTable table;
     private NetworkTableEntry nte_sync_arms;
 
-    //sync values
-    boolean sync_arms = false;    // when true uses diff_x_errs to synchronize
+    // sync values
+    boolean sync_arms = false; // when true uses diff_x_errs to synchronize
     double diff_rot_err = 0.0;
     double diff_ext_err = 0.0;
-    double ext_compensation = 0.0;                        // [in/s] from extPID
-    PIDController extPID = new PIDController(0.05, 0, 0);   // input [in], output [in/s] Kp=[(in/s)/in-err]
-    double rot_compensation = 0.0;                    // [deg/s] from rotPID
-    PIDController rotPID = new PIDController(1.00, 0, 0);   // input [deg], output [deg/s] Kp=[(deg/s)/deg-err]
-    
+    double ext_compensation = 0.0; // [in/s] from extPID
+    PIDController extPID = new PIDController(0.05, 0, 0); // input [in], output [in/s] Kp=[(in/s)/in-err]
+    double rot_compensation = 0.0; // [deg/s] from rotPID
+    PIDController rotPID = new PIDController(1.00, 0, 0); // input [deg], output [deg/s] Kp=[(deg/s)/deg-err]
+
     private CANSparkMax left_motor_rot = new CANSparkMax(CAN.CMB_LEFT_Rotate, MotorType.kBrushed);
     private CANSparkMax right_motor_rot = new CANSparkMax(CAN.CMB_RIGHT_Rotate, MotorType.kBrushed);
     private CANSparkMax left_motor_ext = new CANSparkMax(CAN.CMB_LEFT_Extend, MotorType.kBrushless);
@@ -40,27 +40,27 @@ public class Climber extends SubsystemBase {
         nte_sync_arms = table.getEntry("sync_arms");
         nte_sync_arms.setBoolean(sync_arms);
 
-        left_Arm_rot = new ArmRotation(table.getSubTable("left_arm_rotation"), left_motor_rot, true, 0.3);
-        right_Arm_rot = new ArmRotation(table.getSubTable("right_arm_rotation"), right_motor_rot, false, 0.1);
+        left_Arm_rot = new ArmRotation(table.getSubTable("left_arm_rotation"), left_motor_rot, true, 0.9);
+        right_Arm_rot = new ArmRotation(table.getSubTable("right_arm_rotation"), right_motor_rot, false, 0.5);
         right_Arm_ext = new ArmExtension(table.getSubTable("right_arm_extension"), right_motor_ext, false);
         left_Arm_ext = new ArmExtension(table.getSubTable("left_arm_extension"), left_motor_ext, true);
 
-        //TODO -pull from constants  setAmperageLimit(limit);
+        // TODO -pull from constants setAmperageLimit(limit);
 
         setStartingPos();
     }
 
     public void setStartingPos() {
-        //approx centered
+        // approx centered
         left_Arm_ext.setEncoderPos(0.0);
         right_Arm_ext.setEncoderPos(0.0);
-        
+
         // arms vertical
         left_Arm_rot.setEncoderPos(0.0);
         right_Arm_rot.setEncoderPos(0.0);
-        
-        //always zero setpoint because we want no difference between L and R
-        extPID.setSetpoint(0.0);  
+
+        // always zero setpoint because we want no difference between L and R
+        extPID.setSetpoint(0.0);
         rotPID.setSetpoint(0.0);
     }
 
@@ -92,25 +92,28 @@ public class Climber extends SubsystemBase {
      * 
      * @param spd [in/s]
      */
-    public void setExtSpeed(double spd) { setExtSpeed(spd, spd);}
+    public void setExtSpeed(double spd) {
+        setExtSpeed(spd, spd);
+    }
+
     public void setExtSpeed(double v_lt, double v_rt) {
         double rt_comp = (sync_arms) ? ext_compensation : 0.0;
-        left_Arm_ext.setSpeed(v_lt);
-        right_Arm_ext.setSpeed(v_rt + rt_comp);
+        left_Arm_ext.setSpeed(-v_lt);
+        right_Arm_ext.setSpeed(-v_rt - rt_comp);
     }
-        
 
     /**
      * 
      * @param rot_spd [deg/s]
      */
-    public void setRotSpeed(double rot_spd) { 
+    public void setRotSpeed(double rot_spd) {
         setRotSpeed(rot_spd, rot_spd);
     }
+
     public void setRotSpeed(double rot_spd_lt, double rot_spd_rt) {
-        double rt_comp = (sync_arms) ? rot_compensation : 0.0 ;
-        left_Arm_rot.setRotRate(rot_spd_lt);
-        right_Arm_rot.setRotRate(rot_spd_rt + rt_comp);
+        double rt_comp = (sync_arms) ? rot_compensation : 0.0;
+        left_Arm_rot.setRotRate(-rot_spd_lt);
+        right_Arm_rot.setRotRate(-rot_spd_rt - rt_comp);
     }
 
     public void setArmSync(boolean sync) {
@@ -120,7 +123,7 @@ public class Climber extends SubsystemBase {
 
     @Override
     public void periodic() {
-        
+
         left_Arm_ext.periodic();
         right_Arm_ext.periodic();
         left_Arm_rot.periodic();
@@ -135,23 +138,23 @@ public class Climber extends SubsystemBase {
     }
 
     public double getLeftExtInches() {
-        return left_Arm_ext.getInches();
+        return -left_Arm_ext.getInches();
     }
 
     public double getRightExtInches() {
-        return right_Arm_ext.getInches();
+        return -right_Arm_ext.getInches();
     }
 
     public double getLeftRotation() {
         if (left_Arm_rot == null)
             return 0;
-        return left_Arm_rot.getRotationDegrees();
+        return -left_Arm_rot.getRotationDegrees();
     }
 
     public double getRightRotation() {
         if (right_Arm_rot == null)
             return 0;
-        return right_Arm_rot.getRotationDegrees();
+        return -right_Arm_rot.getRotationDegrees();
     }
 
     public void setAmperageLimit(int limit) {
@@ -168,21 +171,22 @@ public class Climber extends SubsystemBase {
 
     /**
      * accessors for rotation and extension objects - used for testing
+     * 
      * @return
      */
-    public ArmRotation getLeftArmRotation(){
+    public ArmRotation getLeftArmRotation() {
         return left_Arm_rot;
     }
 
-    public ArmRotation getRightArmRotation(){
+    public ArmRotation getRightArmRotation() {
         return right_Arm_rot;
     }
 
-    public ArmExtension getLeftArmExtension(){
+    public ArmExtension getLeftArmExtension() {
         return left_Arm_ext;
     }
 
-    public ArmExtension getRightArmExtension(){
+    public ArmExtension getRightArmExtension() {
         return right_Arm_ext;
     }
 }

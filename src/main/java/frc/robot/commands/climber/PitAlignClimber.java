@@ -3,6 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.commands.climber;
+
 import frc.robot.subsystems.hid.XboxPOV;
 import frc.robot.subsystems.hid.XboxButton;
 import frc.robot.subsystems.ifx.DriverControls;
@@ -20,27 +21,30 @@ public class PitAlignClimber extends CommandBase {
   POVButton up;
   POVButton down, left, right;
 
-
   /** Creates a new PitAlignClimber. */
   public PitAlignClimber(DriverControls dc, Climber climber, double extRate, double rotRate) {
     this.climber = climber;
     this.dc = dc;
-    up = dc.bind(Id.Driver, XboxPOV.POV_UP );
-    down = dc.bind(Id.Driver, XboxPOV.POV_DOWN );
+    up = dc.bind(Id.Driver, XboxPOV.POV_UP);
+    down = dc.bind(Id.Driver, XboxPOV.POV_DOWN);
     left = dc.bind(Id.Driver, XboxPOV.POV_LEFT);
-    right = dc.bind(Id.Driver, XboxPOV.POV_RIGHT );
+    right = dc.bind(Id.Driver, XboxPOV.POV_RIGHT);
+    this.extRate = extRate;
+    this.rotRate = rotRate;
 
     addRequirements(climber);
   }
+
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double v_lt=0.0;
-    double v_rt=0.0;
+    double v_lt = 0.0;
+    double v_rt = 0.0;
     double rot_lt = 0.0;
     double rot_rt = 0.0;
 
@@ -64,7 +68,6 @@ public class PitAlignClimber extends CommandBase {
     climber.setExtSpeed(v_lt, v_rt);
     climber.setRotSpeed(rot_lt, rot_rt);
   }
-
 
   // Called once the command ends or is interrupted.
   @Override
