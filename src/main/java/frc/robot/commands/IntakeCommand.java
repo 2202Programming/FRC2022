@@ -22,7 +22,7 @@ public class IntakeCommand extends CommandBase {
   boolean finished = false;
 
   public enum IntakeMode {
-    LoadCargo, ExpellCargo, Stop
+    LoadCargo, ExpellCargo, Stop, InstantLoad
   }
   IntakeMode mode;
 
@@ -62,6 +62,10 @@ public class IntakeCommand extends CommandBase {
         break;
       case ExpellCargo:
         intake.on( -intakeSpeed.getAsDouble(),sideIntakeSpeed.getAsDouble());
+        break;
+      case InstantLoad:
+        intake.on(intakeSpeed.getAsDouble(),sideIntakeSpeed.getAsDouble());
+        finished = true;
         break;
       case Stop:
         intake.off();
