@@ -7,6 +7,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.Function;
+
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.CANCoderStatusFrame;
@@ -28,6 +30,10 @@ import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.NTStrings;
+import com.revrobotics.ColorSensorV3;
+import com.revrobotics.ColorMatch;
+import com.revrobotics.ColorMatchResult;
+import edu.wpi.first.wpilibj.util.Color;
 
 public class Sensors_Subsystem extends SubsystemBase implements Gyro {
 
@@ -71,12 +77,18 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
   private NetworkTableEntry nt_roll;
   private NetworkTableEntry nt_pitch;
 
+
   static final byte update_hz = 100;
   // Sensors
   AHRS m_ahrs;
   Gyro m_gyro_ahrs;
   ADXRS450_Gyro m_gyro450;
   Gyro m_gyro;
+
+  ColorSensorV3 m_colorSensorV3;
+  ColorMatch m_colorMatcher;
+  Color blackLine;
+  
 
   public static class RotationPositions {
     public double back_left;
@@ -118,6 +130,14 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
 
     // alocate sensors
     m_canStatus = new CANStatus();
+
+    //Create color sensor variables
+    m_colorSensorV3 = new ColorSensorV3(null);
+    //TODO Need to determine connection port for color sensor
+    m_colorMatcher = new ColorMatch();
+    blackLine = new Color(0,0,0);
+    
+
 
     // create devices and interface access, use interface where possible
     m_gyro = m_gyro450 = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
@@ -222,6 +242,20 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
   public void simulationPeriodic() {
     // m_gyroSim.setAngle(-m_drivetrainSimulator.getHeading().getDegrees());
   }
+
+  public String getColor(){
+    //color sensor detects black line and aligns the robot with the bars
+   Color detectedColor = m_colorSensorV3.getColor();
+   String colorString;
+   ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
+   if (match.color == blackLine){
+     colorString = "black";
+     } else {
+       colorString = "DontCare";
+     }
+     return colorString;
+  }
+
 
   public void log(double mod) {
 
