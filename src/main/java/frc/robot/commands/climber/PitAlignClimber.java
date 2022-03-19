@@ -3,13 +3,13 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.commands.climber;
+import frc.robot.subsystems.hid.XboxPOV;
 import frc.robot.subsystems.hid.XboxButton;
 import frc.robot.subsystems.ifx.DriverControls;
 import frc.robot.subsystems.ifx.DriverControls.Id;
 
-import java.sql.Driver;
-
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.subsystems.climber.Climber;
 
 public class PitAlignClimber extends CommandBase {
@@ -17,11 +17,19 @@ public class PitAlignClimber extends CommandBase {
   DriverControls dc;
   double extRate;
   double rotRate;
+  POVButton up;
+  POVButton down, left, right;
+
 
   /** Creates a new PitAlignClimber. */
   public PitAlignClimber(DriverControls dc, Climber climber, double extRate, double rotRate) {
     this.climber = climber;
     this.dc = dc;
+    up = dc.bind(Id.Driver, XboxPOV.POV_UP );
+    down = dc.bind(Id.Driver, XboxPOV.POV_DOWN );
+    left = dc.bind(Id.Driver, XboxPOV.POV_LEFT);
+    right = dc.bind(Id.Driver, XboxPOV.POV_RIGHT );
+
     addRequirements(climber);
   }
   // Called when the command is initially scheduled.
@@ -31,17 +39,39 @@ public class PitAlignClimber extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double v_lt = dc.bind(Id.Driver, XboxButton.LB).get() ? extRate : 0.0;
-    double v_rt = dc.bind(Id.Driver, XboxButton.RB).get() ? extRate : 0.0;
+    double v_lt=0.0;
+    double v_rt=0.0;
+    double rot_lt = 0.0;
+    double rot_rt = 0.0;
 
+    if (up.get()) {
+      v_lt = dc.bind(Id.Driver, XboxButton.LB).get() ? extRate : 0.0;
+      v_rt = dc.bind(Id.Driver, XboxButton.RB).get() ? extRate : 0.0;
+    }
+    if (down.get()) {
+      v_lt = dc.bind(Id.Driver, XboxButton.LB).get() ? -extRate : 0.0;
+      v_rt = dc.bind(Id.Driver, XboxButton.RB).get() ? -extRate : 0.0;
+    }
 
+    if (left.get()) {
+      rot_lt = dc.bind(Id.Driver, XboxButton.LB).get() ? rotRate : 0.0;
+      rot_rt = dc.bind(Id.Driver, XboxButton.RB).get() ? rotRate : 0.0;
+    }
+    if (right.get()) {
+      rot_lt = dc.bind(Id.Driver, XboxButton.LB).get() ? -rotRate : 0.0;
+      rot_rt = dc.bind(Id.Driver, XboxButton.RB).get() ? -rotRate : 0.0;
+    }
     climber.setExtSpeed(v_lt, v_rt);
+    climber.setRotSpeed(rot_lt, rot_rt);
   }
 
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    climber.setStartingPos();
+    System.out.println("Climber arms are set to starting position. I hope you were paying attention.");
+  }
 
   // Returns true when the command should end.
   @Override
