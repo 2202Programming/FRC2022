@@ -259,7 +259,7 @@ public final class Constants {
       public static final double shortVelocity = 40;
       public static final double mediumVelocity = 48;
       public static final double longVelocity = 60;
-      public static final double autoVelocity = 50;
+      public static final double autoVelocity = 46;
 
       // constraints
       public static final double kMaxFPS = 80;      //max FPS
