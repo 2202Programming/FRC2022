@@ -12,10 +12,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 import frc.robot.Constants.DriverPrefs;
 import frc.robot.commands.MecanumDriveCmd;
-import frc.robot.commands.climber.CalibrateClimber;
 import frc.robot.commands.climber.*;
-import frc.robot.commands.climber.SetArmExtension;
-import frc.robot.commands.climber.SetArmRotation;
 import frc.robot.commands.test.ClimberTestRotRate;
 import frc.robot.commands.test.ClimberTestVelocity;
 import frc.robot.commands.test.climberTest;
@@ -61,7 +58,8 @@ public class RobotContainer {
     dashboard = new Dashboard(this);
 
     climber = new Climber();
-    //climber.setDefaultCommand(new SequentialCommandGroup(
+    climber.setDefaultCommand(new PitAlignClimber(driverControls, climber, .5, 3.0 ));
+      //new SequentialCommandGroup(
       // new CalibrateClimber(climber),
       //new climberTest(climber)
     //));
@@ -89,6 +87,8 @@ public class RobotContainer {
     driverControls.bind(Id.Driver, XboxButton.B).whileHeld(new SetArmRotation(driverControls, climber, -0.5));
     driverControls.bind(Id.Driver, XboxButton.Y).whileHeld(new SetArmExtension(driverControls, climber, 0.2));
     driverControls.bind(Id.Driver, XboxButton.A).whileHeld(new SetArmExtension(driverControls, climber, -0.2));
+  
+
     //B - Toggle drive mode
     //driverControls.bind(Id.Driver, XboxButton.B).whenPressed(new InstantCommand( drivetrain::driveModeCycle ));
   
