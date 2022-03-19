@@ -31,6 +31,7 @@ public class MoveArmsTo extends CommandBase {
         climber.setOuterLoop(true);
         climber.setExtension(ext);
         climber.setRotation(rot);
+        System.out.println("****Arms moving to (" + ext +"," +rot+") *********");
     }
 
     @Override
@@ -38,6 +39,10 @@ public class MoveArmsTo extends CommandBase {
         climber.hold();
         climber.setArmSync(syncArms);
         climber.setOuterLoop(endOuterLoop);
+        if (!interrupted)
+            System.out.println("****Completed****");
+        else 
+          System.out.println("****Interrupted****");
     }
 
 

@@ -65,6 +65,8 @@ public class Climber extends SubsystemBase {
         setStartingPos();
         // finish hardware limits
         setAmperageExtLimit(ClimbSettings.MAX_AMPERAGE);
+        setAmperageRotLimit(ClimbSettings.MAX_AMPERAGE);
+
     }
 
     public void setStartingPos() {
@@ -213,6 +215,11 @@ public class Climber extends SubsystemBase {
     public void setAmperageExtLimit(int limit) {
         right_motor_ext.setSmartCurrentLimit(limit);
         left_motor_ext.setSmartCurrentLimit(limit);
+    }
+
+    public void setAmperageRotLimit(int limit) {
+        right_motor_rot.setSmartCurrentLimit(limit);
+        left_motor_rot.setSmartCurrentLimit(limit);
     }
 
     public void setOuterLoop(boolean enable) {
