@@ -39,6 +39,8 @@ public class auto_cmd_group2 extends SequentialCommandGroup {
     this.m_controls = m_controls;
 
     Command finalAuto;
+    Command terminalPath;
+    Command finalCommand;
 
     if(m_controls.readSideboard(SBButton.Sw11)){
       finalAuto = auto_pathPlanner_cmd.PathFactory(m_drivetrain, "AutoPath1");
@@ -48,6 +50,19 @@ public class auto_cmd_group2 extends SequentialCommandGroup {
     }
     else{
       finalAuto = auto_pathPlanner_cmd.PathFactory(m_drivetrain, "AutoPath3");
+    }
+
+    if(m_controls.readSideboard(SBButton.Sw21)){
+      terminalPath = auto_pathPlanner_cmd.PathFactory(m_drivetrain, "AutoPath4");
+    }
+    else if(m_controls.readSideboard(SBButton.Sw22)){
+      terminalPath = auto_pathPlanner_cmd.PathFactory(m_drivetrain, "AutoPath5");
+    }
+    else if(m_controls.readSideboard(SBButton.Sw23)){
+      terminalPath = auto_pathPlanner_cmd.PathFactory(m_drivetrain, "AutoPath5");
+    }
+    else{
+      terminalPath = auto_pathPlanner_cmd.PathFactory(m_drivetrain, "AutoPath5");
     }
     
 
@@ -66,7 +81,15 @@ public class auto_cmd_group2 extends SequentialCommandGroup {
       new IntakeCommand(IntakeMode.Stop),
       new MoveIntake(DeployMode.Retract),
       // new MagazineCommand((()->0.5), MagazineMode.ExpellCargo).withTimeout(0.2),
-      new VelShootCommand().withTimeout(10)
+      new VelShootCommand().withTimeout(5),
+      new MoveIntake(DeployMode.Deploy),
+      new ParallelDeadlineGroup( //all run at same time; group ends when 1st command ends
+        terminalPath,
+        new IntakeCommand(IntakeMode.LoadCargo)
+      ),
+      new IntakeCommand(IntakeMode.Stop),
+      new MoveIntake(DeployMode.Retract),
+      new VelShootCommand().withTimeout(5)
       //new MoveIntake(DeployMode.Retract),
     //   new ParallelDeadlineGroup( //all run at same time; group ends when 1st command ends
     //     new LimelightAim(1.0).withTimeout(3),
