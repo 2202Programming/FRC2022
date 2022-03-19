@@ -4,10 +4,12 @@
 
 package frc.robot.commands.auto;
 
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.subsystems.Magazine_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
+import frc.robot.subsystems.hid.SideboardController.SBButton;
 import frc.robot.subsystems.ifx.DriverControls;
 
 public class auto_cmd extends SequentialCommandGroup {
@@ -19,7 +21,11 @@ public class auto_cmd extends SequentialCommandGroup {
   public auto_cmd() {
    
     addCommands(
-      new auto_cmd_group2()
+      //run first path and shoot
+      new auto_cmd_group2(),
+      
+      // if any 2nd row sideboards are pressed, run second path and shoot
+      new ConditionalCommand(new auto_cmd_terminal(), null, ()->(m_controls.readSideboard(SBButton.Sw21)||m_controls.readSideboard(SBButton.Sw22)||m_controls.readSideboard(SBButton.Sw23)))
     );
   }
 
