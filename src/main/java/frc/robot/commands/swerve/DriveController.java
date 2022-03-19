@@ -181,6 +181,14 @@ public class DriveController  extends CommandBase implements SolutionProvider {
     }
   }
 
+  public void setRobotCentric() {
+    requestedDriveMode = DriveModes.robotCentric;
+  }
+
+  public void setFieldCentric() {
+    requestedDriveMode = DriveModes.fieldCentric;
+  }
+
   public void turnOnShootingMode(){
     shootingRequested = true;
   }
