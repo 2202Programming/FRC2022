@@ -117,7 +117,7 @@ public class RobotContainer {
       driverControls.bind(Id.SwitchBoard, SBButton.Sw22).whenPressed(new MidClimb(climber));
       driverControls.bind(Id.SwitchBoard, SBButton.Sw23).whenPressed(new TraverseClimb(climber));
       driverControls.bind(Id.SwitchBoard, SBButton.Sw24).whenPressed(new MoveArmsTo(climber, 0, 0, true, true));
-      driverControls.bind(Id.SwitchBoard, SBButton.Sw24).whenPressed(new ClimberTestRotRate(climber, 15, -20, 40));
+      driverControls.bind(Id.SwitchBoard, SBButton.Sw25).whenPressed(new ClimberTestRotRate(climber, 15, -20, 40));
     }
   }
 
