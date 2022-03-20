@@ -9,7 +9,7 @@ public class MidClimb extends SequentialCommandGroup {
     public static final double midrot = -21;
     public static final double pullupext = -3;
     public static final double travers_start_ext = 10;
-    public static final double travers_start_rot = -20;
+    public static final double travers_start_rot = 15;
 
     /**
      * 

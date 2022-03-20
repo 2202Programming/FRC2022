@@ -154,7 +154,7 @@ public final class Constants {
 
     // Software outer loop rate limits
     public static final double MAX_VELOCITY_EXT = 8; // [in/s]
-    public static final double MAX_VELOCITY_ROT = 10; // [deg/s]
+    public static final double MAX_VELOCITY_ROT = 30; // [deg/s]
 
     // SmartCurrent limit for brushless
     public static final int MAX_EXT_AMPS = 25;
