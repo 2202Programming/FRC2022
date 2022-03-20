@@ -17,9 +17,10 @@ public class Climb extends SequentialCommandGroup {
             //TODO:  add drivetrain stuff
             new MidClimb(climber), 
             new WaitCommand(mid_stabilize_seconds),
-            new MoveArmsTo(climber, 0, 0), 
-            new WaitCommand(high_stabilize_seconds), 
-            new MoveArmsTo(climber, 10, 10));
+            new TraverseClimb(climber),
+            new WaitCommand(high_stabilize_seconds),
+            new TraverseClimb(climber)
+        );
 
         this.addRequirements(climber, drivetrain);
     }
