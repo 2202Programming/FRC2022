@@ -294,4 +294,10 @@ public class Climber extends SubsystemBase {
     public ArmExtension getRightArmExtension() {
         return right_Arm_ext;
     }
+
+    @Deprecated
+    public void setPercentOutputRot(double pct_l, double pct_r) {
+        left_Arm_rot.setPercentOutput(pct_l);
+        right_Arm_rot.setPercentOutput(pct_r);
+    }
 }

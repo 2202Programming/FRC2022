@@ -13,6 +13,7 @@ public class MoveArmsTo extends CommandBase {
     final boolean endOuterLoop;
     final String name;
     
+    @Deprecated
     public MoveArmsTo(Climber climber, double ext_pos, double rot_pos, boolean syncArms, boolean endOuterLoop)  {
         this.climber = climber;
         this.name = null;
