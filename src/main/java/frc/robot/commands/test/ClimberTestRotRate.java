@@ -19,7 +19,7 @@ public class ClimberTestRotRate extends CommandBase {
   double max_ext;
   int delay_l;
   int delay_r;
-  boolean syncMode = false;
+  boolean syncMode = true;
   final double delayCount = 20;
 
   public ClimberTestRotRate(Climber climber, double spd, double min_ext, double max_ext) {
@@ -34,6 +34,7 @@ public class ClimberTestRotRate extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    climber.setOuterLoop(true);
     delay_l = 0;
     delay_r = 0;
     climber.setRotSpeed(speed_l, speed_r);
@@ -69,6 +70,7 @@ public class ClimberTestRotRate extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     climber.setRotSpeed(0.0);
+    climber.setOuterLoop(true);
   }
 
   // Returns true when the command should end.

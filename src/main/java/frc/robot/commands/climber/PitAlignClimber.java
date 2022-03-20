@@ -76,6 +76,7 @@ public class PitAlignClimber extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     climber.setStartingPos();
+    climber.hold();
     System.out.println("Climber arms are set to starting position. I hope you were paying attention.");
   }
 

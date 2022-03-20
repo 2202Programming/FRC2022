@@ -19,17 +19,20 @@ public class TraverseClimb extends SequentialCommandGroup {
 
     public TraverseClimb(Climber climber) {
         super();
-        
-        double hang_rot = 0;
 
         double TO = 3.0;  //default timeout for testing
 
         this.addCommands(
              //goto Travers start
             new MoveArmsTo(climber, "traverseStart", travers_start_ext , travers_start_rot, true, true).withTimeout(2),
-            new MoveArmsTo(climber, "extforgrab", 20 , travers_start_rot, true, true).withTimeout(2),
-            new MoveArmsTo(climber, "rotateforgrab", 20 , -30, true, true).withTimeout(2),
-            new MoveArmsTo(climber, "pullupTraverse", pullupext, -30, true, true).withTimeout(TO),
+            new MoveArmsTo(climber, "rotate-under", travers_start_ext , 40, true, true).withTimeout(2),
+            new MoveArmsTo(climber, "extforgrab", 20 , 40, true, true).withTimeout(2),
+            new MoveArmsTo(climber, "rotateforgrab", 20 , 15, true, true).withTimeout(2),
+            new MoveArmsTo(climber, "partialpullupTraverse", partialpullupext, pulluprotForward , true, true).withTimeout(TO),
+            new MoveArmsTo(climber, "pullupTraverse", pullupext, 0, true, true).withTimeout(TO),
+            new MoveArmsTo(climber, "rotateCG1", pullupext, pulluprotForward, true, true).withTimeout(TO),
+            new MoveArmsTo(climber, "T-extend to hang", midext, travers_start_rot, true, true).withTimeout(TO),
+
 
             // new MoveArmsTo(climber, pullupext, -5, true, true).withName("rotateCG1").withTimeout(TO),
             // new MoveArmsTo(climber, pullupext, hang_rot, true, true).withName("rotateCG2").withTimeout(TO),

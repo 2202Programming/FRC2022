@@ -141,8 +141,8 @@ public final class Constants {
   public static final class ClimbSettings {
     // Hardware Controller constants for velocity and position modes, each gets hw
     // slot
-    public static PIDFController rotatePID_vel = new PIDFController(0.005, 0.0, 0.05, 0.0215); // [deg/s] - slot 0
-    public static PIDFController rotatePID_pos = new PIDFController(0.0, 0.0, 0.0, 0.0); // [deg] - slot 1
+    public static PIDFController rotatePID_vel = new PIDFController(0.0055, 0.000, 0.0, 0.0215); // [deg/s] - slot 0
+    public static PIDFController rotatePID_pos = new PIDFController(0.0055, 0.0, 0.0, 0.0215); // [deg] - slot 1
     public static PIDFController extendPID_vel = new PIDFController(0.015, 0.0, 0.05, 0.08); // [in/s] - slot 0
     public static PIDFController extendPID_pos = new PIDFController(0.05, 0.0, 0.0, 0.0); // [in] - slot 1
 
@@ -154,7 +154,7 @@ public final class Constants {
 
     // Software outer loop rate limits
     public static final double MAX_VELOCITY_EXT = 8; // [in/s]
-    public static final double MAX_VELOCITY_ROT = 30; // [deg/s]
+    public static final double MAX_VELOCITY_ROT = 20; // [deg/s]
 
     // SmartCurrent limit for brushless
     public static final int MAX_EXT_AMPS = 25;

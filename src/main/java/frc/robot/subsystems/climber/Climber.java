@@ -29,8 +29,8 @@ public class Climber extends SubsystemBase {
     double ext_compensation = 0.0;                              // [in/s] from extCompPID
     
     // postion goals - software outer loops for position
-    PIDController rotPosL = new PIDController(0.5, 0.0, 0.0); // in degs-err out: vel deg/s
-    PIDController rotPosR = new PIDController(0.5, 0.0, 0.0); // in degs-err out: vel deg/s
+    PIDController rotPosL = new PIDController(2.5, 0.0001, 0.0); // in degs-err out: vel deg/s
+    PIDController rotPosR = new PIDController(2.2, 0.0001, 0.0); // in degs-err out: vel deg/s
     PIDController extPosL = new PIDController(5.0, 0.0, 0.0); // in inch-err out vel in/s
     PIDController extPosR = new PIDController(5.0, 0.0, 0.0); // in inch-err out vel in/s
 
@@ -49,8 +49,8 @@ public class Climber extends SubsystemBase {
         nte_sync_arms = table.getEntry("syncArms");
         nte_sync_arms.setBoolean(syncArmsEnabled);
 
-        left_Arm_rot = new ArmRotation(table.getSubTable("left_arm_rotation"), left_motor_rot, true, 0.9);
-        right_Arm_rot = new ArmRotation(table.getSubTable("right_arm_rotation"), right_motor_rot, false, 0.5);
+        left_Arm_rot = new ArmRotation(table.getSubTable("left_arm_rotation"), left_motor_rot, true, 0.2);
+        right_Arm_rot = new ArmRotation(table.getSubTable("right_arm_rotation"), right_motor_rot, false, 0.2);
         right_Arm_ext = new ArmExtension(table.getSubTable("right_arm_extension"), right_motor_ext, false);
         left_Arm_ext = new ArmExtension(table.getSubTable("left_arm_extension"), left_motor_ext, true);
 
@@ -79,8 +79,6 @@ public class Climber extends SubsystemBase {
 
         extCompPID.reset();
         rotCompPID.reset();
-        extCompPID.setSetpoint(0.0);
-        rotCompPID.setSetpoint(0.0);
 
         //clear all position pids
         extPosL.reset();
@@ -189,7 +187,7 @@ public class Climber extends SubsystemBase {
 
         //c
         ext_compensation = 0.0;
-        ext_compensation = 0.0;
+        rot_compensation = 0.0;
         if (syncArmsEnabled) {
             extCompPID.setSetpoint(getLeftExtInches());
             rotCompPID.setSetpoint(getLeftRotation());
