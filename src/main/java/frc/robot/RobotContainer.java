@@ -133,7 +133,7 @@ public class RobotContainer {
     // B - Toggle drive mode
     if (Constants.HAS_DRIVETRAIN) {
       driverControls.bind(Id.Driver, XboxButton.B).whenPressed(m_driveController::cycleDriveMode);
-      driverControls.bind(Id.Driver, XboxButton.X).whenPressed(new InstantCommand(drivetrain::resetAnglePose));
+      //driverControls.bind(Id.Driver, XboxButton.X).whenPressed(new InstantCommand(drivetrain::resetAnglePose));
       driverControls.bind(Id.Driver, XboxButton.Y).whenPressed(new InstantCommand(() -> { drivetrain.setPose(Autonomous.startPose3); }));
       driverControls.bind(Id.Driver, XboxAxis.TRIGGER_LEFT).whenPressed(m_driveController::setRobotCentric);
       driverControls.bind(Id.Driver, XboxAxis.TRIGGER_LEFT).whenReleased(m_driveController::setFieldCentric);   
@@ -142,7 +142,7 @@ public class RobotContainer {
     }
 
     // RB limelight toggle
-    driverControls.bind(Id.Driver, XboxButton.RB).whenPressed(new InstantCommand(limelight::toggleLED));
+    driverControls.bind(Id.Driver, XboxButton.X).whenPressed(new InstantCommand(limelight::toggleLED));
 
 
   }
