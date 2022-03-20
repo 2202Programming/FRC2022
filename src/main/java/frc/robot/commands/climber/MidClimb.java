@@ -11,7 +11,7 @@ public class MidClimb extends SequentialCommandGroup {
     
     
     public static final double pullupext = -2.70;
-    public static final double pulluprot = 10;      //max forward on rotation
+    public static final double pulluprotForward = 10;      //max forward on rotation
     public static final double travers_start_ext = 10;
     public static final double travers_start_rot = 15;
 
@@ -29,9 +29,9 @@ public class MidClimb extends SequentialCommandGroup {
                 new MoveArmsTo(climber, "extendForMid", midext, 0, true, true),
                 new MoveArmsTo(climber, "rotateForMidBar", midext, midrot, true, true).withTimeout(2), // timeout needed
                 new MoveArmsTo(climber, "partial-pullup", partialpullupext, midrot, true, true).withTimeout(TO),
-            
+                new MoveArmsTo(climber, "partial-pullup-startrot", partialpullupext, 0, true, true).withTimeout(TO),
                 new MoveArmsTo(climber, "pullupMid", pullupext, 0, true, true).withTimeout(TO),
-                new MoveArmsTo(climber, "rotateCG1", pullupext, pulluprot, true, true).withTimeout(TO),
-                new MoveArmsTo(climber, "extend to hang", midext, pulluprot, true, true).withTimeout(TO));
+                new MoveArmsTo(climber, "rotateCG1", pullupext, pulluprotForward, true, true).withTimeout(TO),
+                new MoveArmsTo(climber, "extend to hang", midext, pulluprotForward, true, true).withTimeout(TO));
     }
 }
