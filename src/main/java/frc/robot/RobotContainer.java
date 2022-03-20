@@ -129,30 +129,19 @@ public class RobotContainer {
   void setDriverButtons() {
     // B - Toggle drive mode
     if (Constants.HAS_DRIVETRAIN) {
-      driverControls.bind(Id.Driver, XboxButton.A).whenPressed(new getTrajectoryFollowTest(sensors, drivetrain));
       driverControls.bind(Id.Driver, XboxButton.B).whenPressed(m_driveController::cycleDriveMode);
       driverControls.bind(Id.Driver, XboxButton.X).whenPressed(new InstantCommand(drivetrain::resetAnglePose));
       driverControls.bind(Id.Driver, XboxButton.Y).whenPressed(new InstantCommand(() -> { drivetrain.setPose(Autonomous.startPose3); }));
       driverControls.bind(Id.Driver, XboxAxis.TRIGGER_LEFT).whenPressed(m_driveController::setRobotCentric);
       driverControls.bind(Id.Driver, XboxAxis.TRIGGER_LEFT).whenReleased(m_driveController::setFieldCentric);   
+      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_RIGHT).whenPressed(m_driveController::turnOnShootingMode);
+      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_RIGHT).whenReleased(m_driveController::turnOffShootingMode);
     }
-
-    // X - follow path off chooser
-    // if (Constants.HAS_DRIVETRAIN) { 
-    //    driverControls.bind(Id.Driver, XboxButton.START).whenPressed(new auto_drivePath_cmd(drivetrain,  dashboard.getTrajectoryChooser()));
-    // .whenPressed(auto_pathPlanner_cmd.PathFactory(drivetrain, "AutoPath4").andThen(m_driveController));
-    // // driverControls.bind(Id.Driver, XboxButton.BACK).whenPressed(new auto_drivePath_cmd(drivetrain,
-    // dashboard.getTrajectoryChooser()));
-    // .whenPressed(auto_pathPlanner_cmd.PathFactory(drivetrain, "Straight1").andThen(m_driveController));
-    // }
 
     // RB limelight toggle
     driverControls.bind(Id.Driver, XboxButton.RB).whenPressed(new InstantCommand(limelight::toggleLED));
 
-    if (Constants.HAS_DRIVETRAIN) {
-      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_RIGHT).whenPressed(m_driveController::turnOnShootingMode);
-      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_RIGHT).whenReleased(m_driveController::turnOffShootingMode);
-    }
+
   }
 
   // /**

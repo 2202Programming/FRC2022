@@ -20,11 +20,11 @@ public class auto_cmd extends SequentialCommandGroup {
       new InstantCommand(RobotContainer.RC().drivetrain::printPose),
       new auto_cmd_group2(),
       new InstantCommand(RobotContainer.RC().drivetrain::printPose),
+
+      //run 2nd path that correlates to 1st path if sideboard 4 is pressed
       new ConditionalCommand(new auto_cmd_terminal(), new WaitCommand(0), () -> RobotContainer.RC().driverControls.readSideboard(SBButton.Sw14)),
       new InstantCommand(RobotContainer.RC().drivetrain::printPose)
-      //new ConditionalCommand(new auto_pathPlanner_cmd(m_drivetrain, "AutoPath1"), new WaitCommand(0), this::isRedPath1),
-      // if any 2nd row sideboards are pressed, run second path and shoot
-      //new ConditionalCommand(new auto_cmd_terminal(), null, ()->(m_controls.readSideboard(SBButton.Sw21)||m_controls.readSideboard(SBButton.Sw22)||m_controls.readSideboard(SBButton.Sw23)))
+
     );
   }
 
