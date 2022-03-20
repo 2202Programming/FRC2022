@@ -77,8 +77,21 @@ public class Climber extends SubsystemBase {
         left_Arm_rot.setEncoderPos(0.0);
         right_Arm_rot.setEncoderPos(0.0);
 
+        extCompPID.reset();
+        rotCompPID.reset();
         extCompPID.setSetpoint(0.0);
         rotCompPID.setSetpoint(0.0);
+
+        //clear all position pids
+        extPosL.reset();
+        extPosR.reset();
+        rotPosL.reset();
+        rotPosR.reset();
+        //clear all position pids
+        extPosL.setSetpoint(0.0);
+        extPosR.setSetpoint(0.0);
+        rotPosL.setSetpoint(0.0);
+        rotPosR.setSetpoint(0.0);
     }
 
     public boolean readyToClimb() {
