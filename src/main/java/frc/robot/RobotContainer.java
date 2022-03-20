@@ -26,6 +26,7 @@ import frc.robot.commands.climber.PitAlignClimber;
 import frc.robot.commands.climber.TraverseClimb;
 import frc.robot.commands.swerve.DriveController;
 import frc.robot.commands.swerve.LimelightDriveCmd;
+import frc.robot.commands.test.ClimberTestRotOscillation;
 import frc.robot.commands.test.ClimberTestRotRate;
 import frc.robot.commands.test.ClimberTestRotRatePercent;
 import frc.robot.commands.test.getTrajectoryFollowTest;
@@ -118,7 +119,8 @@ public class RobotContainer {
       driverControls.bind(Id.SwitchBoard, SBButton.Sw22).whenPressed(new MidClimb(climber));
       driverControls.bind(Id.SwitchBoard, SBButton.Sw23).whenPressed(new TraverseClimb(climber));
       driverControls.bind(Id.SwitchBoard, SBButton.Sw24).whenPressed(new MoveArmsTo(climber, "To zero", 0, 0, true, true));
-      driverControls.bind(Id.SwitchBoard, SBButton.Sw25).whenPressed(new ClimberTestRotRatePercent(climber, 0.5, -20, 40));
+      driverControls.bind(Id.SwitchBoard, SBButton.Sw25).whenPressed(//new ClimberTestRotRatePercent(climber, 0.5, -20, 40));
+            new ClimberTestRotOscillation(climber));
     }
   }
 

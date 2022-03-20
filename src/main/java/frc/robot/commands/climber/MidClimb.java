@@ -6,10 +6,9 @@ import frc.robot.subsystems.climber.Climber;
 //import static frc.robot.Constants.ClimbSettings;
 public class MidClimb extends SequentialCommandGroup {
     public static final double midext = 18;
-    public static final double midrot = -8;
-    public static final double partialpullupext = 10;
-    
-    
+    public static final double midrot = -9.5;
+    public static final double partialpullupext = 0;
+
     public static final double pullupext = -2.70;
     public static final double pulluprotForward = 8;      //max forward on rotation
     public static final double travers_start_ext = 10;

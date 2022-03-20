@@ -149,7 +149,7 @@ public final class Constants {
     // Position/vel tolerance for outer position loops
     public static final double TOLERANCE_EXT = 0.25; // [in]
     public static final double TOLERANCE_EXT_VEL = 0.02; // [in/s]
-    public static final double TOLERANCE_ROT = 2.0; // [deg]
+    public static final double TOLERANCE_ROT = 1.0; // [deg]
     public static final double TOLERANCE_ROT_RATE = 0.25; // [deg/s]
 
     // Software outer loop rate limits
