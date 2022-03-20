@@ -7,6 +7,8 @@ import frc.robot.subsystems.climber.Climber;
 public class MidClimb extends SequentialCommandGroup {
     public static final double midext = 16;
     public static final double midrot = -21;
+    public static final double partialpullupext = 10;
+    
     public static final double pullupext = -3;
     public static final double travers_start_ext = 10;
     public static final double travers_start_rot = 15;
@@ -24,10 +26,10 @@ public class MidClimb extends SequentialCommandGroup {
         this.addCommands(
                 new MoveArmsTo(climber, midext, 0, true, true).withName("extendForMid"),
                 new MoveArmsTo(climber, midext, midrot, true, true).withName("rotateForMidBar").withTimeout(2), // timeout needed
-                new MoveArmsTo(climber, pullupext, midrot, true, true).withName("pullupMid").withTimeout(TO),
-                new MoveArmsTo(climber, pullupext, midrot + 5, true, true).withName("rotateCG1").withTimeout(TO),
-                new MoveArmsTo(climber, pullupext, 0, true, true).withName("rotateCG2").withTimeout(TO),
+                new MoveArmsTo(climber, partialpullupext, midrot, true, true).withName("pullupMid").withTimeout(TO),
+                new MoveArmsTo(climber, pullupext, 0, true, true).withName("rotateCG1").withTimeout(TO),
+                //new MoveArmsTo(climber, pullupext, 0, true, true).withName("rotateCG2").withTimeout(TO),
 
-                new MoveArmsTo(climber, midext, -10, true, true).withName("extend to hang").withTimeout(TO));
+                new MoveArmsTo(climber, midext, 10, true, true).withName("extend and forward").withTimeout(TO));
     }
 }
