@@ -111,11 +111,13 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         this(new ShooterSettings(requestedVelocity, 0.0, 0.0, 0.1), 20, null);
     }
 
+    //overload constructor to allow for shooting with autovelocity RPM adjustment off (defaults to true in other constructors)
     public VelShootCommand(boolean autoVelocity){
         this(defaultShooterSettings, 20, null);
         this.autoVelocity = autoVelocity;        
     }
 
+    //overload constructor to allow for shooting with autovelocity RPM adjustment off
     public VelShootCommand(double requestedVelocity, boolean autoVelocity){
         this(new ShooterSettings(requestedVelocity, 0.0, 0.0, 0.1), 20, null);
         this.autoVelocity = autoVelocity;        
@@ -142,7 +144,9 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         NTupdates();
         calculateDistance();
         calculateVelocity();
-        //calculatedVel = cmdSS.vel; //get rid of this when calculated Velocity is working
+        
+        //if autovelocity is true will calculate a new RPM speed based on the distance and adjust positioner
+        //otherwise RPMs should be constant based on the constructor parameters
         if (autoVelocity) {
             setPositioner();
             if(calculatedVel != cmdSS.vel){
