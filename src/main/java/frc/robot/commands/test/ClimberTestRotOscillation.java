@@ -25,19 +25,36 @@ public class ClimberTestRotOscillation extends SequentialCommandGroup {
         super();
 
         this.climber = climber;
-        this.addCommands(new MoveArmsTo(climber, "cycle number " + number + " to -15 deg", 0, -15, true, true).withTimeout(1),
-            new MoveArmsTo(climber, "cycle number " + number + " to 30 deg", 0, 30, true, true).withTimeout(1));
-    }
+        this.addCommands(
+            new MoveArmsTo(climber, "cycle number 1 to -15 deg", 0, -15, true, true).withTimeout(1),
+            new MoveArmsTo(climber, "cycle number 1 to 30 deg", 0, 30, true, true).withTimeout(1),
 
-    @Override
-    public void execute() {
-        if (cycleCount == 10) {
-            number++;
-            this.addCommands(new MoveArmsTo(climber, "cycle number " + number + " to -15 deg", 0, -15, true, true).withTimeout(1),
-            new MoveArmsTo(climber, "cycle number " + number + " to 30 deg", 0, 30, true, true).withTimeout(1));
-            cycleCount = 0;
-        }
-        cycleCount++;
-    }
+            new MoveArmsTo(climber, "cycle number 2 to -15 deg", 0, -15, true, true).withTimeout(1),
+            new MoveArmsTo(climber, "cycle number 2 to 30 deg", 0, 30, true, true).withTimeout(1),
 
+            new MoveArmsTo(climber, "cycle number 3 to -15 deg", 0, -15, true, true).withTimeout(1),
+            new MoveArmsTo(climber, "cycle number 3 to 30 deg", 0, 30, true, true).withTimeout(1),
+
+            new MoveArmsTo(climber, "cycle number 4 to -15 deg", 0, -15, true, true).withTimeout(1),
+            new MoveArmsTo(climber, "cycle number 4 to 30 deg", 0, 30, true, true).withTimeout(1),
+
+            new MoveArmsTo(climber, "cycle number 5 to -15 deg", 0, -15, true, true).withTimeout(1),
+            new MoveArmsTo(climber, "cycle number 5 to 30 deg", 0, 30, true, true).withTimeout(1),
+
+            new MoveArmsTo(climber, "cycle number 6 to -15 deg", 0, -15, true, true).withTimeout(1),
+            new MoveArmsTo(climber, "cycle number 6 to 30 deg", 0, 30, true, true).withTimeout(1),
+
+            new MoveArmsTo(climber, "cycle number 7 to -15 deg", 0, -15, true, true).withTimeout(1),
+            new MoveArmsTo(climber, "cycle number 7 to 30 deg", 0, 30, true, true).withTimeout(1),
+
+            new MoveArmsTo(climber, "cycle number 8 to -15 deg", 0, -15, true, true).withTimeout(1),
+            new MoveArmsTo(climber, "cycle number 8 to 30 deg", 0, 30, true, true).withTimeout(1),
+
+            new MoveArmsTo(climber, "cycle number 9 to -15 deg", 0, -15, true, true).withTimeout(1),
+            new MoveArmsTo(climber, "cycle number 9 to 30 deg", 0, 30, true, true).withTimeout(1),
+
+            new MoveArmsTo(climber, "cycle number 10 to -15 deg", 0, -15, true, true).withTimeout(1),
+            new MoveArmsTo(climber, "cycle number 10 to 30 deg", 0, 30, true, true).withTimeout(1)
+        );
+    }
 }
