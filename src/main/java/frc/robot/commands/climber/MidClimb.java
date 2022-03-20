@@ -14,7 +14,7 @@ public class MidClimb extends SequentialCommandGroup {
         super();
         double midext = 16;
         double midrot = -21;
-        double pullupext = -2;
+        double pullupext = -3;
         double travers_start_ext = 15;
         double travers_start_rot = -20;
 
@@ -24,10 +24,10 @@ public class MidClimb extends SequentialCommandGroup {
             new MoveArmsTo(climber, midext, 0, true, true).withName("extendForMid"),
             new MoveArmsTo(climber, midext, midrot, true, true).withName("rotateForMidBar").withTimeout(2),  //timeout needed
             new MoveArmsTo(climber, pullupext, midrot, true, true).withName("pullupMid").withTimeout(TO),
-            new MoveArmsTo(climber, pullupext, -5, true, true).withName("rotateCG1").withTimeout(TO),
+            new MoveArmsTo(climber, pullupext, midrot+5, true, true).withName("rotateCG1").withTimeout(TO),
             new MoveArmsTo(climber, pullupext, 0, true, true).withName("rotateCG2").withTimeout(TO),
             
-            new MoveArmsTo(climber, 15, 0, true, true).withName("extend to hang").withTimeout(TO),
+            new MoveArmsTo(climber, 18, 0, true, true).withName("extend to hang").withTimeout(TO),
             new WaitCommand(10).withName("hanging"),
 
             //goto Travers start
