@@ -63,7 +63,7 @@ public class IntakeCommand extends CommandBase {
       case ExpellCargo:
         intake.on( -intakeSpeed.getAsDouble(),sideIntakeSpeed.getAsDouble());
         break;
-      case InstantLoad:
+      case InstantLoad: //for command groups that need an instant command to finish but leave intake running
         intake.on(intakeSpeed.getAsDouble(),sideIntakeSpeed.getAsDouble());
         finished = true;
         break;
