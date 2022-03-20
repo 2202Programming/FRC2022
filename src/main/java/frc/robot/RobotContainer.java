@@ -21,6 +21,7 @@ import frc.robot.commands.ResetPosition;
 import frc.robot.commands.Shoot.VelShootCommand;
 import frc.robot.commands.auto.auto_cmd;
 import frc.robot.commands.climber.MidClimb;
+import frc.robot.commands.climber.MoveArmsTo;
 import frc.robot.commands.climber.PitAlignClimber;
 import frc.robot.commands.climber.TraverseClimb;
 import frc.robot.commands.swerve.DriveController;
@@ -114,6 +115,8 @@ public class RobotContainer {
       driverControls.bind(Id.SwitchBoard, SBButton.Sw21).whileHeld(new PitAlignClimber(driverControls, Id.Driver, climber, 2.0, 5.0)); //[in/s] [deg/s]
       driverControls.bind(Id.SwitchBoard, SBButton.Sw22).whenPressed(new MidClimb(climber));
       driverControls.bind(Id.SwitchBoard, SBButton.Sw23).whenPressed(new TraverseClimb(climber));
+      driverControls.bind(Id.SwitchBoard, SBButton.Sw24).whenPressed(new MoveArmsTo(climber, 0, 0, true, true));
+      
     }
   }
 
