@@ -17,8 +17,6 @@ public class ClimberTestRotOscillation extends SequentialCommandGroup {
     // dirve.toClimbStart
     // climbMid
     // stabilize etc.
-    double cycleCount = 0;
-    double number = 0;
     Climber climber;
 
     public ClimberTestRotOscillation(Climber climber) {
