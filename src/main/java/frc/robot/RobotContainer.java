@@ -117,7 +117,7 @@ public class RobotContainer {
       driverControls.bind(Id.SwitchBoard, SBButton.Sw21).whileHeld(new PitAlignClimber(driverControls, Id.Driver, climber, 2.0, 5.0)); //[in/s] [deg/s]
       driverControls.bind(Id.SwitchBoard, SBButton.Sw22).whenPressed(new MidClimb(climber));
       driverControls.bind(Id.SwitchBoard, SBButton.Sw23).whenPressed(new TraverseClimb(climber));
-      driverControls.bind(Id.SwitchBoard, SBButton.Sw24).whenPressed(new MoveArmsTo(climber, 0, 0, true, true));
+      driverControls.bind(Id.SwitchBoard, SBButton.Sw24).whenPressed(new MoveArmsTo(climber, "To zero", 0, 0, true, true));
       driverControls.bind(Id.SwitchBoard, SBButton.Sw25).whenPressed(new ClimberTestRotRatePercent(climber, 0.5, -20, 40));
     }
   }

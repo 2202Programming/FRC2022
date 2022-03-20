@@ -26,12 +26,11 @@ public class MidClimb extends SequentialCommandGroup {
         double TO = 30.0; // default timeout for testing
 
         this.addCommands(
-                
-                new MoveArmsTo(climber, "extendForMid", midext, 0, true, true),
-                new MoveArmsTo(climber, "rotateForMidBar", midext, midrot, true, true).withTimeout(2), // timeout needed
-                new MoveArmsTo(climber, "partial-pullup", partialpullupext, midrot, true, true).withTimeout(TO),
-                new MoveArmsTo(climber, "pullupMid", pullupext, midrot, true, true).withTimeout(TO),
-                new MoveArmsTo(climber, "rotateCG1", pullupext, pulluprotForward, true, true).withTimeout(TO),
-                new MoveArmsTo(climber, "extend to hang", midext, partialpullupext, true, true).withTimeout(TO));
+        new MoveArmsTo(climber, "extendForMid", midext, midrot/2, true, true),
+        new MoveArmsTo(climber, "rotateForMidBar", midext, midrot, true, true).withTimeout(2), // timeout needed
+        new MoveArmsTo(climber, "partial-pullup", partialpullupext, midrot, true, true).withTimeout(TO),
+        new MoveArmsTo(climber, "pullupMid", pullupext, midrot, true, true).withTimeout(TO),
+        new MoveArmsTo(climber, "rotateCG1", pullupext, pulluprotForward, true, true).withTimeout(TO),
+        new MoveArmsTo(climber, "extend to hang", midext, partialpullupext, true, true).withTimeout(TO));
     }
 }
