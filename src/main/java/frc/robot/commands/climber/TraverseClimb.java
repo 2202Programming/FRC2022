@@ -26,10 +26,10 @@ public class TraverseClimb extends SequentialCommandGroup {
 
         this.addCommands(
              //goto Travers start
-            new MoveArmsTo(climber, travers_start_ext , travers_start_rot, true, true).withName("traverseStart").withTimeout(2),
-            new MoveArmsTo(climber, 20 , travers_start_rot, true, true).withName("extforgrab").withTimeout(2),
-            new MoveArmsTo(climber, 20 , -30, true, true).withName("rotateforgrab").withTimeout(2),
-            new MoveArmsTo(climber, pullupext, -30, true, true).withName("pullupTraverse").withTimeout(TO),
+            new MoveArmsTo(climber, "traverseStart", travers_start_ext , travers_start_rot, true, true).withTimeout(2),
+            new MoveArmsTo(climber, "extforgrab", 20 , travers_start_rot, true, true).withTimeout(2),
+            new MoveArmsTo(climber, "rotateforgrab", 20 , -30, true, true).withTimeout(2),
+            new MoveArmsTo(climber, "pullupTraverse", pullupext, -30, true, true).withTimeout(TO),
 
             // new MoveArmsTo(climber, pullupext, -5, true, true).withName("rotateCG1").withTimeout(TO),
             // new MoveArmsTo(climber, pullupext, hang_rot, true, true).withName("rotateCG2").withTimeout(TO),

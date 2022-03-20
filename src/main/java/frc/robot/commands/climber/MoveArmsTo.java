@@ -11,9 +11,21 @@ public class MoveArmsTo extends CommandBase {
     final double rot;
     final boolean syncArms;
     final boolean endOuterLoop;
+    final String name;
     
     public MoveArmsTo(Climber climber, double ext_pos, double rot_pos, boolean syncArms, boolean endOuterLoop)  {
         this.climber = climber;
+        this.name = null;
+        this.ext = ext_pos;
+        this.rot = rot_pos;
+        this.syncArms = syncArms;
+        this.endOuterLoop = endOuterLoop;
+        addRequirements(climber);
+    }
+
+    public MoveArmsTo(Climber climber, String name, double ext_pos, double rot_pos, boolean syncArms, boolean endOuterLoop)  {
+        this.climber = climber;
+        this.name = name;
         this.ext = ext_pos;
         this.rot = rot_pos;
         this.syncArms = syncArms;
@@ -31,7 +43,7 @@ public class MoveArmsTo extends CommandBase {
         climber.setOuterLoop(true);
         climber.setExtension(ext);
         climber.setRotation(rot);
-        System.out.println("****Arms moving to (" + ext +"," +rot+") *********");
+        System.out.println("****" + name + " Arms moving to (" + ext +"," +rot+") *********");
     }
 
     @Override
@@ -40,9 +52,9 @@ public class MoveArmsTo extends CommandBase {
         climber.setArmSync(syncArms);
         climber.setOuterLoop(endOuterLoop);
         if (!interrupted)
-            System.out.println("****Completed****");
+            System.out.println("****" + name + " Completed****");
         else 
-          System.out.println("****Interrupted****");
+          System.out.println("****" + name + " Interrupted****");
     }
 
 
