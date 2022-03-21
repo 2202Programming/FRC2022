@@ -59,6 +59,10 @@ public class Climber extends SubsystemBase {
         rotPosR.setTolerance(ClimbSettings.TOLERANCE_ROT, ClimbSettings.TOLERANCE_ROT_RATE);
         extPosL.setTolerance(ClimbSettings.TOLERANCE_EXT, ClimbSettings.TOLERANCE_EXT_VEL);
         extPosR.setTolerance(ClimbSettings.TOLERANCE_EXT, ClimbSettings.TOLERANCE_EXT_VEL);
+        
+        //Set min/max integrator range on outerloop position PID (default is 1.0 otherwise)
+        rotPosL.setIntegratorRange(ClimbSettings.ROT_INTEGRATOR_MIN, ClimbSettings.ROT_INTEGRATOR_MIN);
+        rotPosR.setIntegratorRange(ClimbSettings.ROT_INTEGRATOR_MIN, ClimbSettings.ROT_INTEGRATOR_MIN);
 
         setArmSync(false);
         setOuterLoop(false);

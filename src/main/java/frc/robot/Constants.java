@@ -151,6 +151,11 @@ public final class Constants {
     public static final double TOLERANCE_EXT_VEL = 0.02; // [in/s]
     public static final double TOLERANCE_ROT = 1.0; // [deg]
     public static final double TOLERANCE_ROT_RATE = 0.25; // [deg/s]
+    
+    //limit integrator windup (default =1.0)
+    public static final double ROT_INTEGRATOR_MIN = 0.0; // [deg/s]
+    public static final double ROT_INTEGRATOR_MAX = 5.0; // [deg/s]
+    
 
     // Software outer loop rate limits
     public static final double MAX_VELOCITY_EXT = 8; // [in/s]
