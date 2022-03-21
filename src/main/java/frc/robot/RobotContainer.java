@@ -27,6 +27,7 @@ import frc.robot.commands.climber.TraverseClimb;
 import frc.robot.commands.swerve.DriveController;
 import frc.robot.commands.swerve.LimelightDriveCmd;
 import frc.robot.commands.test.ClimberTestRotRate;
+import frc.robot.commands.test.LightGateTest;
 import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.Magazine_Subsystem;
@@ -89,8 +90,10 @@ public class RobotContainer {
       shooter = new Shooter_Subsystem();
     if (Constants.HAS_MAGAZINE)
       magazine = new Magazine_Subsystem();
-    if (Constants.HAS_INTAKE)
+    if (Constants.HAS_INTAKE) {
       intake = new Intake_Subsystem();
+      intake.setDefaultCommand(new LightGateTest());
+    }
     if (Constants.HAS_CLIMBER)
       climber = new Climber();
 
