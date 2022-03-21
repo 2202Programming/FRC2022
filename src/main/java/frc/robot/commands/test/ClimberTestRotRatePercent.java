@@ -6,6 +6,7 @@ package frc.robot.commands.test;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.climber.Climber;
+@SuppressWarnings( "deprecation" )
 
 /**
  * Uses velocity mod to tune hardware pid loops
@@ -57,9 +58,6 @@ public class ClimberTestRotRatePercent extends CommandBase {
       delay_r = 0;
     }
 
-    if (syncMode == true) {
-      pct_r = pct_l;
-    }
     climber.setPercentOutputRot(pct_l, pct_r);
     delay_l++;
     delay_r++;
