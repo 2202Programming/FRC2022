@@ -141,7 +141,7 @@ public final class Constants {
   public static final class ClimbSettings {
     // Hardware Controller constants for velocity and position modes, each gets hw
     // slot
-    public static PIDFController rotatePID_vel = new PIDFController(0.0055, 0.000, 0.0, 0.0215); // [deg/s] - slot 0
+    public static PIDFController rotatePID_vel = new PIDFController(0.0055, 0.00015, 0.20, 0.0215); // [deg/s] - slot 0
     public static PIDFController rotatePID_pos = new PIDFController(0.0055, 0.0, 0.0, 0.0215); // [deg] - slot 1
     public static PIDFController extendPID_vel = new PIDFController(0.015, 0.0, 0.05, 0.08); // [in/s] - slot 0
     public static PIDFController extendPID_pos = new PIDFController(0.05, 0.0, 0.0, 0.0); // [in] - slot 1

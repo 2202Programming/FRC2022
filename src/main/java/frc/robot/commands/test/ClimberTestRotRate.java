@@ -34,7 +34,7 @@ public class ClimberTestRotRate extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    climber.setOuterLoop(true);
+    climber.setOuterLoop(false);
     delay_l = 0;
     delay_r = 0;
     climber.setRotSpeed(speed_l, speed_r);
