@@ -49,8 +49,8 @@ public class Climber extends SubsystemBase {
         nte_sync_arms = table.getEntry("syncArms");
         nte_sync_arms.setBoolean(syncArmsEnabled);
 
-        left_Arm_rot = new ArmRotation(table.getSubTable("left_arm_rotation"), left_motor_rot, true, 0.0);
-        right_Arm_rot = new ArmRotation(table.getSubTable("right_arm_rotation"), right_motor_rot, false, 0.0);
+        left_Arm_rot = new ArmRotation(table.getSubTable("left_arm_rotation"), left_motor_rot, true, 0.20);
+        right_Arm_rot = new ArmRotation(table.getSubTable("right_arm_rotation"), right_motor_rot, false, 0.20);
         right_Arm_ext = new ArmExtension(table.getSubTable("right_arm_extension"), right_motor_ext, false);
         left_Arm_ext = new ArmExtension(table.getSubTable("left_arm_extension"), left_motor_ext, true);
 
@@ -84,13 +84,15 @@ public class Climber extends SubsystemBase {
         // arms vertical
         left_Arm_rot.setEncoderPos(0.0);
         if (Math.abs(left_Arm_rot.getRotationDegrees()) > 0.0001) {
-            System.out.println("warning -->" + left_Arm_rot.getRotationDegrees() +
-            " left rot pos not zero!!!!!!!!");
+            //System.out.println("warning -->" + left_Arm_rot.getRotationDegrees() +
+           // " left rot pos not zero!!!!!!!!");
+           left_Arm_rot.setEncoderPos(0.0);
         }
         right_Arm_rot.setEncoderPos(0.0);
         if (Math.abs(right_Arm_rot.getRotationDegrees()) > 0.0001) {
-            System.out.println("warning -->" + right_Arm_rot.getRotationDegrees() +
-            " right rot pos not zero!!!!!!!!");
+            //System.out.println("warning -->" + right_Arm_rot.getRotationDegrees() +
+            //" right rot pos not zero!!!!!!!!");
+            right_Arm_rot.setEncoderPos(0.0);
         }
 
         //compensation loop

@@ -92,23 +92,22 @@ public class ArmRotation {
     }
 
     public void setEncoderPos(double pos) {
-        setRotRate(0.0);
         REVLibError err = encoder.setPosition(pos);
-        double readval = encoder.getPosition();
-        boolean done = false;
-        while (!done)
-            {
-                readval = encoder.getPosition();
-                if (readval != pos) {
-                    err = encoder.setPosition(pos);
-                    periodic();
-                    System.out.println("readval="+readval +"pos=" +pos);
-                    System.out.println("err="+err.toString());
-                }
-                else { 
-                    done = true;
-                }
-            }
+        // double readval = encoder.getPosition();
+        // boolean done = false;
+        // while (!done)
+        //     {
+        //         readval = encoder.getPosition();
+        //         if (readval != pos) {
+        //             err = encoder.setPosition(pos);
+        //             periodic();
+        //             System.out.println("readval="+readval +"pos=" +pos);
+        //             System.out.println("err="+err.toString());
+        //         }
+        //         else { 
+        //             done = true;
+        //         }
+        //     }
     }
 
     public void set(double degrees) {
