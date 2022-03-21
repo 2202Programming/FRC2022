@@ -73,14 +73,25 @@ public class Climber extends SubsystemBase {
     }
 
     public void setStartingPos() {
+        //reset hardware pid
+        left_Arm_rot.resetPID();
+        right_Arm_rot.resetPID();
+        
         // approx centered
         left_Arm_ext.setEncoderPos(0.0);
         right_Arm_ext.setEncoderPos(0.0);
 
         // arms vertical
         left_Arm_rot.setEncoderPos(0.0);
+        if (Math.abs(left_Arm_rot.getRotationDegrees()) < 0.0001) {
+            System.out.println("warning - left rot pos not zero!!!!!!!!");
+        }
         right_Arm_rot.setEncoderPos(0.0);
+        if (Math.abs(right_Arm_rot.getRotationDegrees()) < 0.0001) {
+            System.out.println("warning - right rot pos not zero!!!!!!!!");
+        }
 
+        //compensation loop
         extCompPID.reset();
         rotCompPID.reset();
 
@@ -89,11 +100,9 @@ public class Climber extends SubsystemBase {
         extPosR.reset();
         rotPosL.reset();
         rotPosR.reset();
-        //clear all position pids
-        extPosL.setSetpoint(0.0);
-        extPosR.setSetpoint(0.0);
-        rotPosL.setSetpoint(0.0);
-        rotPosR.setSetpoint(0.0);
+        // setpoints for sw outer loop
+        setExtension(0.0);
+        setRotation(0.0);
     }
 
     public boolean readyToClimb() {

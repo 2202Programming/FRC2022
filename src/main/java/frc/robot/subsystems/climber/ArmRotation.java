@@ -111,6 +111,10 @@ public class ArmRotation {
         
     }
 
+    public void resetPID() {
+        pidController.setIAccum(0.0);
+    }
+
     // calibration and testing only
     public void setPercentOutput(double percentOutput) {
         motor_rot.set(percentOutput);

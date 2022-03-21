@@ -107,6 +107,10 @@ public class ArmExtension {
         encoder.setPosition(pos);
     }
 
+    public void resetPID() {
+        pidController.setIAccum(0.0);
+    }
+
     /**
      * used only for calibration modes and testing.
      * @param percentOutput
