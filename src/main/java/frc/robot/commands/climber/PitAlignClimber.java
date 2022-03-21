@@ -40,7 +40,7 @@ public class PitAlignClimber extends CommandBase {
   public void initialize() {
     climber.setArmSync(false);
     climber.setOuterLoop(false); //using velocity
-    climber.setStartingPos();
+    //climber.setStartingPos();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -70,6 +70,8 @@ public class PitAlignClimber extends CommandBase {
     }
     climber.setExtSpeed(v_lt, v_rt);
     climber.setRotSpeed(rot_lt, rot_rt);
+    climber.setStartingPos();
+    climber.periodic();
   }
 
   // Called once the command ends or is interrupted.
