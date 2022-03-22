@@ -17,9 +17,10 @@ public class ClimberTestVelocity extends CommandBase {
   double speed_r;
   double min_ext;
   double max_ext;
+  double absspd;
   int delay_l;
   int delay_r;
-  boolean syncMode = true;
+  boolean syncMode = false;
   final double delayCount = 10;
   boolean move_to_done = false;
 
@@ -28,8 +29,7 @@ public class ClimberTestVelocity extends CommandBase {
     this.climber = climber;
     this.min_ext = min_ext;
     this.max_ext = max_ext;
-    speed_l = Math.abs(spd);
-    speed_r = speed_l;
+    this.absspd = speed_r= speed_l = Math.abs(spd);
     addRequirements(climber);
   }
 
@@ -41,6 +41,7 @@ public class ClimberTestVelocity extends CommandBase {
     climber.setOuterLoop(true);
     climber.setExtension(min_ext + 0.5);
     climber.setArmSync(syncMode);
+    speed_r = speed_l = absspd;  //start going positive vel always
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -68,9 +69,6 @@ public class ClimberTestVelocity extends CommandBase {
       delay_r = 0;
     }
 
-    if (syncMode == true) {
-      speed_r = speed_l;
-    }
     climber.setExtSpeed(speed_l, speed_r);
     delay_l++;
     delay_r++;

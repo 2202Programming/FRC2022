@@ -143,7 +143,7 @@ public final class Constants {
     // slot
     public static PIDFController rotatePID_vel = new PIDFController(0.0055, 0.00015, 0.20, 0.0215); // [deg/s] - slot 0
     public static PIDFController rotatePID_pos = new PIDFController(0.0055, 0.0, 0.0, 0.0215); // [deg] - slot 1
-    public static PIDFController extendPID_vel = new PIDFController(0.015, 0.0, 0.05, 0.08); // [in/s] - slot 0
+    public static PIDFController extendPID_vel = new PIDFController(0.015, 0.00015, 0.08, 0.08); // [in/s] - slot 0
     public static PIDFController extendPID_pos = new PIDFController(0.05, 0.0, 0.0, 0.0); // [in] - slot 1
 
     // Position/vel tolerance for outer position loops
@@ -158,7 +158,7 @@ public final class Constants {
     
 
     // Software outer loop rate limits
-    public static final double MAX_VELOCITY_EXT = 8; // [in/s]
+    public static final double MAX_VELOCITY_EXT = 10; // [in/s] 100% DutyCycle at 13.5
     public static final double MAX_VELOCITY_ROT = 20; // [deg/s]
 
     // SmartCurrent limit for brushless
