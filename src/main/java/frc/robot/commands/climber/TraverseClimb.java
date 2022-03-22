@@ -24,16 +24,18 @@ public class TraverseClimb extends SequentialCommandGroup {
 
         this.addCommands(
              //goto Travers start
-            new MoveArmsTo(climber, "traverseStart", travers_start_ext , travers_start_rot, true, true).withTimeout(5),
-            new MoveArmsTo(climber, "traverseStart", midext, travers_start_rot, true, true).withTimeout(5),
-            new MoveArmsTo(climber, "rotate-under", midext, 40, true, true).withTimeout(TO),
-            new MoveArmsTo(climber, "extforgrab", midext , 50, true, true).withTimeout(TO),
-            new MoveArmsTo(climber, "extforgrab2", 23 , 62, true, true).withTimeout(TO),
-            new MoveArmsTo(climber, "rotateforgrab", 22 , 15, true, true).withTimeout(TO),
-            new MoveArmsTo(climber, "partialpullupTraverse", partialpullupext, pulluprotForward , true, true).withTimeout(TO),
-            new MoveArmsTo(climber, "pullupTraverse", pullupext, 0, true, true).withTimeout(TO),
-            new MoveArmsTo(climber, "rotateCG1", pullupext, pulluprotForward, true, true).withTimeout(TO),
-            new MoveArmsTo(climber, "T-extend to hang", midext, travers_start_rot, true, true).withTimeout(TO),
+            //new MoveArmsTo(climber, "traverseStart", travers_start_ext , travers_start_rot, true, true).withTimeout(5),
+            new MoveArmsTo(climber, "traverseStart", travers_start_ext, travers_start_rot, true, true).withTimeout(5),
+            new MoveArmsTo(climber, "rotate-under", travers_start_ext, 45, true, true).withTimeout(TO),
+            new MoveArmsTo(climber, "rotateunder2", travers_start_ext, 50, true, true).withTimeout(TO),
+            new MoveArmsTo(climber, "rotate4grab2", travers_start_ext, 65, true, true).withTimeout(TO),
+            new MoveArmsTo(climber, "extend-under",  24, 60, true, true).withTimeout(TO),
+            new MoveArmsTo(climber, "rotateforgrab", 24, 15, true, true).withTimeout(5),
+            new MoveArmsTo(climber, "partialpullupTraverse-wait10", partialpullupext, pulluprotForward, true, true).withTimeout(TO),
+            new WaitCommand(10),
+            new MoveArmsTo(climber, "partpullupTraverse-startRotate", partialpullupext, pulluprotForward, true, true).withTimeout(TO),
+            new MoveArmsTo(climber, "pullupTraverse-chinup", pullupext, pulluprotForward, true, true).withTimeout(TO),
+            new MoveArmsTo(climber, "T-extend to hang", travers_start_ext, travers_start_rot, true, true).withTimeout(TO),
 
 
             // new MoveArmsTo(climber, pullupext, -5, true, true).withName("rotateCG1").withTimeout(TO),
