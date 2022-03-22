@@ -92,7 +92,7 @@ public class RobotContainer {
       magazine = new Magazine_Subsystem();
     if (Constants.HAS_INTAKE) {
       intake = new Intake_Subsystem();
-      intake.setDefaultCommand(new LightGateTest());
+      ///intake.setDefaultCommand(new LightGateTest());
     }
     if (Constants.HAS_CLIMBER)
       climber = new Climber();
