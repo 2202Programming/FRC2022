@@ -29,7 +29,7 @@ public class MidClimb extends SequentialCommandGroup {
         this.addCommands(
         new MoveArmsTo(climber, "extendForMid", midext, midreachrot/2, true, true),
         new MoveArmsTo(climber, "rotateForMidBar", midext, midreachrot, true, true).withTimeout(2), // timeout needed
-        new MoveArmsTo(climber, "partial-pullup1", partialpullupext, midreachrot, true, true).withTimeout(TO),
+        //new MoveArmsTo(climber, "partial-pullup1", partialpullupext, midreachrot, true, true).withTimeout(TO),
         new MoveArmsTo(climber, "partial-pullup2", partialpullupext, midrot, true, true).withTimeout(TO),
         new MoveArmsTo(climber, "pullupMid", pullupext, midrot, true, true).withTimeout(TO),
         new MoveArmsTo(climber, "rotateCG1", pullupext, pulluprotForward, true, true).withTimeout(TO)
