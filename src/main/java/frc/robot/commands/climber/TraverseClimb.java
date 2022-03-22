@@ -25,7 +25,8 @@ public class TraverseClimb extends SequentialCommandGroup {
         this.addCommands(
              //goto Travers start
             //new MoveArmsTo(climber, "traverseStart", travers_start_ext , travers_start_rot, true, true).withTimeout(5),
-            new MoveArmsTo(climber, "traverseStart", travers_start_ext, travers_start_rot, true, true).withTimeout(5),
+            new MoveArmsTo(climber, "extend to trav", travers_start_ext, pulluprotForward, true, true).withTimeout(TO),
+            new MoveArmsTo(climber, "rotate to trav", travers_start_ext, travers_start_rot, true, true).withTimeout(TO),
             new MoveArmsTo(climber, "rotate-under", travers_start_ext, 45, true, true).withTimeout(TO),
             new MoveArmsTo(climber, "rotateunder2", travers_start_ext, 50, true, true).withTimeout(TO),
             new MoveArmsTo(climber, "extend-under",  24, 50, true, true).withTimeout(TO),
@@ -34,10 +35,7 @@ public class TraverseClimb extends SequentialCommandGroup {
             new MoveArmsTo(climber, "partial-pullup-15", partialpullupext, -10, true, true).withTimeout(TO),
             new WaitCommand(10),
             new MoveArmsTo(climber, "pullupMid1", pullupext, -10, true, true).withTimeout(TO),
-            new MoveArmsTo(climber, "rotateCG1", pullupext, pulluprotForward, true, true).withTimeout(TO),
-            new MoveArmsTo(climber, "extend to trav", travers_start_ext, pulluprotForward, true, true).withTimeout(TO),
-            new MoveArmsTo(climber, "rotate to trav", travers_start_ext, travers_start_rot, true, true).withTimeout(TO)    
-            
+            new MoveArmsTo(climber, "rotateCG1", pullupext, pulluprotForward, true, true).withTimeout(TO)
      );
     }
 
