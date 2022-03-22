@@ -21,13 +21,15 @@ public class ClimberTestVelocity extends CommandBase {
   int delay_r;
   boolean syncMode = true;
   final double delayCount = 10;
+  boolean move_to_done = false;
+
 
   public ClimberTestVelocity(Climber climber, double spd, double min_ext, double max_ext) {
     this.climber = climber;
     this.min_ext = min_ext;
     this.max_ext = max_ext;
-    speed_l = spd;
-    speed_r = spd;
+    speed_l = Math.abs(spd);
+    speed_r = speed_l;
     addRequirements(climber);
   }
 
@@ -36,13 +38,23 @@ public class ClimberTestVelocity extends CommandBase {
   public void initialize() {
     delay_l = 0;
     delay_r = 0;
-    climber.setExtSpeed(speed_l, speed_r);
+    climber.setOuterLoop(true);
+    climber.setExtension(min_ext + 0.5);
     climber.setArmSync(syncMode);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    if (!move_to_done) {
+      //wait until extension is in bound
+      if (climber.outerLoopExtDone()) {
+        move_to_done = true;
+        climber.setOuterLoop(false);  //use pure velocity control
+      }
+      else return;
+    }
+
     // change the direction at the end
     if (((climber.getLeftArmExtension().getInches() >= max_ext) || 
          climber.getLeftArmExtension().getInches() <= min_ext) && delay_l > delayCount) {
