@@ -67,8 +67,8 @@ public class MoveArmsTo extends CommandBase {
     }
 
     void printPositons() {
-        System.out.println("Left Rot = "+ (climber.getLeftRotation() -rot) + "Right Rot Err="+climber.getRightRotation() );
-        System.out.println("Left ext = "+ (climber.getLeftExtInches() - ext) + "Right Ext Err="+climber.getRightExtInches() );
+        System.out.println("Left Rot = "+ (climber.getLeftRotation() -rot) + "Right Rot Err="+  (climber.getRightRotation() - rot ));
+        System.out.println("Left ext = "+ (climber.getLeftExtInches() - ext) + "Right Ext Err="+(climber.getRightExtInches() - ext) );
     }
 
 }
