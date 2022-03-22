@@ -54,14 +54,21 @@ public class MoveArmsTo extends CommandBase {
         climber.setOuterLoop(endOuterLoop);
         if (!interrupted)
             System.out.println("****" + name + " Completed****");
-        else 
+        else {
           System.out.println("****" + name + " Interrupted****");
+          printPositons();
+        }
     }
 
 
     @Override
     public boolean isFinished() {
         return climber.outerLoopDone();
+    }
+
+    void printPositons() {
+        System.out.println("Left Rot = "+ (climber.getLeftRotation() -rot) + "Right Rot Err="+climber.getRightRotation() );
+        System.out.println("Left ext = "+ (climber.getLeftExtInches() - ext) + "Right Ext Err="+climber.getRightExtInches() );
     }
 
 }
