@@ -3,6 +3,7 @@ package frc.robot.commands.climber;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.ifx.DriverControls;
 
 //import static frc.robot.Constants.ClimbSettings;
 public class MidClimb extends SequentialCommandGroup {
@@ -21,18 +22,18 @@ public class MidClimb extends SequentialCommandGroup {
      * @param climber
      */
 
-    public MidClimb(Climber climber) {
+    public MidClimb(Climber climber, DriverControls dc) {
         super();
 
         double TO = 30.0; // default timeout for testing
 
         this.addCommands(
-        new MoveArmsTo(climber, "extendForMid", midext, midreachrot/2, true, true),
-        new MoveArmsTo(climber, "rotateForMidBar", midext, midreachrot, true, true).withTimeout(2), // timeout needed
+        new MoveArmsTo(climber, "extendForMid", midext, midreachrot/2, true, true, dc),
+        new MoveArmsTo(climber, "rotateForMidBar", midext, midreachrot, true, true, dc).withTimeout(2), // timeout needed
         //new MoveArmsTo(climber, "partial-pullup1", partialpullupext, midreachrot, true, true).withTimeout(TO),
         //new MoveArmsTo(climber, "partial-pullup2", partialpullupext, midrot, true, true).withTimeout(TO),
-        new MoveArmsTo(climber, "pullupMid", pullupext, midrot, true, true).withTimeout(TO),
-        new MoveArmsTo(climber, "rotateCG1", pullupext, pulluprotForward, true, true).withTimeout(TO)
+        new MoveArmsTo(climber, "pullupMid", pullupext, midrot, true, true, dc).withTimeout(TO),
+        new MoveArmsTo(climber, "rotateCG1", pullupext, pulluprotForward, true, true, dc).withTimeout(TO)
         );
     }
 }

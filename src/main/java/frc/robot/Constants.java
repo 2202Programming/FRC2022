@@ -164,6 +164,9 @@ public final class Constants {
     // SmartCurrent limit for brushless
     public static final int MAX_EXT_AMPS = 25;
     public static final int MAX_ROT_AMPS = 25;
+
+    // max angle delta before kill
+    public static final double KILL_COUNT = 30;
   }
 
 

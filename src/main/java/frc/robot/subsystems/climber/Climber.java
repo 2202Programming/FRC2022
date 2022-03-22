@@ -5,6 +5,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -19,7 +20,10 @@ public class Climber extends SubsystemBase {
     private NetworkTableEntry nte_sync_arms;
 
     // command fixes
-    boolean outerLoopEnabled = false;   // use sw position pids to control velocity
+    private boolean outerLoopEnabled = false;   // use sw position pids to control velocity
+    // kill switch
+    private boolean kill = false;
+    private LinearFilter filter;
 
     // Compensation "syncArms" 
     boolean syncArmsEnabled;                // when true uses differential pos err to compensate
@@ -70,6 +74,9 @@ public class Climber extends SubsystemBase {
         // finish hardware limits
         setAmperageExtLimit(ClimbSettings.MAX_EXT_AMPS);
         setAmperageRotLimit(ClimbSettings.MAX_ROT_AMPS);
+
+        // filter
+        filter = LinearFilter.movingAverage(3);
     }
 
     public void setStartingPos() {
@@ -212,8 +219,13 @@ public class Climber extends SubsystemBase {
             rot_compensation = rotCompPID.calculate(getRightRotation());
         }
       
+        if (filter.calculate(Math.abs(left_Arm_rot.getRotationDegrees() - right_Arm_rot.getRotationDegrees())) > ClimbSettings.KILL_COUNT) kill = true;
+
         // output new speed settings
-        if (outerLoopEnabled) { 
+        if (kill == true) {
+            setExtSpeed(0.0);
+            setRotSpeed(0.0);
+        } else if (outerLoopEnabled) { 
             setExtSpeed(ext_velL, ext_velR);
             setRotSpeed(rot_velL, rot_velR);
         }
@@ -308,6 +320,10 @@ public class Climber extends SubsystemBase {
 
     public ArmExtension getRightArmExtension() {
         return right_Arm_ext;
+    }
+
+    public void killIt() {
+        kill = true;
     }
 
     @Deprecated

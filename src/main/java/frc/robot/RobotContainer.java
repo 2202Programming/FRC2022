@@ -117,9 +117,9 @@ public class RobotContainer {
     if (Constants.HAS_CLIMBER) {
       // warning - PitAlign command use Driver's DPAD, RB and, LB. DPL-can we run this in TEST mode?
       driverControls.bind(Id.SwitchBoard, SBButton.Sw21).whileHeld(new PitAlignClimber(driverControls, Id.Driver, climber, 2.0, 5.0)); //[in/s] [deg/s]
-      driverControls.bind(Id.SwitchBoard, SBButton.Sw22).whenPressed(new MidClimb(climber));
-      driverControls.bind(Id.SwitchBoard, SBButton.Sw23).whenPressed(new TraverseClimb(climber));
-      driverControls.bind(Id.SwitchBoard, SBButton.Sw24).whileHeld(new MoveArmsTo(climber, "To zero", 0, 0, true, true));
+      driverControls.bind(Id.SwitchBoard, SBButton.Sw22).whenPressed(new MidClimb(climber, driverControls));
+      driverControls.bind(Id.SwitchBoard, SBButton.Sw23).whenPressed(new TraverseClimb(climber, driverControls));
+      driverControls.bind(Id.SwitchBoard, SBButton.Sw24).whileHeld(new MoveArmsTo(climber, "To zero", 0, 0, true, true, driverControls));
       driverControls.bind(Id.SwitchBoard, SBButton.Sw25).whileHeld(new ClimberTestRotRate(climber, 20, -30, 65)); //use pit-zero to start
       //driverControls.bind(Id.SwitchBoard, SBButton.Sw25).whileHeld(new ClimberTestVelocity(climber, 5, 0.0, 15)); //use pit-zero to start
             //new ClimberTestRotRate(climber, 15, -30, 60));
