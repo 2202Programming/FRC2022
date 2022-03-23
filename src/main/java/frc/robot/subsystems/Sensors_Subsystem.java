@@ -10,6 +10,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.CANCoderStatusFrame;
+import com.ctre.phoenix.sensors.Pigeon2;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 //import com.kauailabs.navx.AHRSProtocol.AHRSUpdate;
 import com.kauailabs.navx.frc.AHRS;
@@ -32,7 +33,7 @@ import frc.robot.Constants.NTStrings;
 public class Sensors_Subsystem extends SubsystemBase implements Gyro {
 
   public enum YawSensor {
-    kNavX, kADXRS450, kBlended
+    kNavX, kPigeon, kBlended
   };
 
   /**
@@ -55,8 +56,6 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
   private NetworkTableEntry nt_accelZ;
   private NetworkTableEntry nt_yaw_navx;
   private NetworkTableEntry nt_yaw_navx_dot;
-  private NetworkTableEntry nt_yaw_xrs450;
-  private NetworkTableEntry nt_yaw_xrs450_dot;
   private NetworkTableEntry nt_yaw_blend;
 
   private NetworkTableEntry nt_canUtilization;
@@ -74,9 +73,10 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
   static final byte update_hz = 100;
   // Sensors
   AHRS m_ahrs;
+  Pigeon2 m_pigeon;
   Gyro m_gyro_ahrs;
-  ADXRS450_Gyro m_gyro450;
   Gyro m_gyro;
+
 
   public static class RotationPositions {
     public double back_left;
@@ -87,6 +87,10 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
 
   public enum EncoderID {
     BackLeft, BackRight, FrontLeft, FrontRight
+  }
+
+  public enum GyroStatus {
+    UsingNavx, UsingPigeon
   }
 
   // CANCoders - monitor dt angles
@@ -104,13 +108,16 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
   // measured values
   double m_yaw_navx;
   double m_yaw_navx_d;
-  double m_yaw_xrs450;
-  double m_yaw_xrs450_d;
   double m_yaw_blend;
+  double m_yaw_pigeon;
+  double m_roll;
+  double m_pitch;
+  double m_yaw;
   final RotationPositions m_rot = new RotationPositions();
 
   // configurion setting
   YawSensor c_yaw_type = YawSensor.kNavX;
+  GyroStatus c_gryo_status = GyroStatus.UsingNavx;
 
   double log_counter = 0;
 
@@ -120,9 +127,11 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
     m_canStatus = new CANStatus();
 
     // create devices and interface access, use interface where possible
-    m_gyro = m_gyro450 = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
+    m_gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
     m_gyro_ahrs = m_ahrs = new AHRS(SPI.Port.kMXP, update_hz);
     m_ahrs.enableLogging(true);
+
+    m_pigeon = new Pigeon2(CAN.PIGEON_IMU_CAN);
 
     //set all the CanCoders to 100ms refresh rate to save the can bus
     rot_encoder_bl.setStatusFramePeriod(CANCoderStatusFrame.SensorData, 100, 100);
@@ -139,8 +148,6 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
 
     nt_yaw_navx = table.getEntry("yaw_navx");
     nt_yaw_navx_dot = table.getEntry("yaw_navx_d");
-    nt_yaw_xrs450 = table.getEntry("yaw_xrs450");
-    nt_yaw_xrs450_dot = table.getEntry("yaw_xrs450_d");
     nt_yaw_blend = table.getEntry("yaw_blend");
 
     nt_canUtilization = table.getEntry("CanUtilization/value");
@@ -170,9 +177,6 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
 
   @Override
   public void calibrate() {
-    if (m_gyro450.isConnected()) {
-      m_gyro.calibrate();
-    }
 
     if (m_ahrs.isConnected()) {
       m_ahrs.enableBoardlevelYawReset(true);
@@ -202,15 +206,39 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
     }
     m_yaw_navx_d = m_ahrs.getRate();
 
-    m_yaw_xrs450 = m_gyro450.getAngle();
-    m_yaw_xrs450_d = m_gyro450.getRate();
+    m_yaw_pigeon = m_pigeon.getYaw();
 
     // simple average, but could become weighted estimator.
-    m_yaw_blend = 0.5 * (m_yaw_navx + m_yaw_xrs450);
+    m_yaw_blend = 0.5 * (m_yaw_navx + m_yaw_pigeon);
 
     getRotationPositions(m_rot);
 
     log(20);
+  }
+
+
+  void setActiveGryo(){
+    switch(c_gryo_status){
+      case UsingNavx:
+        if(!m_ahrs.isConnected()){
+          setSensorType(YawSensor.kPigeon);
+          c_gryo_status = GyroStatus.UsingPigeon;
+          System.out.println("***NAVX COM LOST, SWITCHING TO PIGEON***");
+        } else {
+          if((log_counter % 10)==0) {
+            m_pigeon.setYaw(m_yaw_navx); // keep pigeon calibrated to navx as long as navx is working, so when if it switches over there is no jump in yaw, but every 10 cycles not to hammer CAN
+          }
+        }
+      break;
+
+      case UsingPigeon:
+        if(m_ahrs.isConnected()){
+          setSensorType(YawSensor.kNavX);
+          c_gryo_status = GyroStatus.UsingNavx;
+          System.out.println("***NAVX COM RESTORED, SWITCHING TO NAVX***");
+        }
+      break;
+    }
   }
 
   void setupSimulation() {
@@ -234,9 +262,6 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
       nt_yaw_navx.setDouble(m_yaw_navx);
       nt_yaw_navx_dot.setDouble(m_yaw_navx_d);
 
-      nt_yaw_xrs450.setDouble(m_yaw_xrs450);
-      nt_yaw_xrs450_dot.setDouble(m_yaw_xrs450_d);
-
       nt_yaw_blend.setDouble(m_yaw_blend);
   // CHANGED 2022: For some reason the method name is getCANStatus instead of GetCANStatus
       CANJNI.getCANStatus(m_canStatus);
@@ -256,9 +281,6 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
   }
 
   public void reset() {
-    if (m_gyro450.isConnected()) {
-      m_gyro.reset();
-    }
 
     if (m_ahrs.isConnected()) {
       m_ahrs.reset();
@@ -270,15 +292,46 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
     switch (c_yaw_type) {
       case kNavX:
         return m_yaw_navx;
-
-      case kADXRS450:
-        return m_yaw_xrs450;
+      
+      case kPigeon:
+        return m_yaw_pigeon;
 
       case kBlended:
       default:
         return m_yaw_blend;
     }
   }
+
+  public double getRoll() {
+    double temp_roll = 0;
+
+    switch(c_yaw_type){
+      case kNavX:
+        temp_roll = m_ahrs.getRoll();
+      break;
+
+      case kPigeon:
+        temp_roll = m_pigeon.getRoll();
+      break;
+    }
+      return temp_roll;
+  }
+
+  public double getPitch() {
+    double temp_pitch = 0;
+
+    switch(c_yaw_type){
+      case kNavX:
+        temp_pitch = m_ahrs.getPitch();
+      break;
+
+      case kPigeon:
+        temp_pitch = m_pigeon.getPitch();
+      break;
+    }
+      return temp_pitch;
+  }
+  
 
   @Override
   public void close() throws Exception {
@@ -322,17 +375,7 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
    */
   @Override
   public double getRate() {
-    switch (c_yaw_type) {
-      case kNavX:
         return m_yaw_navx_d;
-
-      case kADXRS450:
-        return m_yaw_xrs450_d;
-
-      case kBlended:
-      default:
-        return 0.5 * (m_yaw_navx_d + m_yaw_xrs450_d);
-    }
   }
 
   public RotationPositions getRotationPositions(RotationPositions pos) {
