@@ -43,10 +43,10 @@ public class Climb extends SequentialCommandGroup {
     @Override
     public boolean isFinished() {
         var doKill = false;
-        if(RobotContainer.RC().driverControls.bind(Id.SwitchBoard, SBButton.Sw11).get()) {
-            System.out.println("** CLIMBER KILLED reason=sb-button");
-            doKill = true;
-        }
+        // if(RobotContainer.RC().driverControls.bind(Id.SwitchBoard, SBButton.Sw11).get()) {
+        //     System.out.println("** CLIMBER KILLED reason=sb-button");
+        //     doKill = true;
+        // }
 
         if(RobotContainer.RC().driverControls.bind(Id.Driver, XboxButton.START).get()) {
             System.out.println("** CLIMBER KILLED reason=driver-button");

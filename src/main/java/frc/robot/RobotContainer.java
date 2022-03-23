@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.Autonomous;
 import frc.robot.Constants.DriverPrefs;
 import frc.robot.Constants.Shooter;
@@ -119,7 +120,10 @@ public class RobotContainer {
       driverControls.bind(Id.SwitchBoard, SBButton.Sw21).whileHeld(new PitAlignClimber(driverControls, Id.Driver, climber, 2.0, 5.0)); //[in/s] [deg/s]
       driverControls.bind(Id.SwitchBoard, SBButton.Sw22).whenPressed(new MidClimb(climber));
       driverControls.bind(Id.SwitchBoard, SBButton.Sw23).whenPressed(new TraverseClimb(climber));
-      driverControls.bind(Id.SwitchBoard, SBButton.Sw24).whileHeld(new MoveArmsTo(climber, "To zero", 0, 0, true, true));
+      driverControls.bind(Id.SwitchBoard, SBButton.Sw24).whileHeld(new SequentialCommandGroup(
+        new MoveArmsTo(climber, "To Angle 0", (climber.getLeftExtInches() + climber.getRightExtInches())/2, 0, true, true),
+        new MoveArmsTo(climber, "To zero", 0, 0, true, true)
+      ));
       //driverControls.bind(Id.SwitchBoard, SBButton.Sw25).whileHeld(new ClimberTestRotRate(climber, 20, -30, 65)); //use pit-zero to start
       driverControls.bind(Id.SwitchBoard, SBButton.Sw25).whileHeld(new ClimberTestVelocity(climber, 4, 0.0, 12)); //use pit-zero to start
             //new ClimberTestRotRate(climber, 15, -30, 60));

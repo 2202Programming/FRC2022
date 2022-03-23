@@ -147,10 +147,10 @@ public final class Constants {
     public static PIDFController extendPID_pos = new PIDFController(0.05, 0.0, 0.0, 0.0); // [in] - slot 1
 
     // Position/vel tolerance for outer position loops
-    public static final double TOLERANCE_EXT = 0.25; // [in]
-    public static final double TOLERANCE_EXT_VEL = 0.02; // [in/s]
-    public static final double TOLERANCE_ROT = 1.0; // [deg]
-    public static final double TOLERANCE_ROT_RATE = 0.25; // [deg/s]
+    public static final double TOLERANCE_EXT = 1.0; // [in]
+    public static final double TOLERANCE_EXT_VEL = 0.1; // [in/s]
+    public static final double TOLERANCE_ROT = 2.0; // [deg]
+    public static final double TOLERANCE_ROT_RATE = 1.0; // [deg/s]
     
     //limit integrator windup (default =1.0)
     public static final double ROT_INTEGRATOR_MIN = 0.0; // [deg/s]

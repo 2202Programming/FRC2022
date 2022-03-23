@@ -34,9 +34,9 @@ public class MidClimb extends SequentialCommandGroup {
     public MidClimb(Climber climber) {
         super();
 
-        double TO = 30.0; // default timeout for testing
+        double TO = 2.0; // default timeout for testing
 
-        this.addCommands(new MoveArmsTo(climber, "extendForMid", midext, midreachrot / 2, true, true),
+        this.addCommands(new MoveArmsTo(climber, "extendForMid", midext, midreachrot / 2, true, true).withTimeout(TO),
                 new MoveArmsTo(climber, "rotateForMidBar", midext, midreachrot, true, true).withTimeout(2), // timeout
                                                                                                             // needed
                 // new MoveArmsTo(climber, "partial-pullup1", partialpullupext, midreachrot,
@@ -54,10 +54,10 @@ public class MidClimb extends SequentialCommandGroup {
     @Override
     public boolean isFinished() {
         var doKill = false;
-        if (RobotContainer.RC().driverControls.bind(Id.SwitchBoard, SBButton.Sw11).get()) {
-            System.out.println("** CLIMBER KILLED reason=sb-button");
-            doKill = true;
-        }
+        // if (RobotContainer.RC().driverControls.bind(Id.SwitchBoard, SBButton.Sw11).get()) {
+        //     System.out.println("** CLIMBER KILLED reason=sb-button");
+        //     doKill = true;
+        // }
 
         if (RobotContainer.RC().driverControls.bind(Id.Driver, XboxButton.START).get()) {
             System.out.println("** CLIMBER KILLED reason=driver-button");
