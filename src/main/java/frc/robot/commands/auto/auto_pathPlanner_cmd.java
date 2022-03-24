@@ -6,9 +6,11 @@ package frc.robot.commands.auto;
 
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -62,6 +64,10 @@ public class auto_pathPlanner_cmd extends CommandBase {
       return new InstantCommand();  // no path selected
     }
       
+    // get initial state from the trajectory
+    PathPlannerState initialState = path.getInitialState();
+    Pose2d startingPose = new Pose2d(initialState.poseMeters.getTranslation(), initialState.holonomicRotation);
+
       PIDController xController = new PIDController(4.0, 0.0, 0.0);
       PIDController yController = new PIDController(4.0, 0.0, 0.0);
       ProfiledPIDController thetaController = new ProfiledPIDController(4, 0, 0, new TrapezoidProfile.Constraints(3, 3));
@@ -80,18 +86,17 @@ public class auto_pathPlanner_cmd extends CommandBase {
           m_robotDrive::drive,
           m_robotDrive
       );
-
-        // Reset odometry to the starting pose of the trajectory.
-        m_robotDrive.setPose(path.getInitialPose());
         
     // Run path following command, then stop at the end.
     return new SequentialCommandGroup(
+      new InstantCommand(()-> {
+        m_robotDrive.setPose(startingPose);
+      }),
       new autoPrint("***Running Path " + pathname),
       swerveControllerCommand,
       new InstantCommand(m_robotDrive::stop),
       new autoPrint("***Done Running Path " + pathname)
       );
-
   }
 
   // Returns true when the command should end.
@@ -107,6 +112,10 @@ public class auto_pathPlanner_cmd extends CommandBase {
       return new InstantCommand();  // no path selected
     }
       
+    // get initial state from the trajectory
+    PathPlannerState initialState = path.getInitialState();
+    Pose2d startingPose = new Pose2d(initialState.poseMeters.getTranslation(), initialState.holonomicRotation);
+
       PIDController xController = new PIDController(4.0, 0.0, 0.0);
       PIDController yController = new PIDController(4.0, 0.0, 0.0);
       ProfiledPIDController thetaController = new ProfiledPIDController(4, 0, 0, new TrapezoidProfile.Constraints(3, 3));
@@ -126,11 +135,12 @@ public class auto_pathPlanner_cmd extends CommandBase {
           m_robotDrive
       );
 
-        // Reset odometry to the starting pose of the trajectory.
-        m_robotDrive.setPose(path.getInitialPose());
 
     // Run path following command, then stop at the end.
     return new SequentialCommandGroup(
+      new InstantCommand(()-> {
+        m_robotDrive.setPose(startingPose);
+      }),
       new autoPrint("***Running Path " + pathname),
       swerveControllerCommand,
       new InstantCommand(m_robotDrive::stop),
@@ -145,6 +155,10 @@ public class auto_pathPlanner_cmd extends CommandBase {
       return new InstantCommand();  // no path selected
     }
       
+    // get initial state from the trajectory
+    PathPlannerState initialState = path.getInitialState();
+    Pose2d startingPose = new Pose2d(initialState.poseMeters.getTranslation(), initialState.holonomicRotation);
+
       PIDController xController = new PIDController(4.0, 0.0, 0.0);
       PIDController yController = new PIDController(4.0, 0.0, 0.0);
       ProfiledPIDController thetaController = new ProfiledPIDController(4, 0, 0, new TrapezoidProfile.Constraints(3, 3));
@@ -170,7 +184,7 @@ public class auto_pathPlanner_cmd extends CommandBase {
     // Run path following command, then stop at the end.
     return new SequentialCommandGroup(
       new InstantCommand(()-> {
-        m_robotDrive.setPose(path.getInitialPose());
+        m_robotDrive.setPose(startingPose);
       }),
       new autoPrint("***Running Path " + pathname),
       swerveControllerCommand,
