@@ -36,13 +36,13 @@ public class auto_cmd_terminal extends SequentialCommandGroup {
     Command finalAuto;
 
     if(m_controls.readSideboard(SBButton.Sw11)){
-      finalAuto = auto_pathPlanner_cmd.PathFactory2(m_drivetrain, "Auto21");
+      finalAuto = auto_pathPlanner_cmd.PathFactory2(2.5,2, "Auto21");
     }
     else if(m_controls.readSideboard(SBButton.Sw12)){
-      finalAuto = auto_pathPlanner_cmd.PathFactory2(m_drivetrain, "Auto22");
+      finalAuto = auto_pathPlanner_cmd.PathFactory2(2.5,2, "Auto22");
     }
     else{
-      finalAuto = auto_pathPlanner_cmd.PathFactory2(m_drivetrain, "Auto23");
+      finalAuto = auto_pathPlanner_cmd.PathFactory2(2.5,2, "Auto23");
     }
     
 
