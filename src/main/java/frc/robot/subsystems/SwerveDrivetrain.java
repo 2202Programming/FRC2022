@@ -301,6 +301,18 @@ public class SwerveDrivetrain extends SubsystemBase {
     }
   }
 
+  public void setBrakeMode(){
+    for (int i = 0; i < modules.length; i++) {
+      modules[i].setBrakeMode();
+    }
+  }
+
+  public void setCoastMode(){
+    for (int i = 0; i < modules.length; i++) {
+      modules[i].setCoastMode();
+    }
+  }
+
   //  TODO: Move to a TEST/Tuning command  - DPL 2/21/22
   // private void pidTuning() { //if drivetrain tuning
 

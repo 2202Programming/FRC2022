@@ -31,6 +31,7 @@ public class Robot extends TimedRobot {
     robotContainer = new RobotContainer();
     // todo() don't use statics
     robotContainer.limelight.disableLED();
+    robotContainer.drivetrain.setCoastMode(); //make robot easier to push around to set up correctly
   }
 
   /**
@@ -51,7 +52,9 @@ public class Robot extends TimedRobot {
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    robotContainer.drivetrain.setCoastMode(); //make robot easier to push around to set up correctly
+  }
 
   @Override
   public void disabledPeriodic() {}
@@ -59,6 +62,7 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    robotContainer.drivetrain.setBrakeMode(); //brake mode for gameplay
     Command m_autonomousCommand = robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command
@@ -73,6 +77,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    robotContainer.drivetrain.setBrakeMode(); //brake mode for gameplay
     CommandScheduler.getInstance().cancelAll();
     if(RobotContainer.m_driveController != null){
       CommandScheduler.getInstance().schedule(RobotContainer.m_driveController);
