@@ -257,11 +257,10 @@ public class SwerveDrivetrain extends SubsystemBase {
     m_odometry.resetPosition(m_pose, sensors.getRotation2d());
   }
 
-  //reset angle to be zero, but retain X and Y
-  public void resetAnglePose(){
-    m_pose = new Pose2d(getPose().getX(), getPose().getY(), new Rotation2d(0));
-    m_odometry.resetPosition(m_pose, sensors.getRotation2d());
-
+  //reset angle to be zero, but retain X and Y; takes a Rotation2d object
+  public void resetAnglePose(Rotation2d rot){
+    m_pose = new Pose2d(getPose().getX(), getPose().getY(), rot);
+    m_odometry.resetPosition(m_pose, sensors.getRotation2d());  //updates gryo offset
   }
 
   public Pose2d getPose() {
