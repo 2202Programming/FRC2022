@@ -266,7 +266,8 @@ public final class Constants {
       public static final double PCEffectiveRadius = 8 / 2.0 / 12.0; // feet - compressed radius
       
       public static final double shortVelocity = 40;
-      public static final double mediumVelocity = 48;
+      public static final double mediumVelocity = 50;
+      public static final double mediumLongVelocity = 55;
       public static final double longVelocity = 60;
       public static final double autoVelocity = 46;
 
