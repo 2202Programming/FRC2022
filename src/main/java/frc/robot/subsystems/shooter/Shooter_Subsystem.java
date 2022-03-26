@@ -64,6 +64,11 @@ public class Shooter_Subsystem extends SubsystemBase  {
   // Flywheels 
   final FlyWheel  upper_shooter; 
   final FlyWheel  lower_shooter; 
+
+  // adjustment factors
+  private double shortAdj = 1.0;
+  private double mediumAdj = 1.0;
+  private double longAdj = 1.0;
   
   /**
    * ShooterSettings - simple struture to group the shooters settings.
@@ -328,6 +333,29 @@ public class Shooter_Subsystem extends SubsystemBase  {
     return upper_shooter.getF();
   }
 
+  public void changeShortAdj(double factor) {
+    shortAdj += factor;
+  }
+
+  public void changeMediumAdj(double factor) {
+    mediumAdj += factor;
+  }
+
+  public void changeLongAdj(double factor) {
+    longAdj += factor;
+  }
+
+  public double getShortAdj() {
+    return shortAdj;
+  }
+
+  public double getMediumAdj() {
+    return mediumAdj;
+  }
+
+  public double getLongAdj() {
+    return longAdj;
+  }
 
 }
 

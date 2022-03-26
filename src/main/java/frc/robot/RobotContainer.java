@@ -19,6 +19,7 @@ import frc.robot.commands.MagazineCommand.MagazineMode;
 import frc.robot.commands.MovePositioner.PositionerMode;
 import frc.robot.commands.MovePositioner;
 import frc.robot.commands.ResetPosition;
+import frc.robot.commands.Shoot.ChangeAdjFactors;
 import frc.robot.commands.Shoot.VelShootCommand;
 import frc.robot.commands.auto.auto_cmd;
 import frc.robot.commands.climber.MidClimb;
@@ -157,6 +158,11 @@ public class RobotContainer {
     driverControls.bind(Id.Driver, XboxButton.X).whenPressed(new InstantCommand(limelight::toggleLED));
 
 
+    // driver change velocity percentage
+    driverControls.bind(Id.Driver, XboxButton.LB).whenPressed(new ChangeAdjFactors(-0.01, driverControls));
+    driverControls.bind(Id.Driver, XboxButton.RB).whenPressed(new ChangeAdjFactors(0.01, driverControls));
+
+
   }
 
   // /**
@@ -189,9 +195,9 @@ public class RobotContainer {
 
     if (Constants.HAS_SHOOTER) {
       driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_RIGHT).whileHeld(new VelShootCommand(Shooter.DefaultSettings, 20)); 
-      driverControls.bind(Id.Assistant, XboxPOV.POV_LEFT).whileHeld(new VelShootCommand(Shooter.shortVelocity, false));
-      driverControls.bind(Id.Assistant, XboxPOV.POV_DOWN).whileHeld(new VelShootCommand(Shooter.mediumVelocity, false));
-      driverControls.bind(Id.Assistant, XboxPOV.POV_RIGHT).whileHeld(new VelShootCommand(Shooter.longVelocity, false));
+      driverControls.bind(Id.Assistant, XboxPOV.POV_LEFT).whileHeld(new VelShootCommand(Shooter.shortVelocity * shooter.getShortAdj(), false));
+      driverControls.bind(Id.Assistant, XboxPOV.POV_DOWN).whileHeld(new VelShootCommand(Shooter.mediumVelocity * shooter.getMediumAdj(), false));
+      driverControls.bind(Id.Assistant, XboxPOV.POV_RIGHT).whileHeld(new VelShootCommand(Shooter.longVelocity * shooter.getLongAdj(), false));
     }
   }
 
