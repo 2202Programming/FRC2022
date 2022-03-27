@@ -190,8 +190,8 @@ public class RobotContainer {
     if (Constants.HAS_SHOOTER) {
       driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_RIGHT).whileHeld(new VelShootCommand(Shooter.DefaultSettings, 20)); 
       driverControls.bind(Id.Assistant, XboxPOV.POV_LEFT).whileHeld(new VelShootCommand(Shooter.shortVelocity, false));
+      driverControls.bind(Id.Assistant, XboxPOV.POV_UP).whileHeld(new VelShootCommand(Shooter.shortMediumVelocity, false));
       driverControls.bind(Id.Assistant, XboxPOV.POV_DOWN).whileHeld(new VelShootCommand(Shooter.mediumVelocity, false));
-      driverControls.bind(Id.Assistant, XboxPOV.POV_UP).whileHeld(new VelShootCommand(Shooter.mediumLongVelocity, false));
       driverControls.bind(Id.Assistant, XboxPOV.POV_RIGHT).whileHeld(new VelShootCommand(Shooter.longVelocity, false));
     }
   }
