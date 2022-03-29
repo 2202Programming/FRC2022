@@ -80,7 +80,7 @@ public class Limelight_Subsystem extends SubsystemBase {
     double angleToGoalDegrees = Shooter.LL_MOUNT_ANGLE_DEG + targetOffsetAngle_Vertical; 
     double angleToGoalRadians = angleToGoalDegrees * (Math.PI / 180.0);
     //calculate distance
-    return ((Shooter.GOAL_HEIGHT_TO_FLOOR_INCHES - Shooter.LL_LENS_HEIGHT_INCHES)/Math.tan(angleToGoalRadians) + Shooter.EDGE_TO_CENTER_INCHES);
+    return (((Shooter.GOAL_HEIGHT_TO_FLOOR_INCHES - Shooter.LL_LENS_HEIGHT_INCHES)/Math.tan(angleToGoalRadians) + Shooter.EDGE_TO_CENTER_INCHES) / Shooter.METERS_TO_INCHES);
   }
 
   public double getX() {

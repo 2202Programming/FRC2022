@@ -277,6 +277,8 @@ public final class Constants {
       public static final double GOAL_HEIGHT_TO_FLOOR_INCHES = 104.0;
         // adjustment from edge to centre of target
       public static final double EDGE_TO_CENTER_INCHES = 24.0;
+        // adjustment factor
+      public static final double METERS_TO_INCHES = 39.37;
 
       // constraints
       public static final double kMaxFPS = 80;      //max FPS
