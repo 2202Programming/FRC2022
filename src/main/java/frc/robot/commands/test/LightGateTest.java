@@ -31,10 +31,6 @@ public class LightGateTest extends CommandBase {
     nte_gate2 = table.getEntry("/gate2");
     nte_gate1.setBoolean(false);
     nte_gate2.setBoolean(false);
-    
-    //warning this will stop normal Mag working
-    addRequirements(mag);
-
   }
 
   // Called when the command is initially scheduled.

@@ -5,7 +5,9 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.Autonomous;
 import frc.robot.Constants.DriverPrefs;
@@ -94,7 +96,7 @@ public class RobotContainer {
       magazine = new Magazine_Subsystem();
     if (Constants.HAS_INTAKE) {
       intake = new Intake_Subsystem();
-      ///intake.setDefaultCommand(new LightGateTest());
+    
     }
     if (Constants.HAS_CLIMBER)
       climber = new Climber();
@@ -106,6 +108,11 @@ public class RobotContainer {
       // swd = new LimelightDriveCmd(drivetrain, driverControls, limelight);
       m_driveController = new DriveController();
       // drivetrain.setDefaultCommand(m_driveController);
+    }
+
+    //TEST CODE 
+    if (magazine!=null) {
+      CommandScheduler.getInstance().schedule (new LightGateTest());
     }
 
     // //setup the dashboard programatically, creates any choosers, screens
