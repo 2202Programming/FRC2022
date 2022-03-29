@@ -269,12 +269,13 @@ public final class Constants {
       public static final double autoVelocity = 46;
 
       // limelight distance constants
-      public static final double LL_MOUNT_ANGLE_DEG = 62.0;
-      // distance from the center of the Limelight lens to the floor
+        // how many degrees back is your limelight rotated from perfectly vertical?
+      public static final double LL_MOUNT_ANGLE_DEG = 28.0;
+        // distance from the center of the Limelight lens to the floor
       public static final double LL_LENS_HEIGHT_INCHES = 27.0;
-      // distance from the target to the floor
+        // distance from the target to the floor
       public static final double GOAL_HEIGHT_TO_FLOOR_INCHES = 104.0;
-      // adjustment from edge to centre of target
+        // adjustment from edge to centre of target
       public static final double EDGE_TO_CENTER_INCHES = 24.0;
 
       // constraints
