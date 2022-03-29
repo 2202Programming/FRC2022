@@ -4,10 +4,9 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.Autonomous;
 import frc.robot.Constants.Shooter;
+import frc.robot.commands.MagazineController;
 import frc.robot.subsystems.Intake_Subsystem;
-import frc.robot.subsystems.Magazine_Subsystem;
 import frc.robot.subsystems.Positioner_Subsystem;
-import frc.robot.subsystems.hid.SideboardController.SBButton;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -15,47 +14,33 @@ import frc.robot.subsystems.shooter.Shooter_Subsystem;
 import frc.robot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
 import frc.robot.util.PoseMath;
 
-/**
- * Use the gated version - it ties into the light gates on the magazine
- */
-@Deprecated 
-public class VelShootCommand extends CommandBase implements SolutionProvider{ 
 
+public class VelShootGatedCommand extends CommandBase implements SolutionProvider{ 
+   
     public static final double USE_CURRENT_ANGLE = 0.0;
 
-    final Magazine_Subsystem magazine;
+    final MagazineController mag_ctrl;
     final Intake_Subsystem intake;
     final Shooter_Subsystem shooter;
     final Positioner_Subsystem positioner;
     final SolutionProvider solutionProvider;  
-    final double TESTANGLE = 0.0;
-    final double TESTTOL = 0.02;
-    final int BackupPeriod;
-
-    int ballCount = 999;
-    int backupCounter = 0;
-    double currentDistance = 0;
-
-    NetworkTable table;
-    NetworkTable drivetrainTable;
-    NetworkTableEntry ntUpperRPM;   //FW speeds (output)
-    NetworkTableEntry ntLowerRPM;
-    NetworkTableEntry ntBallVel;    // ball physics (input) 
-    NetworkTableEntry shooterState;
-    NetworkTableEntry distance;
-    NetworkTableEntry NToutOfRange;
+  
+  
+    
+    final NetworkTableEntry nte_BallVel;    // ball physics (input) 
+    final NetworkTableEntry nte_shooterState;
+    final NetworkTableEntry nte_distance;
+    final NetworkTableEntry nte_outOfRange;
     public final String NT_Name = "Shooter"; 
 
+    ShooterSettings  m_shooterSettings;  // passed in setting, likely fixed
+    ShooterSettings  cmdSS;              // calculated by this command
 
-    ShooterSettings m_shooterSettings;
-    
-    ShooterSettings  cmdSS;         // instance the shooter sees
-    ShooterSettings  prevSS;        // instance for prev State
-
+    //solution provider calculated values
     double calculatedVel = 20;
+    double currentDistance = 0;
 
     private boolean finished = false;
-    //private boolean solution = true;
     private boolean shooterAngleLongRange;
     private boolean outOfRange = false;
     private boolean autoVelocity = true;
@@ -65,9 +50,8 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
     final static ShooterSettings defaultShooterSettings = new ShooterSettings(20.0, 0.0, USE_CURRENT_ANGLE, 0.01);
 
     public enum Stage{
-        DoNothing("Do Nothing"),
         WaitingForFlyWheel("Waiting for flywheel"),
-        BackingMagazine("Backing  Mag"),
+        WaitingOnMag("MagCtrl Not ready"),
         PreparingToShoot("Preparing to Shoot"),
         WaitingForSolution("Waiting for Solution"),
         Shooting("Shooting");
@@ -85,65 +69,47 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
     
     Stage stage;
     
-    public VelShootCommand(ShooterSettings shooterSettings, int backupFrameCount, SolutionProvider solutionProvider){
+    /**
+     * 
+     * @param shooterSettings       container for shooter speeds/angle
+     * @param mag_ctrl              interface for controlling magazine
+     * @param solutionProvider      interface for target tracking 
+     */
+
+    public VelShootGatedCommand(ShooterSettings shooterSettings, MagazineController mag_ctrl, SolutionProvider solutionProvider){
+        this.mag_ctrl = mag_ctrl;
         this.intake = RobotContainer.RC().intake;
         this.shooter = RobotContainer.RC().shooter;
-        this.magazine = RobotContainer.RC().magazine;
+    
         this.positioner = RobotContainer.RC().positioner;
         // the default solution provider is always true
-        this.solutionProvider = (solutionProvider ==null) ? this : solutionProvider;
+        this.solutionProvider = (solutionProvider == null) ? this : solutionProvider;
         m_shooterSettings = shooterSettings;
-        BackupPeriod = backupFrameCount;  //number of frames to move mag back slowly 5-20
-        addRequirements(magazine,shooter,positioner);
+        
+        addRequirements(shooter, positioner);
 
-        table = NetworkTableInstance.getDefault().getTable(NT_Name);
-
-        ntBallVel = table.getEntry("/VelShootCmd/BallVel");
-        shooterState = table.getEntry("/VelShootCmd/ShooterState");
-        distance = table.getEntry("/VelShootCmd/Distance");
-        NToutOfRange = table.getEntry("/VelShootCmd/OutOfRange");
+        NetworkTable table = NetworkTableInstance.getDefault().getTable(NT_Name);
+        nte_BallVel = table.getEntry("/VelShootCmd/BallVel");
+        nte_shooterState = table.getEntry("/VelShootCmd/ShooterState");
+        nte_distance = table.getEntry("/VelShootCmd/Distance");
+        nte_outOfRange = table.getEntry("/VelShootCmd/OutOfRange");
     }
 
-    public VelShootCommand(ShooterSettings shooterSettings, int backupFrameCount)
+    public VelShootGatedCommand(ShooterSettings shooterSettings, MagazineController mag_ctrl)
     {
-        this(shooterSettings, backupFrameCount, null);
+        this(shooterSettings, mag_ctrl, null);
     }
-
-    public VelShootCommand(double requestedVelocity){  //velocity only overload
-        this(new ShooterSettings(requestedVelocity, 0.0, 0.0, 0.1), 20, null);
-    }
-
-    //overload constructor to allow for shooting with autovelocity RPM adjustment off (defaults to true in other constructors)
-    public VelShootCommand(boolean autoVelocity){
-        this(defaultShooterSettings, 20, null);
-        this.autoVelocity = autoVelocity;        
-    }
-
-    //overload constructor to allow for shooting with autovelocity RPM adjustment off
-    public VelShootCommand(double requestedVelocity, boolean autoVelocity){
-        this(new ShooterSettings(requestedVelocity, 0.0, 0.0, 0.1), 20, null);
-        this.autoVelocity = autoVelocity;        
-    }
-
-    public VelShootCommand()
-    {
-        this(defaultShooterSettings, 20, null);
-    }
-
 
     @Override
     public void initialize(){
-        cmdSS = m_shooterSettings; 
-        prevSS = new ShooterSettings(cmdSS);
-        stage = Stage.DoNothing;
+        cmdSS = new ShooterSettings(m_shooterSettings); 
+        stage = Stage.WaitingOnMag;
         shooter.off();
-        magazine.driveWheelOff();
         shooterAngleLongRange = !positioner.isDeployed(); //Low shooting mode = long range = retracted
     }
 
     @Override
     public void execute(){
-        NTupdates();
         calculateDistance();
         calculateVelocity();
         
@@ -152,28 +118,17 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         if (autoVelocity) {
             setPositioner();
             if(calculatedVel != cmdSS.vel){
-                cmdSS = new ShooterSettings(calculatedVel, 0);
+                cmdSS.vel = calculatedVel;   //shouldn't have to create new object, just change vel
                 shooter.spinup(cmdSS);
             }
         } 
 
         switch(stage){
-            case DoNothing:
-                backupCounter = 0;
-                stage = Stage.BackingMagazine;
-                magazine.expellCargo(0.1);
-            break;
-
-            case BackingMagazine:                
-                backupCounter++;
-                if (backupCounter > BackupPeriod) {
-                    // issues commands for next stage 
+            case WaitingOnMag:                
+                if (mag_ctrl.safeToSpinUp()) {
                     stage = Stage.WaitingForFlyWheel;
-                    backupCounter = 0;
-                    magazine.driveWheelOff();           // balls are off the flywheels
                     intake.off();
                     shooter.spinup(cmdSS);              // spin shooter up
-                    //here we could trigger a drive-sys/Limelight command that responds to WaitingForSoln
                 }                
             break;
 
@@ -186,14 +141,14 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
             case WaitingForSolution:
                 if (solutionProvider.isOnTarget()) {
                     stage = Stage.Shooting;
-                    magazine.driveWheelOn(1.0);
+                    mag_ctrl.feederOn();
                     intake.on(0.0, 0.2);
                 }
                 break;
 
             case Shooting:
                 if (!shooter.isReadyToShoot()){
-                    magazine.driveWheelOff();
+                    mag_ctrl.feederOff();
                     intake.off();
                     shooter.spinup(cmdSS); //in case a new velocity has been set due to a new distance
                     stage = Stage.WaitingForFlyWheel;
@@ -202,12 +157,13 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
             default:
                 break;
         }
+
+        NTupdates();
     }
 
     @Override
     public void end(boolean interrupted){
-        stage = Stage.DoNothing;
-        magazine.driveWheelOff();
+        mag_ctrl.feederOff();
         intake.off();
         shooter.off();
     }
@@ -216,12 +172,14 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         finished = true;
     }
     
+    /*
     private double getManualVelocity(){
         double velocity = Shooter.mediumVelocity;
         if(RobotContainer.RC().driverControls.readSideboard(SBButton.Sw21)) velocity = Shooter.shortVelocity;
         else if(RobotContainer.RC().driverControls.readSideboard(SBButton.Sw23)) velocity = Shooter.longVelocity;
         return velocity;
     }
+    */
 
     @Override
     public boolean isFinished(){
@@ -268,10 +226,10 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
     private void NTupdates(){
         log_counter++;
         if ((log_counter%20)==0) {
-            ntBallVel.setDouble(calculatedVel);
-            shooterState.setString(stage.toString());
-            distance.setDouble(currentDistance);
-            NToutOfRange.setBoolean(outOfRange);
+            nte_BallVel.setDouble(calculatedVel);
+            nte_shooterState.setString(stage.toString());
+            nte_distance.setDouble(currentDistance);
+            nte_outOfRange.setBoolean(outOfRange);
         }
     }
 

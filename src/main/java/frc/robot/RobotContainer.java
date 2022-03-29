@@ -5,9 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.Autonomous;
 import frc.robot.Constants.DriverPrefs;
@@ -16,8 +14,7 @@ import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.IntakeCommand.IntakeMode;
 import static frc.robot.commands.MoveIntake.DeployMode;
 import frc.robot.commands.MoveIntake;
-import frc.robot.commands.MagazineCommand;
-import frc.robot.commands.MagazineCommand.MagazineMode;
+import frc.robot.commands.MagazineGatedCommand;
 import frc.robot.commands.MovePositioner.PositionerMode;
 import frc.robot.commands.MovePositioner;
 import frc.robot.commands.ResetPosition;
@@ -29,7 +26,6 @@ import frc.robot.commands.climber.PitAlignClimber;
 import frc.robot.commands.climber.TraverseClimb;
 import frc.robot.commands.swerve.DriveController;
 import frc.robot.commands.swerve.LimelightDriveCmd;
-import frc.robot.commands.test.ClimberTestRotRate;
 import frc.robot.commands.test.ClimberTestVelocity;
 import frc.robot.commands.test.LightGateTest;
 import frc.robot.subsystems.Intake_Subsystem;
@@ -188,9 +184,11 @@ public class RobotContainer {
       // Positioner binds :)
       driverControls.bind(Id.Assistant, XboxButton.RB).whenPressed(new MovePositioner(PositionerMode.Toggle));
 
-      // MagazineCommand to intake or expell ball
-      driverControls.bind(Id.Assistant, XboxButton.X).whileHeld(new MagazineCommand((() -> 1.0), MagazineMode.LoadCargo));
-      driverControls.bind(Id.Assistant, XboxButton.Y).whileHeld(new MagazineCommand((() -> 1.0), MagazineMode.ExpellCargo));
+      // MagazineCommand 
+      MagazineGatedCommand mag_default_cmd = new MagazineGatedCommand( ()-> 1.0);
+      magazine.setDefaultCommand(mag_default_cmd);
+      driverControls.bind(Id.Assistant, XboxButton.X).whileHeld(mag_default_cmd.getFeedCmd());
+      driverControls.bind(Id.Assistant, XboxButton.Y).whileHeld(mag_default_cmd.getEjectCmd());
     }
 
     if (Constants.HAS_SHOOTER) {
