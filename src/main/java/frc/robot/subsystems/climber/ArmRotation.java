@@ -15,9 +15,8 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import frc.robot.Constants.ClimbSettings;
 
 public class ArmRotation {
-    // encoder is 1:1 with motor and drives small-gear (12 tooth)
-    // small-gear drives 26 tooth large gear
-    final double kGR = 26.0 / 12.0;   // motor rotations to arm rot[deg]
+    // encoder is 1:1 with motor and drives a gearbox --> gear ratio = 147:1
+    final double kGR = 147;   // motor rotations to arm rot[deg]
     final double kCounts2Degrees = 360 / kGR;   // 360[deg]  / gr* encoder counts/rot
 
     final double kAff;
@@ -32,7 +31,7 @@ public class ArmRotation {
     private SparkMaxLimitSwitch ForwardLimitSwitch;
     private SparkMaxLimitSwitch BackwardLimitSwitch;
 
-    private RelativeEncoder encoder;
+    private RelativeEncoder encoder = null;
 
     // nts
     private NetworkTable network_table;
@@ -72,7 +71,7 @@ public class ArmRotation {
         nte_forward_limit.setBoolean(false);
 
         // Encoder setup - use native units everywhere.
-        encoder = motor_rot.getEncoder(com.revrobotics.SparkMaxRelativeEncoder.Type.kQuadrature, 8192);
+        encoder = motor_rot.getEncoder();
         encoder.setInverted(inverted);
         encoder.setPositionConversionFactor(kCounts2Degrees);
         encoder.setVelocityConversionFactor(kCounts2Degrees/60.0);

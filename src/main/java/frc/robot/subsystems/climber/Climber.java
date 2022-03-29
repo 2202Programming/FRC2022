@@ -34,8 +34,8 @@ public class Climber extends SubsystemBase {
     PIDController extPosL = new PIDController(8.0, 0.0, 0.0); // in inch-err out vel in/s
     PIDController extPosR = new PIDController(8.0, 0.0, 0.0); // in inch-err out vel in/s
 
-    private CANSparkMax left_motor_rot = new CANSparkMax(CAN.CMB_LEFT_Rotate, MotorType.kBrushed);
-    private CANSparkMax right_motor_rot = new CANSparkMax(CAN.CMB_RIGHT_Rotate, MotorType.kBrushed);
+    private CANSparkMax left_motor_rot = new CANSparkMax(CAN.CMB_LEFT_Rotate, MotorType.kBrushless);
+    private CANSparkMax right_motor_rot = new CANSparkMax(CAN.CMB_RIGHT_Rotate, MotorType.kBrushless);
     private CANSparkMax left_motor_ext = new CANSparkMax(CAN.CMB_LEFT_Extend, MotorType.kBrushless);
     private CANSparkMax right_motor_ext = new CANSparkMax(CAN.CMB_RIGHT_Extend, MotorType.kBrushless);
 
@@ -49,6 +49,7 @@ public class Climber extends SubsystemBase {
         nte_sync_arms = table.getEntry("syncArms");
         nte_sync_arms.setBoolean(syncArmsEnabled);
 
+        // 550 NEO
         left_Arm_rot = new ArmRotation(table.getSubTable("left_arm_rotation"), left_motor_rot, true, 0.20);
         right_Arm_rot = new ArmRotation(table.getSubTable("right_arm_rotation"), right_motor_rot, false, 0.20);
         right_Arm_ext = new ArmExtension(table.getSubTable("right_arm_extension"), right_motor_ext, false);
