@@ -6,8 +6,6 @@ import frc.robot.Constants.Autonomous;
 import frc.robot.Constants.Shooter;
 import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.subsystems.Magazine_Subsystem;
-import frc.robot.subsystems.Positioner_Subsystem;
-import frc.robot.subsystems.hid.SideboardController.SBButton;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -24,14 +22,15 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
     final Magazine_Subsystem magazine;
     final Intake_Subsystem intake;
     final Shooter_Subsystem shooter;
-    final Positioner_Subsystem positioner;
     final SolutionProvider solutionProvider;  
     final double TESTANGLE = 0.0;
     final double TESTTOL = 0.02;
     final int BackupPeriod;
+    final int maxSolutionWait = 1000;
 
     int ballCount = 999;
     int backupCounter = 0;
+    int solutionTimer = 0;
     double currentDistance = 0;
 
     NetworkTable table;
@@ -54,7 +53,6 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
 
     private boolean finished = false;
     //private boolean solution = true;
-    private boolean shooterAngleLongRange;
     private boolean outOfRange = false;
     private boolean autoVelocity = true;
 
@@ -87,12 +85,11 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         this.intake = RobotContainer.RC().intake;
         this.shooter = RobotContainer.RC().shooter;
         this.magazine = RobotContainer.RC().magazine;
-        this.positioner = RobotContainer.RC().positioner;
         // the default solution provider is always true
         this.solutionProvider = (solutionProvider ==null) ? this : solutionProvider;
         m_shooterSettings = shooterSettings;
         BackupPeriod = backupFrameCount;  //number of frames to move mag back slowly 5-20
-        addRequirements(magazine,shooter,positioner);
+        addRequirements(magazine,shooter);
 
         table = NetworkTableInstance.getDefault().getTable(NT_Name);
 
@@ -136,7 +133,6 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         stage = Stage.DoNothing;
         shooter.off();
         magazine.driveWheelOff();
-        shooterAngleLongRange = !positioner.isDeployed(); //Low shooting mode = long range = retracted
     }
 
     @Override
@@ -148,7 +144,6 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         //if autovelocity is true will calculate a new RPM speed based on the distance and adjust positioner
         //otherwise RPMs should be constant based on the constructor parameters
         if (autoVelocity) {
-            setPositioner();
             if(calculatedVel != cmdSS.vel){
                 cmdSS = new ShooterSettings(calculatedVel, 0);
                 shooter.spinup(cmdSS);
@@ -171,7 +166,6 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
                     magazine.driveWheelOff();           // balls are off the flywheels
                     intake.off();
                     shooter.spinup(cmdSS);              // spin shooter up
-                    //here we could trigger a drive-sys/Limelight command that responds to WaitingForSoln
                 }                
             break;
 
@@ -182,10 +176,12 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
             break;
 
             case WaitingForSolution:
-                if (solutionProvider.isOnTarget()) {
+                solutionTimer++;
+                if (solutionProvider.isOnTarget() || (solutionTimer > maxSolutionWait)) {
                     stage = Stage.Shooting;
                     magazine.driveWheelOn(1.0);
                     intake.on(0.0, 0.2);
+                    solutionTimer = 0;
                 }
                 break;
 
@@ -214,46 +210,22 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         finished = true;
     }
     
-    private double getManualVelocity(){
-        double velocity = Shooter.mediumVelocity;
-        if(RobotContainer.RC().driverControls.readSideboard(SBButton.Sw21)) velocity = Shooter.shortVelocity;
-        else if(RobotContainer.RC().driverControls.readSideboard(SBButton.Sw23)) velocity = Shooter.longVelocity;
-        return velocity;
-    }
-
     @Override
     public boolean isFinished(){
         return finished;
     }
 
     private void calculateDistance(){
-        currentDistance = PoseMath.poseDistance(RobotContainer.RC().drivetrain.getPose(), Autonomous.hubPose);
+        currentDistance = PoseMath.poseDistance(RobotContainer.RC().drivetrain.getPose(), Autonomous.hubPose); //crappy estimate from odometery
         if (RobotContainer.RC().limelight.getTarget() && RobotContainer.RC().limelight.getLEDStatus()){
             //calculate current distance with limelight area instead of odometery
-            currentDistance = RobotContainer.RC().limelight.getArea(); //need actual fit equation of limelight area vs. distance
+            currentDistance = RobotContainer.RC().limelight.estimateDistance(); 
         }
 
-    }
-
-    //Low shooting mode = long range = retracted
-    //min long range and max short range should not be equal to allow for some historesis to prevent rapid toggling at transition distance
-    private void setPositioner(){
-        shooterAngleLongRange = !positioner.isDeployed(); //check positioner angle from subsystem
-        if ((currentDistance < Shooter.minLongRange) && shooterAngleLongRange) { //below long range, switch to short range
-            positioner.deploy();
-        } else if ((currentDistance > Shooter.maxShortRange) && !shooterAngleLongRange) { //above short trange, switch to long range
-            positioner.retract();
-            ;
-        }
-        shooterAngleLongRange = !positioner.isDeployed(); //check positioner angle from subsystem
     }
 
     private void calculateVelocity(){       
-        if (shooterAngleLongRange) {
-            calculatedVel = 4.64*currentDistance + 26.8; //distnce vs. velocity trendline for long range positioner
-        } else {
-            calculatedVel = 8.5 *currentDistance + 26.5; //distnce vs. velocity trendline for short range positioner
-        }
+        calculatedVel = 4.64*currentDistance + 26.8; //distnce vs. velocity trendline for long range positioner
 
         if (calculatedVel > Shooter.kMaxFPS){
             outOfRange = true;
