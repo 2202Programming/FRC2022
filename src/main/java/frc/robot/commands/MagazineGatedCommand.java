@@ -37,8 +37,8 @@ public class MagazineGatedCommand extends MagazineCommand {
     public void initialize() {
         super.initialize();
         //sort out ligth gates and ball positions for state machine
-        state = (magazine.isGate1Blocked()) ? MagazineState.OneBallPos1 : MagazineState.Empty;
-        if (magazine.isGate2Blocked()) {
+        state = (magazine.lowerGateBlocked()) ? MagazineState.OneBallPos1 : MagazineState.Empty;
+        if (magazine.upperGateBlocked()) {
             state = (state == MagazineState.Empty)  ? MagazineState.OneBallPos2 : MagazineState.TwoBalls;
         }
        

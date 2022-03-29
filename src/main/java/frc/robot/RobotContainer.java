@@ -111,7 +111,7 @@ public class RobotContainer {
     }
 
     //TEST CODE 
-    driverControls.bind(Id.SwitchBoard, SBButton.Sw11).whenPressed(new LightGateTest());
+    driverControls.bind(Id.SwitchBoard, SBButton.Sw16).whenPressed(new LightGateTest());
   
 
     // //setup the dashboard programatically, creates any choosers, screens
