@@ -14,10 +14,10 @@ import frc.robot.subsystems.Magazine_Subsystem;
 public class LightGateTest extends CommandBase {
   final Magazine_Subsystem mag;
 
-  final String NT_Name = "Test/gates";
+  final String NT_Name = "/Test/gates";
   final NetworkTableEntry nte_gate1;
   final NetworkTableEntry nte_gate2;
-
+  final NetworkTableEntry nte_gate3;
 
   /** Creates a new LightGateTest.
    * 
@@ -29,14 +29,16 @@ public class LightGateTest extends CommandBase {
     NetworkTable table  = NetworkTableInstance.getDefault().getTable(NT_Name);
     nte_gate1 = table.getEntry("/gate1");
     nte_gate2 = table.getEntry("/gate2");
-    nte_gate1.setBoolean(false);
-    nte_gate2.setBoolean(false);
+    nte_gate3 = table.getEntry("/gate3");
+    nte_gate1.setBoolean(true);
+    nte_gate2.setBoolean(true);
+    nte_gate3.setBoolean(true);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    System.out.print("***Warning: Magazine is under test - default command not running.***");
+    System.out.println("***********Warning: Magazine is under test - default command not running.***");
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -44,12 +46,13 @@ public class LightGateTest extends CommandBase {
   public void execute() {
     nte_gate1.setBoolean(mag.isGate1Blocked());
     nte_gate2.setBoolean(mag.isGate2Blocked());
+    nte_gate3.setBoolean(mag.isGate3Blocked());
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    System.out.print("***Magazine testing of Lightgates is complete***");
+    System.out.println("***********Magazine testing of Lightgates is complete***");
   }
 
   // Returns true when the command should end.
