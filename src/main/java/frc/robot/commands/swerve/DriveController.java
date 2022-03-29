@@ -80,7 +80,7 @@ public class DriveController  extends CommandBase implements SolutionProvider {
     m_fieldCentricDrive = new FieldCentricDrive(drivetrain, dc);
     m_hubCentricDrive = new HubCentricDrive(drivetrain, dc, limelight);
     m_intakeCentricDrive = new IntakeCentricDrive(drivetrain, dc);
-    m_velShootCommand = new VelShootCommand( Shooter.DefaultSettings, 15, this); //ft/s,rot, backupcount, SolutionProvider
+    m_velShootCommand = new VelShootCommand(45,false);  //right now just use fixed velocity; eventually replace with limelight distance estimated velocity
 
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
     shooterTable = NetworkTableInstance.getDefault().getTable(NT_ShooterName);
@@ -106,10 +106,10 @@ public class DriveController  extends CommandBase implements SolutionProvider {
   }
 
   private void checkShooter(){
-    if (!currentlyShooting && shootingRequested){ //start shooting
+    if (!currentlyShooting && shootingRequested && limelight.getTarget() && limelight.getLEDStatus()){ //start shooting if requested and limelight has target
       currentlyShooting = true;
       requestedDriveMode = DriveModes.hubCentric;
-      CommandScheduler.getInstance().schedule(m_velShootCommand);
+      CommandScheduler.getInstance().schedule(m_velShootCommand); //right now just use fixed velocity; eventually replace with limelight distance estimated velocity
     } else if (currentlyShooting && !shootingRequested){ //stop shooting
       currentlyShooting = false;
       requestedDriveMode = lastDriveMode;
