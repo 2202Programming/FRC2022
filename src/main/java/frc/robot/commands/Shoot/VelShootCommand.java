@@ -18,7 +18,6 @@ import frc.robot.util.PoseMath;
 /**
  * Use the gated version - it ties into the light gates on the magazine
  */
-@Deprecated 
 public class VelShootCommand extends CommandBase implements SolutionProvider{ 
 
     public static final double USE_CURRENT_ANGLE = 0.0;
@@ -44,21 +43,18 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
     NetworkTableEntry shooterState;
     NetworkTableEntry distance;
     NetworkTableEntry NToutOfRange;
-    public final String NT_Name = "Shooter"; 
+    final String NT_Name = "Shooter"; 
 
 
     ShooterSettings m_shooterSettings;
-    
     ShooterSettings  cmdSS;         // instance the shooter sees
-    ShooterSettings  prevSS;        // instance for prev State
-
+    
     double calculatedVel = 20;
 
-    private boolean finished = false;
-    //private boolean solution = true;
-    private boolean shooterAngleLongRange;
-    private boolean outOfRange = false;
-    private boolean autoVelocity = true;
+    boolean finished = false;
+    boolean shooterAngleLongRange;
+    boolean outOfRange = false;
+    boolean autoVelocity = true;
 
     double log_counter = 0;
 
@@ -134,7 +130,6 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
     @Override
     public void initialize(){
         cmdSS = m_shooterSettings; 
-        prevSS = new ShooterSettings(cmdSS);
         stage = Stage.DoNothing;
         shooter.off();
         magazine.driveWheelOff();
@@ -216,7 +211,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         finished = true;
     }
     
-    private double getManualVelocity(){
+    double getManualVelocity(){
         double velocity = Shooter.mediumVelocity;
         if(RobotContainer.RC().driverControls.readSideboard(SBButton.Sw21)) velocity = Shooter.shortVelocity;
         else if(RobotContainer.RC().driverControls.readSideboard(SBButton.Sw23)) velocity = Shooter.longVelocity;
@@ -228,18 +223,18 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         return finished;
     }
 
-    private void calculateDistance(){
+    double calculateDistance(){
         currentDistance = PoseMath.poseDistance(RobotContainer.RC().drivetrain.getPose(), Autonomous.hubPose);
         if (RobotContainer.RC().limelight.getTarget() && RobotContainer.RC().limelight.getLEDStatus()){
             //calculate current distance with limelight area instead of odometery
             currentDistance = RobotContainer.RC().limelight.getArea(); //need actual fit equation of limelight area vs. distance
         }
-
+        return currentDistance;
     }
 
     //Low shooting mode = long range = retracted
     //min long range and max short range should not be equal to allow for some historesis to prevent rapid toggling at transition distance
-    private void setPositioner(){
+    void setPositioner(){
         shooterAngleLongRange = !positioner.isDeployed(); //check positioner angle from subsystem
         if ((currentDistance < Shooter.minLongRange) && shooterAngleLongRange) { //below long range, switch to short range
             positioner.deploy();
@@ -250,7 +245,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         shooterAngleLongRange = !positioner.isDeployed(); //check positioner angle from subsystem
     }
 
-    private void calculateVelocity(){       
+    double calculateVelocity(){       
         if (shooterAngleLongRange) {
             calculatedVel = 4.64*currentDistance + 26.8; //distnce vs. velocity trendline for long range positioner
         } else {
@@ -263,6 +258,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         } else {
             outOfRange = false;
         }
+        return calculatedVel;
     }
 
     private void NTupdates(){

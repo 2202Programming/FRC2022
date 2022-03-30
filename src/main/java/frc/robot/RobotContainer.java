@@ -18,7 +18,7 @@ import frc.robot.commands.MagazineGatedCommand;
 import frc.robot.commands.MovePositioner.PositionerMode;
 import frc.robot.commands.MovePositioner;
 import frc.robot.commands.ResetPosition;
-import frc.robot.commands.Shoot.VelShootCommand;
+import frc.robot.commands.Shoot.VelShootGatedCommand;
 import frc.robot.commands.auto.auto_cmd;
 import frc.robot.commands.climber.MidClimb;
 import frc.robot.commands.climber.MoveArmsTo;
@@ -42,6 +42,7 @@ import frc.robot.subsystems.hid.XboxPOV;
 import frc.robot.subsystems.hid.SideboardController.SBButton;
 import frc.robot.subsystems.ifx.DriverControls.Id;
 import frc.robot.subsystems.shooter.Shooter_Subsystem;
+import frc.robot.commands.MagazineController;
 import frc.robot.ux.Dashboard;
 
 public class RobotContainer {
@@ -180,7 +181,7 @@ public class RobotContainer {
       driverControls.bind(Id.Assistant, XboxButton.B).whileHeld(new IntakeCommand((() -> 0.35), () -> 0.20, IntakeMode.ExpellCargo));
     }
 
-    if (Constants.HAS_MAGAZINE) {
+    if (Constants.HAS_MAGAZINE && Constants.HAS_SHOOTER) {
       // Positioner binds :)
       driverControls.bind(Id.Assistant, XboxButton.RB).whenPressed(new MovePositioner(PositionerMode.Toggle));
 
@@ -189,14 +190,12 @@ public class RobotContainer {
       magazine.setDefaultCommand(mag_default_cmd);
       driverControls.bind(Id.Assistant, XboxButton.X).whileHeld(mag_default_cmd.getFeedCmd());
       driverControls.bind(Id.Assistant, XboxButton.Y).whileHeld(mag_default_cmd.getEjectCmd());
-    }
 
-    if (Constants.HAS_SHOOTER) {
-      driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_RIGHT).whileHeld(new VelShootCommand(Shooter.DefaultSettings, 20)); 
-      driverControls.bind(Id.Assistant, XboxPOV.POV_LEFT).whileHeld(new VelShootCommand(Shooter.shortVelocity, false));
-      driverControls.bind(Id.Assistant, XboxPOV.POV_UP).whileHeld(new VelShootCommand(Shooter.shortMediumVelocity, false));
-      driverControls.bind(Id.Assistant, XboxPOV.POV_DOWN).whileHeld(new VelShootCommand(Shooter.mediumVelocity, false));
-      driverControls.bind(Id.Assistant, XboxPOV.POV_RIGHT).whileHeld(new VelShootCommand(Shooter.longVelocity, false));
+      driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_RIGHT).whileHeld(new VelShootGatedCommand(Shooter.DefaultSettings,     mag_default_cmd));
+      driverControls.bind(Id.Assistant, XboxPOV.POV_LEFT)      .whileHeld(new VelShootGatedCommand(Shooter.shortVelocity,       mag_default_cmd));
+      driverControls.bind(Id.Assistant, XboxPOV.POV_UP)        .whileHeld(new VelShootGatedCommand(Shooter.shortMediumVelocity, mag_default_cmd));
+      driverControls.bind(Id.Assistant, XboxPOV.POV_DOWN)      .whileHeld(new VelShootGatedCommand(Shooter.mediumVelocity,      mag_default_cmd));
+      driverControls.bind(Id.Assistant, XboxPOV.POV_RIGHT)     .whileHeld(new VelShootGatedCommand(Shooter.longVelocity,        mag_default_cmd));
     }
   }
 

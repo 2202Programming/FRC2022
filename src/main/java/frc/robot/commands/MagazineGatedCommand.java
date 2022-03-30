@@ -146,8 +146,10 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
 
         // handle driver requests or execute state machine
         if (feed_request) {
+            SpinUpSafe = true;
             magazine.driveWheelOn(magazineSpeed.getAsDouble());
         } else if (eject_request) {
+            SpinUpSafe = false;
             magazine.driveWheelOn(-magazineSpeed.getAsDouble());
         } else // Run the normal handler
             switch (state) {
