@@ -21,6 +21,7 @@ import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.ifx.DriverControls;
 import frc.robot.subsystems.shooter.Shooter_Subsystem;
 //import frc.robot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
+import frc.robot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
 
 
 public class DriveController  extends CommandBase implements SolutionProvider {
@@ -81,6 +82,9 @@ public class DriveController  extends CommandBase implements SolutionProvider {
     m_hubCentricDrive = new HubCentricDrive(drivetrain, dc, limelight);
     m_intakeCentricDrive = new IntakeCentricDrive(drivetrain, dc);
     m_velShootCommand = new VelShootCommand(45,false);  //right now just use fixed velocity; eventually replace with limelight distance estimated velocity
+    
+    //use this one when ready for solution provider and velocity auto adjustment
+    //m_velShootCommand = new VelShootCommand(new ShooterSettings(20.0, 0.0, 0, 0.01), 20, this);
 
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
     shooterTable = NetworkTableInstance.getDefault().getTable(NT_ShooterName);
