@@ -38,14 +38,30 @@ import frc.robot.subsystems.Magazine_Subsystem;
  * 
  */
 
+ /**
+  * Testing 3/31/22 notes -
+        blind ->> one ball upper - works
+        oneball upper start -->  works
+        oneball lower start --> work
+        one ball upper
+            added ball moves correctly in, stops and backs up for flywheel --> works
+        one ball moved to LG gets too far on top, slow down the move up speed???
+
+        add state for two-balls, but check for not on flywheel in case they got jammed
+        eject backup doens't stop spinning the indexer - bug why?
+        feed goes forward and stops --> works, why?
+
+        add counter to nt?
+  */
+
 public class MagazineGatedCommand extends CommandBase implements MagazineController {
     final Magazine_Subsystem magazine;
     final Intake_Subsystem intake;
     final DoubleSupplier magazineSpeed;
 
-    final int MovingTwoCountFC = 20; // frames *.02 = .4 sec
+    final int MovingTwoCountFC = 10; // frames *.02 = .4 sec
     final int SafetyBackupFC = 5; // frames *02 = .1 sec
-    final int ConfirmEmptyFC = 20; // frame
+    final int ConfirmEmptyFC = 15; // frame
 
     boolean prev_lower_lg;
     boolean prev_upper_lg;
@@ -110,6 +126,8 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
         nte_feed_request = table.getEntry("/feederOn");
         nte_eject_request = table.getEntry("/ejectorOn");
         nte_state = table.getEntry("/state");
+
+        addRequirements(magazine);
     }
 
     public Command getEjectCmd() {
@@ -156,7 +174,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
                 case ConfirmEmpty:
                     // back up for a bit to make sure we don't have a ball
                     magazine.driveWheelOn(-magazineSpeed.getAsDouble());
-                    if (frame_count_down <= 0 || lower_lg) {
+                    if (--frame_count_down <= 0 || lower_lg) {
                         magazine.driveWheelOff();
                         // goto empty either way, lg will move to next state
                         state = MagazineState.Empty;
