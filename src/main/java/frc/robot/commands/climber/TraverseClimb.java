@@ -42,14 +42,13 @@ public class TraverseClimb extends SequentialCommandGroup {
                 // travers_start_rot, true, true).withTimeout(TO),
                 // new MoveArmsTo(climber, "rotate-under", travers_start_ext, 45, true,
                 // true).withTimeout(TO),
-                new MoveArmsTo(climber, "rotateunder2", travers_start_ext, 55, true, true).withTimeout(TO),
-                new MoveArmsTo(climber, "extend-under", 24, 65, true, true).withTimeout(TO),
-                new MoveArmsTo(climber, "rotateforgrab-40", 24, 35, true, true).withTimeout(2),
-                new WaitCommand(1),
-                new MoveArmsTo(climber, "partial-pullup20", partialpullupext, 20, true, true).withTimeout(TO),
-                new MoveArmsTo(climber, "partial-pullup-15", partialpullupext, -10, true, true).withTimeout(TO),
-                new WaitCommand(1),
-                new MoveArmsTo(climber, "pullupMid2", pullupext, -10, true, true).withTimeout(TO),
+                new MoveArmsTo(climber, "rotateunder2", travers_start_ext, 50, true, true).withTimeout(TO),
+                new MoveArmsTo(climber, "extend-under", 24, 50, true, true).withTimeout(TO),
+                new MoveArmsTo(climber, "rotateforgrab  +35", 24, 35, true, true).withTimeout(2),
+                new MoveArmsTo(climber, "partial-pullup 0", partialpullupext, 0, true, true).withTimeout(TO),
+                //put magic counterswing cmd here...
+                new MoveArmsTo(climber, "partial-pullup -18", partialpullupext, -22, true, true).withTimeout(TO),
+                new MoveArmsTo(climber, "pullupMid2", pullupext, -17, true, true).withTimeout(TO*10),
                 new MoveArmsTo(climber, "rotateCG1", pullupext, pulluprotForward, true, true).withTimeout(TO));
         this.climber = climber;
         filter = LinearFilter.movingAverage(3);

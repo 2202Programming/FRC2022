@@ -70,7 +70,9 @@ public class ClimberTestRotRate extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     climber.setRotSpeed(0.0);
-    climber.setOuterLoop(true);
+    climber.setOuterLoop(false);
+    climber.setArmSync(false);
+    climber.hold();
   }
 
   // Returns true when the command should end.
