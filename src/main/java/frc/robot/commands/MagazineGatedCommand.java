@@ -40,9 +40,9 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
     final Intake_Subsystem intake;
     final double magazineSpeed;
 
-    final int MovingTwoInFC = 15;   //moves forward to get 2nd ball into position
+    final int MovingTwoInFC = 10;   //moves forward to get 2nd ball into position
     final int SafetyBackupFC = 5;   //back off the flywheels
-    final int ConfirmEmptyFC = 15;  //moves backward to check blind spot
+    final int ConfirmEmptyFC = 8;  //moves backward to check blind spot
     final int AlignFC = 10;         //moves forward to align when both gates have a ball
 
     final double SlowRotate = 0.5;
@@ -248,7 +248,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
                 case TwoBalls:
                     spinup_safe = true;
                     intake.off();
-                    CommandScheduler.getInstance().schedule(movePositionerHigh);
+                    intake.retract();
                     break;
 
                 default:
