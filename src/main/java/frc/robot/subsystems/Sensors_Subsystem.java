@@ -497,10 +497,9 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
     //expected difference in heading from start of auto to end
     Rotation2d autoRot = autoStartPose.getRotation().minus(autoEndPose.getRotation());
 
-    //gyro should power on at zero which would be our auto start position.  So any angle off zero is the difference from start to end per the gyro
-    //AHRS.getAngle is the total accumulated angle since power up, so using mod 360
+    //gyro should power on at zero heading which would be our auto start position's heading.  So any angle off zero is the difference from start to end per the gyro
     //not sure if this should be added or subtracted
-    Rotation2d rotError = autoRot.minus(Rotation2d.fromDegrees(m_ahrs.getAngle()%360));
+    Rotation2d rotError = autoRot.minus(Rotation2d.fromDegrees(m_ahrs.getYaw()));
 
     System.out.println("***Auto End Pose set: "+pose);
     System.out.println("***Rotation difference per Pose: " + autoRot.getDegrees());
