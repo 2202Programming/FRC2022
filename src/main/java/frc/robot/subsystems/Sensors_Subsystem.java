@@ -24,6 +24,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -132,6 +133,8 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
 
   double log_counter = 0;
   private boolean navxManuallyDisabled = false;
+  public Pose2d autoStartPose;
+  public Pose2d autoEndPose;
 
   public Sensors_Subsystem() {
 
@@ -482,7 +485,17 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
     navxManuallyDisabled = disabled;
   }
 
+  public void setAutoStartPose(Pose2d pose){
+    autoStartPose = pose;
+    System.out.println("***Auto Start Pose set: "+pose);
+  }
 
+  public void setAutoEndPose(Pose2d pose){
+    autoEndPose = pose;
+    System.out.println("***Auto End Pose set: "+pose);
+    System.out.println("***Rotation difference per Pose: " + (autoStartPose.getRotation().getDegrees() - autoEndPose.getRotation().getDegrees()));
+    System.out.println("***Rotation difference per Gyro: " + m_ahrs.getAngle()%360);
+  }
 
   public static class Signals {
     public enum Signal {
