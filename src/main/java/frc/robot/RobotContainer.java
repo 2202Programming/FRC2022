@@ -42,7 +42,6 @@ import frc.robot.subsystems.hid.XboxPOV;
 import frc.robot.subsystems.hid.SideboardController.SBButton;
 import frc.robot.subsystems.ifx.DriverControls.Id;
 import frc.robot.subsystems.shooter.Shooter_Subsystem;
-import frc.robot.commands.MagazineController;
 import frc.robot.ux.Dashboard;
 
 public class RobotContainer {
@@ -187,7 +186,7 @@ public class RobotContainer {
       driverControls.bind(Id.Assistant, XboxButton.RB).whenPressed(new MovePositioner(PositionerMode.Toggle));
 
       // MagazineCommand 
-      MagazineGatedCommand mag_default_cmd = new MagazineGatedCommand( ()-> 1.0);
+      MagazineGatedCommand mag_default_cmd = new MagazineGatedCommand(1.0);
       magazine.setDefaultCommand(mag_default_cmd);
       driverControls.bind(Id.Assistant, XboxButton.X).whileHeld(mag_default_cmd.getFeedCmd());
       driverControls.bind(Id.Assistant, XboxButton.Y).whileHeld(mag_default_cmd.getEjectCmd());

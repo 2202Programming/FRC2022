@@ -1,7 +1,5 @@
 package frc.robot.commands;
 
-import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -37,31 +35,17 @@ import frc.robot.subsystems.Magazine_Subsystem;
  * simplify driver workload
  * 
  */
-
- /**
-  * Testing 3/31/22 notes -
-        blind ->> one ball upper - works
-        oneball upper start -->  works
-        oneball lower start --> work
-        one ball upper
-            added ball moves correctly in, stops and backs up for flywheel --> works
-        one ball moved to LG gets too far on top, slow down the move up speed???
-
-        add state for two-balls, but check for not on flywheel in case they got jammed
-        eject backup doens't stop spinning the indexer - bug why?
-        feed goes forward and stops --> works, why?
-
-        add counter to nt?
-  */
-
 public class MagazineGatedCommand extends CommandBase implements MagazineController {
     final Magazine_Subsystem magazine;
     final Intake_Subsystem intake;
-    final DoubleSupplier magazineSpeed;
+    final double magazineSpeed;
 
-    final int MovingTwoCountFC = 10; // frames *.02 = .4 sec
-    final int SafetyBackupFC = 5; // frames *02 = .1 sec
-    final int ConfirmEmptyFC = 15; // frame
+    final int MovingTwoInFC = 15;   //moves forward to get 2nd ball into position
+    final int SafetyBackupFC = 5;   //back off the flywheels
+    final int ConfirmEmptyFC = 15;  //moves backward to check blind spot
+    final int AlignFC = 10;         //moves forward to align when both gates have a ball
+
+    final double SlowRotate = 0.5;
 
     boolean prev_lower_lg;
     boolean prev_upper_lg;
@@ -75,9 +59,9 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
         OneBall_Lower("1-ball-lower"),
         MovingToUpper("move 1-ball to upper"),
         OneBall_Upper("one ball in upper"),
-        // OneBall_NoGate,
         MovingBallTwoIn("moving 2-ball in"),
         BackingUp("backing up for safety"),
+        AlignTwoBalls("align 2-ball"),
         TwoBalls("two balls ready");
 
         String name;
@@ -91,7 +75,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
         }
     }
 
-    boolean SpinUpSafe = false;
+    boolean spinup_safe = false;
     boolean feed_request = false; // external event
     boolean eject_request = false; // external event
 
@@ -107,14 +91,14 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
     final NetworkTableEntry nte_uppergate;
     final NetworkTableEntry nte_feed_request;
     final NetworkTableEntry nte_eject_request;
+    final NetworkTableEntry nte_spinup_safe;
     final NetworkTableEntry nte_state;
 
-
     // Constructor
-    public MagazineGatedCommand(DoubleSupplier magazineSpeedFunction) {
+    public MagazineGatedCommand(double magazineSpeed) {
         this.magazine = RobotContainer.RC().magazine; // just get the magazine from RC
         this.intake = RobotContainer.RC().intake;
-        this.magazineSpeed = magazineSpeedFunction;
+        this.magazineSpeed = magazineSpeed;
 
         ejectCmd = new EjectCmd(this);
         feedCmd = new FeedCmd(this);
@@ -125,11 +109,13 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
         nte_uppergate = table.getEntry("/upperGate");
         nte_feed_request = table.getEntry("/feederOn");
         nte_eject_request = table.getEntry("/ejectorOn");
+        nte_spinup_safe = table.getEntry("/spinupSafe");
         nte_state = table.getEntry("/state");
 
-        addRequirements(magazine);
+        addRequirements(magazine);  //required for a default command
     }
 
+    // Accessor for supporting eject/feed commands
     public Command getEjectCmd() {
         return this.ejectCmd;
     }
@@ -143,7 +129,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
      * cargo we are carrying, like after feed or eject request.
      */
     public void initialize() {
-        SpinUpSafe = false;
+        spinup_safe = false;
         // read gates, save as previous values for edge detection
         prev_upper_lg = magazine.upperGateBlocked();
         prev_lower_lg = magazine.lowerGateBlocked();
@@ -151,11 +137,17 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
         // sort out gates and ball positions for state machine
         state = (prev_lower_lg) ? MagazineState.OneBall_Lower : MagazineState.Empty;
         if (prev_upper_lg) {
-            state = (state == MagazineState.Empty) ? MagazineState.OneBall_Upper : MagazineState.TwoBalls;
+            state = (state == MagazineState.Empty) ? MagazineState.OneBall_Upper : MagazineState.AlignTwoBalls;
         }
         // if we didn't find anything, still need to check the blind zone
         state = (state == MagazineState.Empty) ? MagazineState.ConfirmEmpty : state;
-        frame_count_down = ConfirmEmptyFC;
+       
+        if(state == MagazineState.ConfirmEmpty) {
+             frame_count_down = ConfirmEmptyFC;
+        }
+        if (state == MagazineState.AlignTwoBalls) {
+            frame_count_down = AlignFC;
+        }
     }
 
     public void execute() {
@@ -164,22 +156,22 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
 
         // handle driver requests or execute state machine
         if (feed_request) {
-            SpinUpSafe = true;
-            magazine.driveWheelOn(magazineSpeed.getAsDouble());
+            spinup_safe = true;
+            magazine.driveWheelOn(magazineSpeed);
         } else if (eject_request) {
-            SpinUpSafe = false;
-            magazine.driveWheelOn(-magazineSpeed.getAsDouble());
+            spinup_safe = false;
+            magazine.driveWheelOn(-magazineSpeed);
         } else // Run the normal handler
             switch (state) {
                 case ConfirmEmpty:
                     // back up for a bit to make sure we don't have a ball
-                    magazine.driveWheelOn(-magazineSpeed.getAsDouble());
+                    magazine.driveWheelOn(-magazineSpeed);
                     if (--frame_count_down <= 0 || lower_lg) {
                         magazine.driveWheelOff();
                         // goto empty either way, lg will move to next state
                         state = MagazineState.Empty;
                     }
-                    SpinUpSafe = false;
+                    spinup_safe = false;
                     break;
 
                 case Empty:
@@ -187,14 +179,14 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
                     if (lower_lg && prev_lower_lg) {
                         state = MagazineState.OneBall_Lower;
                     }
-                    SpinUpSafe = false;
+                    spinup_safe = false;
                     break;
 
                 case OneBall_Lower:
-                    SpinUpSafe = true;
+                    spinup_safe = true;
                     if (lower_lg) {
                         state = MagazineState.MovingToUpper;
-                        magazine.driveWheelOn(magazineSpeed.getAsDouble());
+                        magazine.driveWheelOn(magazineSpeed*SlowRotate);
                     } else {
                         // must have bounced out???
                         state = MagazineState.ConfirmEmpty;
@@ -202,45 +194,59 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
                     break;
 
                 case MovingToUpper:
-                    SpinUpSafe = true;
+                    spinup_safe = true;
                     // Run the mag until the ball hits the upper limit, then next state
                     // run mag for 1 extra frame so prev and current match
-                    if (upper_lg && prev_upper_lg) {
+                    if (upper_lg) {
                         magazine.driveWheelOff();
                         state = MagazineState.OneBall_Upper;
                     }
                     break;
 
                 case OneBall_Upper:
-                    SpinUpSafe = true;
+                    spinup_safe = true;
                     // Now we are looking for the 2nd ball to be trigger
                     if (lower_lg & prev_lower_lg) {
-                        SpinUpSafe = false;
-                        magazine.driveWheelOn(magazineSpeed.getAsDouble());
+                        spinup_safe = false;
+                        magazine.driveWheelOn(magazineSpeed);
                         state = MagazineState.MovingBallTwoIn;
-                        frame_count_down = MovingTwoCountFC;
+                        frame_count_down = MovingTwoInFC;
                     }
                     break;
 
                 case MovingBallTwoIn:
-                    SpinUpSafe = false;
+                    // moving second ball into magazine
+                    spinup_safe = false;
                     if (--frame_count_down <= 0) {
                         magazine.driveWheelOff();
                         state = MagazineState.BackingUp;
                         frame_count_down = SafetyBackupFC;
-                        magazine.driveWheelOn(-magazineSpeed.getAsDouble());
+                        magazine.driveWheelOn(-magazineSpeed);
                     }
                     break;
 
                 case BackingUp:
-                    SpinUpSafe = false;
+                    spinup_safe = false;
                     if (--frame_count_down <= 0) {
                         magazine.driveWheelOff();
                         state = MagazineState.TwoBalls;
                     }
+                    break;
+
+                case AlignTwoBalls:
+                    // move balls up to flywheel
+                    spinup_safe = false;
+                    magazine.driveWheelOn(magazineSpeed*SlowRotate);
+                    if (--frame_count_down <= 0) {
+                        //done moving forward, next backup
+                        magazine.driveWheelOn(-magazineSpeed);
+                        frame_count_down = SafetyBackupFC;
+                        state = MagazineState.BackingUp;
+                    }
+                    break;
 
                 case TwoBalls:
-                    SpinUpSafe = true;
+                    spinup_safe = true;
                     intake.off();
                     CommandScheduler.getInstance().schedule(movePositionerHigh);
                     break;
@@ -272,13 +278,13 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
     }
 
     public void ejectOff() {
-        eject_request = true;
+        eject_request = false;
         initialize(); // read gates and shutoff feeder
     }
 
     // Safe when we have cargo and are not on the flywheels
     public boolean safeToSpinUp() {
-        return SpinUpSafe;
+        return spinup_safe;
     }
 
     // This command never really ends, it always runs to manage the cargo
@@ -296,6 +302,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
         nte_uppergate.setBoolean(prev_upper_lg);
         nte_feed_request.setBoolean(feed_request);
         nte_eject_request.setBoolean(eject_request);
+        nte_spinup_safe.setBoolean(spinup_safe);
         nte_state.setString(state.toString());
     }
 
