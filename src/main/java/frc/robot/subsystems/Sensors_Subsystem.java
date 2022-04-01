@@ -503,7 +503,7 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
 
     System.out.println("***Auto End Pose set: "+pose);
     System.out.println("***Rotation difference per Pose: " + autoRot.getDegrees());
-    System.out.println("***Rotation difference per Gyro: " + m_ahrs.getAngle()%360);
+    System.out.println("***Rotation difference per Gyro: " + m_ahrs.getYaw());
     System.out.println("***Difference: " + rotError.getDegrees());
 
     /*Idea below for correcting pose angle
