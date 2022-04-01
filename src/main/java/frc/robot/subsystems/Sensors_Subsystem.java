@@ -28,6 +28,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.NTStrings;
 
@@ -486,15 +487,33 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
   }
 
   public void setAutoStartPose(Pose2d pose){
-    autoStartPose = pose;
+    autoStartPose = new Pose2d(pose.getTranslation(), pose.getRotation());
     System.out.println("***Auto Start Pose set: "+pose);
   }
 
   public void setAutoEndPose(Pose2d pose){
-    autoEndPose = pose;
+    autoEndPose = new Pose2d(pose.getTranslation(), pose.getRotation());
+    
+    //expected difference in heading from start of auto to end
+    Rotation2d autoRot = autoStartPose.getRotation().minus(autoEndPose.getRotation());
+
+    //gyro should power on at zero which would be our auto start position.  So any angle off zero is the difference from start to end per the gyro
+    //AHRS.getAngle is the total accumulated angle since power up, so using mod 360
+    //not sure if this should be added or subtracted
+    Rotation2d rotError = autoRot.minus(Rotation2d.fromDegrees(m_ahrs.getAngle()%360));
+
     System.out.println("***Auto End Pose set: "+pose);
-    System.out.println("***Rotation difference per Pose: " + (autoStartPose.getRotation().getDegrees() - autoEndPose.getRotation().getDegrees()));
+    System.out.println("***Rotation difference per Pose: " + autoRot.getDegrees());
     System.out.println("***Rotation difference per Gyro: " + m_ahrs.getAngle()%360);
+    System.out.println("***Difference: " + rotError.getDegrees());
+
+    /*Idea below for correcting pose angle
+    Since before we run each path we set our pose to the starting position,
+    it's possible that our "true" heading (as determined by gryo) is not exactly the starting heading of the new path.
+    The end of the prior path should be the start of the new path, but presumably the rotation is not perfectly aligned (PID errors)
+    So with multiple paths this rotation error in pose may accumulate?
+    */
+    //RobotContainer.RC().drivetrain.resetAnglePose(pose.getRotation().minus(rotError));
   }
 
   public static class Signals {
