@@ -57,6 +57,7 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
   private NetworkTableEntry nt_yaw_navx;
   private NetworkTableEntry nt_yaw_navx_dot;
   private NetworkTableEntry nt_yaw_blend;
+  private NetworkTableEntry nt_yaw_pigeon;
 
   private NetworkTableEntry nt_canUtilization;
   private NetworkTableEntry nt_canTxError;
@@ -66,9 +67,11 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
   private NetworkTableEntry nt_cancoder_br;
   private NetworkTableEntry nt_cancoder_fl;
   private NetworkTableEntry nt_cancoder_fr;
-
+  private NetworkTableEntry nt_activeIMU;
+  private NetworkTableEntry nt_yaw;
   private NetworkTableEntry nt_roll;
   private NetworkTableEntry nt_pitch;
+  private NetworkTableEntry nt_rotation;
 
   static final byte update_hz = 100;
   // Sensors
@@ -90,7 +93,15 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
   }
 
   public enum GyroStatus {
-    UsingNavx, UsingPigeon
+    UsingNavx("Navx"),
+    UsingPigeon("Pigeon");
+    private String name;
+    private GyroStatus(String name) {
+      this.name = name;
+    }
+    public String toString() {
+      return name;
+    }
   }
 
   // CANCoders - monitor dt angles
@@ -149,6 +160,7 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
     nt_yaw_navx = table.getEntry("yaw_navx");
     nt_yaw_navx_dot = table.getEntry("yaw_navx_d");
     nt_yaw_blend = table.getEntry("yaw_blend");
+    nt_yaw_pigeon = table.getEntry("yaw_pigeon");
 
     nt_canUtilization = table.getEntry("CanUtilization/value");
     nt_canRxError = table.getEntry("CanRxError");
@@ -159,7 +171,9 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
     nt_cancoder_br = table.getEntry("cc_br");
     nt_cancoder_fl = table.getEntry("cc_fl");
     nt_cancoder_fr = table.getEntry("cc_fr");
-
+    nt_activeIMU = table.getEntry("Active IMU");
+    nt_yaw = table.getEntry("Active Yaw");
+    nt_rotation = table.getEntry("Rotation");
     nt_pitch = positionTable.getEntry("Pitch");
     nt_roll = positionTable.getEntry("Roll");
 
@@ -197,25 +211,27 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-
-    if(m_ahrs.isMagnetometerCalibrated()){ // We will only get valid fused headings if the magnetometer is calibrated
-      m_yaw_navx = m_ahrs.getFusedHeading(); //returns 0-360 deg
-      m_yaw_navx -= 180; //convert to -180 to 180
-    } else {
-      m_yaw_navx = m_ahrs.getYaw(); //gryo only, returns -180 to 180
-    }
-    m_yaw_navx_d = m_ahrs.getRate();
-
-    m_yaw_pigeon = m_pigeon.getYaw();
-
-    // simple average, but could become weighted estimator.
-    m_yaw_blend = 0.5 * (m_yaw_navx + m_yaw_pigeon);
-
+    updateYaw();
+    setActiveGryo();
     getRotationPositions(m_rot);
 
     log(20);
   }
 
+  void updateYaw(){
+    if(m_ahrs.isMagnetometerCalibrated()){ // We will only get valid fused headings if the magnetometer is calibrated
+      m_yaw_navx = m_ahrs.getFusedHeading(); //returns 0-360 deg; CW positive
+      m_yaw_navx -= 180; //convert to -180 to 180
+    } else {
+      m_yaw_navx = m_ahrs.getYaw(); //gryo only, returns -180 to 180; CW positive
+    }
+    m_yaw_navx_d = m_ahrs.getRate();
+
+    m_yaw_pigeon = -m_pigeon.getYaw(); //CCW positive, inverting here to match all the NavX code previously written.  Need to check range
+
+    // simple average, but could become weighted estimator.
+    m_yaw_blend = 0.5 * (m_yaw_navx + m_yaw_pigeon);
+  }
 
   void setActiveGryo(){
     switch(c_gryo_status){
@@ -226,7 +242,9 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
           System.out.println("***NAVX COM LOST, SWITCHING TO PIGEON***");
         } else {
           if((log_counter % 10)==0) {
-            m_pigeon.setYaw(m_yaw_navx); // keep pigeon calibrated to navx as long as navx is working, so when if it switches over there is no jump in yaw, but every 10 cycles not to hammer CAN
+            m_pigeon.setYaw(-m_yaw_navx); 
+            // keep pigeon calibrated to navx as long as navx is working, so when if it switches over there is no jump in yaw, 
+            //but every 10 cycles not to hammer CAN.  Also invert as NAVx an pigeon have opposite rotation conventions
           }
         }
       break;
@@ -261,9 +279,9 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
 
       nt_yaw_navx.setDouble(m_yaw_navx);
       nt_yaw_navx_dot.setDouble(m_yaw_navx_d);
+      nt_yaw_pigeon.setDouble(m_yaw_pigeon);
 
       nt_yaw_blend.setDouble(m_yaw_blend);
-  // CHANGED 2022: For some reason the method name is getCANStatus instead of GetCANStatus
       CANJNI.getCANStatus(m_canStatus);
       nt_canUtilization.setDouble(m_canStatus.percentBusUtilization);
       nt_canRxError.setNumber(m_canStatus.receiveErrorCount);
@@ -274,7 +292,9 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
       nt_cancoder_br.setDouble(m_rot.back_right);
       nt_cancoder_fl.setDouble(m_rot.front_left);
       nt_cancoder_fr.setDouble(m_rot.front_right);
-
+      nt_activeIMU.setString(c_gryo_status.toString());
+      nt_yaw.setDouble(getYaw());
+      nt_rotation.setDouble(getRotation2d().getDegrees());
       nt_roll.setDouble(m_ahrs.getRoll());
       nt_pitch.setDouble(m_ahrs.getPitch());
     }
@@ -285,20 +305,6 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
     if (m_ahrs.isConnected()) {
       m_ahrs.reset();
       m_ahrs.resetDisplacement();
-    }
-  }
-
-  public double getYaw() {
-    switch (c_yaw_type) {
-      case kNavX:
-        return m_yaw_navx;
-      
-      case kPigeon:
-        return m_yaw_pigeon;
-
-      case kBlended:
-      default:
-        return m_yaw_blend;
     }
   }
 
@@ -339,6 +345,38 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
     m_gyro_ahrs.close();
   }
 
+
+    /**
+   * Return the heading of the robot in degrees.
+   *
+   * <p>
+   * The angle is continuous, that is it will continue from 360 to 361 degrees.
+   * This allows algorithms that wouldn't want to see a discontinuity in the gyro
+   * output as it sweeps past from 360 to 0 on the second time around.
+   *
+   * <p>
+   * The angle is expected to increase as the gyro turns clockwise when looked at
+   * from the top. It needs to follow the NED axis convention.
+   *
+   * <p>
+   * This heading is based on integration of the returned rate from the gyro.
+   *
+   * @return the current heading of the robot in degrees.
+   */
+  public double getYaw() {
+    switch (c_yaw_type) {
+      case kNavX:
+        return m_yaw_navx;
+      
+      case kPigeon:
+        return m_yaw_pigeon;
+
+      case kBlended:
+      default:
+        return m_yaw_blend;
+    }
+  }
+
   /**
    * Return the heading of the robot in degrees.
    *
@@ -359,6 +397,26 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
   @Override
   public double getAngle() {
     return getYaw();
+  }
+
+/**
+   * Return the heading of the robot as a {@link edu.wpi.first.math.geometry.Rotation2d}.
+   *
+   * <p>The angle is continuous, that is it will continue from 360 to 361 degrees. This allows
+   * algorithms that wouldn't want to see a discontinuity in the gyro output as it sweeps past from
+   * 360 to 0 on the second time around.
+   *
+   * <p>The angle is expected to increase as the gyro turns counterclockwise when looked at from the
+   * top. It needs to follow the NWU axis convention.
+   *
+   * <p>This heading is based on integration of the returned rate from the gyro.
+   *
+   * @return the current heading of the robot as a {@link
+   *     edu.wpi.first.math.geometry.Rotation2d}.
+   */
+  @Override
+  public Rotation2d getRotation2d() {
+    return Rotation2d.fromDegrees(-getAngle());
   }
 
   /**
@@ -419,25 +477,7 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
   }
 
 
-/**
-   * Return the heading of the robot as a {@link edu.wpi.first.math.geometry.Rotation2d}.
-   *
-   * <p>The angle is continuous, that is it will continue from 360 to 361 degrees. This allows
-   * algorithms that wouldn't want to see a discontinuity in the gyro output as it sweeps past from
-   * 360 to 0 on the second time around.
-   *
-   * <p>The angle is expected to increase as the gyro turns counterclockwise when looked at from the
-   * top. It needs to follow the NWU axis convention.
-   *
-   * <p>This heading is based on integration of the returned rate from the gyro.
-   *
-   * @return the current heading of the robot as a {@link
-   *     edu.wpi.first.math.geometry.Rotation2d}.
-   */
-  @Override
-  public Rotation2d getRotation2d() {
-    return Rotation2d.fromDegrees(-getAngle());
-  }
+
 
   public static class Signals {
     public enum Signal {
