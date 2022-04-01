@@ -240,7 +240,7 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
         if(!m_ahrs.isConnected() || navxManuallyDisabled){
           setSensorType(YawSensor.kPigeon);
           c_gryo_status = GyroStatus.UsingPigeon;
-          System.out.println("***NAVX COM LOST, SWITCHING TO PIGEON***");
+          System.out.println("***NAVX COM LOST (or manually disabled), SWITCHING TO PIGEON***");
         } else {
           if((log_counter % 10)==0) {
             m_pigeon.setYaw(-m_yaw_navx); 
@@ -251,10 +251,10 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
       break;
 
       case UsingPigeon:
-        if(m_ahrs.isConnected()){
+        if(m_ahrs.isConnected() && !navxManuallyDisabled){
           setSensorType(YawSensor.kNavX);
           c_gryo_status = GyroStatus.UsingNavx;
-          System.out.println("***NAVX COM RESTORED, SWITCHING TO NAVX***");
+          System.out.println("***NAVX COM RESTORED (or manually renabled), SWITCHING TO NAVX***");
         }
       break;
     }
