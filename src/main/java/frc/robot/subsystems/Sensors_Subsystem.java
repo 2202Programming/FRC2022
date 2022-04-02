@@ -129,8 +129,8 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
   final RotationPositions m_rot = new RotationPositions();
 
   // configurion setting
-  YawSensor c_yaw_type = YawSensor.kNavX;
-  GyroStatus c_gryo_status = GyroStatus.UsingNavx;
+  YawSensor c_yaw_type = YawSensor.kPigeon;
+  GyroStatus c_gryo_status = GyroStatus.UsingPigeon;
 
   double log_counter = 0;
   private boolean navxManuallyDisabled = false;
@@ -187,7 +187,7 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
   }
 
   public void setSensorType(YawSensor type) {
-    this.c_yaw_type = type;
+    //keep pigeon this.c_yaw_type = type;
   }
 
   public AHRS getAHRS(){
@@ -217,7 +217,7 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
   public void periodic() {
     // This method will be called once per scheduler run
     updateYaw();
-    setActiveGryo();
+    //setActiveGryo();
     getRotationPositions(m_rot);
 
     log(20);
@@ -255,7 +255,8 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
       break;
 
       case UsingPigeon:
-        if(m_ahrs.isConnected() && !navxManuallyDisabled){
+      //force pigeon per Alek's no drift policy.
+        if(false && m_ahrs.isConnected() && !navxManuallyDisabled){
           setSensorType(YawSensor.kNavX);
           c_gryo_status = GyroStatus.UsingNavx;
           System.out.println("***NAVX COM RESTORED (or manually renabled), SWITCHING TO NAVX***");
