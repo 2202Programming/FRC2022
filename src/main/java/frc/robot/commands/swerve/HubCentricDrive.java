@@ -68,8 +68,11 @@ public class HubCentricDrive extends CommandBase {
   Rotation2d targetAngle;
   Rotation2d velocityCorrectionAngle;
 
-  double min_rot_rate = 20.0;
+  double min_rot_rate = 6.0;        //about 7.5 deg is min we measured
   double r_min_rot_rate = min_rot_rate;
+
+  final double vel_tol = 10.0;
+  final double pos_tol = 2.0;
 
   public HubCentricDrive(SwerveDrivetrain drivetrain, DriverControls dc, Limelight_Subsystem limelight) {
     this.drivetrain = drivetrain;
@@ -80,7 +83,7 @@ public class HubCentricDrive extends CommandBase {
 
     // anglePid = new PIDController(angle_kp, angle_ki, angle_kd);
     limelightPid = new PIDController(limelight_kP, limelight_kI, limelight_kD);
-    limelightPid.setTolerance(2, 10);
+    limelightPid.setTolerance(pos_tol, vel_tol);
 //limelightPid.setTolerance(Shooter.angleErrorTolerance, Shooter.angleVelErrorTolerance);
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
     NTangleError = table.getEntry("/HubCentric/angleError");
@@ -116,12 +119,12 @@ public class HubCentricDrive extends CommandBase {
     limelightPidOutput = limelightPid.calculate(llx);
     SmartDashboard.putNumber("LLPidOutput", limelightPidOutput);
     SmartDashboard.putNumber("LLFiltered", limelight.getFilteredX());
-    SmartDashboard.putNumber("PID PositionError", limelightPid.getPositionError());
+    SmartDashboard.putNumber("PID PosError", limelightPid.getPositionError());
     SmartDashboard.putNumber("PID VelError", limelightPid.getVelocityError());
     angleError = Rotation2d.fromDegrees(limelight.getX()); //approximation of degrees off center
 
     // Clamp rotation rate to +/- X degrees/sec
-    double min_rot = (Math.abs(llx) > 2.0)  ? - Math.signum(llx) *min_rot_rate : 0.0;
+    double min_rot = (Math.abs(llx) > pos_tol)  ? - Math.signum(llx) * min_rot_rate : 0.0;
     rot = MathUtil.clamp(limelightPidOutput + min_rot, -max_rot_rate, max_rot_rate) / 57.3;   //clamp in [deg/s] convert to [rad/s]
 
     currentAngle = drivetrain.getPose().getRotation();

@@ -93,7 +93,16 @@ public class VelShootGatedCommand extends VelShootCommand{
         // thes methods have side-effect flags
         calculateDistance();  // sets currentDistance
         calculateVelocity();  // sets outOfRange and calculatedVelocity
-        
+
+        //if autovelocity is true will calculate a new RPM speed based on the distance and adjust positioner
+        //otherwise RPMs should be constant based on the constructor parameters
+        if (autoVelocity) {
+            if (mag_ctrl.safeToSpinUp() && (calculatedVel != cmdSS.vel)) {
+                cmdSS.vel = calculatedVel;   //shouldn't have to create new object, just change vel
+                shooter.spinup(cmdSS);
+            }
+        } 
+
         switch(stage){
             case WaitingOnMag:                
                 if (mag_ctrl.safeToSpinUp()) {
@@ -128,15 +137,6 @@ public class VelShootGatedCommand extends VelShootCommand{
             default:
                 break;
         }
-
-        //if autovelocity is true will calculate a new RPM speed based on the distance and adjust positioner
-        //otherwise RPMs should be constant based on the constructor parameters
-        if (autoVelocity) {
-            if (mag_ctrl.safeToSpinUp() && (calculatedVel != cmdSS.vel)) {
-                cmdSS.vel = calculatedVel;   //shouldn't have to create new object, just change vel
-                shooter.spinup(cmdSS);
-            }
-        } 
 
         NTupdates();
     }
