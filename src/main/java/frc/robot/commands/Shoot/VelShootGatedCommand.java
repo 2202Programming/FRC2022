@@ -148,6 +148,10 @@ public class VelShootGatedCommand extends VelShootCommand{
         shooter.off();
     }
 
+    @Override
+    public boolean isFinished() {
+        return (mag_ctrl.getBallCount() <= 0);
+    }
 
     void NTupdates(){
         log_counter++;
