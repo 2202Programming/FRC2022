@@ -57,6 +57,7 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
   private NetworkTableEntry nt_yaw_navx;
   private NetworkTableEntry nt_yaw_navx_dot;
   private NetworkTableEntry nt_yaw_blend;
+  private NetworkTableEntry nt_yaw_pigeon;
 
   private NetworkTableEntry nt_canUtilization;
   private NetworkTableEntry nt_canTxError;
@@ -149,6 +150,7 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
     nt_yaw_navx = table.getEntry("yaw_navx");
     nt_yaw_navx_dot = table.getEntry("yaw_navx_d");
     nt_yaw_blend = table.getEntry("yaw_blend");
+    nt_yaw_pigeon = table.getEntry("yaw_pigeon");
 
     nt_canUtilization = table.getEntry("CanUtilization/value");
     nt_canRxError = table.getEntry("CanRxError");
@@ -261,6 +263,7 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
 
       nt_yaw_navx.setDouble(m_yaw_navx);
       nt_yaw_navx_dot.setDouble(m_yaw_navx_d);
+      nt_yaw_pigeon.setDouble(m_yaw_pigeon);
 
       nt_yaw_blend.setDouble(m_yaw_blend);
   // CHANGED 2022: For some reason the method name is getCANStatus instead of GetCANStatus
