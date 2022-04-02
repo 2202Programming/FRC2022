@@ -57,6 +57,10 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
 
     double log_counter = 0;
 
+    //for velocity calculation
+    final double SLOPE = 4.872;
+    final double INTERCEPT = 26.8;
+
     final static ShooterSettings defaultShooterSettings = new ShooterSettings(20.0, 0.0, USE_CURRENT_ANGLE, 0.01);
 
     public enum Stage{
@@ -223,7 +227,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
     }
 
     public void calculateVelocity(){       
-        calculatedVel = 4.64*currentDistance + 26.8; //distnce vs. velocity trendline for long range positioner
+        calculatedVel = SLOPE*currentDistance + INTERCEPT; //distnce vs. velocity trendline for long range positioner
 
         if (calculatedVel > Shooter.kMaxFPS){
             outOfRange = true;
