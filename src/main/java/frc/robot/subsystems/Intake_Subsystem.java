@@ -3,12 +3,10 @@ package frc.robot.subsystems;
 import static frc.robot.Constants.CAN;
 import static frc.robot.Constants.PCM1;
 
-import static frc.robot.Constants.DigitalIO;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj.DigitalInput;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -33,8 +31,7 @@ public class Intake_Subsystem extends SubsystemBase {
                 PneumaticsModuleType.CTREPCM,
                 PCM1.INTAKE_UP_SOLENOID_PCM,
                 PCM1.INTAKE_DOWN_SOLENOID_PCM);
-    final DigitalInput intake_lightGate = new DigitalInput(DigitalIO.INTAKE_GATE);
-
+    
     private CANSparkMax r_side_mtr = new CANSparkMax(CAN.MAG_R_SIDE_MTR, MotorType.kBrushless);
     private CANSparkMax l_side_mtr = new CANSparkMax(CAN.MAG_L_SIDE_MTR, MotorType.kBrushless);
 
@@ -60,20 +57,28 @@ public class Intake_Subsystem extends SubsystemBase {
         l_side_mtr.set(sideMotorStrength);
     }
 
-    // used by new gated magazine control
     public void defaultOn(){
         double intakeMotorStrength = 0.6;
-        double sideMotorStrength = 0.5;
         intake_mtr.set(intakeMotorStrength);
+        sidesOn();
+    }       
+
+     // used by gated magazine control
+    public void sidesOn() {
+        double sideMotorStrength = 0.5; 
         r_side_mtr.set(sideMotorStrength);
         l_side_mtr.set(sideMotorStrength);
+    }
+
+    public void sidesOff() {
+        r_side_mtr.set(0);
+        l_side_mtr.set(0);
     }
 
     //Turn Intake Motor Off by setting a double value
     public void off() {
         intake_mtr.set(0.0);
-        r_side_mtr.set(0);
-        l_side_mtr.set(0);
+        sidesOff();
     }
 
     //Deploy arm mechanism using a Double Solenoids
@@ -86,11 +91,6 @@ public class Intake_Subsystem extends SubsystemBase {
         intake_solenoid.set(RETRACT);
     }
     
-    //Indicates if Cargo is inside the intake
-    public boolean isCargoDetected() {
-        return intake_lightGate.get();
-    }
-
     //Returns the state of the Intake Arm
     public boolean isDeployed() {
       return ( intake_solenoid.get() == DEPLOY); 
