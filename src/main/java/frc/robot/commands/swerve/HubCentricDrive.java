@@ -123,9 +123,6 @@ public class HubCentricDrive extends CommandBase {
     double min_rot = (Math.abs(llx) > 1.0)  ?  Math.signum(llx) *min_rot_rate : 0.0;
     rot = MathUtil.clamp(limelightPidOutput + min_rot, -max_rot_rate, max_rot_rate) / 57.3;   //clamp in [deg/s] convert to [rad/s]
      
-    // update rotation and calulate new output-states
-    ///rot = llLimiter.calculate(limelightPidOutput) / 57.3; //degrees to radians/sec
-   
     currentAngle = drivetrain.getPose().getRotation();
     output_states = kinematics
         .toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, currentAngle));
