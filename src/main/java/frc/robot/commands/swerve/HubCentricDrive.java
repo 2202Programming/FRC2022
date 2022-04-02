@@ -68,6 +68,9 @@ public class HubCentricDrive extends CommandBase {
   Rotation2d targetAngle;
   Rotation2d velocityCorrectionAngle;
 
+  double min_rot_rate;
+  double r_min_rot_rate;
+
   public HubCentricDrive(SwerveDrivetrain drivetrain, DriverControls dc, Limelight_Subsystem limelight) {
     this.drivetrain = drivetrain;
     addRequirements(drivetrain);
@@ -92,7 +95,7 @@ public class HubCentricDrive extends CommandBase {
   }
 
   void calculate() {
-    final double min_rot_rate = 2.0; // [deg/s]
+    min_rot_rate = 2.0; // [deg/s]
     final double max_rot_rate = 5.0;  //[deg/s]
     double llx = limelight.getX();  //[deg error]
 
@@ -130,6 +133,7 @@ public class HubCentricDrive extends CommandBase {
     SmartDashboard.putNumber("Requested Limelight P", r_limelight_kP);
     SmartDashboard.putNumber("Requested Limelight I", r_limelight_kI);
     SmartDashboard.putNumber("Requested Limelight D", r_limelight_kD);
+    SmartDashboard.putNumber("Requested min rotation rate", r_min_rot_rate);
   }
 
   @Override
@@ -194,6 +198,7 @@ public class HubCentricDrive extends CommandBase {
     SmartDashboard.putNumber("Current Limelight P", limelight_kP);
     SmartDashboard.putNumber("Current Limelight I", limelight_kI);
     SmartDashboard.putNumber("Current Limelight D", limelight_kD);
+    SmartDashboard.putNumber("Current min rotation rate", min_rot_rate);
 
     // SmartDashboard.putNumber("Requested Limelight P", r_limelight_kP);
     // SmartDashboard.putNumber("Requested Limelight I", r_limelight_kI);
@@ -204,12 +209,15 @@ public class HubCentricDrive extends CommandBase {
     r_limelight_kP = SmartDashboard.getNumber("Requested Limelight P", r_limelight_kP);
     r_limelight_kI = SmartDashboard.getNumber("Requested Limelight I", r_limelight_kI);
     r_limelight_kD = SmartDashboard.getNumber("Requested Limelight D", r_limelight_kD);
+    r_min_rot_rate = SmartDashboard.getNumber("Requested min rotation rate", r_min_rot_rate);
     if((r_limelight_kP!=limelight_kP) || (r_limelight_kI!=limelight_kI) || (r_limelight_kD != limelight_kD)){
       limelight_kP=r_limelight_kP;
       limelight_kI=r_limelight_kI;
       limelight_kD=r_limelight_kD;
       limelightPid.setPID(limelight_kP, limelight_kI, limelight_kD);
     }
+
+    min_rot_rate = r_min_rot_rate;
 
   }
 
