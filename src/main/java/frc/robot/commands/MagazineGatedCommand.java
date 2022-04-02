@@ -5,7 +5,6 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.RobotContainer;
 import frc.robot.commands.MovePositioner.PositionerMode;
 import frc.robot.subsystems.Intake_Subsystem;
@@ -44,12 +43,15 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
     final int SafetyBackupFC = 6;   //back off the flywheels
     final int ConfirmEmptyFC = 8;  //moves backward to check blind spot
     final int AlignFC = 10;         //moves forward to align when both gates have a ball
+    final int SideOffDelayFC = 10;
 
     final double SlowRotate = 0.5;
 
+    boolean prev_deployed;
     boolean prev_lower_lg;
     boolean prev_upper_lg;
     int frame_count_down; // used for open loop position, stop on zero.
+    int side_off_count_down;
 
     int ball_count;
 
@@ -113,6 +115,8 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
         nte_spinup_safe = table.getEntry("/spinupSafe");
         nte_state = table.getEntry("/state");
 
+        prev_deployed = intake.isDeployed();
+
         addRequirements(magazine);  //required for a default command
     }
 
@@ -166,7 +170,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
             switch (state) {
                 case ConfirmEmpty:
                     // back up for a bit to make sure we don't have a ball
-                    intake.off();
+                    intake.sidesOff();
                     magazine.driveWheelOn(-magazineSpeed);
                     if (--frame_count_down <= 0 || lower_lg) {
                         magazine.driveWheelOff();
@@ -178,7 +182,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
 
                 case Empty:
                     // Looking for ball to trigger lower gate, 
-                    intake.defaultOn();
+                    intakeSidesOn();
                     if (lower_lg && prev_lower_lg) {
                         state = MagazineState.OneBall_Lower;
                     }
@@ -186,7 +190,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
                     break;
 
                 case OneBall_Lower:
-                    intake.defaultOn();
+                    intakeSidesOn();
                     spinup_safe = true;
                     if (lower_lg) {
                         state = MagazineState.MovingToUpper;
@@ -209,6 +213,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
 
                 case OneBall_Upper:
                     spinup_safe = true;
+                    intakeSidesOn();
                     // Now we are looking for the 2nd ball to be trigger
                     if (lower_lg & prev_lower_lg) {
                         spinup_safe = false;
@@ -220,6 +225,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
 
                 case MovingBallTwoIn:
                     // moving second ball into magazine
+                    intake.sidesOff();
                     spinup_safe = false;
                     if (--frame_count_down <= 0) {
                         magazine.driveWheelOff();
@@ -230,7 +236,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
                     break;
 
                 case BackingUp:
-                    intake.off();
+                    intake.sidesOff();
                     spinup_safe = false;
                     if (--frame_count_down <= 0) {
                         magazine.driveWheelOff();
@@ -241,7 +247,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
 
                 case AlignTwoBalls:
                     // move balls up to flywheel
-                    intake.off();
+                    intake.sidesOff();
                     spinup_safe = false;
                     magazine.driveWheelOn(magazineSpeed*SlowRotate);
                     if (--frame_count_down <= 0) {
@@ -267,6 +273,21 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
         prev_upper_lg = upper_lg;
         prev_state = state;
         updateNT();
+    }
+
+    void intakeSidesOn() {
+        //sides on, only if deployed.
+        boolean deployed = intake.isDeployed();
+        if (intake.isDeployed()) intake.sidesOn();
+        else if (prev_deployed ==true  && intake.isDeployed() == false) {
+            side_off_count_down = SideOffDelayFC;
+        }
+        else {side_off_count_down = 0;}
+        if (side_off_count_down-- <= 0 ) {
+            intake.sidesOff();
+            side_off_count_down = 0;
+        }
+        prev_deployed = deployed;
     }
 
     // External Event Handling
