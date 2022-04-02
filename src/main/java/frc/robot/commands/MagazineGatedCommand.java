@@ -43,7 +43,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
     final int SafetyBackupFC = 6;   //back off the flywheels
     final int ConfirmEmptyFC = 8;  //moves backward to check blind spot
     final int AlignFC = 10;         //moves forward to align when both gates have a ball
-    final int SideOffDelayFC = 10;
+    final int SideOffDelayFC = 50;
 
     final double SlowRotate = 0.5;
 

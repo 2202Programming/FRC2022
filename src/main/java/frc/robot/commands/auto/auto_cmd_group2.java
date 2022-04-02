@@ -56,7 +56,7 @@ public class auto_cmd_group2 extends SequentialCommandGroup {
       new IntakeCommand(IntakeMode.Stop),
       new MoveIntake(DeployMode.Retract),
       //new VelShootCommand().withTimeout(1.8)
-      new VelShootGatedCommand(new ShooterSettings(Shooter.autoVelocity-2, 0.0, 0, Shooter.DefaultRPMTolerance), RobotContainer.RC().m_driveController.magazineController)
+      new VelShootGatedCommand(new ShooterSettings(Shooter.autoVelocity-2, 0.0, 0, Shooter.DefaultRPMTolerance), RobotContainer.RC().m_driveController.magazineController).withTimeout(1.8)
     );
   }
 

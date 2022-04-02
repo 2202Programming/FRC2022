@@ -68,7 +68,7 @@ public class HubCentricDrive extends CommandBase {
   Rotation2d targetAngle;
   Rotation2d velocityCorrectionAngle;
 
-  double min_rot_rate;
+  double min_rot_rate = 1.0;
   double r_min_rot_rate;
 
   public HubCentricDrive(SwerveDrivetrain drivetrain, DriverControls dc, Limelight_Subsystem limelight) {
@@ -95,7 +95,6 @@ public class HubCentricDrive extends CommandBase {
   }
 
   void calculate() {
-    min_rot_rate = 2.0; // [deg/s]
     final double max_rot_rate = 5.0;  //[deg/s]
     double llx = limelight.getX();  //[deg error]
 

@@ -43,7 +43,7 @@ public class auto_cmd_terminal extends SequentialCommandGroup {
     Command finalAutoB = new WaitCommand(0);
 
     if(m_controls.readSideboard(SBButton.Sw11)){
-      finalAuto = auto_pathPlanner_cmd.PathFactory2(2.5,2, "Auto21");
+      finalAuto = auto_pathPlanner_cmd.PathFactory2(3,2, "Auto21");
       finalAutoB = auto_pathPlanner_cmd.PathFactory3(2.5,2, "Auto21B");
     }
     else if(m_controls.readSideboard(SBButton.Sw12)){
@@ -64,7 +64,7 @@ public class auto_cmd_terminal extends SequentialCommandGroup {
       new WaitCommand(2),
       finalAutoB,
       new MoveIntake(DeployMode.Retract),
-      new VelShootGatedCommand(new ShooterSettings(Shooter.autoVelocity, 0.0, 0, Shooter.DefaultRPMTolerance), RobotContainer.RC().m_driveController.magazineController),
+      new VelShootGatedCommand(new ShooterSettings(Shooter.autoVelocity-2, 0.0, 0, Shooter.DefaultRPMTolerance), RobotContainer.RC().m_driveController.magazineController),
       new IntakeCommand(IntakeMode.Stop)
     );
   }
