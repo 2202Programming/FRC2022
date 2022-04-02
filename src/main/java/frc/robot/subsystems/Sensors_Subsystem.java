@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.NTStrings;
+import frc.robot.util.ModMath;
 
 public class Sensors_Subsystem extends SubsystemBase implements Gyro {
 
@@ -133,7 +134,7 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
   GyroStatus c_gryo_status = GyroStatus.UsingPigeon;
 
   double log_counter = 0;
-  private boolean navxManuallyDisabled = false;
+  private boolean navxManuallyDisabled = true;
   public Pose2d autoStartPose;
   public Pose2d autoEndPose;
 
@@ -232,7 +233,7 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
     }
     m_yaw_navx_d = m_ahrs.getRate();
 
-    m_yaw_pigeon = -m_pigeon.getYaw(); //CCW positive, inverting here to match all the NavX code previously written.  Need to check range
+    m_yaw_pigeon = ModMath.fmod360_2(-m_pigeon.getYaw()); //CCW positive, inverting here to match all the NavX code previously written.  Need to check range
 
     // simple average, but could become weighted estimator.
     m_yaw_blend = 0.5 * (m_yaw_navx + m_yaw_pigeon);
