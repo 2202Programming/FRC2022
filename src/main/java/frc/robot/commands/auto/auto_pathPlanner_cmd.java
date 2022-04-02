@@ -142,6 +142,7 @@ public class auto_pathPlanner_cmd extends CommandBase {
     return new SequentialCommandGroup(
       new InstantCommand(()-> {
         m_robotDrive.setPose(startingPose);
+        RobotContainer.RC().sensors.setAutoStartPose(startingPose);
       }),
       new autoPrint("***Factory1: Running Path " + pathname),
       swerveControllerCommand,
@@ -150,6 +151,8 @@ public class auto_pathPlanner_cmd extends CommandBase {
       );
   }
 
+  
+
   public static Command PathFactory2(double maxVel, double maxAcc, String pathname){
     SwerveDrivetrain m_robotDrive = RobotContainer.RC().drivetrain;
     var path = PathPlanner.loadPath(pathname, maxVel, maxAcc); //last two parameters are max velocity and max accelleration
@@ -157,7 +160,7 @@ public class auto_pathPlanner_cmd extends CommandBase {
     if (path == null) {
       return new InstantCommand();  // no path selected
     }
-      
+    
     // get initial state from the trajectory
     PathPlannerState initialState = path.getInitialState();
     Pose2d startingPose = new Pose2d(initialState.poseMeters.getTranslation(), initialState.holonomicRotation);

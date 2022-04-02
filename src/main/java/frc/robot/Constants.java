@@ -100,7 +100,7 @@ public final class Constants {
     public static final int CMB_RIGHT_Rotate = 37;
 
     //IMU
-    public static final int PIGEON_IMU_CAN = 40;
+    public static final int PIGEON_IMU_CAN = 60;
 
     // Whether to burn flash or not
     public static final boolean BURN_FLASH = false; //swerve-mk3

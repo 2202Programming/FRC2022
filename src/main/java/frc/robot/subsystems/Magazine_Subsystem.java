@@ -18,9 +18,8 @@ public class Magazine_Subsystem extends SubsystemBase {
   
 
   /*Definitions*/
-  final DigitalInput lightGate1 = new DigitalInput(DigitalIO.MAGAZINE_GATE1);
-  final DigitalInput lightGate2 = new DigitalInput(DigitalIO.MAGAZINE_GATE2);
-  final DigitalInput lightGate3 = new DigitalInput(DigitalIO.MAGAZINE_GATE3);
+  final DigitalInput lightGateLower = new DigitalInput(DigitalIO.MAGAZINE_GATE1);
+  final DigitalInput lightGateUpper = new DigitalInput(DigitalIO.MAGAZINE_GATE2);
 
   //Constructor
   public Magazine_Subsystem() {
@@ -54,14 +53,11 @@ public class Magazine_Subsystem extends SubsystemBase {
   }
   
   //lets us know if cargo is detected
-  public boolean isGate1Blocked() {
-    return lightGate1.get();
+  public boolean lowerGateBlocked() {
+    return  !lightGateLower.get();
   }
-  public boolean isGate2Blocked(){
-    return lightGate2.get();
-  }
-  public boolean isGate3Blocked(){
-    return lightGate3.get();
+  public boolean upperGateBlocked(){
+    return !lightGateUpper.get();
   }
 
 }

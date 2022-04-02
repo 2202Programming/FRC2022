@@ -15,12 +15,11 @@ import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.IntakeCommand.IntakeMode;
 import static frc.robot.commands.MoveIntake.DeployMode;
 import frc.robot.commands.MoveIntake;
-import frc.robot.commands.MagazineCommand;
-import frc.robot.commands.MagazineCommand.MagazineMode;
+import frc.robot.commands.MagazineGatedCommand;
 import frc.robot.commands.MovePositioner.PositionerMode;
 import frc.robot.commands.MovePositioner;
 import frc.robot.commands.ResetPosition;
-import frc.robot.commands.Shoot.VelShootCommand;
+import frc.robot.commands.Shoot.VelShootGatedCommand;
 import frc.robot.commands.auto.auto_cmd;
 import frc.robot.commands.climber.MidClimb;
 import frc.robot.commands.climber.MoveArmsTo;
@@ -28,7 +27,6 @@ import frc.robot.commands.climber.PitAlignClimber;
 import frc.robot.commands.climber.TraverseClimb;
 import frc.robot.commands.swerve.DriveController;
 import frc.robot.commands.swerve.LimelightDriveCmd;
-import frc.robot.commands.test.ClimberTestRotRate;
 import frc.robot.commands.test.ClimberTestVelocity;
 import frc.robot.commands.test.LightGateTest;
 import frc.robot.subsystems.Intake_Subsystem;
@@ -95,7 +93,7 @@ public class RobotContainer {
       magazine = new Magazine_Subsystem();
     if (Constants.HAS_INTAKE) {
       intake = new Intake_Subsystem();
-      ///intake.setDefaultCommand(new LightGateTest());
+    
     }
     if (Constants.HAS_CLIMBER)
       climber = new Climber();
@@ -109,6 +107,10 @@ public class RobotContainer {
       // drivetrain.setDefaultCommand(m_driveController);
     }
 
+    //TEST CODE 
+    driverControls.bind(Id.SwitchBoard, SBButton.Sw16).whenPressed(new LightGateTest());
+  
+
     // //setup the dashboard programatically, creates any choosers, screens
     // dashboard = new Dashboard(this);
 
@@ -116,9 +118,9 @@ public class RobotContainer {
     setAssistantButtons();
     
     // Sideboard 
-    if (Constants.HAS_CLIMBER) {
+    if (Constants.HAS_CLIMBER) { driverControls.bind(Id.SwitchBoard, SBButton.Sw21).whileHeld(new 
       // warning - PitAlign command use Driver's DPAD, RB and, LB. DPL-can we run this in TEST mode?
-      driverControls.bind(Id.SwitchBoard, SBButton.Sw21).whileHeld(new PitAlignClimber(driverControls, Id.Driver, climber, 2.0, 5.0)); //[in/s] [deg/s]
+     PitAlignClimber(driverControls, Id.Driver, climber, 2.0, 5.0)); //[in/s] [deg/s]
       driverControls.bind(Id.SwitchBoard, SBButton.Sw22).whenPressed(new MidClimb(climber));
       driverControls.bind(Id.SwitchBoard, SBButton.Sw23).whenPressed(new TraverseClimb(climber));
       driverControls.bind(Id.SwitchBoard, SBButton.Sw24).whileHeld(new SequentialCommandGroup(
@@ -156,6 +158,9 @@ public class RobotContainer {
     // RB limelight toggle
     driverControls.bind(Id.Driver, XboxButton.X).whenPressed(new InstantCommand(limelight::toggleLED));
 
+    //temporary for navx/pigeon testing
+    driverControls.bind(Id.Driver, XboxPOV.POV_UP).whenPressed(new InstantCommand(()->{ sensors.disableNavx(true); }));
+    driverControls.bind(Id.Driver, XboxPOV.POV_DOWN).whenPressed(new InstantCommand(()->{ sensors.disableNavx(false); }));
 
   }
 
@@ -174,25 +179,26 @@ public class RobotContainer {
 
     if (Constants.HAS_INTAKE) {
       driverControls.bind(Id.Assistant, XboxButton.LB).whenPressed(new MoveIntake(DeployMode.Toggle));
-      driverControls.bind(Id.Assistant, XboxButton.A).whileHeld(new IntakeCommand((() -> 0.47), () -> 0.20, IntakeMode.LoadCargo));
-      driverControls.bind(Id.Assistant, XboxButton.B).whileHeld(new IntakeCommand((() -> 0.35), () -> 0.20, IntakeMode.ExpellCargo));
+      //vertical intake controls
+      driverControls.bind(Id.Assistant, XboxButton.A).whileHeld(new IntakeCommand((() -> 0.6), () -> 0.5, IntakeMode.LoadCargo));
+      driverControls.bind(Id.Assistant, XboxButton.B).whileHeld(new IntakeCommand((() -> 0.35), () -> 0.5, IntakeMode.ExpellCargo));
     }
 
-    if (Constants.HAS_MAGAZINE) {
+    if (Constants.HAS_MAGAZINE && Constants.HAS_SHOOTER) {
       // Positioner binds :)
       driverControls.bind(Id.Assistant, XboxButton.RB).whenPressed(new MovePositioner(PositionerMode.Toggle));
 
-      // MagazineCommand to intake or expell ball
-      driverControls.bind(Id.Assistant, XboxButton.X).whileHeld(new MagazineCommand((() -> 1.0), MagazineMode.LoadCargo));
-      driverControls.bind(Id.Assistant, XboxButton.Y).whileHeld(new MagazineCommand((() -> 1.0), MagazineMode.ExpellCargo));
-    }
+      // MagazineCommand 
+      MagazineGatedCommand mag_default_cmd = new MagazineGatedCommand(1.0);
+      magazine.setDefaultCommand(mag_default_cmd);
+      driverControls.bind(Id.Assistant, XboxButton.X).whileHeld(mag_default_cmd.getFeedCmd());
+      driverControls.bind(Id.Assistant, XboxButton.Y).whileHeld(mag_default_cmd.getEjectCmd());
 
-    if (Constants.HAS_SHOOTER) {
-      driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_RIGHT).whileHeld(new VelShootCommand(Shooter.DefaultSettings, 20)); 
-      driverControls.bind(Id.Assistant, XboxPOV.POV_LEFT).whileHeld(new VelShootCommand(Shooter.shortVelocity, false));
-      driverControls.bind(Id.Assistant, XboxPOV.POV_UP).whileHeld(new VelShootCommand(Shooter.shortMediumVelocity, false));
-      driverControls.bind(Id.Assistant, XboxPOV.POV_DOWN).whileHeld(new VelShootCommand(Shooter.mediumVelocity, false));
-      driverControls.bind(Id.Assistant, XboxPOV.POV_RIGHT).whileHeld(new VelShootCommand(Shooter.longVelocity, false));
+      driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_RIGHT).whileHeld(new VelShootGatedCommand(Shooter.DefaultSettings,     mag_default_cmd));
+      driverControls.bind(Id.Assistant, XboxPOV.POV_LEFT)      .whileHeld(new VelShootGatedCommand(Shooter.shortVelocity,       mag_default_cmd));
+      driverControls.bind(Id.Assistant, XboxPOV.POV_UP)        .whileHeld(new VelShootGatedCommand(Shooter.shortMediumVelocity, mag_default_cmd));
+      driverControls.bind(Id.Assistant, XboxPOV.POV_DOWN)      .whileHeld(new VelShootGatedCommand(Shooter.mediumVelocity,      mag_default_cmd));
+      driverControls.bind(Id.Assistant, XboxPOV.POV_RIGHT)     .whileHeld(new VelShootGatedCommand(Shooter.longVelocity,        mag_default_cmd));
     }
   }
 
