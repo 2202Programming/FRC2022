@@ -1,121 +1,151 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
-//Aims the robot using limelight and odometry to target
-
 package frc.robot.commands.Shoot;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
+import frc.robot.Constants.DriveTrain;
 import frc.robot.Constants.Shooter;
 import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import frc.robot.subsystems.ifx.DriverControls;
+import frc.robot.util.PoseMath;
 
-public class LimelightAim extends CommandBase {
-  /** Creates a new LimelightShoot. */
+/* Current driving behavior:
+  Starts in field centric
+  B will toggle between field centric and intake centric
+  Holding right trigger will switch to hub centric until you let go, then it will go back to original mode
+          (either field or intake centric, depending what you started in)
+  If in intake centric and you try to rotate with left joystick, will drop back to field centric mode.
+*/
 
-  SwerveDrivetrain drivetrain;
-  Limelight_Subsystem limelight;
+
+public class LimeLightAim extends CommandBase {
+
+  final SwerveDrivetrain drivetrain;
   final SwerveDriveKinematics kinematics;
+  final Limelight_Subsystem limelight;
 
   // output to Swerve Drivetrain
-  double rot;
+  double xSpeed, ySpeed, rot;
   SwerveModuleState[] output_states;
-
-  // PID for odometery-based heading to a target
-  private PIDController anglePid;
-  private double angle_kp = 0.075;
-  private double angle_ki = 0.004;
-  private double angle_kd = 0.005;
 
   // PID for limelight-based heading to a target
   PIDController limelightPid;
-  double limelight_kP = 0.05;
-  double limelight_kI = 0.0;
-  double limelight_kD = 0.0;
+  double limelight_kP = Shooter.limelight_default_p;
+  double limelight_kI = Shooter.limelight_default_i;
+  double limelight_kD = Shooter.limelight_default_d;
   double limelightPidOutput = 0.0;
+  
+  double r_limelight_kP = limelight_kP;
+  double r_limelight_kI = limelight_kI;
+  double r_limelight_kD = limelight_kD;
 
+  // Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
+  final SlewRateLimiter xspeedLimiter = new SlewRateLimiter(3);
+  final SlewRateLimiter yspeedLimiter = new SlewRateLimiter(3);
+  final SlewRateLimiter rotLimiter = new SlewRateLimiter(3);
+  final SlewRateLimiter llLimiter = new SlewRateLimiter(3);
+
+  NetworkTable table;
+  private NetworkTableEntry NTangleError;
+  public final String NT_Name = "Shooter"; 
+
+  double log_counter = 0;
   Rotation2d currentAngle;
   Rotation2d angleError;
   Rotation2d targetAngle;
-  private Pose2d centerField = new Pose2d(27, 13.5, new Rotation2d()); //actual
-  final SlewRateLimiter rotLimiter = new SlewRateLimiter(3);
-  final SlewRateLimiter llLimiter = new SlewRateLimiter(3);
-  
-  private boolean finished = false;
-  private double tolerance;
+  Rotation2d velocityCorrectionAngle;
 
-  public LimelightAim(double tolerance) {
+  double min_rot_rate = 6.0;        //about 7.5 deg is min we measured
+  double r_min_rot_rate = min_rot_rate;
+
+  final double vel_tol = 10.0;
+  final double pos_tol = 2.0;
+
+  public LimeLightAim() {
     this.drivetrain = RobotContainer.RC().drivetrain;
-    // tolerance is in degrees
-    this.limelight = RobotContainer.RC().limelight;
-    this.kinematics = drivetrain.getKinematics();
-    this.tolerance = tolerance;
     addRequirements(drivetrain);
+    this.kinematics = drivetrain.getKinematics();
+    this.limelight = RobotContainer.RC().limelight;
+
+    // anglePid = new PIDController(angle_kp, angle_ki, angle_kd);
+    limelightPid = new PIDController(limelight_kP, limelight_kI, limelight_kD);
+    limelightPid.setTolerance(pos_tol, vel_tol);
+    table = NetworkTableInstance.getDefault().getTable(NT_Name);
+    NTangleError = table.getEntry("/HubCentric/angleError");
+
+    calculate();
+
   }
 
-  // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    anglePid = new PIDController(angle_kp, angle_ki, angle_kd);
-    anglePid.enableContinuousInput(-Math.PI, Math.PI);
-    limelightPid = new PIDController(limelight_kP, limelight_kI, limelight_kD);
-    limelightPid.setTolerance(Shooter.angleErrorTolerance, Shooter.angleVelErrorTolerance);
-  }
-
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
-    calculate();
-  }
-
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {}
-
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return limelightPid.atSetpoint();
+    updateNT();
   }
 
   void calculate() {
+    final double max_rot_rate = 60.0;  //[deg/s]
+    double llx = limelight.getFilteredX();  //[deg error]
 
-    rot = 0;
-    // set goal of angle PID to be heading (in rad) from current position to
-    // centerfield
-    targetAngle = getHeading2Target(drivetrain.getPose(), centerField);
-    targetAngle.plus(new Rotation2d(Math.PI)); // flip since shooter is on "back" of robot, bound to -pi to +pi
-    currentAngle = drivetrain.getPose().getRotation(); // from -pi to pi
-    angleError = targetAngle;
-    angleError.minus(currentAngle);
-    anglePid.setSetpoint(targetAngle.getDegrees()); //PID was tuned in degrees already
-    rot = anglePid.calculate(currentAngle.getDegrees());
+    // limelight is on the shooter side, so we don't need to worry about flipping target angles
+    limelightPid.setSetpoint(0);
 
-    if (limelight.getTarget() && limelight.getLEDStatus()) {
-      // if limelight is available, override rotation input from odometery to limelight
-      limelightPid.setSetpoint(0); // always go towards the light.
-      limelightPidOutput = limelightPid.calculate(limelight.getFilteredX());
-      // update rotation and calulate new output-states
-      rot = llLimiter.calculate(limelightPidOutput);
-    }
+    //uncomment this below and comment line above when ready to test velocity correction
+    //limelightPid.setSetpoint(velocityCorrectionAngle.getDegrees()*Shooter.degPerPixel); // 0 is towards target, 
+   
+    limelightPidOutput = limelightPid.calculate(llx);
+    angleError = Rotation2d.fromDegrees(limelight.getX()); //approximation of degrees off center
 
-    output_states = kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, rot, currentAngle));
+    // Clamp rotation rate to +/- X degrees/sec
+    double min_rot = (Math.abs(llx) > pos_tol)  ? - Math.signum(llx) * min_rot_rate : 0.0;
+    rot = MathUtil.clamp(limelightPidOutput + min_rot, -max_rot_rate, max_rot_rate) / 57.3;   //clamp in [deg/s] convert to [rad/s]
+
+    currentAngle = drivetrain.getPose().getRotation();
+    output_states = kinematics
+        .toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, rot, currentAngle));
 
   }
-  
-  // takes 2 positions, gives heading from current point to target (in degrees)
-  Rotation2d getHeading2Target(Pose2d current, Pose2d target) {
-    // from -PI to +PI
-    return new Rotation2d(Math.atan2(target.getY() - current.getY(), target.getX() - current.getX()));
+
+  @Override
+  public void execute() {
+
+    calculate();
+    drivetrain.drive(output_states);
+    updateNT();
+  }
+
+  @Override
+  public boolean isFinished(){
+    return isReady();
+  }
+
+  @Override
+  public void end(boolean interrupted) {
+    drivetrain.stop();
+  }
+
+  void updateNT() {
+    log_counter++;
+    if ((log_counter%20)==0) {
+      // update network tables
+      NTangleError.setDouble(angleError.getDegrees());
+    }
+  }
+
+  public boolean isReady() {
+    return limelightPid.atSetpoint();
   }
 
 }
