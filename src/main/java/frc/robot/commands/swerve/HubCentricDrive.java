@@ -117,10 +117,6 @@ public class HubCentricDrive extends CommandBase {
     //limelightPid.setSetpoint(velocityCorrectionAngle.getDegrees()*Shooter.degPerPixel); // 0 is towards target, 
    
     limelightPidOutput = limelightPid.calculate(llx);
-    SmartDashboard.putNumber("LLPidOutput", limelightPidOutput);
-    SmartDashboard.putNumber("LLFiltered", limelight.getFilteredX());
-    SmartDashboard.putNumber("PID PosError", limelightPid.getPositionError());
-    SmartDashboard.putNumber("PID VelError", limelightPid.getVelocityError());
     angleError = Rotation2d.fromDegrees(limelight.getX()); //approximation of degrees off center
 
     // Clamp rotation rate to +/- X degrees/sec
@@ -131,19 +127,12 @@ public class HubCentricDrive extends CommandBase {
     output_states = kinematics
         .toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, currentAngle));
 
-    SmartDashboard.putNumber("Rot (rad)", rot);
-    SmartDashboard.putNumber("Min_rot (deg)", min_rot);
-
-    SmartDashboard.putNumber("Requested Limelight P", r_limelight_kP);
-    SmartDashboard.putNumber("Requested Limelight I", r_limelight_kI);
-    SmartDashboard.putNumber("Requested Limelight D", r_limelight_kD);
-    SmartDashboard.putNumber("Requested min rotation rate", r_min_rot_rate);
   }
 
   @Override
   public void execute() {
-    pidPrint();
-    pidSet();
+    //pidPrint();
+    //pidSet();
     calculate();
     drivetrain.drive(output_states);
     updateNT();
