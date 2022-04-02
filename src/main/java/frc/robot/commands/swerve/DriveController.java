@@ -43,7 +43,7 @@ public class DriveController  extends CommandBase implements SolutionProvider {
   SwerveDrivetrain drivetrain;
   DriverControls dc;
   Shooter_Subsystem shooter;
-  MagazineController magazineController;
+  public MagazineController magazineController;
   Limelight_Subsystem limelight;
   RobotCentricDrive m_robotCentricDrive;
   FieldCentricDrive m_fieldCentricDrive;
@@ -84,7 +84,7 @@ public class DriveController  extends CommandBase implements SolutionProvider {
     //shootCommand = new VelShootCommand(45,false);  //right now just use fixed velocity; eventually replace with limelight distance estimated velocity
     
     //use this one when ready for solution provider and velocity auto adjustment
-    shootCommand = new VelShootGatedCommand(new ShooterSettings(20.0, 0.0, 0, Shooter.DefaultRPMTolerance), magazineController, this, true);
+    shootCommand = new VelShootGatedCommand(magazineController, this);
 
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
     shooterTable = NetworkTableInstance.getDefault().getTable(NT_ShooterName);
@@ -195,6 +195,7 @@ public class DriveController  extends CommandBase implements SolutionProvider {
 
   public void turnOnShootingMode(){
     shootingRequested = true;
+    limelight.enableLED();
   }
 
   public void turnOffShootingMode(){

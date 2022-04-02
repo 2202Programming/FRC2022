@@ -18,11 +18,13 @@ import frc.robot.commands.MoveIntake;
 import frc.robot.commands.IntakeCommand.IntakeMode;
 import frc.robot.commands.MoveIntake.DeployMode;
 import frc.robot.commands.Shoot.VelShootCommand;
+import frc.robot.commands.Shoot.VelShootGatedCommand;
 import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.subsystems.Magazine_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.hid.SideboardController.SBButton;
 import frc.robot.subsystems.ifx.DriverControls;
+import frc.robot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
 
 public class auto_cmd_terminal extends SequentialCommandGroup {
   SwerveDrivetrain m_drivetrain;
@@ -62,7 +64,7 @@ public class auto_cmd_terminal extends SequentialCommandGroup {
       new WaitCommand(2),
       finalAutoB,
       new MoveIntake(DeployMode.Retract),
-      new ConditionalCommand(new VelShootCommand(Shooter.autoVelocity - 2, false).withTimeout(2.5), new VelShootCommand().withTimeout(2.5), () -> RobotContainer.RC().driverControls.readSideboard(SBButton.Sw16)), //decide wether or not to use limelight for shooting final shot in auto
+      new VelShootGatedCommand(new ShooterSettings(Shooter.autoVelocity, 0.0, 0, Shooter.DefaultRPMTolerance), RobotContainer.RC().m_driveController.magazineController),
       new IntakeCommand(IntakeMode.Stop)
     );
   }
