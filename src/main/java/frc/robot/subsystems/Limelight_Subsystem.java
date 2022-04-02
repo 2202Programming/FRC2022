@@ -38,7 +38,7 @@ public class Limelight_Subsystem extends SubsystemBase {
   private LinearFilter x_iir;
   private LinearFilter area_iir;
   public final String NT_Name = "DT"; // expose data under DriveTrain table
-  private double filterTC = 0.8; // seconds, cutoff 1.25Hz
+  private double filterTC = 0.08;     // seconds, 2Hz cutoff T = 1/(2pi*f)  was .2hz T=.8
 
   public Limelight_Subsystem() {
     x_iir = LinearFilter.singlePoleIIR(filterTC, Constants.Tperiod);
