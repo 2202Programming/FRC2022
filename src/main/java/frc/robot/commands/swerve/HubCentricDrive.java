@@ -80,8 +80,8 @@ public class HubCentricDrive extends CommandBase {
 
     // anglePid = new PIDController(angle_kp, angle_ki, angle_kd);
     limelightPid = new PIDController(limelight_kP, limelight_kI, limelight_kD);
-    limelightPid.setTolerance(Shooter.angleErrorTolerance, Shooter.angleVelErrorTolerance);
-
+    limelightPid.setTolerance(2, 10);
+//limelightPid.setTolerance(Shooter.angleErrorTolerance, Shooter.angleVelErrorTolerance);
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
     NTangleError = table.getEntry("/HubCentric/angleError");
 
@@ -95,8 +95,8 @@ public class HubCentricDrive extends CommandBase {
   }
 
   void calculate() {
-    final double max_rot_rate = 30.0;  //[deg/s]
-    double llx = limelight.getX();  //[deg error]
+    final double max_rot_rate = 60.0;  //[deg/s]
+    double llx = limelight.getFilteredX();  //[deg error]
 
     // Get the x speed. We are inverting this because Xbox controllers return
     // negative values when we push forward.
@@ -116,10 +116,12 @@ public class HubCentricDrive extends CommandBase {
     limelightPidOutput = limelightPid.calculate(llx);
     SmartDashboard.putNumber("LLPidOutput", limelightPidOutput);
     SmartDashboard.putNumber("LLFiltered", limelight.getFilteredX());
+    SmartDashboard.putNumber("PID PositionError", limelightPid.getPositionError());
+    SmartDashboard.putNumber("PID VelError", limelightPid.getVelocityError());
     angleError = Rotation2d.fromDegrees(limelight.getX()); //approximation of degrees off center
 
     // Clamp rotation rate to +/- X degrees/sec
-    double min_rot = (Math.abs(llx) > 1.0)  ? - Math.signum(llx) *min_rot_rate : 0.0;
+    double min_rot = (Math.abs(llx) > 2.0)  ? - Math.signum(llx) *min_rot_rate : 0.0;
     rot = MathUtil.clamp(limelightPidOutput + min_rot, -max_rot_rate, max_rot_rate) / 57.3;   //clamp in [deg/s] convert to [rad/s]
 
     currentAngle = drivetrain.getPose().getRotation();
