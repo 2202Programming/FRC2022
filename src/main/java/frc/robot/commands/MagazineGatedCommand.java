@@ -279,7 +279,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
         //sides on, only if deployed.
         boolean deployed = intake.isDeployed();
         if (intake.isDeployed()) intake.sidesOn();
-        else if (prev_deployed ==true  && intake.isDeployed() == false) {
+        else if (prev_deployed ==true  && deployed == false) {
             side_off_count_down = SideOffDelayFC;
         }
         else {side_off_count_down = 0;}
