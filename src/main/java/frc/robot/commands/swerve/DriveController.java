@@ -84,7 +84,7 @@ public class DriveController  extends CommandBase implements SolutionProvider {
     //shootCommand = new VelShootCommand(45,false);  //right now just use fixed velocity; eventually replace with limelight distance estimated velocity
     
     //use this one when ready for solution provider and velocity auto adjustment
-    shootCommand = new VelShootGatedCommand(new ShooterSettings(20.0, 0.0, 0, 0.01), magazineController, this, true);
+    shootCommand = new VelShootGatedCommand(new ShooterSettings(20.0, 0.0, 0, 0.05), magazineController, this, true);
 
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
     shooterTable = NetworkTableInstance.getDefault().getTable(NT_ShooterName);

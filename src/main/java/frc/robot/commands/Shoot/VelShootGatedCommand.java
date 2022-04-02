@@ -146,7 +146,7 @@ public class VelShootGatedCommand extends VelShootCommand{
 
     void NTupdates(){
         log_counter++;
-        if ((log_counter%20)==0) {
+        if ((log_counter%10)==0) {
             nte_BallVel.setDouble(calculatedVel);
             nte_shooterState.setString(stage.toString());
             nte_distance.setDouble(currentDistance);
