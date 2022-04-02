@@ -41,7 +41,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
     final double magazineSpeed;
 
     final int MovingTwoInFC = 10;   //moves forward to get 2nd ball into position
-    final int SafetyBackupFC = 5;   //back off the flywheels
+    final int SafetyBackupFC = 6;   //back off the flywheels
     final int ConfirmEmptyFC = 8;  //moves backward to check blind spot
     final int AlignFC = 10;         //moves forward to align when both gates have a ball
 
@@ -80,6 +80,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
     boolean eject_request = false; // external event
 
     MagazineState state = MagazineState.Empty;
+    MagazineState prev_state = state;
 
     final Command ejectCmd;
     final Command feedCmd;
@@ -165,6 +166,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
             switch (state) {
                 case ConfirmEmpty:
                     // back up for a bit to make sure we don't have a ball
+                    intake.off();
                     magazine.driveWheelOn(-magazineSpeed);
                     if (--frame_count_down <= 0 || lower_lg) {
                         magazine.driveWheelOff();
@@ -176,6 +178,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
 
                 case Empty:
                     // Looking for ball to trigger lower gate, 
+                    intake.defaultOn();
                     if (lower_lg && prev_lower_lg) {
                         state = MagazineState.OneBall_Lower;
                     }
@@ -183,6 +186,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
                     break;
 
                 case OneBall_Lower:
+                    intake.defaultOn();
                     spinup_safe = true;
                     if (lower_lg) {
                         state = MagazineState.MovingToUpper;
@@ -226,6 +230,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
                     break;
 
                 case BackingUp:
+                    intake.off();
                     spinup_safe = false;
                     if (--frame_count_down <= 0) {
                         magazine.driveWheelOff();
@@ -235,6 +240,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
 
                 case AlignTwoBalls:
                     // move balls up to flywheel
+                    intake.off();
                     spinup_safe = false;
                     magazine.driveWheelOn(magazineSpeed*SlowRotate);
                     if (--frame_count_down <= 0) {
@@ -258,6 +264,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
         // save prev
         prev_lower_lg = lower_lg;
         prev_upper_lg = upper_lg;
+        prev_state = state;
         updateNT();
     }
 
