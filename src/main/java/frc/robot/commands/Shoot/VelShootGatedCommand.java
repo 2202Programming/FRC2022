@@ -75,9 +75,9 @@ public class VelShootGatedCommand extends VelShootCommand{
         this(new ShooterSettings(requestedVelocity, 0.0, 0.0, 0.1), mag_ctrl, null, false);
     }
 
-    public VelShootGatedCommand(MagazineController mag_ctrl)
+    public VelShootGatedCommand(MagazineController mag_ctrl, SolutionProvider solutionProvider)
     {
-        this(new ShooterSettings(20, 0.0, 0.0, 0.1), mag_ctrl, null, true);
+        this(new ShooterSettings(20, 0.0, 0.0, 0.1), mag_ctrl, solutionProvider, true);
     }
 
 
