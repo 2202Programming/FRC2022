@@ -13,7 +13,6 @@ import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.MoveIntake;
 import frc.robot.commands.IntakeCommand.IntakeMode;
 import frc.robot.commands.MoveIntake.DeployMode;
-import frc.robot.commands.Shoot.VelShootCommand;
 import frc.robot.commands.Shoot.VelShootGatedCommand;
 import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.subsystems.Magazine_Subsystem;

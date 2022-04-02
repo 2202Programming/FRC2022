@@ -88,8 +88,8 @@ public class Robot extends TimedRobot {
     RobotContainer.RC().limelight.enableLED();
     robotContainer.drivetrain.setBrakeMode(); //brake mode for gameplay
     CommandScheduler.getInstance().cancelAll();
-    if(RobotContainer.m_driveController != null){
-      CommandScheduler.getInstance().schedule(RobotContainer.m_driveController);
+    if(RobotContainer.RC().m_driveController != null){
+      CommandScheduler.getInstance().schedule(RobotContainer.RC().m_driveController);
       //CommandScheduler.getInstance().schedule(new RPMShootCommandTune());
     }
   }
@@ -104,7 +104,7 @@ public class Robot extends TimedRobot {
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
     CommandScheduler.getInstance().schedule(new RPMShootCommandTune());
-    CommandScheduler.getInstance().schedule(RobotContainer.m_driveController);
+    CommandScheduler.getInstance().schedule(RobotContainer.RC().m_driveController);
   }
 
   /** This function is called periodically during test mode. */

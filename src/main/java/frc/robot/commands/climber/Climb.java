@@ -24,7 +24,6 @@ public class Climb extends SequentialCommandGroup {
         this.climber = climber;
         // Use the following subcommands to climb climbMID climbHIGH stabilize
         this.addCommands(
-            //TODO:  add drivetrain stuff
             new MidClimb(climber), 
             new WaitCommand(mid_stabilize_seconds),
             new TraverseClimb(climber),

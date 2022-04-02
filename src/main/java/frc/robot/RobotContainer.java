@@ -13,11 +13,11 @@ import frc.robot.Constants.DriverPrefs;
 import frc.robot.Constants.Shooter;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.IntakeCommand.IntakeMode;
-import static frc.robot.commands.MoveIntake.DeployMode;
-import frc.robot.commands.MoveIntake;
 import frc.robot.commands.MagazineGatedCommand;
-import frc.robot.commands.MovePositioner.PositionerMode;
+import frc.robot.commands.MoveIntake;
+import frc.robot.commands.MoveIntake.DeployMode;
 import frc.robot.commands.MovePositioner;
+import frc.robot.commands.MovePositioner.PositionerMode;
 import frc.robot.commands.ResetPosition;
 import frc.robot.commands.Shoot.VelShootGatedCommand;
 import frc.robot.commands.auto.auto_cmd;
@@ -27,10 +27,7 @@ import frc.robot.commands.climber.PitAlignClimber;
 import frc.robot.commands.climber.TraverseClimb;
 import frc.robot.commands.swerve.DriveController;
 import frc.robot.commands.swerve.LimelightDriveCmd;
-import frc.robot.commands.test.ClimberTestRotOscillation;
 import frc.robot.commands.test.ClimberTestRotRate;
-import frc.robot.commands.test.ClimberTestVelocity;
-import frc.robot.commands.test.LightGateTest;
 import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.Magazine_Subsystem;
@@ -39,10 +36,10 @@ import frc.robot.subsystems.Sensors_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.hid.HID_Xbox_Subsystem;
+import frc.robot.subsystems.hid.SideboardController.SBButton;
 import frc.robot.subsystems.hid.XboxAxis;
 import frc.robot.subsystems.hid.XboxButton;
 import frc.robot.subsystems.hid.XboxPOV;
-import frc.robot.subsystems.hid.SideboardController.SBButton;
 import frc.robot.subsystems.ifx.DriverControls.Id;
 import frc.robot.subsystems.shooter.Shooter_Subsystem;
 import frc.robot.ux.Dashboard;
@@ -67,7 +64,7 @@ public class RobotContainer {
 
   public static String auto_path_name = "NONE";
 
-  public static DriveController m_driveController = null;
+  public DriveController m_driveController = null;
   MagazineGatedCommand mag_default_cmd;
 
   // modifiable commands

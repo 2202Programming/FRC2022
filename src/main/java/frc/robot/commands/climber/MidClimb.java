@@ -7,7 +7,6 @@ import frc.robot.RobotContainer;
 import frc.robot.Constants.ClimbSettings;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.hid.XboxButton;
-import frc.robot.subsystems.hid.SideboardController.SBButton;
 import frc.robot.subsystems.ifx.DriverControls.Id;
 
 //import static frc.robot.Constants.ClimbSettings;
