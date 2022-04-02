@@ -43,13 +43,13 @@ public class HubCentricDrive extends CommandBase {
 
   // PID for limelight-based heading to a target
   PIDController limelightPid;
-  double limelight_kP = Shooter.limelight_default_p;
-  double limelight_kI = Shooter.limelight_default_i;
+  double limelight_kP = -0.1;
+  double minCommand = 0.05;
   double limelight_kD = Shooter.limelight_default_d;
   double limelightPidOutput = 0.0;
   
   double r_limelight_kP = limelight_kP;
-  double r_limelight_kI = limelight_kI;
+  double r_minCommand = minCommand;
   double r_limelight_kD = limelight_kD;
 
   // Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
@@ -76,7 +76,7 @@ public class HubCentricDrive extends CommandBase {
     this.limelight = limelight;
 
     // anglePid = new PIDController(angle_kp, angle_ki, angle_kd);
-    limelightPid = new PIDController(limelight_kP, limelight_kI, limelight_kD);
+    limelightPid = new PIDController(limelight_kP, minCommand, limelight_kD);
     limelightPid.setTolerance(Shooter.angleErrorTolerance, Shooter.angleVelErrorTolerance);
 
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
@@ -101,25 +101,26 @@ public class HubCentricDrive extends CommandBase {
     xSpeed = MathUtil.clamp(xSpeed, -Constants.DriveTrain.kMaxSpeed, Constants.DriveTrain.kMaxSpeed);
     ySpeed = MathUtil.clamp(ySpeed, -Constants.DriveTrain.kMaxSpeed, Constants.DriveTrain.kMaxSpeed);
 
-    // limelight is on the shooter side, so we don't need to worry about flipping target angles
-    limelightPid.setSetpoint(0);
+    double tx = limelight.getX();
+    double headingError = -tx;
+    limelightPidOutput = 0;
+    
+    if(tx > 1.0){
+      limelightPidOutput = limelight_kP*headingError - minCommand;
+    }
+    else if(tx < 1.0){
+      limelightPidOutput = limelight_kP*headingError + minCommand;
+    }
 
-    //uncomment this below and comment line above when ready to test velocity correction
-    //limelightPid.setSetpoint(velocityCorrectionAngle.getDegrees()*Shooter.degPerPixel); // 0 is towards target, 
-
-    limelightPidOutput = limelightPid.calculate(limelight.getX());
-    SmartDashboard.putNumber("LLPidOutput", limelightPidOutput);
-    SmartDashboard.putNumber("LLFiltered", limelight.getFilteredX());
-    angleError = Rotation2d.fromDegrees(limelight.getX()); //approximation of degrees off center
-    // update rotation and calulate new output-states
-    rot = llLimiter.calculate(limelightPidOutput); // / 57.3; //degrees to radians/sec
+    rot = llLimiter.calculate(limelightPidOutput) / 57.3; //degrees to radians/sec
+    SmartDashboard.putNumber("limelight rotation output", rot);
 
     currentAngle = drivetrain.getPose().getRotation();
     output_states = kinematics
         .toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, currentAngle));
 
     SmartDashboard.putNumber("Requested Limelight P", r_limelight_kP);
-    SmartDashboard.putNumber("Requested Limelight I", r_limelight_kI);
+    SmartDashboard.putNumber("Requested min command", r_minCommand);
     SmartDashboard.putNumber("Requested Limelight D", r_limelight_kD);
   }
 
@@ -183,23 +184,23 @@ public class HubCentricDrive extends CommandBase {
 
   private void pidPrint(){
     SmartDashboard.putNumber("Current Limelight P", limelight_kP);
-    SmartDashboard.putNumber("Current Limelight I", limelight_kI);
+    SmartDashboard.putNumber("Current min command", minCommand);
     SmartDashboard.putNumber("Current Limelight D", limelight_kD);
 
     // SmartDashboard.putNumber("Requested Limelight P", r_limelight_kP);
-    // SmartDashboard.putNumber("Requested Limelight I", r_limelight_kI);
+    // SmartDashboard.putNumber("Requested Limelight I", r_minCommand);
     // SmartDashboard.putNumber("Requested Limelight D", r_limelight_kD);
   }
 
   private void pidSet(){
     r_limelight_kP = SmartDashboard.getNumber("Requested Limelight P", r_limelight_kP);
-    r_limelight_kI = SmartDashboard.getNumber("Requested Limelight I", r_limelight_kI);
+    r_minCommand = SmartDashboard.getNumber("Requested min command", r_minCommand);
     r_limelight_kD = SmartDashboard.getNumber("Requested Limelight D", r_limelight_kD);
-    if((r_limelight_kP!=limelight_kP) || (r_limelight_kI!=limelight_kI) || (r_limelight_kD != limelight_kD)){
+    if((r_limelight_kP!=limelight_kP) || (r_minCommand!=minCommand) || (r_limelight_kD != limelight_kD)){
       limelight_kP=r_limelight_kP;
-      limelight_kI=r_limelight_kI;
+      minCommand=r_minCommand;
       limelight_kD=r_limelight_kD;
-      limelightPid.setPID(limelight_kP, limelight_kI, limelight_kD);
+      limelightPid.setPID(limelight_kP, minCommand, limelight_kD);
     }
 
   }
