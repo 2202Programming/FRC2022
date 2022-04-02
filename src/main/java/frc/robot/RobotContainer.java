@@ -27,6 +27,8 @@ import frc.robot.commands.climber.PitAlignClimber;
 import frc.robot.commands.climber.TraverseClimb;
 import frc.robot.commands.swerve.DriveController;
 import frc.robot.commands.swerve.LimelightDriveCmd;
+import frc.robot.commands.test.ClimberTestRotOscillation;
+import frc.robot.commands.test.ClimberTestRotRate;
 import frc.robot.commands.test.ClimberTestVelocity;
 import frc.robot.commands.test.LightGateTest;
 import frc.robot.subsystems.Intake_Subsystem;
@@ -127,10 +129,12 @@ public class RobotContainer {
       driverControls.bind(Id.SwitchBoard, SBButton.Sw23).whenPressed(new TraverseClimb(climber));
       driverControls.bind(Id.SwitchBoard, SBButton.Sw24).whileHeld(new SequentialCommandGroup(
         new MoveArmsTo(climber, "To Angle 0", (climber.getLeftExtInches() + climber.getRightExtInches())/2, 0, true, true),
-        new MoveArmsTo(climber, "To zero", 0, 0, true, true)
-      ));
+        new MoveArmsTo(climber, "To zero", 0, 0, true, true)));
       //driverControls.bind(Id.SwitchBoard, SBButton.Sw25).whileHeld(new ClimberTestRotRate(climber, 20, -30, 65)); //use pit-zero to start
-      driverControls.bind(Id.SwitchBoard, SBButton.Sw25).whileHeld(new ClimberTestVelocity(climber, 4, 0.0, 12)); //use pit-zero to start
+      driverControls.bind(Id.SwitchBoard, SBButton.Sw25).whileHeld(
+        new ClimberTestRotRate(climber, 40.0, -70.0, 30.0));
+      
+            //new ClimberTestVelocity(climber, 4, 0.0, 12)); //use pit-zero to start
             //new ClimberTestRotRate(climber, 15, -30, 60));
             //new ClimberTestRotRatePercent(climber, 0.5, -20, 40));
             //new ClimberTestRotOscillation(climber));

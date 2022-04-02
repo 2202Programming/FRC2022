@@ -15,9 +15,8 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import frc.robot.Constants.ClimbSettings;
 
 public class ArmRotation {
-    // encoder is 1:1 with motor and drives small-gear (12 tooth)
-    // small-gear drives 26 tooth large gear
-    final double kGR = 26.0 / 12.0;   // motor rotations to arm rot[deg]
+    // encoder is 1:1 with motor and drives a gearbox --> gear ratio = 147:1
+    final double kGR = 147.0 * (26.0 / 12.0);   // motor rotations to arm rot[deg]
     final double kCounts2Degrees = 360 / kGR;   // 360[deg]  / gr* encoder counts/rot
 
     final double kAff;
@@ -32,7 +31,7 @@ public class ArmRotation {
     private SparkMaxLimitSwitch ForwardLimitSwitch;
     private SparkMaxLimitSwitch BackwardLimitSwitch;
 
-    private RelativeEncoder encoder;
+    private RelativeEncoder encoder = null;
 
     // nts
     private NetworkTable network_table;
@@ -72,8 +71,8 @@ public class ArmRotation {
         nte_forward_limit.setBoolean(false);
 
         // Encoder setup - use native units everywhere.
-        encoder = motor_rot.getEncoder(com.revrobotics.SparkMaxRelativeEncoder.Type.kQuadrature, 8192);
-        encoder.setInverted(inverted);
+        encoder = motor_rot.getEncoder();
+      //  encoder.setInverted(inverted);
         encoder.setPositionConversionFactor(kCounts2Degrees);
         encoder.setVelocityConversionFactor(kCounts2Degrees/60.0);
 
@@ -84,7 +83,7 @@ public class ArmRotation {
 
     public void periodic() {
         nte_curr_pos_deg.setDouble(getRotationDegrees());
-        nte_curr_vel_deg.setDouble(-encoder.getVelocity());
+        nte_curr_vel_deg.setDouble(encoder.getVelocity());
         nte_backward_limit.setBoolean(BackwardLimitSwitch.isPressed());
         nte_forward_limit.setBoolean(ForwardLimitSwitch.isPressed());
         nte_duty_cycle.setDouble(motor_rot.getAppliedOutput());
@@ -122,8 +121,8 @@ public class ArmRotation {
      */
     public void setRotRate(double rate) {
         //account for the sign convention here 
-        double arbFF = kAff * Math.signum(-rate);
-        pidController.setReference(-rate, CANSparkMax.ControlType.kVelocity, vel_pid, arbFF);
+        double arbFF = kAff * Math.signum(rate);
+        pidController.setReference(rate, CANSparkMax.ControlType.kVelocity, vel_pid, arbFF);
         
     }
 
@@ -146,7 +145,7 @@ public class ArmRotation {
 
     public double getRotationDegrees() {
         // account for sign convention here
-        return -encoder.getPosition();
+        return encoder.getPosition();
     }
 
 void sleep(long ms) {
