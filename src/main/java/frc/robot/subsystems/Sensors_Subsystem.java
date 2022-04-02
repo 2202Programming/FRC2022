@@ -133,7 +133,7 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
   GyroStatus c_gryo_status = GyroStatus.UsingPigeon;
 
   double log_counter = 0;
-  private boolean navxManuallyDisabled = true;
+  private boolean navxManuallyDisabled = false;
   public Pose2d autoStartPose;
   public Pose2d autoEndPose;
 

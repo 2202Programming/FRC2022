@@ -20,6 +20,8 @@ import frc.robot.commands.Shoot.RPMShootCommandTune;
 public class Robot extends TimedRobot {
   private RobotContainer robotContainer;
   
+  int disabledTimer = 0;
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -53,11 +55,17 @@ public class Robot extends TimedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
-    // robotContainer.drivetrain.setCoastMode(); //make robot easier to push around to set up correctly
+    disabledTimer = 0;
+    
   }
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    disabledTimer++;
+    if(disabledTimer == 200){ //wait a few seconds to stop momementum before releasing brakes
+      robotContainer.drivetrain.setCoastMode(); //make robot easier to push around to set up correctly
+    }
+  }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override

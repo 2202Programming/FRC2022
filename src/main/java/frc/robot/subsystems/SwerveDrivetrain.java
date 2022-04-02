@@ -304,12 +304,14 @@ public class SwerveDrivetrain extends SubsystemBase {
     for (int i = 0; i < modules.length; i++) {
       modules[i].setBrakeMode();
     }
+    System.out.println("***BRAKES ENGAGED***");
   }
 
   public void setCoastMode(){
     for (int i = 0; i < modules.length; i++) {
       modules[i].setCoastMode();
     }
+    System.out.println("***BRAKES RELEASED***");
   }
 
   //  TODO: Move to a TEST/Tuning command  - DPL 2/21/22

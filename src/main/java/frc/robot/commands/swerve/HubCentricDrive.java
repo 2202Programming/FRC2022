@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveTrain;
+import frc.robot.Constants.Shooter;
 import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.ifx.DriverControls;
@@ -42,9 +43,9 @@ public class HubCentricDrive extends CommandBase {
 
   // PID for limelight-based heading to a target
   PIDController limelightPid;
-  double limelight_kP = 0.05;
-  double limelight_kI = 0.0;
-  double limelight_kD = 0.0;
+  double limelight_kP = Shooter.limelight_default_p;
+  double limelight_kI = Shooter.limelight_default_i;
+  double limelight_kD = Shooter.limelight_default_d;
   double limelightPidOutput = 0.0;
   
   double r_limelight_kP = limelight_kP;
@@ -113,6 +114,10 @@ public class HubCentricDrive extends CommandBase {
     currentAngle = drivetrain.getPose().getRotation();
     output_states = kinematics
         .toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, currentAngle));
+
+    SmartDashboard.putNumber("Requested Limelight P", r_limelight_kP);
+    SmartDashboard.putNumber("Requested Limelight I", r_limelight_kI);
+    SmartDashboard.putNumber("Requested Limelight D", r_limelight_kD);
   }
 
   @Override

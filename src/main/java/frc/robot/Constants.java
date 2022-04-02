@@ -283,6 +283,12 @@ public final class Constants {
         // adjustment factor
       public static final double METERS_TO_INCHES = 39.37;
 
+
+      public static final double limelight_default_p = 0.1;
+      public static final double limelight_default_i = 0.001;
+      public static final double limelight_default_d = 0.0025;
+
+
       // constraints
       public static final double kMaxFPS = 80;      //max FPS
       public static final double maxLongRage = 8; //maximum range in long distance shooting mode
