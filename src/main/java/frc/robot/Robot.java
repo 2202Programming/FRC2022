@@ -53,7 +53,7 @@ public class Robot extends TimedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
-    robotContainer.drivetrain.setCoastMode(); //make robot easier to push around to set up correctly
+    // robotContainer.drivetrain.setCoastMode(); //make robot easier to push around to set up correctly
   }
 
   @Override

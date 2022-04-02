@@ -53,15 +53,15 @@ public class auto_cmd_terminal extends SequentialCommandGroup {
 
     addCommands(
       new MoveIntake(DeployMode.Deploy),
-      new ParallelDeadlineGroup( //all run at same time; group ends when 1st command ends
-        finalAuto,
-        new IntakeCommand(IntakeMode.LoadCargo)
-      ),
+      new IntakeCommand(IntakeMode.InstantLoad),
+      new autoPrint("Instant load running"),
+      finalAuto,
       new WaitCommand(2),
-      new IntakeCommand(IntakeMode.Stop),
       finalAutoB,
+      new autoPrint("About to retract"),
       new MoveIntake(DeployMode.Retract),
-      new VelShootCommand(Shooter.autoVelocity, false).withTimeout(2.5)
+      new VelShootCommand(Shooter.autoVelocity, false).withTimeout(2.5),
+      new IntakeCommand(IntakeMode.Stop)
     );
   }
 
