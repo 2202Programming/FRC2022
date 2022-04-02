@@ -14,6 +14,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
+import frc.robot.Constants.Shooter;
 import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -67,6 +68,7 @@ public class LimelightAim extends CommandBase {
     anglePid = new PIDController(angle_kp, angle_ki, angle_kd);
     anglePid.enableContinuousInput(-Math.PI, Math.PI);
     limelightPid = new PIDController(limelight_kP, limelight_kI, limelight_kD);
+    limelightPid.setTolerance(Shooter.angleErrorTolerance, Shooter.angleVelErrorTolerance);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -82,7 +84,7 @@ public class LimelightAim extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return finished;
+    return limelightPid.atSetpoint();
   }
 
   void calculate() {
@@ -108,9 +110,6 @@ public class LimelightAim extends CommandBase {
 
     output_states = kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, rot, currentAngle));
 
-    if (Math.abs(angleError.getDegrees()) < tolerance){
-      finished = true;
-    }
   }
   
   // takes 2 positions, gives heading from current point to target (in degrees)
