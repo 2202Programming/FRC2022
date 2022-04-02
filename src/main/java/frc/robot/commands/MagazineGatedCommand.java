@@ -80,6 +80,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
     boolean spinup_safe = false;
     boolean feed_request = false; // external event
     boolean eject_request = false; // external event
+    boolean sides_on = false;
 
     MagazineState state = MagazineState.Empty;
     MagazineState prev_state = state;
@@ -97,6 +98,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
     final NetworkTableEntry nte_spinup_safe;
     final NetworkTableEntry nte_state;
     final NetworkTableEntry nte_ballcount;
+    final NetworkTableEntry nte_sides;
 
 
     // Constructor
@@ -117,6 +119,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
         nte_spinup_safe = table.getEntry("/spinupSafe");
         nte_state = table.getEntry("/state");
         nte_ballcount = table.getEntry("/ballCount");
+        nte_sides = table.getEntry("/sidesOn");
 
         prev_deployed = intake.isDeployed();
 
@@ -137,6 +140,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
      * cargo we are carrying, like after feed or eject request.
      */
     public void initialize() {
+        sides_on = false;
         spinup_safe = false;
         // read gates, save as previous values for edge detection
         prev_upper_lg = magazine.upperGateBlocked();
@@ -188,7 +192,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
                 case Empty:
                     ball_count = 0;
                     // Looking for ball to trigger lower gate, 
-                    intakeSidesOn();
+                    sidesOnCheck();
                     if (lower_lg && prev_lower_lg) {
                         state = MagazineState.OneBall_Lower;
                     }
@@ -197,7 +201,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
 
                 case OneBall_Lower:
                     ball_count = 1;
-                    intakeSidesOn();
+                    sidesOnCheck();
                     spinup_safe = true;
                     if (lower_lg) {
                         state = MagazineState.MovingToUpper;
@@ -220,7 +224,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
 
                 case OneBall_Upper:
                     spinup_safe = true;
-                    intakeSidesOn();
+                    sidesOnCheck();
                     // Now we are looking for the 2nd ball to be trigger
                     if (lower_lg & prev_lower_lg) {
                         spinup_safe = false;
@@ -233,7 +237,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
                 case MovingBallTwoIn:
                     // moving second ball into magazine
                     ball_count = 2;
-                    intake.sidesOff();
+                    sides_on = false;
                     spinup_safe = false;
                     if (--frame_count_down <= 0) {
                         magazine.driveWheelOff();
@@ -244,7 +248,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
                     break;
 
                 case BackingUp:
-                    intake.sidesOff();
+                   sides_on = false;
                     spinup_safe = false;
                     if (--frame_count_down <= 0) {
                         magazine.driveWheelOff();
@@ -255,7 +259,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
 
                 case AlignTwoBalls:
                     // move balls up to flywheel
-                    intake.sidesOff();
+                    sides_on = false;
                     spinup_safe = false;
                     magazine.driveWheelOn(magazineSpeed*SlowRotate);
                     if (--frame_count_down <= 0) {
@@ -291,16 +295,16 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
 
     }
 
-    void intakeSidesOn() {
+    void sidesOnCheck() {
         //sides on, only if deployed.
         boolean deployed = intake.isDeployed();
-        if (intake.isDeployed()) intake.sidesOn();
-        else if (prev_deployed ==true  && deployed == false) {
+        if (deployed) {
+            sides_on = true;
             side_off_count_down = SideOffDelayFC;
         }
-        else {side_off_count_down = 0;}
-        if (side_off_count_down-- <= 0 ) {
-            intake.sidesOff();
+       
+        if (--side_off_count_down <= 0 ) {
+            sides_on = false;
             side_off_count_down = 0;
         }
         prev_deployed = deployed;
@@ -354,6 +358,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
         nte_spinup_safe.setBoolean(spinup_safe);
         nte_ballcount.setDouble(ball_count);
         nte_state.setString(state.toString());
+        nte_sides.setBoolean(sides_on);
     }
 
     /**
