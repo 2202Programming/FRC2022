@@ -107,10 +107,12 @@ public class HubCentricDrive extends CommandBase {
     //uncomment this below and comment line above when ready to test velocity correction
     //limelightPid.setSetpoint(velocityCorrectionAngle.getDegrees()*Shooter.degPerPixel); // 0 is towards target, 
 
-    limelightPidOutput = limelightPid.calculate(limelight.getFilteredX());
-    angleError = Rotation2d.fromDegrees(limelight.getFilteredX()); //approximation of degrees off center
+    limelightPidOutput = limelightPid.calculate(limelight.getX());
+    SmartDashboard.putNumber("LLPidOutput", limelightPidOutput);
+    SmartDashboard.putNumber("LLFiltered", limelight.getFilteredX());
+    angleError = Rotation2d.fromDegrees(limelight.getX()); //approximation of degrees off center
     // update rotation and calulate new output-states
-    rot = llLimiter.calculate(limelightPidOutput);
+    rot = llLimiter.calculate(limelightPidOutput); // / 57.3; //degrees to radians/sec
 
     currentAngle = drivetrain.getPose().getRotation();
     output_states = kinematics
