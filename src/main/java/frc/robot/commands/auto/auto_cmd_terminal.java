@@ -5,9 +5,12 @@
 package frc.robot.commands.auto;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.Shooter;
 import frc.robot.commands.IntakeCommand;
@@ -59,7 +62,7 @@ public class auto_cmd_terminal extends SequentialCommandGroup {
       new WaitCommand(2),
       finalAutoB,
       new MoveIntake(DeployMode.Retract),
-      new VelShootCommand().withTimeout(2.5),
+      new ConditionalCommand(new VelShootCommand(Shooter.autoVelocity - 2, false).withTimeout(2.5), new VelShootCommand().withTimeout(2.5), () -> RobotContainer.RC().driverControls.readSideboard(SBButton.Sw16)), //decide wether or not to use limelight for shooting final shot in auto
       new IntakeCommand(IntakeMode.Stop)
     );
   }
