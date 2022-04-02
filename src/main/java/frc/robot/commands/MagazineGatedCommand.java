@@ -96,6 +96,8 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
     final NetworkTableEntry nte_eject_request;
     final NetworkTableEntry nte_spinup_safe;
     final NetworkTableEntry nte_state;
+    final NetworkTableEntry nte_ballcount;
+
 
     // Constructor
     public MagazineGatedCommand(double magazineSpeed) {
@@ -114,6 +116,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
         nte_eject_request = table.getEntry("/ejectorOn");
         nte_spinup_safe = table.getEntry("/spinupSafe");
         nte_state = table.getEntry("/state");
+        nte_ballcount = table.getEntry("/ballCount");
 
         prev_deployed = intake.isDeployed();
 
@@ -163,6 +166,8 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
         if (feed_request) {
             spinup_safe = true;
             magazine.driveWheelOn(magazineSpeed);
+            checkBallCount(upper_lg);
+
         } else if (eject_request) {
             spinup_safe = false;
             magazine.driveWheelOn(-magazineSpeed);
@@ -181,6 +186,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
                     break;
 
                 case Empty:
+                    ball_count = 0;
                     // Looking for ball to trigger lower gate, 
                     intakeSidesOn();
                     if (lower_lg && prev_lower_lg) {
@@ -190,6 +196,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
                     break;
 
                 case OneBall_Lower:
+                    ball_count = 1;
                     intakeSidesOn();
                     spinup_safe = true;
                     if (lower_lg) {
@@ -225,6 +232,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
 
                 case MovingBallTwoIn:
                     // moving second ball into magazine
+                    ball_count = 2;
                     intake.sidesOff();
                     spinup_safe = false;
                     if (--frame_count_down <= 0) {
@@ -275,6 +283,14 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
         updateNT();
     }
 
+    void checkBallCount(boolean current_upper) {
+        if ((prev_upper_lg == true) && (current_upper == false)) {
+            // ball shot 
+            ball_count--;
+        }
+
+    }
+
     void intakeSidesOn() {
         //sides on, only if deployed.
         boolean deployed = intake.isDeployed();
@@ -316,6 +332,10 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
         return spinup_safe;
     }
 
+    public int getBallCount() {
+        return ball_count;
+    }
+
     // This command never really ends, it always runs to manage the cargo
     public boolean isFinished() {
         return false;
@@ -332,6 +352,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
         nte_feed_request.setBoolean(feed_request);
         nte_eject_request.setBoolean(eject_request);
         nte_spinup_safe.setBoolean(spinup_safe);
+        nte_ballcount.setDouble(ball_count);
         nte_state.setString(state.toString());
     }
 

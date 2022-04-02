@@ -17,7 +17,8 @@ public interface MagazineController {
     public void ejectOn();
     public void ejectOff();
 
-    public boolean safeToSpinUp();   
+    public boolean safeToSpinUp();
+    public int getBallCount();   
 
     // high level cmds
     public Command getEjectCmd();
