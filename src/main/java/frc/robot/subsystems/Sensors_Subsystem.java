@@ -134,6 +134,7 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
   GyroStatus c_gryo_status = GyroStatus.UsingPigeon;
 
   double log_counter = 0;
+  //set this to true to default to pigeon
   private boolean navxManuallyDisabled = true;
   public Pose2d autoStartPose;
   public Pose2d autoEndPose;
@@ -385,7 +386,7 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
   }
 
   public void setYaw(Rotation2d rot){
-    m_pigeon.setYaw(rot.getDegrees());
+    //m_pigeon.setYaw(rot.getDegrees());
   }
 
   /**
@@ -519,7 +520,7 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
     The end of the prior path should be the start of the new path, but presumably the rotation is not perfectly aligned (PID errors)
     So with multiple paths this rotation error in pose may accumulate?
     */
-    RobotContainer.RC().drivetrain.resetAnglePose(pose.getRotation().minus(rotError));
+    //RobotContainer.RC().drivetrain.resetAnglePose(pose.getRotation().minus(rotError));
     System.out.println("***Corrected End Pose: "+pose);
 
   }
