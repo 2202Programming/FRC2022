@@ -68,8 +68,8 @@ public class HubCentricDrive extends CommandBase {
   Rotation2d targetAngle;
   Rotation2d velocityCorrectionAngle;
 
-  double min_rot_rate = 1.0;
-  double r_min_rot_rate;
+  double min_rot_rate = 20.0;
+  double r_min_rot_rate = min_rot_rate;
 
   public HubCentricDrive(SwerveDrivetrain drivetrain, DriverControls dc, Limelight_Subsystem limelight) {
     this.drivetrain = drivetrain;
@@ -95,7 +95,7 @@ public class HubCentricDrive extends CommandBase {
   }
 
   void calculate() {
-    final double max_rot_rate = 5.0;  //[deg/s]
+    final double max_rot_rate = 30.0;  //[deg/s]
     double llx = limelight.getX();  //[deg error]
 
     // Get the x speed. We are inverting this because Xbox controllers return
@@ -119,12 +119,15 @@ public class HubCentricDrive extends CommandBase {
     angleError = Rotation2d.fromDegrees(limelight.getX()); //approximation of degrees off center
 
     // Clamp rotation rate to +/- X degrees/sec
-    double min_rot = (Math.abs(llx) > 1.0)  ?  Math.signum(llx) *min_rot_rate : 0.0;
+    double min_rot = (Math.abs(llx) > 1.0)  ? - Math.signum(llx) *min_rot_rate : 0.0;
     rot = MathUtil.clamp(limelightPidOutput + min_rot, -max_rot_rate, max_rot_rate) / 57.3;   //clamp in [deg/s] convert to [rad/s]
-     
+
     currentAngle = drivetrain.getPose().getRotation();
     output_states = kinematics
         .toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, currentAngle));
+
+    SmartDashboard.putNumber("Rot (rad)", rot);
+    SmartDashboard.putNumber("Min_rot (deg)", min_rot);
 
     SmartDashboard.putNumber("Requested Limelight P", r_limelight_kP);
     SmartDashboard.putNumber("Requested Limelight I", r_limelight_kI);
@@ -191,9 +194,9 @@ public class HubCentricDrive extends CommandBase {
   }
 
   private void pidPrint(){
-    SmartDashboard.putNumber("Current Limelight P", limelight_kP);
-    SmartDashboard.putNumber("Current Limelight I", limelight_kI);
-    SmartDashboard.putNumber("Current Limelight D", limelight_kD);
+    SmartDashboard.putNumber("Current Limelight P", limelightPid.getP());
+    SmartDashboard.putNumber("Current Limelight I", limelightPid.getI());
+    SmartDashboard.putNumber("Current Limelight D", limelightPid.getD());
     SmartDashboard.putNumber("Current min rotation rate", min_rot_rate);
 
     // SmartDashboard.putNumber("Requested Limelight P", r_limelight_kP);
@@ -211,6 +214,8 @@ public class HubCentricDrive extends CommandBase {
       limelight_kI=r_limelight_kI;
       limelight_kD=r_limelight_kD;
       limelightPid.setPID(limelight_kP, limelight_kI, limelight_kD);
+      limelightPid.reset();
+      System.out.println("***PID UPDATED***");
     }
 
     min_rot_rate = r_min_rot_rate;
