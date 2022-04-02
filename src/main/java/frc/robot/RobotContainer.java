@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -147,8 +148,7 @@ public class RobotContainer {
     // B - Toggle drive mode
     if (Constants.HAS_DRIVETRAIN) {
       driverControls.bind(Id.Driver, XboxButton.B).whenPressed(m_driveController::cycleDriveMode);
-      //driverControls.bind(Id.Driver, XboxButton.X).whenPressed(new InstantCommand(drivetrain::resetAnglePose));
-      driverControls.bind(Id.Driver, XboxButton.Y).whenPressed(new InstantCommand(() -> { drivetrain.setPose(Autonomous.startPose3); }));
+      driverControls.bind(Id.Driver, XboxButton.Y).whenPressed(new InstantCommand(() -> { drivetrain.resetAnglePose(Rotation2d.fromDegrees(-180)); })); //-180 reset if intake faces drivers
       driverControls.bind(Id.Driver, XboxAxis.TRIGGER_LEFT).whenPressed(m_driveController::setRobotCentric);
       driverControls.bind(Id.Driver, XboxAxis.TRIGGER_LEFT).whenReleased(m_driveController::setFieldCentric);   
       driverControls.bind(Id.Driver, XboxAxis.TRIGGER_RIGHT).whenPressed(m_driveController::turnOnShootingMode);
@@ -158,6 +158,9 @@ public class RobotContainer {
     // RB limelight toggle
     driverControls.bind(Id.Driver, XboxButton.X).whenPressed(new InstantCommand(limelight::toggleLED));
 
+    //temporary for navx/pigeon testing
+    driverControls.bind(Id.Driver, XboxPOV.POV_UP).whenPressed(new InstantCommand(()->{ sensors.disableNavx(true); }));
+    driverControls.bind(Id.Driver, XboxPOV.POV_DOWN).whenPressed(new InstantCommand(()->{ sensors.disableNavx(false); }));
 
   }
 

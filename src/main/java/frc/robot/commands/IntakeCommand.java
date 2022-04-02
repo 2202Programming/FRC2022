@@ -80,7 +80,9 @@ public class IntakeCommand extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     // don't auto-retract - drive may not want that.
-    intake.off();
+    if(mode != IntakeMode.InstantLoad){
+      intake.off();
+    }
   }
 
   public void setFinished(){

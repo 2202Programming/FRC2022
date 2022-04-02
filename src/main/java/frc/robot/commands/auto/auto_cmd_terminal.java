@@ -7,6 +7,7 @@ package frc.robot.commands.auto;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.Shooter;
 import frc.robot.commands.IntakeCommand;
@@ -34,27 +35,33 @@ public class auto_cmd_terminal extends SequentialCommandGroup {
 
 
     Command finalAuto;
+    Command finalAutoB = new WaitCommand(0);
 
     if(m_controls.readSideboard(SBButton.Sw11)){
-      finalAuto = auto_pathPlanner_cmd.PathFactory2(m_drivetrain, "Auto21");
+      finalAuto = auto_pathPlanner_cmd.PathFactory2(2.5,2, "Auto21");
+      finalAutoB = auto_pathPlanner_cmd.PathFactory2(2.5,2, "Auto21B");
     }
     else if(m_controls.readSideboard(SBButton.Sw12)){
-      finalAuto = auto_pathPlanner_cmd.PathFactory2(m_drivetrain, "Auto22");
+      finalAuto = auto_pathPlanner_cmd.PathFactory2(2.5,2, "Auto22");
+      finalAutoB = auto_pathPlanner_cmd.PathFactory3(2.5,2, "Auto22B");
     }
     else{
-      finalAuto = auto_pathPlanner_cmd.PathFactory2(m_drivetrain, "Auto23");
+      finalAuto = auto_pathPlanner_cmd.PathFactory2(2.5,2, "Auto23");
+      finalAuto = auto_pathPlanner_cmd.PathFactory2(2.5,2, "Auto23B");
     }
     
 
     addCommands(
       new MoveIntake(DeployMode.Deploy),
-      new ParallelDeadlineGroup( //all run at same time; group ends when 1st command ends
-        finalAuto,
-        new IntakeCommand(IntakeMode.LoadCargo)
-      ),
-      new IntakeCommand(IntakeMode.Stop),
+      new IntakeCommand(IntakeMode.InstantLoad),
+      new autoPrint("Instant load running"),
+      finalAuto,
+      new WaitCommand(2),
+      finalAutoB,
+      new autoPrint("About to retract"),
       new MoveIntake(DeployMode.Retract),
-      new VelShootCommand(Shooter.autoVelocity, false).withTimeout(2.5)
+      new VelShootCommand(Shooter.autoVelocity, false).withTimeout(2.5),
+      new IntakeCommand(IntakeMode.Stop)
     );
   }
 
