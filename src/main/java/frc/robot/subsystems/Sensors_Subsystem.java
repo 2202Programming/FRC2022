@@ -80,7 +80,7 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
   AHRS m_ahrs;
   Pigeon2 m_pigeon;
   Gyro m_gyro_ahrs;
-  Gyro m_gyro;
+  //Gyro m_gyro;
 
 
   public static class RotationPositions {
@@ -133,7 +133,7 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
   GyroStatus c_gryo_status = GyroStatus.UsingPigeon;
 
   double log_counter = 0;
-  private boolean navxManuallyDisabled = false;
+  private boolean navxManuallyDisabled = true;
   public Pose2d autoStartPose;
   public Pose2d autoEndPose;
 
@@ -143,7 +143,7 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
     m_canStatus = new CANStatus();
 
     // create devices and interface access, use interface where possible
-    m_gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
+    //m_gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
     m_gyro_ahrs = m_ahrs = new AHRS(SPI.Port.kMXP, update_hz);
     m_ahrs.enableLogging(true);
 
@@ -187,7 +187,7 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
   }
 
   public void setSensorType(YawSensor type) {
-    //keep pigeon this.c_yaw_type = type;
+      this.c_yaw_type = type;
   }
 
   public AHRS getAHRS(){
@@ -217,7 +217,7 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
   public void periodic() {
     // This method will be called once per scheduler run
     updateYaw();
-    //setActiveGryo();
+    setActiveGryo();
     getRotationPositions(m_rot);
 
     log(20);
@@ -256,7 +256,7 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
 
       case UsingPigeon:
       //force pigeon per Alek's no drift policy.
-        if(false && m_ahrs.isConnected() && !navxManuallyDisabled){
+        if(m_ahrs.isConnected() && !navxManuallyDisabled){
           setSensorType(YawSensor.kNavX);
           c_gryo_status = GyroStatus.UsingNavx;
           System.out.println("***NAVX COM RESTORED (or manually renabled), SWITCHING TO NAVX***");
@@ -347,7 +347,7 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
 
   @Override
   public void close() throws Exception {
-    m_gyro.close();
+    //m_gyro.close();
     m_gyro_ahrs.close();
   }
 
@@ -381,6 +381,10 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
       default:
         return m_yaw_blend;
     }
+  }
+
+  public void setYaw(Rotation2d rot){
+    m_pigeon.setYaw(rot.getDegrees());
   }
 
   /**
@@ -489,6 +493,7 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
 
   public void setAutoStartPose(Pose2d pose){
     autoStartPose = new Pose2d(pose.getTranslation(), pose.getRotation());
+    setYaw(pose.getRotation()); //set gyro to starting heading so it's in field coordinates.
     System.out.println("***Auto Start Pose set: "+pose);
   }
 

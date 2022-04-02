@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.RobotContainer;
+import frc.robot.commands.IntakeCommand;
 import frc.robot.subsystems.hid.SideboardController.SBButton;
 
 public class auto_cmd extends SequentialCommandGroup {
