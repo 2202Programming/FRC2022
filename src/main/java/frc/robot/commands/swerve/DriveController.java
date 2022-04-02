@@ -43,7 +43,7 @@ public class DriveController  extends CommandBase implements SolutionProvider {
   SwerveDrivetrain drivetrain;
   DriverControls dc;
   Shooter_Subsystem shooter;
-  MagazineController magazineController;
+  public MagazineController magazineController;
   Limelight_Subsystem limelight;
   RobotCentricDrive m_robotCentricDrive;
   FieldCentricDrive m_fieldCentricDrive;
