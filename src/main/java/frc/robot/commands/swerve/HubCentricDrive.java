@@ -77,6 +77,7 @@ public class HubCentricDrive extends CommandBase {
 
     // anglePid = new PIDController(angle_kp, angle_ki, angle_kd);
     limelightPid = new PIDController(limelight_kP, limelight_kI, limelight_kD);
+    limelightPid.setTolerance(Shooter.angleErrorTolerance, Shooter.angleVelErrorTolerance);
 
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
     NTangleError = table.getEntry("/HubCentric/angleError");
@@ -144,6 +145,10 @@ public class HubCentricDrive extends CommandBase {
 
   public Rotation2d getAngleError() {
     return this.angleError;
+  }
+
+  public boolean isReady() {
+    return limelightPid.atSetpoint();
   }
 
   //returns a position for the hub adjusted for robot movement

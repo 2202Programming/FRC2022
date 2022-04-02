@@ -295,7 +295,9 @@ public final class Constants {
       public static final double minLongRange = 1.8; //minimum range in long distance shooting mode
       public static final double maxShortRange = 2; //maximum range in short distance shooting mode
       public static final double degPerPixel = 59.6 / 320; //limelight conversion
-      public static final double angleErrorTolerance = 5.0; //allowed angle error to shoot in guided shooting modes
+      public static final double angleErrorTolerance = 2.0; // [deg] allowed angle error to shoot in guided shooting modes
+      public static final double angleVelErrorTolerance = 1.0; // [deg/s] allowed angle error to shoot in guided shooting modes
+      
       // Flywheel info
       // Flywheel maxOpenLoopRPM and gear ratio are used to calculate kFF in shooter
       public static FlyWheelConfig upperFWConfig = new FlyWheelConfig();
