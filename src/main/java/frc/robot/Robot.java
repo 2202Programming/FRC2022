@@ -56,7 +56,7 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     disabledTimer = 0;
-    
+    RobotContainer.RC().limelight.disableLED();
   }
 
   @Override
@@ -85,6 +85,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    RobotContainer.RC().limelight.enableLED();
     robotContainer.drivetrain.setBrakeMode(); //brake mode for gameplay
     CommandScheduler.getInstance().cancelAll();
     if(RobotContainer.m_driveController != null){
