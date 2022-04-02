@@ -35,13 +35,13 @@ public class auto_cmd_group2 extends SequentialCommandGroup {
     Command finalAuto;
 
     if(m_controls.readSideboard(SBButton.Sw11)){
-      finalAuto = auto_pathPlanner_cmd.PathFactory(m_drivetrain, "AutoPath1");
+      finalAuto = auto_pathPlanner_cmd.PathFactory(1,1, "AutoPath1");
     }
     else if(m_controls.readSideboard(SBButton.Sw12)){
-      finalAuto = auto_pathPlanner_cmd.PathFactory(m_drivetrain, "AutoPath2");
+      finalAuto = auto_pathPlanner_cmd.PathFactory(1,1, "AutoPath2");
     }
     else{
-      finalAuto = auto_pathPlanner_cmd.PathFactory(m_drivetrain, "AutoPath3");
+      finalAuto = auto_pathPlanner_cmd.PathFactory(1,1, "AutoPath3");
     }
     
     addCommands(
@@ -52,7 +52,7 @@ public class auto_cmd_group2 extends SequentialCommandGroup {
       ),
       new IntakeCommand(IntakeMode.Stop),
       new MoveIntake(DeployMode.Retract),
-      new VelShootCommand().withTimeout(2.3)
+      new VelShootCommand().withTimeout(1.8)
     );
   }
 

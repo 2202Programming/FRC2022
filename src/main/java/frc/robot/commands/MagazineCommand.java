@@ -16,7 +16,7 @@ import frc.robot.subsystems.Intake_Subsystem;
 
 public class MagazineCommand extends CommandBase {
     //Defintions
-    private final Magazine_Subsystem magazine;
+    final Magazine_Subsystem magazine;
     DoubleSupplier magazineSpeed;
     boolean finished = false;
 

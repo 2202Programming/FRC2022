@@ -455,5 +455,14 @@ public class SwerveModuleMK3 {
     return angleMotorPID;
   }
 
+  public void setBrakeMode(){
+    driveMotor.setIdleMode(IdleMode.kBrake);
+    angleMotor.setIdleMode(IdleMode.kBrake);
+  }
+
+  public void setCoastMode(){
+    driveMotor.setIdleMode(IdleMode.kCoast);
+    angleMotor.setIdleMode(IdleMode.kCoast);
+  }
 
 }

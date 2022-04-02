@@ -13,10 +13,11 @@ import frc.robot.subsystems.shooter.Shooter_Subsystem;
 import frc.robot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
 import frc.robot.util.PoseMath;
 
-
+/**
+ * Use the gated version - it ties into the light gates on the magazine
+ */
 public class VelShootCommand extends CommandBase implements SolutionProvider{ 
 
-   
     public static final double USE_CURRENT_ANGLE = 0.0;
 
     final Magazine_Subsystem magazine;
@@ -41,14 +42,12 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
     NetworkTableEntry shooterState;
     NetworkTableEntry distance;
     NetworkTableEntry NToutOfRange;
-    public final String NT_Name = "Shooter"; 
+    final String NT_Name = "Shooter"; 
 
 
     ShooterSettings m_shooterSettings;
-    
     ShooterSettings  cmdSS;         // instance the shooter sees
-    ShooterSettings  prevSS;        // instance for prev State
-
+    
     double calculatedVel = 20;
 
     private boolean finished = false;
@@ -129,7 +128,6 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
     @Override
     public void initialize(){
         cmdSS = m_shooterSettings; 
-        prevSS = new ShooterSettings(cmdSS);
         stage = Stage.DoNothing;
         shooter.off();
         magazine.driveWheelOff();
@@ -221,7 +219,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
             //calculate current distance with limelight area instead of odometery
             currentDistance = RobotContainer.RC().limelight.estimateDistance(); 
         }
-
+        return currentDistance;
     }
 
     private void calculateVelocity(){       
@@ -233,6 +231,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         } else {
             outOfRange = false;
         }
+        return calculatedVel;
     }
 
     private void NTupdates(){

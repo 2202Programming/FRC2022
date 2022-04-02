@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.RobotContainer;
+import frc.robot.commands.IntakeCommand;
 import frc.robot.subsystems.hid.SideboardController.SBButton;
 
 public class auto_cmd extends SequentialCommandGroup {
@@ -23,8 +24,8 @@ public class auto_cmd extends SequentialCommandGroup {
 
       //run 2nd path that correlates to 1st path if sideboard 4 is pressed
       new ConditionalCommand(new auto_cmd_terminal(), new WaitCommand(0), () -> RobotContainer.RC().driverControls.readSideboard(SBButton.Sw14)),
-      new InstantCommand(RobotContainer.RC().drivetrain::printPose)
-
+      new InstantCommand(RobotContainer.RC().drivetrain::printPose),
+      new InstantCommand(()->{ RobotContainer.RC().sensors.setAutoEndPose(RobotContainer.RC().drivetrain.getPose()); })
     );
   }
 
