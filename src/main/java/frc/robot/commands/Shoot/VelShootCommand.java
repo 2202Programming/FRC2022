@@ -50,10 +50,10 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
     
     double calculatedVel = 20;
 
-    private boolean finished = false;
+    boolean finished = false;
     //private boolean solution = true;
-    private boolean outOfRange = false;
-    private boolean autoVelocity = true;
+    boolean outOfRange = false;
+    boolean autoVelocity = true;
 
     double log_counter = 0;
 
@@ -143,7 +143,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         //otherwise RPMs should be constant based on the constructor parameters
         if (autoVelocity) {
             if(calculatedVel != cmdSS.vel){
-                cmdSS = new ShooterSettings(calculatedVel, 0);
+                cmdSS.vel = calculatedVel;   // = new ShooterSettings(calculatedVel, 0);
                 shooter.spinup(cmdSS);
             }
         } 

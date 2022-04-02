@@ -39,10 +39,6 @@ public class VelShootGatedCommand extends VelShootCommand{
     
     GStage stage;
 
-    Boolean autoVelocity = false;
-    Boolean shooterAngleLongRange = true;
-    boolean outOfRange = false;
-    
     /**
      * VelShootGatedCommand - uses magazine with lightgates. Details of magazine ball management is
      * completely inside the magazineController. 
@@ -85,7 +81,6 @@ public class VelShootGatedCommand extends VelShootCommand{
     public void initialize(){
         stage = GStage.WaitingOnMag;
         // should be off already shooter.off();
-        shooterAngleLongRange = true;  //fixed  !positioner.isDeployed(); //Low shooting mode = long range = retracted
     }
 
     @Override
@@ -132,11 +127,9 @@ public class VelShootGatedCommand extends VelShootCommand{
         //if autovelocity is true will calculate a new RPM speed based on the distance and adjust positioner
         //otherwise RPMs should be constant based on the constructor parameters
         if (autoVelocity) {
-            if (calculatedVel != cmdSS.vel){
+            if (mag_ctrl.safeToSpinUp() && (calculatedVel != cmdSS.vel)) {
                 cmdSS.vel = calculatedVel;   //shouldn't have to create new object, just change vel
-                if (mag_ctrl.safeToSpinUp()) {
-                    shooter.spinup(cmdSS);
-                }
+                shooter.spinup(cmdSS);
             }
         } 
 

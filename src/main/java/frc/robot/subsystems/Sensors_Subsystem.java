@@ -33,7 +33,7 @@ import frc.robot.Constants.CAN;
 import frc.robot.Constants.NTStrings;
 import frc.robot.util.ModMath;
 
-public class Sensors_Subsystem extends SubsystemBase implements Gyro {
+public class Sensors_Subsystem extends SubsystemBase { //implements Gyro {
 
   public enum YawSensor {
     kNavX, kPigeon, kBlended
@@ -196,7 +196,7 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
     return m_ahrs;
   }
 
-  @Override
+  //@Override
   public void calibrate() {
 
     if (m_ahrs.isConnected()) {
@@ -347,7 +347,7 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
   }
   
 
-  @Override
+  //@Override
   public void close() throws Exception {
     //m_gyro.close();
     m_gyro_ahrs.close();
@@ -406,8 +406,8 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
    *
    * @return the current heading of the robot in degrees.
    */
-  @Override
-  public double getAngle() {
+  //@Override
+  private double getAngle() {
     return getYaw();
   }
 
@@ -426,7 +426,7 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
    * @return the current heading of the robot as a {@link
    *     edu.wpi.first.math.geometry.Rotation2d}.
    */
-  @Override
+  //@Override
   public Rotation2d getRotation2d() {
     return Rotation2d.fromDegrees(-getAngle());
   }
@@ -443,7 +443,7 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
    *
    * @return the current rate in degrees per second
    */
-  @Override
+  //@Override
   public double getRate() {
         return m_yaw_navx_d;
   }

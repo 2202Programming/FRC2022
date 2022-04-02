@@ -66,6 +66,7 @@ public class RobotContainer {
   public static String auto_path_name = "NONE";
 
   public static DriveController m_driveController = null;
+  MagazineGatedCommand mag_default_cmd;
 
   // modifiable commands
   // DriveCmd swd;
@@ -98,12 +99,13 @@ public class RobotContainer {
     if (Constants.HAS_CLIMBER)
       climber = new Climber();
 
-    // set default commands
-
     if (Constants.HAS_DRIVETRAIN && Constants.HAS_SHOOTER && Constants.HAS_MAGAZINE) {
+       // set default commands
+      mag_default_cmd = new MagazineGatedCommand(1.0);
+      magazine.setDefaultCommand(mag_default_cmd);
       // swd = new DriveCmd(drivetrain, driverControls);
       // swd = new LimelightDriveCmd(drivetrain, driverControls, limelight);
-      m_driveController = new DriveController();
+      m_driveController = new DriveController(mag_default_cmd);
       // drivetrain.setDefaultCommand(m_driveController);
     }
 
@@ -189,8 +191,6 @@ public class RobotContainer {
       driverControls.bind(Id.Assistant, XboxButton.RB).whenPressed(new MovePositioner(PositionerMode.Toggle));
 
       // MagazineCommand 
-      MagazineGatedCommand mag_default_cmd = new MagazineGatedCommand(1.0);
-      magazine.setDefaultCommand(mag_default_cmd);
       driverControls.bind(Id.Assistant, XboxButton.X).whileHeld(mag_default_cmd.getFeedCmd());
       driverControls.bind(Id.Assistant, XboxButton.Y).whileHeld(mag_default_cmd.getEjectCmd());
 
