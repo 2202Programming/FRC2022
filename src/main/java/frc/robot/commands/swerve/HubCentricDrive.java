@@ -92,6 +92,10 @@ public class HubCentricDrive extends CommandBase {
   }
 
   void calculate() {
+    final double min_rot_rate = 2.0; // [deg/s]
+    final double max_rot_rate = 5.0;  //[deg/s]
+    double llx = limelight.getX();  //[deg error]
+
     // Get the x speed. We are inverting this because Xbox controllers return
     // negative values when we push forward.
     xSpeed = xspeedLimiter.calculate(dc.getVelocityX()) * DriveTrain.kMaxSpeed;
@@ -106,14 +110,19 @@ public class HubCentricDrive extends CommandBase {
 
     //uncomment this below and comment line above when ready to test velocity correction
     //limelightPid.setSetpoint(velocityCorrectionAngle.getDegrees()*Shooter.degPerPixel); // 0 is towards target, 
-
-    limelightPidOutput = limelightPid.calculate(limelight.getX());
+   
+    limelightPidOutput = limelightPid.calculate(llx);
     SmartDashboard.putNumber("LLPidOutput", limelightPidOutput);
     SmartDashboard.putNumber("LLFiltered", limelight.getFilteredX());
     angleError = Rotation2d.fromDegrees(limelight.getX()); //approximation of degrees off center
-    // update rotation and calulate new output-states
-    rot = llLimiter.calculate(limelightPidOutput); // / 57.3; //degrees to radians/sec
 
+    // Clamp rotation rate to +/- X degrees/sec
+    double min_rot = (Math.abs(llx) > 1.0)  ?  Math.signum(llx) *min_rot_rate : 0.0;
+    rot = MathUtil.clamp(limelightPidOutput + min_rot, -max_rot_rate, max_rot_rate) / 57.3;   //clamp in [deg/s] convert to [rad/s]
+     
+    // update rotation and calulate new output-states
+    ///rot = llLimiter.calculate(limelightPidOutput) / 57.3; //degrees to radians/sec
+   
     currentAngle = drivetrain.getPose().getRotation();
     output_states = kinematics
         .toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, currentAngle));
