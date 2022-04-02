@@ -505,11 +505,11 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
 
     //gyro should power on at zero heading which would be our auto start position's heading.  So any angle off zero is the difference from start to end per the gyro
     //not sure if this should be added or subtracted
-    Rotation2d rotError = autoRot.minus(Rotation2d.fromDegrees(m_ahrs.getYaw()));
+    Rotation2d rotError = autoRot.minus(Rotation2d.fromDegrees(getYaw()));
 
     System.out.println("***Auto End Pose set: "+pose);
     System.out.println("***Rotation difference per Pose: " + autoRot.getDegrees());
-    System.out.println("***Rotation difference per Gyro: " + m_ahrs.getYaw());
+    System.out.println("***Rotation difference per Gyro: " + getYaw());
     System.out.println("***Difference: " + rotError.getDegrees());
 
     /*Idea below for correcting pose angle
@@ -518,7 +518,7 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
     The end of the prior path should be the start of the new path, but presumably the rotation is not perfectly aligned (PID errors)
     So with multiple paths this rotation error in pose may accumulate?
     */
-    //RobotContainer.RC().drivetrain.resetAnglePose(pose.getRotation().minus(rotError));
+    RobotContainer.RC().drivetrain.resetAnglePose(pose.getRotation().minus(rotError));
   }
 
   public static class Signals {
