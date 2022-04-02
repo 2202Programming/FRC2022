@@ -60,9 +60,10 @@ public class Intake_Subsystem extends SubsystemBase {
         l_side_mtr.set(sideMotorStrength);
     }
 
+    // used by new gated magazine control
     public void defaultOn(){
-        double intakeMotorStrength = 0.47;
-        double sideMotorStrength = 0.2;
+        double intakeMotorStrength = 0.6;
+        double sideMotorStrength = 0.5;
         intake_mtr.set(intakeMotorStrength);
         r_side_mtr.set(sideMotorStrength);
         l_side_mtr.set(sideMotorStrength);
