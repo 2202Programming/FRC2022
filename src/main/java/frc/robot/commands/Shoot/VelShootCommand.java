@@ -213,16 +213,16 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         return finished;
     }
 
-    private void calculateDistance(){
+    public void calculateDistance(){
         currentDistance = PoseMath.poseDistance(RobotContainer.RC().drivetrain.getPose(), Autonomous.hubPose); //crappy estimate from odometery
         if (RobotContainer.RC().limelight.getTarget() && RobotContainer.RC().limelight.getLEDStatus()){
             //calculate current distance with limelight area instead of odometery
             currentDistance = RobotContainer.RC().limelight.estimateDistance(); 
         }
-        return currentDistance;
+        //return currentDistance;
     }
 
-    private void calculateVelocity(){       
+    public void calculateVelocity(){       
         calculatedVel = 4.64*currentDistance + 26.8; //distnce vs. velocity trendline for long range positioner
 
         if (calculatedVel > Shooter.kMaxFPS){
@@ -231,7 +231,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         } else {
             outOfRange = false;
         }
-        return calculatedVel;
+        //return calculatedVel;
     }
 
     private void NTupdates(){

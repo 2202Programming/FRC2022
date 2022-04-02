@@ -38,6 +38,10 @@ public class VelShootGatedCommand extends VelShootCommand{
     }
     
     GStage stage;
+
+    Boolean autoVelocity = false;
+    Boolean shooterAngleLongRange = true;
+    boolean outOfRange = false;
     
     /**
      * VelShootGatedCommand - uses magazine with lightgates. Details of magazine ball management is
