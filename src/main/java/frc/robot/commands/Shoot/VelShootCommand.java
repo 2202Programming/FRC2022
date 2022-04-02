@@ -58,7 +58,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
     double log_counter = 0;
 
     //for velocity calculation
-    final double FARDISTANCE = 5.0;
+    final double FARDISTANCE = 4.8;
 
     final double SLOPE = 4.872;
     final double INTERCEPT = 26.8;
