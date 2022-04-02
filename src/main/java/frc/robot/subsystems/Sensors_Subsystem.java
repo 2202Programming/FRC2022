@@ -519,6 +519,8 @@ public class Sensors_Subsystem extends SubsystemBase implements Gyro {
     So with multiple paths this rotation error in pose may accumulate?
     */
     RobotContainer.RC().drivetrain.resetAnglePose(pose.getRotation().minus(rotError));
+    System.out.println("***Corrected End Pose: "+pose);
+
   }
 
   public static class Signals {
