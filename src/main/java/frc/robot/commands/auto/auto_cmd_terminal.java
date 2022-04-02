@@ -59,7 +59,7 @@ public class auto_cmd_terminal extends SequentialCommandGroup {
       new WaitCommand(2),
       finalAutoB,
       new MoveIntake(DeployMode.Retract),
-      new VelShootCommand(Shooter.autoVelocity - 2, false).withTimeout(2.5),
+      new VelShootCommand().withTimeout(2.5),
       new IntakeCommand(IntakeMode.Stop)
     );
   }
