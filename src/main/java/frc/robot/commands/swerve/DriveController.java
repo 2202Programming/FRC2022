@@ -20,9 +20,6 @@ import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.ifx.DriverControls;
 import frc.robot.subsystems.shooter.Shooter_Subsystem;
-//import frc.robot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
-import frc.robot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
-
 
 public class DriveController  extends CommandBase implements SolutionProvider {
 

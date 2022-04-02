@@ -6,12 +6,10 @@ package frc.robot.commands.climber;
 
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.ClimbSettings;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.hid.XboxButton;
-import frc.robot.subsystems.hid.SideboardController.SBButton;
 import frc.robot.subsystems.ifx.DriverControls.Id;
 
 //import static frc.robot.commands.climber.MidClimb.travers_start_ext;
