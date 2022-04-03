@@ -27,6 +27,8 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
     final double TESTANGLE = 0.0;
     final double TESTTOL = 0.02;
     final int BackupPeriod;
+
+    //how long to wait for a solution before shooting without it
     final int maxSolutionWait = 1000;
 
     int ballCount = 999;
@@ -57,12 +59,15 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
 
     double log_counter = 0;
 
-    //for velocity calculation
+    //for velocity calculations
+    //cut over distance between two distance/speed linear relationships
     final double FARDISTANCE = 4.8;
 
+    //close slope/intercept.  Slope will change multiplier between distance and RPM.  Intercept will add RPMs to all distances equally.
     final double SLOPE = 4.872;
     final double INTERCEPT = 26.8;
 
+    //change slope multiplier to increase FPS at far distances.
     final double FARSLOPE = SLOPE*1.3;
     final double FARINTERCEPT =  FARDISTANCE * SLOPE + INTERCEPT;
 
@@ -150,7 +155,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         calculateDistance();
         calculateVelocity();
         
-        //if autovelocity is true will calculate a new RPM speed based on the distance and adjust positioner
+        //if autovelocity is true will calculate a new RPM speed based on the distance
         //otherwise RPMs should be constant based on the constructor parameters
         if (autoVelocity) {
             if(calculatedVel != cmdSS.vel){
@@ -230,7 +235,6 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
             //calculate current distance with limelight area instead of odometery
             currentDistance = RobotContainer.RC().limelight.estimateDistance(); 
         }
-        //return currentDistance;
     }
 
     public void calculateVelocity(){    
@@ -246,15 +250,12 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         }
 
             
-        
-
         if (calculatedVel > Shooter.kMaxFPS){
             outOfRange = true;
             calculatedVel = Shooter.kMaxFPS; //don't ask shooter to go above max FPS otherwise can get stuck waiting for impossible goals
         } else {
             outOfRange = false;
         }
-        //return calculatedVel;
     }
 
     private void NTupdates(){

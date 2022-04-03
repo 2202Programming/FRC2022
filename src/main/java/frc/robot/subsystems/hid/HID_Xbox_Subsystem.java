@@ -303,7 +303,7 @@ public class HID_Xbox_Subsystem extends MonitoredSubsystemBase implements Driver
   }
 
   public void log() {
-    SmartDashboard.putBoolean("Controls Inverted", isControlInverted());
+    //SmartDashboard.putBoolean("Controls Inverted", isControlInverted());
   }
 
 @Override

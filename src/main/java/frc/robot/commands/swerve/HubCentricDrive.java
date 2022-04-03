@@ -120,6 +120,7 @@ public class HubCentricDrive extends CommandBase {
     angleError = Rotation2d.fromDegrees(limelight.getX()); //approximation of degrees off center
 
     // Clamp rotation rate to +/- X degrees/sec
+    // adjust min_rot_rate to barely turn robot when P/I/D are all zero (similar to FF)
     double min_rot = (Math.abs(llx) > pos_tol)  ? - Math.signum(llx) * min_rot_rate : 0.0;
     rot = MathUtil.clamp(limelightPidOutput + min_rot, -max_rot_rate, max_rot_rate) / 57.3;   //clamp in [deg/s] convert to [rad/s]
 
@@ -131,7 +132,7 @@ public class HubCentricDrive extends CommandBase {
 
   @Override
   public void execute() {
-    //pidPrint();
+    //pidPrint();  //these are for PID tuning only
     //pidSet();
     calculate();
     drivetrain.drive(output_states);

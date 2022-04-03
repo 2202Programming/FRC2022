@@ -8,6 +8,8 @@ import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.Shooter;
@@ -149,6 +151,7 @@ public class Limelight_Subsystem extends SubsystemBase {
       NT_hasTarget.setBoolean(target);
       outputTv.setValue(target);
       outputTx.setDouble(x);
+      SmartDashboard.putBoolean("Target Lock", target);
     }
   }
 

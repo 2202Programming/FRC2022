@@ -182,7 +182,14 @@ public class Sensors_Subsystem extends SubsystemBase { //implements Gyro {
     nt_pitch = positionTable.getEntry("Pitch");
     nt_roll = positionTable.getEntry("Roll");
 
-    calibrate();
+    //allow Navx to calibrate in it's own thread
+    new Thread(()->{
+      try {
+        Thread.sleep(1000); //wait a second so gyro is done booting before calibrating.
+        calibrate();
+      } catch (Exception e){}
+    }).start();
+
     log(20);
   }
 
@@ -232,7 +239,8 @@ public class Sensors_Subsystem extends SubsystemBase { //implements Gyro {
     }
     m_yaw_navx_d = m_ahrs.getRate();
 
-    m_yaw_pigeon = ModMath.fmod360_2(-m_pigeon.getYaw()); //CCW positive, inverting here to match all the NavX code previously written.  Need to check range
+    //pigeon yaw is not modulated so needs modmath to get -180 to 180
+    m_yaw_pigeon = ModMath.fmod360_2(-m_pigeon.getYaw()); //CCW positive, inverting here to match all the NavX code previously written. 
 
     // simple average, but could become weighted estimator.
     m_yaw_blend = 0.5 * (m_yaw_navx + m_yaw_pigeon);
@@ -247,15 +255,14 @@ public class Sensors_Subsystem extends SubsystemBase { //implements Gyro {
           System.out.println("***NAVX COM LOST (or manually disabled), SWITCHING TO PIGEON***");
         } else {
           if((log_counter % 10)==0) {
-            m_pigeon.setYaw(-m_yaw_navx); 
+            m_pigeon.setYaw(m_yaw_navx); //check, does this need to be inverted?
             // keep pigeon calibrated to navx as long as navx is working, so when if it switches over there is no jump in yaw, 
-            //but every 10 cycles not to hammer CAN.  Also invert as NAVx an pigeon have opposite rotation conventions
+            //but every 10 cycles not to hammer CAN.  
           }
         }
       break;
 
       case UsingPigeon:
-      //force pigeon per Alek's no drift policy.
         if(m_ahrs.isConnected() && !navxManuallyDisabled){
           setSensorType(YawSensor.kNavX);
           c_gryo_status = GyroStatus.UsingNavx;
