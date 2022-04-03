@@ -17,12 +17,14 @@ public class Limelight_Subsystem extends SubsystemBase {
 
   private NetworkTable table;
   private NetworkTable outputTable;
+  private NetworkTable shooterTable;
   private NetworkTableEntry tx;
   private NetworkTableEntry ty;
   private NetworkTableEntry ta;
   private NetworkTableEntry tv;
   private NetworkTableEntry leds;
   private NetworkTableEntry booleanLeds;
+  private NetworkTableEntry NT_hasTarget;
 
   private NetworkTableEntry outputTx;
   private NetworkTableEntry outputTv;
@@ -38,19 +40,25 @@ public class Limelight_Subsystem extends SubsystemBase {
   private LinearFilter x_iir;
   private LinearFilter area_iir;
   public final String NT_Name = "DT"; // expose data under DriveTrain table
+  final String NT_Shooter_Name = "Shooter"; 
   private double filterTC = 0.08;     // seconds, 2Hz cutoff T = 1/(2pi*f)  was .2hz T=.8
+  private int log_counter = 0;
 
   public Limelight_Subsystem() {
     x_iir = LinearFilter.singlePoleIIR(filterTC, Constants.Tperiod);
     area_iir = LinearFilter.singlePoleIIR(filterTC, Constants.Tperiod);
     table = NetworkTableInstance.getDefault().getTable("limelight");
     outputTable = NetworkTableInstance.getDefault().getTable(NT_Name);
+    shooterTable = NetworkTableInstance.getDefault().getTable(NT_Shooter_Name);
+
     tx = table.getEntry("tx"); // -27 degrees to 27 degrees
     ty = table.getEntry("ty"); // -20.5 to 20.5 degrees
     ta = table.getEntry("ta");
     tv = table.getEntry("tv"); // target validity (1 or 0)
     leds = table.getEntry("ledMode");
     booleanLeds = table.getEntry("booleanLeds");
+
+    NT_hasTarget = shooterTable.getEntry("LL_Has_Target");
 
     outputTv = outputTable.getEntry("Limelight Valid");
     outputTx = outputTable.getEntry("Limelight X error");
@@ -67,8 +75,7 @@ public class Limelight_Subsystem extends SubsystemBase {
     filteredX = x_iir.calculate(x);
     filteredArea = area_iir.calculate(area);
     ledStatus = (leds.getDouble(0) == 3) ? (true) : (false);
-    outputTv.setValue(target);
-    outputTx.setDouble(x);
+
   }
 
   public double estimateDistance() {
@@ -137,7 +144,12 @@ public class Limelight_Subsystem extends SubsystemBase {
   }
 
   public void log() {
-
+    log_counter++;
+    if(log_counter%20 == 0){
+      NT_hasTarget.setBoolean(target);
+      outputTv.setValue(target);
+      outputTx.setDouble(x);
+    }
   }
 
 }
