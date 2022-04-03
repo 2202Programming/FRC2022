@@ -63,7 +63,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
     final double SLOPE = 4.872;
     final double INTERCEPT = 26.8;
 
-    final double FARSLOPE = SLOPE*1.25;
+    final double FARSLOPE = SLOPE*1.3;
     final double FARINTERCEPT =  FARDISTANCE * SLOPE + INTERCEPT;
 
   
