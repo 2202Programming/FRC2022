@@ -41,15 +41,15 @@ public class auto_cmd_terminal extends SequentialCommandGroup {
 
     if(m_controls.readSideboard(SBButton.Sw11)){
       finalAuto = auto_pathPlanner_cmd.PathFactory2(3,2, "Auto21");
-      finalAutoB = auto_pathPlanner_cmd.PathFactory3(2.5,2, "Auto21B");
+      finalAutoB = auto_pathPlanner_cmd.PathFactory3(3,2, "Auto21B");
     }
     else if(m_controls.readSideboard(SBButton.Sw12)){
-      finalAuto = auto_pathPlanner_cmd.PathFactory2(2.5,2, "Auto22");
-      finalAutoB = auto_pathPlanner_cmd.PathFactory3(2.5,2, "Auto22B");
+      finalAuto = auto_pathPlanner_cmd.PathFactory2(3,2, "Auto22");
+      finalAutoB = auto_pathPlanner_cmd.PathFactory3(3,2, "Auto22B");
     }
     else{
-      finalAuto = auto_pathPlanner_cmd.PathFactory2(2.5,2, "Auto23");
-      finalAutoB = auto_pathPlanner_cmd.PathFactory3(2.5,2, "Auto23B");
+      finalAuto = auto_pathPlanner_cmd.PathFactory2(3,2, "Auto23");
+      finalAutoB = auto_pathPlanner_cmd.PathFactory3(3,2, "Auto23B");
     }
     
 
@@ -61,7 +61,12 @@ public class auto_cmd_terminal extends SequentialCommandGroup {
       new WaitCommand(2),
       finalAutoB,
       new MoveIntake(DeployMode.Retract),
+
+      //if limelight is functioning well at competition, this will use LL to aim last shot since it has most odometerty drift
+      //if SW16 is on it will skip and just shoot based on pose odometery position
       new ConditionalCommand(new WaitCommand(0), new LimeLightAim().withTimeout(2), () -> RobotContainer.RC().driverControls.readSideboard(SBButton.Sw16)),
+      
+      //right now this is just hard coded veloctity for the shooting.  Could consider a LL distance RPM auto adjust version
       new VelShootGatedCommand(new ShooterSettings(Shooter.autoVelocity-2, 0.0, 0, Shooter.DefaultRPMTolerance), RobotContainer.RC().m_driveController.magazineController),
       new IntakeCommand(IntakeMode.Stop)
     );

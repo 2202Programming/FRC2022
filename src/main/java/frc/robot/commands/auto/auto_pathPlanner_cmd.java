@@ -106,6 +106,7 @@ public class auto_pathPlanner_cmd extends CommandBase {
     return true;
   }
 
+  //for first path only
   public static Command PathFactory(double maxVel, double maxAcc, String pathname){
     SwerveDrivetrain m_robotDrive = RobotContainer.RC().drivetrain;
     var path = PathPlanner.loadPath(pathname, maxVel, maxAcc); //last two parameters are max velocity and max accelleration
@@ -152,7 +153,7 @@ public class auto_pathPlanner_cmd extends CommandBase {
   }
 
   
-
+  //for a subsequent path
   public static Command PathFactory2(double maxVel, double maxAcc, String pathname){
     SwerveDrivetrain m_robotDrive = RobotContainer.RC().drivetrain;
     var path = PathPlanner.loadPath(pathname, maxVel, maxAcc); //last two parameters are max velocity and max accelleration
@@ -189,9 +190,9 @@ public class auto_pathPlanner_cmd extends CommandBase {
 
     // Run path following command, then stop at the end.
     return new SequentialCommandGroup(
-      new InstantCommand(()-> {
-        m_robotDrive.setPose(startingPose);
-      }),
+      // new InstantCommand(()-> {  
+      //   m_robotDrive.setPose(startingPose);  //may not need path pose reset on secondary paths
+      // }), //should allow robot to "drive" to beginning of second path (which should just correct rotation to current gryo)
       new autoPrint("***Factory2: Running Path " + pathname),
       swerveControllerCommand,
       new InstantCommand(m_robotDrive::stop),
@@ -199,6 +200,7 @@ public class auto_pathPlanner_cmd extends CommandBase {
       );
   }
 
+  //for a subsequent path
   public static Command PathFactory3(double maxVel, double maxAcc, String pathname){
     SwerveDrivetrain m_robotDrive = RobotContainer.RC().drivetrain;
     var path = PathPlanner.loadPath(pathname, maxVel, maxAcc); //last two parameters are max velocity and max accelleration
@@ -235,9 +237,9 @@ public class auto_pathPlanner_cmd extends CommandBase {
 
     // Run path following command, then stop at the end.
     return new SequentialCommandGroup(
-      new InstantCommand(()-> {
-        m_robotDrive.setPose(startingPose);
-      }),
+      // new InstantCommand(()-> {  
+      //   m_robotDrive.setPose(startingPose);  //may not need path pose reset on secondary paths
+      // }), //should allow robot to "drive" to beginning of second path (which should just correct rotation to current gryo)
       new autoPrint("***Factory3: Running Path " + pathname),
       swerveControllerCommand,
       new InstantCommand(m_robotDrive::stop),
