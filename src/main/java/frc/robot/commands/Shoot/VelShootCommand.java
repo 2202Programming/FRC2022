@@ -194,7 +194,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
                 if (solutionProvider.isOnTarget() || (solutionTimer > maxSolutionWait)) {
                     stage = Stage.Shooting;
                     magazine.driveWheelOn(1.0);
-                    intake.on(0.0, 0.2);
+                    intake.on(0.0, 0.5);
                     solutionTimer = 0;
                 }
                 break;

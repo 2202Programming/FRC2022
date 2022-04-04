@@ -58,13 +58,13 @@ public class IntakeCommand extends CommandBase {
     //Call the double supplier function to get a new speed.
     switch(mode){
       case LoadCargo:
-        intake.on(intakeSpeed.getAsDouble(),sideIntakeSpeed.getAsDouble());
+        intake.on(intakeSpeed.getAsDouble(), sideIntakeSpeed.getAsDouble());
         break;
       case ExpellCargo:
-        intake.on( -intakeSpeed.getAsDouble(),sideIntakeSpeed.getAsDouble());
+        intake.on( -intakeSpeed.getAsDouble(), -sideIntakeSpeed.getAsDouble());
         break;
       case InstantLoad: //for command groups that need an instant command to finish but leave intake running
-        intake.on(intakeSpeed.getAsDouble(),sideIntakeSpeed.getAsDouble());
+        intake.on(intakeSpeed.getAsDouble(), sideIntakeSpeed.getAsDouble());
         finished = true;
         break;
       case Stop:
@@ -72,8 +72,6 @@ public class IntakeCommand extends CommandBase {
         finished = true;
         break;
     }
-
-    //Possible TODO - check light gate and count cargo
   }
 
   // Called once the command ends or is interrupted.
