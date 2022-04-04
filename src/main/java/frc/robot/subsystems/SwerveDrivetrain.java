@@ -17,6 +17,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.constraint.SwerveDriveKinematicsConstraint;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.CAN;
@@ -164,10 +165,13 @@ public class SwerveDrivetrain extends SubsystemBase {
   }
 
   public void drive(SwerveModuleState[] states) {
-    this.cur_states = states;
+    this.cur_states = states; //keep copy of commanded states so we can stop() withs 
+
+    //if any one wheel is above max obtainable speed, reduce them all in the same ratio to maintain control
+    SwerveDriveKinematics.desaturateWheelSpeeds(states, DriveTrain.kMaxSpeed);
+
     // output the angle and velocity for each module
     for (int i = 0; i < states.length; i++) {
-      //keep copy of commanded states so we can stop() withs 
       modules[i].setDesiredState(states[i]);
     }
   }
