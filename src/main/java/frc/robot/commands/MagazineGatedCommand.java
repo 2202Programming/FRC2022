@@ -169,7 +169,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
         boolean lower_lg = magazine.lowerGateBlocked();
         boolean upper_lg = magazine.upperGateBlocked();
 
-        // handle driver requests or execute state machine
+        // handle driver requests or execute magazine state machine
         if (feed_request) {
             spinup_safe = true;
             magazine.driveWheelOn(magazineSpeed);
@@ -183,11 +183,11 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
             intake.deploy();
             sides_on = true;
             side_speed = -SideSpeed;
-            intake.on(-IntakeSpeed, -SideSpeed); // ejecting, run everything reversed
+            intake.on(-IntakeSpeed, -SideSpeed); // ejecting, run everything reversed, turn off in init()
 
         } else {
             // Run the normal handler
-            sidesOnCheck();     //based on intake being deployed or not
+            sidesOnCheck();     //based on intake being deployed or not, with delay
             switch (state) {
                 case ConfirmEmpty:
                     // back up for a bit to make sure we don't have a ball
