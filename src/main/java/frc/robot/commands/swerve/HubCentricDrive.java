@@ -195,6 +195,7 @@ public class HubCentricDrive extends CommandBase {
     final double HANGTIME = 1.5; //needs to be measured, probably a trendline equation
     double[] u = {drivetrain.getChassisSpeeds().vxMetersPerSecond, drivetrain.getChassisSpeeds().vyMetersPerSecond}; //robot's direction vector
     Rotation2d facing = drivetrain.getPose().getRotation(); //direction we are facing, presumably towards target
+    Rotation2d bearing = Rotation2d.fromDegrees(drivetrain.getBearing()); //should be direction of travel.  Hopefully accurate even if odometery is off 
     double distance = limelight.estimateDistance(); //distance to target
 
     return xOffset;
