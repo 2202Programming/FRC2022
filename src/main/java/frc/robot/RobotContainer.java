@@ -182,7 +182,7 @@ public class RobotContainer {
 
     if (Constants.HAS_INTAKE) {
       driverControls.bind(Id.Assistant, XboxButton.LB).whenPressed(new MoveIntake(DeployMode.Toggle));
-      //vertical intake controls
+      //vertical intake controls - manual control of intake and side rollers,not the magazine
       driverControls.bind(Id.Assistant, XboxButton.A).whileHeld(new IntakeCommand((() -> 0.6), () -> 0.5, IntakeMode.LoadCargo));
       driverControls.bind(Id.Assistant, XboxButton.B).whileHeld(new IntakeCommand((() -> 0.35), () -> 0.5, IntakeMode.ExpellCargo));
     }
@@ -191,7 +191,7 @@ public class RobotContainer {
       // Positioner binds :)
       driverControls.bind(Id.Assistant, XboxButton.RB).whenPressed(new MovePositioner(PositionerMode.Toggle));
 
-      // MagazineCommand 
+      // Magazine Commands with intake sides, and intake roller
       driverControls.bind(Id.Assistant, XboxButton.X).whileHeld(mag_default_cmd.getFeedCmd());
       driverControls.bind(Id.Assistant, XboxButton.Y).whileHeld(mag_default_cmd.getEjectCmd());
 
