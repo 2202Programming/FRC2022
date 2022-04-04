@@ -12,10 +12,7 @@ import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.CANCoderStatusFrame;
 import com.ctre.phoenix.sensors.Pigeon2;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
-//import com.kauailabs.navx.AHRSProtocol.AHRSUpdate;
 import com.kauailabs.navx.frc.AHRS;
-
-//import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.hal.can.CANJNI;
 import edu.wpi.first.hal.can.CANStatus;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -31,10 +28,9 @@ import frc.robot.Constants.CAN;
 import frc.robot.Constants.NTStrings;
 import frc.robot.util.ModMath;
 
-public class Sensors_Subsystem extends SubsystemBase { //implements Gyro {
-
+public class Sensors_Subsystem extends SubsystemBase { 
   public enum YawSensor {
-    kNavX, kPigeon, kBlended
+    kNavX, kPigeon
   };
 
   /**
@@ -79,8 +75,8 @@ public class Sensors_Subsystem extends SubsystemBase { //implements Gyro {
   AHRS m_ahrs;
   Pigeon2 m_pigeon;
   Gyro m_gyro_ahrs;
-  //Gyro m_gyro;
-
+  
+  double[] m_xyz_dps = new double[3];     //rotation rates [deg/s]
 
   public static class RotationPositions {
     public double back_left;
@@ -226,6 +222,7 @@ public class Sensors_Subsystem extends SubsystemBase { //implements Gyro {
     updateYaw();
     setActiveGryo();
     getRotationPositions(m_rot);
+    m_pigeon.getRawGyro(m_xyz_dps);
 
     log(20);
   }
@@ -351,6 +348,17 @@ public class Sensors_Subsystem extends SubsystemBase { //implements Gyro {
       return temp_pitch;
   }
   
+  public double getPitchRate() {
+    return m_xyz_dps[1];
+  }
+
+  public double getRollRate() {
+    return  m_xyz_dps[0];
+  }
+
+  public double getYawRate() {
+    return m_xyz_dps[2];
+  }
 
   //@Override
   public void close() throws Exception {
@@ -382,11 +390,8 @@ public class Sensors_Subsystem extends SubsystemBase { //implements Gyro {
         return m_yaw_navx;
       
       case kPigeon:
-        return m_yaw_pigeon;
-
-      case kBlended:
       default:
-        return m_yaw_blend;
+        return m_yaw_pigeon;
     }
   }
 
