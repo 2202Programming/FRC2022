@@ -188,6 +188,18 @@ public class HubCentricDrive extends CommandBase {
     return new Pose2d(newX, newY, new Rotation2d());
   }
 
+  //should return how many degrees to offset LL target in X direction to compensate for perpendicular velocity*hangtime.
+  public double getVelocityOffset(){
+    double xOffset = 0;
+
+    final double HANGTIME = 1.5; //needs to be measured, probably a trendline equation
+    double[] u = {drivetrain.getChassisSpeeds().vxMetersPerSecond, drivetrain.getChassisSpeeds().vyMetersPerSecond}; //robot's direction vector
+    Rotation2d facing = drivetrain.getPose().getRotation(); //direction we are facing, presumably towards target
+    double distance = limelight.estimateDistance(); //distance to target
+
+    return xOffset;
+  }
+
   private void pidPrint(){
     SmartDashboard.putNumber("Current Limelight P", limelightPid.getP());
     SmartDashboard.putNumber("Current Limelight I", limelightPid.getI());
