@@ -68,7 +68,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
     final double INTERCEPT = 26.8;
 
     //change slope multiplier to increase FPS at far distances.
-    final double FARSLOPE = SLOPE*1.3;
+    final double FARSLOPE = SLOPE*1.4;
     final double FARINTERCEPT =  FARDISTANCE * SLOPE + INTERCEPT;
 
   
