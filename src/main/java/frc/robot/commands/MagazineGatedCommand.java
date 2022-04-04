@@ -261,8 +261,10 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
                     spinup_safe = false;
                     if (--frame_count_down <= 0) {
                         magazine.driveWheelOff();
-                        intake.retract();
+                        intake.retract();     //only on edge, driver can redeploy
+                        intake.off();
                         state = MagazineState.TwoBalls;
+                        sides_on = false;
                     }
                     break;
 
@@ -281,10 +283,6 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
 
                 case TwoBalls:
                     spinup_safe = true;
-                    sides_on = false;
-                    intake.off();
-                    intake.retract();
-                    // some actions only on the state change
                     break;
 
                 default:
