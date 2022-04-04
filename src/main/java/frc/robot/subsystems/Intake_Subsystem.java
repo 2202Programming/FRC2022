@@ -17,6 +17,9 @@ public class Intake_Subsystem extends SubsystemBase {
      * Intake arm consists of a deploy/retractable arm, controlled by Double Solenoid
      * Intake itself consists of a wheel, controlled by Spark PWM value
      */
+    // defaults - move to constants
+    final double IntakeMotorStrength = 0.6;
+    final double SideMotorStrength = 0.5;
 
     //Localized Constants - what valve value does what action
     static final Value DEPLOY  = Value.kReverse;
@@ -53,26 +56,24 @@ public class Intake_Subsystem extends SubsystemBase {
     //Turn Intake Motor On by sending a double value
     public void on(double intakeMotorStrength, double sideMotorStrength) {
         intake_mtr.set(intakeMotorStrength);
-        r_side_mtr.set(sideMotorStrength);
-        l_side_mtr.set(sideMotorStrength);
+        sidesOn(sideMotorStrength);
     }
 
+    /**
+     * Loads cargo
+     */
     public void defaultOn(){
-        double intakeMotorStrength = 0.6;
-        intake_mtr.set(intakeMotorStrength);
-        sidesOn();
+        on(IntakeMotorStrength, SideMotorStrength);
     }       
 
      // used by gated magazine control
-    public void sidesOn() {
-        double sideMotorStrength = 0.5; 
+    public void sidesOn(double sideMotorStrength) {
         r_side_mtr.set(sideMotorStrength);
         l_side_mtr.set(sideMotorStrength);
     }
 
     public void sidesOff() {
-        r_side_mtr.set(0);
-        l_side_mtr.set(0);
+        sidesOn(0.0);
     }
 
     //Turn Intake Motor Off by setting a double value
