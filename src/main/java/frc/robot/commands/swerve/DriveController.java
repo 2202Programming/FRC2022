@@ -109,10 +109,12 @@ public class DriveController  extends CommandBase implements SolutionProvider {
   private void checkShooter(){
     if (!currentlyShooting && shootingRequested && limelight.getTarget() && limelight.getLEDStatus()){ //start shooting if requested and limelight has target
       currentlyShooting = true;
+      limelight.enableLED();
       requestedDriveMode = DriveModes.hubCentric;
       CommandScheduler.getInstance().schedule(shootCommand); //right now just use fixed velocity; eventually replace with limelight distance estimated velocity
     } else if (currentlyShooting && !shootingRequested){ //stop shooting
       currentlyShooting = false;
+      limelight.disableLED();
       requestedDriveMode = lastDriveMode;
       CommandScheduler.getInstance().cancel(shootCommand);
     } 
