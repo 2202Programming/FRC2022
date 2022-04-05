@@ -110,7 +110,11 @@ public class RobotContainer {
     }
 
     //TEST CODE  - Swingcheck wont return but puts values on Nettable
+<<<<<<< Updated upstream
     driverControls.bind(Id.SwitchBoard, SBButton.Sw26).whileHeld(new SwingCheck(SwingCheck.Axis.Pitch, -40,-42, 0.0).withTimeout(30.0));
+=======
+    driverControls.bind(Id.SwitchBoard, SBButton.Sw16).whileHeld(new SwingCheck(SwingCheck.Axis.Pitch, -40,-42, -1.0, 1.0).withTimeout(30.0));
+>>>>>>> Stashed changes
   
 
     // //setup the dashboard programatically, creates any choosers, screens

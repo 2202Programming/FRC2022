@@ -27,10 +27,9 @@ public class SwingCheck extends CommandBase {
 
   final NetworkTableEntry nte_pos;
   final NetworkTableEntry nte_rate;
-  
 
   final Axis axis;
-  final double axis_min, axis_max, axis_rate;
+  final double axis_min, axis_max, axis_min_rate, axis_max_rate;
   final DoubleSupplier posFunc, rateFunc;
   double pos, rate;
 
@@ -46,12 +45,13 @@ public class SwingCheck extends CommandBase {
    * @param max_rate  abs() of rate  [deg/s]
    * 
    */
-  public SwingCheck(Axis axis, double min, double max, double max_rate ) {
+  public SwingCheck(Axis axis, double min, double max, double min_rate, double max_rate ) {
     sensors = RobotContainer.RC().sensors;
     this.axis = axis;
     axis_min = min;
     axis_max = max;
-    axis_rate = max_rate;
+    axis_min_rate = min_rate;
+    axis_max_rate = max_rate;
 
     switch (axis) {
       case Roll:
@@ -97,8 +97,7 @@ public class SwingCheck extends CommandBase {
   @Override
   public boolean isFinished() {
     boolean pos_in_range = (pos >= axis_min) && (pos <= axis_max);
-    boolean rate_in_range = Math.abs(rate) <= axis_rate;
-
+    boolean rate_in_range = (rate >= axis_min_rate) && (rate <= axis_max_rate);
     return (pos_in_range && rate_in_range);
   }
 

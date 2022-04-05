@@ -232,7 +232,8 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
                     }
                     break;
 
-                case OneBall_Upper:
+                case OneBall_Upper: 
+                    ball_count = 1;   // could state here
                     spinup_safe = true;
                     // Now we are looking for the 2nd ball to be trigger
                     if (lower_lg & prev_lower_lg) {

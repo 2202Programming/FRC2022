@@ -34,6 +34,10 @@ public class TraverseClimb extends SequentialCommandGroup {
                 // goto Travers start
                 // new MoveArmsTo(climber, "traverseStart", travers_start_ext ,
                 // travers_start_rot, true, true).withTimeout(5),
+                // check how we are swinging before traversing - neg is robot swing to lower bars
+                // static hang is about +1deg.
+                // allow a swing towards the bar
+                new SwingCheck(SwingCheck.Axis.Pitch, -15, 0.0, -15.0, 2.0), //min/max angle, min/max rate
                 new MoveArmsTo(climber, "extend to trav", travers_start_ext, pulluprotForward, true, true)
                         .withTimeout(TO),
                 // new MoveArmsTo(climber, "rotate to trav", travers_start_ext,
