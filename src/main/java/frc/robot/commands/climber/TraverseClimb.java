@@ -47,7 +47,7 @@ public class TraverseClimb extends SequentialCommandGroup {
                 new MoveArmsTo(climber, "partial-pullup 0", partialpullupext, 0, true, true).withTimeout(TO),
                 //put magic counterswing cmd here...
                 new MoveArmsTo(climber, "partial-pullup -18", partialpullupext, -22, true, true).withTimeout(TO),
-                new MoveArmsTo(climber, "pullupMid2", pullupext, -17, true, true).withTimeout(TO*10),
+                new MoveArmsTo(climber, "pullupMid2", pullupext, -17, true, true).withTimeout(TO),
                 new MoveArmsTo(climber, "rotateCG1", pullupext, pulluprotForward, true, true).withTimeout(TO));
         this.climber = climber;
         filter = LinearFilter.movingAverage(3);
