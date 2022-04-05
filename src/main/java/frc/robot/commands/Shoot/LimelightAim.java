@@ -68,6 +68,9 @@ public class LimeLightAim extends CommandBase {
   final double vel_tol = 10.0;
   final double pos_tol = 2.0;
 
+  //A simplified version of HubCentricDrive, designed for stand-alone limelight aiming during auto
+  //will finish when PID error is small enough, to allow auto to progress to next command.
+
   public LimeLightAim() {
     this.drivetrain = RobotContainer.RC().drivetrain;
     addRequirements(drivetrain);
@@ -78,7 +81,7 @@ public class LimeLightAim extends CommandBase {
     limelightPid = new PIDController(limelight_kP, limelight_kI, limelight_kD);
     limelightPid.setTolerance(pos_tol, vel_tol);
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
-    NTangleError = table.getEntry("/HubCentric/angleError");
+    NTangleError = table.getEntry("/LimelightAim/angleError");
 
     calculate();
 
@@ -86,6 +89,7 @@ public class LimeLightAim extends CommandBase {
 
   @Override
   public void initialize() {
+    limelight.enableLED(); 
     updateNT();
   }
 
@@ -95,9 +99,6 @@ public class LimeLightAim extends CommandBase {
 
     // limelight is on the shooter side, so we don't need to worry about flipping target angles
     limelightPid.setSetpoint(0);
-
-    //uncomment this below and comment line above when ready to test velocity correction
-    //limelightPid.setSetpoint(velocityCorrectionAngle.getDegrees()*Shooter.degPerPixel); // 0 is towards target, 
    
     limelightPidOutput = limelightPid.calculate(llx);
     angleError = Rotation2d.fromDegrees(limelight.getX()); //approximation of degrees off center
