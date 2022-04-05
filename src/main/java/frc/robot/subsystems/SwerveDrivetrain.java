@@ -168,7 +168,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     this.cur_states = states; //keep copy of commanded states so we can stop() withs 
 
     //if any one wheel is above max obtainable speed, reduce them all in the same ratio to maintain control
-    SwerveDriveKinematics.desaturateWheelSpeeds(states, DriveTrain.kMaxSpeed);
+    //SwerveDriveKinematics.desaturateWheelSpeeds(states, DriveTrain.kMaxSpeed);
 
     // output the angle and velocity for each module
     for (int i = 0; i < states.length; i++) {
