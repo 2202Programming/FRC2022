@@ -2,7 +2,6 @@ package frc.robot.commands.climber;
 
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.ClimbSettings;
 import frc.robot.subsystems.climber.Climber;
@@ -22,7 +21,6 @@ public class MidClimb extends SequentialCommandGroup {
     public static final double travers_start_rot = 15;
 
     private Climber climber;
-
     private LinearFilter filter;
 
     /**
@@ -32,16 +30,10 @@ public class MidClimb extends SequentialCommandGroup {
 
     public MidClimb(Climber climber) {
         super();
-
         double TO = 2.0; // default timeout for testing
 
         this.addCommands(new MoveArmsTo(climber, "extendForMid", midext, midreachrot / 2, true, true).withTimeout(TO),
-                new MoveArmsTo(climber, "rotateForMidBar", midext, midreachrot, true, true).withTimeout(2), // timeout
-                new WaitCommand(1),                                                                         // needed
-                // new MoveArmsTo(climber, "partial-pullup1", partialpullupext, midreachrot,
-                // true, true).withTimeout(TO),
-                // new MoveArmsTo(climber, "partial-pullup2", partialpullupext, midrot, true,
-                // true).withTimeout(TO),
+                new MoveArmsTo(climber, "rotateForMidBar", midext, midreachrot, true, true).withTimeout(2), // timeout           
                 new MoveArmsTo(climber, "pullupMid", pullupext, midreachrot, true, true).withTimeout(TO),
                 new MoveArmsTo(climber, "rotateCG1", pullupext, pulluprotForward, true, true).withTimeout(TO));
 

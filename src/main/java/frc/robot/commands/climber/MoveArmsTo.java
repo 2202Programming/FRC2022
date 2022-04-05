@@ -49,7 +49,7 @@ public class MoveArmsTo extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        climber.hold();
+        ///climber.hold();
         climber.setArmSync(syncArms);
         climber.setOuterLoop(endOuterLoop);
         if (!interrupted)

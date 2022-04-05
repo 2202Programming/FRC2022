@@ -37,15 +37,12 @@ public class TraverseClimb extends SequentialCommandGroup {
                 // check how we are swinging before traversing - neg is robot swing to lower bars
                 // static hang is about +1deg.
                 // allow a swing towards the bar
-                new SwingCheck(SwingCheck.Axis.Pitch, -15, 0.0, -15.0, 2.0), //min/max angle, min/max rate
-                new MoveArmsTo(climber, "extend to trav", travers_start_ext, pulluprotForward, true, true)
-                        .withTimeout(TO),
-                // new MoveArmsTo(climber, "rotate to trav", travers_start_ext,
-                // travers_start_rot, true, true).withTimeout(TO),
-                // new MoveArmsTo(climber, "rotate-under", travers_start_ext, 45, true,
-                // true).withTimeout(TO),
-                new MoveArmsTo(climber, "rotateunder2", travers_start_ext, 50, true, true).withTimeout(TO),
-                new MoveArmsTo(climber, "extend-under", 24, 50, true, true).withTimeout(TO),
+                new SwingCheck(SwingCheck.Axis.Pitch, -20, 1.0, -4.0, 1.0), //min/max angle, min/max rate
+            /// step removed 4/4/22 test    
+            ///new MoveArmsTo(climber, "extend to trav", travers_start_ext, pulluprotForward, true, true)
+            ///        .withTimeout(TO),
+                new MoveArmsTo(climber, "rotateunder2", travers_start_ext, 53, true, true).withTimeout(TO),
+                new MoveArmsTo(climber, "extend-under", 24, 53, true, true).withTimeout(TO),
                 new MoveArmsTo(climber, "rotateforgrab  +35", 24, 35, true, true).withTimeout(2),
                 new MoveArmsTo(climber, "partial-pullup 0", partialpullupext, 0, true, true).withTimeout(TO),
                 //put magic counterswing cmd here...
