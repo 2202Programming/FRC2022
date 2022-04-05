@@ -24,6 +24,7 @@ import frc.robot.commands.auto.auto_cmd;
 import frc.robot.commands.climber.MidClimb;
 import frc.robot.commands.climber.MoveArmsTo;
 import frc.robot.commands.climber.PitAlignClimber;
+import frc.robot.commands.climber.SwingCheck;
 import frc.robot.commands.climber.TraverseClimb;
 import frc.robot.commands.swerve.DriveController;
 import frc.robot.commands.swerve.LimelightDriveCmd;
@@ -108,8 +109,8 @@ public class RobotContainer {
       // drivetrain.setDefaultCommand(m_driveController);
     }
 
-    //TEST CODE 
-    //driverControls.bind(Id.SwitchBoard, SBButton.Sw16).whenPressed(new LightGateTest());
+    //TEST CODE  - Swingcheck wont return but puts values on Nettable
+    driverControls.bind(Id.SwitchBoard, SBButton.Sw16).whileHeld(new SwingCheck(SwingCheck.Axis.Pitch, -40,-42, 0.0).withTimeout(30.0));
   
 
     // //setup the dashboard programatically, creates any choosers, screens
