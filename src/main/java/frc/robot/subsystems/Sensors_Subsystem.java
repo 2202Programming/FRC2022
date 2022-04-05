@@ -72,9 +72,9 @@ public class Sensors_Subsystem extends SubsystemBase {
 
   static final byte update_hz = 100;
   // Sensors
-  AHRS m_ahrs;
+  //AHRS m_ahrs;
   Pigeon2 m_pigeon;
-  Gyro m_gyro_ahrs;
+  //Gyro m_gyro_ahrs;
   
   double[] m_xyz_dps = new double[3];     //rotation rates [deg/s]
 
@@ -140,8 +140,8 @@ public class Sensors_Subsystem extends SubsystemBase {
 
     // create devices and interface access, use interface where possible
     //m_gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
-    m_gyro_ahrs = m_ahrs = new AHRS(SPI.Port.kMXP, update_hz);
-    m_ahrs.enableLogging(true);
+    //m_gyro_ahrs = m_ahrs = new AHRS(SPI.Port.kMXP, update_hz);
+    //m_ahrs.enableLogging(true);
 
     m_pigeon = new Pigeon2(CAN.PIGEON_IMU_CAN);
 
@@ -193,25 +193,25 @@ public class Sensors_Subsystem extends SubsystemBase {
       this.c_yaw_type = type;
   }
 
-  public AHRS getAHRS(){
-    return m_ahrs;
-  }
+  // public AHRS getAHRS(){
+  //   return m_ahrs;
+  // }
 
   //@Override
   public void calibrate() {
 
-    if (m_ahrs.isConnected()) {
-      m_ahrs.enableBoardlevelYawReset(true);
+    // if (m_ahrs.isConnected()) {
+    //   m_ahrs.enableBoardlevelYawReset(true);
 
-      m_ahrs.calibrate();
-      System.out.print("\ncalibrating AHRS ");
-      while (m_ahrs.isCalibrating()) { // wait to zero yaw if calibration is still running
-        Timer.delay(0.25);
-        System.out.print(".");
-      }
-      System.out.println(" done.");
-      Timer.delay(0.1);
-    }
+    //   m_ahrs.calibrate();
+    //   System.out.print("\ncalibrating AHRS ");
+    //   while (m_ahrs.isCalibrating()) { // wait to zero yaw if calibration is still running
+    //     Timer.delay(0.25);
+    //     System.out.print(".");
+    //   }
+    //   System.out.println(" done.");
+    //   Timer.delay(0.1);
+    // }
 
     reset();
   }
@@ -228,45 +228,45 @@ public class Sensors_Subsystem extends SubsystemBase {
   }
 
   void updateYaw(){
-    if(m_ahrs.isMagnetometerCalibrated()){ // We will only get valid fused headings if the magnetometer is calibrated
-      m_yaw_navx = m_ahrs.getFusedHeading(); //returns 0-360 deg; CW positive
-      m_yaw_navx -= 180; //convert to -180 to 180
-    } else {
-      m_yaw_navx = m_ahrs.getYaw(); //gryo only, returns -180 to 180; CW positive
-    }
-    m_yaw_navx_d = m_ahrs.getRate();
+    // if(m_ahrs.isMagnetometerCalibrated()){ // We will only get valid fused headings if the magnetometer is calibrated
+    //   m_yaw_navx = m_ahrs.getFusedHeading(); //returns 0-360 deg; CW positive
+    //   m_yaw_navx -= 180; //convert to -180 to 180
+    // } else {
+    //   m_yaw_navx = m_ahrs.getYaw(); //gryo only, returns -180 to 180; CW positive
+    // }
+    // m_yaw_navx_d = m_ahrs.getRate();
 
     //pigeon yaw is not modulated so needs modmath to get -180 to 180
     m_yaw_pigeon = ModMath.fmod360_2(-m_pigeon.getYaw()); //CCW positive, inverting here to match all the NavX code previously written. 
 
-    // simple average, but could become weighted estimator.
-    m_yaw_blend = 0.5 * (m_yaw_navx + m_yaw_pigeon);
+    // // simple average, but could become weighted estimator.
+    // m_yaw_blend = 0.5 * (m_yaw_navx + m_yaw_pigeon);
   }
 
   void setActiveGryo(){
-    switch(c_gryo_status){
-      case UsingNavx:
-        if(!m_ahrs.isConnected() || navxManuallyDisabled){
-          setSensorType(YawSensor.kPigeon);
-          c_gryo_status = GyroStatus.UsingPigeon;
-          System.out.println("***NAVX COM LOST (or manually disabled), SWITCHING TO PIGEON***");
-        } else {
-          if((log_counter % 10)==0) {
-            m_pigeon.setYaw(m_yaw_navx); //check, does this need to be inverted?
-            // keep pigeon calibrated to navx as long as navx is working, so when if it switches over there is no jump in yaw, 
-            //but every 10 cycles not to hammer CAN.  
-          }
-        }
-      break;
+    setSensorType(YawSensor.kPigeon);
+    // switch(c_gryo_status){
+    //   case UsingNavx:
+    //   //   if(!navxManuallyDisabled || !m_ahrs.isConnected() ){
+    //   //     setSensorType(YawSensor.kPigeon);
+    //   //     c_gryo_status = GyroStatus.UsingPigeon;
+    //   //     System.out.println("***NAVX COM LOST (or manually disabled), SWITCHING TO PIGEON***");
+    //   //   } else {
+    //   //     if((log_counter % 10)==0) {
+    //   //       m_pigeon.setYaw(m_yaw_navx); //check, does this need to be inverted?
+    //   //       // keep pigeon calibrated to navx as long as navx is working, so when if it switches over there is no jump in yaw, 
+    //   //       //but every 10 cycles not to hammer CAN.  
+    //   //     }
+    //   //   }
+    //   // break;
 
-      case UsingPigeon:
-        if(m_ahrs.isConnected() && !navxManuallyDisabled){
-          setSensorType(YawSensor.kNavX);
-          c_gryo_status = GyroStatus.UsingNavx;
-          System.out.println("***NAVX COM RESTORED (or manually renabled), SWITCHING TO NAVX***");
-        }
-      break;
-    }
+    //   case UsingPigeon:
+    //       setSensorType(YawSensor.kNavX);
+    //       c_gryo_status = GyroStatus.UsingNavx;
+    //       System.out.println("***NAVX COM RESTORED (or manually renabled), SWITCHING TO NAVX***");
+    //     }
+    //   break;
+    // }
   }
 
   void setupSimulation() {
@@ -283,9 +283,9 @@ public class Sensors_Subsystem extends SubsystemBase {
 
     log_counter++;
     if ((log_counter % mod)==0) {
-      nt_accelX.setDouble(m_ahrs.getWorldLinearAccelX());
-      nt_accelY.setDouble(m_ahrs.getWorldLinearAccelY());
-      nt_accelZ.setDouble(m_ahrs.getWorldLinearAccelZ());
+      // nt_accelX.setDouble(m_ahrs.getWorldLinearAccelX());
+      // nt_accelY.setDouble(m_ahrs.getWorldLinearAccelY());
+      // nt_accelZ.setDouble(m_ahrs.getWorldLinearAccelZ());
 
       nt_yaw_navx.setDouble(m_yaw_navx);
       nt_yaw_navx_dot.setDouble(m_yaw_navx_d);
@@ -305,17 +305,17 @@ public class Sensors_Subsystem extends SubsystemBase {
       nt_activeIMU.setString(c_gryo_status.toString());
       nt_yaw.setDouble(getYaw());
       nt_rotation.setDouble(getRotation2d().getDegrees());
-      nt_roll.setDouble(m_ahrs.getRoll());
-      nt_pitch.setDouble(m_ahrs.getPitch());
+      // nt_roll.setDouble(m_ahrs.getRoll());
+      // nt_pitch.setDouble(m_ahrs.getPitch());
     }
   }
 
   public void reset() {
 
-    if (m_ahrs.isConnected()) {
-      m_ahrs.reset();
-      m_ahrs.resetDisplacement();
-    }
+    // if (m_ahrs.isConnected()) {
+    //   m_ahrs.reset();
+    //   m_ahrs.resetDisplacement();
+    // }
   }
 
   public double getRoll() {
@@ -323,8 +323,8 @@ public class Sensors_Subsystem extends SubsystemBase {
 
     switch(c_yaw_type){
       case kNavX:
-        temp_roll = m_ahrs.getRoll();
-      break;
+      //   temp_roll = m_ahrs.getRoll();
+      // break;
 
       case kPigeon:
         temp_roll = m_pigeon.getRoll();
@@ -338,8 +338,8 @@ public class Sensors_Subsystem extends SubsystemBase {
 
     switch(c_yaw_type){
       case kNavX:
-        temp_pitch = m_ahrs.getPitch();
-      break;
+      //   temp_pitch = m_ahrs.getPitch();
+      // break;
 
       case kPigeon:
         temp_pitch = m_pigeon.getPitch();
@@ -362,8 +362,8 @@ public class Sensors_Subsystem extends SubsystemBase {
 
   //@Override
   public void close() throws Exception {
-    //m_gyro.close();
-    m_gyro_ahrs.close();
+    // //m_gyro.close();
+    // m_gyro_ahrs.close();
   }
 
 
@@ -387,7 +387,7 @@ public class Sensors_Subsystem extends SubsystemBase {
   public double getYaw() {
     switch (c_yaw_type) {
       case kNavX:
-        return m_yaw_navx;
+        // return m_yaw_navx;
       
       case kPigeon:
       default:

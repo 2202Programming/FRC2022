@@ -152,11 +152,10 @@ public final class Constants {
     //ext pid ki was .00015
 
     // Position/vel tolerance for outer position loops
-    public static final double TOLERANCE_EXT = .2
-    ; // [in]
-    public static final double TOLERANCE_EXT_VEL = 0.15; // [in/s]
+    public static final double TOLERANCE_EXT = .30; // [in]
+    public static final double TOLERANCE_EXT_VEL = 0.18; // [in/s]
     public static final double TOLERANCE_ROT = 2.0; // [deg]
-    public static final double TOLERANCE_ROT_RATE = 1.0; // [deg/s]
+    public static final double TOLERANCE_ROT_RATE = 3.0; // [deg/s]
     
     //limit integrator windup (default =1.0)
     public static final double ROT_INTEGRATOR_MIN = 0.0; // [deg/s]
