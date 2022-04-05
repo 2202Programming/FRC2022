@@ -190,9 +190,9 @@ public class auto_pathPlanner_cmd extends CommandBase {
 
     // Run path following command, then stop at the end.
     return new SequentialCommandGroup(
-      // new InstantCommand(()-> {  
-      //   m_robotDrive.setPose(startingPose);  //may not need path pose reset on secondary paths
-      // }), //should allow robot to "drive" to beginning of second path (which should just correct rotation to current gryo)
+      new InstantCommand(()-> {  
+        m_robotDrive.setPose(startingPose);  //may not need path pose reset on secondary paths
+      }), //should allow robot to "drive" to beginning of second path (which should just correct rotation to current gryo)
       new autoPrint("***Factory2: Running Path " + pathname),
       swerveControllerCommand,
       new InstantCommand(m_robotDrive::stop),
@@ -237,9 +237,9 @@ public class auto_pathPlanner_cmd extends CommandBase {
 
     // Run path following command, then stop at the end.
     return new SequentialCommandGroup(
-      // new InstantCommand(()-> {  
-      //   m_robotDrive.setPose(startingPose);  //may not need path pose reset on secondary paths
-      // }), //should allow robot to "drive" to beginning of second path (which should just correct rotation to current gryo)
+      new InstantCommand(()-> {  
+        m_robotDrive.setPose(startingPose);  //may not need path pose reset on secondary paths
+      }), //should allow robot to "drive" to beginning of second path (which should just correct rotation to current gryo)
       new autoPrint("***Factory3: Running Path " + pathname),
       swerveControllerCommand,
       new InstantCommand(m_robotDrive::stop),
