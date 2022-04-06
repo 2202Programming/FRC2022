@@ -15,6 +15,7 @@ import frc.robot.commands.IntakeCommand.IntakeMode;
 import frc.robot.commands.MoveIntake;
 import frc.robot.commands.MoveIntake.DeployMode;
 import frc.robot.commands.Shoot.LimeLightAim;
+import frc.robot.commands.Shoot.VelShootCommand;
 import frc.robot.commands.Shoot.VelShootGatedCommand;
 import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.subsystems.Magazine_Subsystem;
@@ -63,11 +64,17 @@ public class auto_cmd_terminal extends SequentialCommandGroup {
       finalAutoB,
 
       //if limelight is functioning well at competition, this will use LL to aim last shot since it has most odometerty drift
-      //if SW16 is on it will skip and just shoot based on pose odometery position
+      //if SW16 is on it will skip
       new ConditionalCommand(new WaitCommand(0), new LimeLightAim().withTimeout(2), () -> RobotContainer.RC().driverControls.readSideboard(SBButton.Sw16)),
       
-      //right now this is just hard coded veloctity for the shooting.  Could consider a LL distance RPM auto adjust version
-      new VelShootGatedCommand(new ShooterSettings(Shooter.autoVelocity-2, 0.0, 0, Shooter.DefaultRPMTolerance), RobotContainer.RC().m_driveController.magazineController),
+      //if limelight is functioning well at competition, this will use LL to pick velocity for last shot since it has most odometerty drift
+      //if SW16 is on it will skip and just pick hard coded velocity
+      new ConditionalCommand(
+        new VelShootGatedCommand(new ShooterSettings(Shooter.autoVelocity-2, 0.0, 0, Shooter.DefaultRPMTolerance), RobotContainer.RC().m_driveController.magazineController),
+        new VelShootGatedCommand(RobotContainer.RC().m_driveController.magazineController, RobotContainer.RC().m_driveController),
+        () -> RobotContainer.RC().driverControls.readSideboard(SBButton.Sw16)
+      ),
+      
       new IntakeCommand(IntakeMode.Stop)
     );
   }
