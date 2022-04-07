@@ -182,7 +182,6 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
         } else if (eject_request) {
             spinup_safe = false;
             magazine.driveWheelOn(-magazineSpeed);
-            intake.deploy();
             sides_on = true;
             side_speed = -SideSpeed;
             intake.on(-IntakeSpeed, -SideSpeed); // ejecting, run everything reversed, turn off in init()
