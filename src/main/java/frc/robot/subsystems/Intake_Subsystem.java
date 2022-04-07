@@ -59,6 +59,11 @@ public class Intake_Subsystem extends SubsystemBase {
         sidesOn(sideMotorStrength);
     }
 
+    //turn on horizontal intake only
+    public void horizontalOn(double intakeMotorStrength){
+        intake_mtr.set(intakeMotorStrength);
+    }
+
     /**
      * Loads cargo
      */

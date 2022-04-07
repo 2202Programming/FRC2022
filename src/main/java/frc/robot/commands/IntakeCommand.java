@@ -66,7 +66,7 @@ public class IntakeCommand extends CommandBase {
         System.out.println("***IntakeCommand EXPELL");
         break;
       case InstantLoad: //for command groups that need an instant command to finish but leave intake running
-        intake.on(intakeSpeed.getAsDouble(), sideIntakeSpeed.getAsDouble());
+        intake.horizontalOn(intakeSpeed.getAsDouble());
         System.out.println("***IntakeCommand INSTANT LOAD");
         finished = true;
         break;
