@@ -187,7 +187,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
 
         } else {
             // Run the normal handler
-            sidesOnCheck();     //based on intake being deployed or not, with delay
+            //sidesOnCheck();     //based on intake being deployed or not, with delay
             switch (state) {
                 case ConfirmEmpty:
                     // back up for a bit to make sure we don't have a ball

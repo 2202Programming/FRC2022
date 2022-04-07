@@ -59,9 +59,9 @@ public class auto_cmd_terminal extends SequentialCommandGroup {
       finalAuto,
       new MoveIntake(DeployMode.Deploy),
       new WaitCommand(2),
-      new MoveIntake(DeployMode.Retract),
+      
       finalAutoB,
-
+      new MoveIntake(DeployMode.Retract),
       //if limelight is functioning well at competition, this will use LL to aim last shot since it has most odometerty drift
       //if SW16 is on it will skip and just shoot based on pose odometery position
       new ConditionalCommand(new WaitCommand(0), new LimeLightAim().withTimeout(2), () -> RobotContainer.RC().driverControls.readSideboard(SBButton.Sw16)),
