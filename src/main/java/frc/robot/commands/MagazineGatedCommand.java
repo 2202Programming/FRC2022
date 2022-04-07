@@ -146,6 +146,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
         intake.off();           //everything off at start or eject/feed off
         sides_on = false;
         spinup_safe = false;
+        side_speed = SideSpeed;
         // read gates, save as previous values for edge detection
         prev_upper_lg = magazine.upperGateBlocked();
         prev_lower_lg = magazine.lowerGateBlocked();
