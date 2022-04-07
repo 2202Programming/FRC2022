@@ -59,16 +59,20 @@ public class IntakeCommand extends CommandBase {
     switch(mode){
       case LoadCargo:
         intake.on(intakeSpeed.getAsDouble(), sideIntakeSpeed.getAsDouble());
+        System.out.println("***IntakeCommand LOAD");
         break;
       case ExpellCargo:
         intake.on( -intakeSpeed.getAsDouble(), -sideIntakeSpeed.getAsDouble());
+        System.out.println("***IntakeCommand EXPELL");
         break;
       case InstantLoad: //for command groups that need an instant command to finish but leave intake running
         intake.on(intakeSpeed.getAsDouble(), sideIntakeSpeed.getAsDouble());
+        System.out.println("***IntakeCommand INSTANT LOAD");
         finished = true;
         break;
       case Stop:
         intake.off();
+        System.out.println("***IntakeCommand OFF");
         finished = true;
         break;
     }

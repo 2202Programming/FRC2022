@@ -48,10 +48,13 @@ public class auto_cmd_group2 extends SequentialCommandGroup {
     
     addCommands(
       new MoveIntake(DeployMode.Deploy),
-      new ParallelDeadlineGroup( //all run at same time; group ends when 1st command ends
-        finalAuto,
-        new IntakeCommand(IntakeMode.LoadCargo)
-      ),
+      new IntakeCommand(IntakeMode.InstantLoad),
+      finalAuto,
+
+      // new ParallelDeadlineGroup( //all run at same time; group ends when 1st command ends
+      //   finalAuto,
+      //   new IntakeCommand(IntakeMode.LoadCargo)
+      // ),
       new IntakeCommand(IntakeMode.Stop),
       new MoveIntake(DeployMode.Retract),
       //new VelShootCommand().withTimeout(1.8)

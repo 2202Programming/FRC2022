@@ -57,7 +57,7 @@ public class auto_cmd_terminal extends SequentialCommandGroup {
       new MoveIntake(DeployMode.Deploy),
       new IntakeCommand(IntakeMode.InstantLoad),
       finalAuto,
-      new MoveIntake(DeployMode.Deploy),
+      new IntakeCommand(IntakeMode.InstantLoad),
       new WaitCommand(2),
       
       finalAutoB,
