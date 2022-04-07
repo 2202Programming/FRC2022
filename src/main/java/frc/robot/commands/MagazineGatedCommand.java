@@ -292,7 +292,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
         }
         
         if (sides_on) {
-            intake.sidesOn(-side_speed);
+            intake.sidesOn(side_speed);
         } else {
             intake.sidesOff();
         }
