@@ -88,8 +88,8 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
     MagazineState state = MagazineState.Empty;
     MagazineState prev_state = state;
 
-    final Command ejectCmd;
-    final Command feedCmd;
+    //final Command ejectCmd;
+    //final Command feedCmd;
     final Command movePositionerHigh = new MovePositioner(PositionerMode.High);
 
     // Network reporting
@@ -109,8 +109,8 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
         this.intake = RobotContainer.RC().intake;
         this.magazineSpeed = magazineSpeed;
 
-        ejectCmd = new EjectCmd(this);
-        feedCmd = new FeedCmd(this);
+        //ejectCmd = new EjectCmd(this);
+        //feedCmd = new FeedCmd(this);
 
         // setup all the tables for debugging
         NetworkTable table = NetworkTableInstance.getDefault().getTable(NT_Name);
@@ -131,12 +131,12 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
 
     // Accessor for supporting eject/feed commands
     public Command getEjectCmd() {
-        return this.ejectCmd;
+        return new EjectCmd(this);
     }
 
     public Command getFeedCmd() {
-        return this.feedCmd;
-    }
+        return new FeedCmd(this);
+     }
 
     /**
      * Called on scheduling or whenever we need to figure out the state of the

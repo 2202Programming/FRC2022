@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.Shooter;
 import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.MagazineController;
 import frc.robot.commands.MoveIntake;
 import frc.robot.commands.IntakeCommand.IntakeMode;
 import frc.robot.commands.MoveIntake.DeployMode;
@@ -35,7 +36,8 @@ public class auto_cmd_group2 extends SequentialCommandGroup {
 
 
     Command finalAuto;
-
+    Command feed = RobotContainer.RC().m_driveController.magazineController.getFeedCmd();
+    
     if(m_controls.readSideboard(SBButton.Sw11)){
       finalAuto = auto_pathPlanner_cmd.PathFactory(1,1, "AutoPath1");
     }
@@ -57,6 +59,7 @@ public class auto_cmd_group2 extends SequentialCommandGroup {
       // ),
       new IntakeCommand(IntakeMode.Stop),
       new MoveIntake(DeployMode.Retract),
+      feed.withTimeout(0.1),
       //new VelShootCommand().withTimeout(1.8)
       new VelShootGatedCommand(new ShooterSettings(Shooter.autoVelocity-2, 0.0, 0, Shooter.DefaultRPMTolerance), RobotContainer.RC().m_driveController.magazineController).withTimeout(1.8)
     );
