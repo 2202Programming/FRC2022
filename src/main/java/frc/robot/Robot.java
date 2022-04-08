@@ -64,6 +64,7 @@ public class Robot extends TimedRobot {
     disabledTimer++;
     if(disabledTimer == 200){ //wait a few seconds to stop momementum before releasing brakes
       robotContainer.drivetrain.setCoastMode(); //make robot easier to push around to set up correctly
+      RobotContainer.RC().limelight.disableLED();
     }
   }
 
