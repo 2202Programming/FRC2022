@@ -40,7 +40,7 @@ public class auto_cmd_terminal extends SequentialCommandGroup {
     Command finalAutoB = new WaitCommand(0);
 
     if(m_controls.readSideboard(SBButton.Sw11)){
-      finalAuto = auto_pathPlanner_cmd.PathFactory2(3,2, "Auto21");
+      finalAuto = auto_pathPlanner_cmd.PathFactory2(6,4, "Auto21");
       finalAutoB = auto_pathPlanner_cmd.PathFactory3(3,2, "Auto21B");
     }
     else if(m_controls.readSideboard(SBButton.Sw12)){
