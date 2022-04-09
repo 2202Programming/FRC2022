@@ -60,5 +60,9 @@ public class Magazine_Subsystem extends SubsystemBase {
     return !lightGateUpper.get();
   }
 
+  public boolean bothGatesBlocked() {
+    return upperGateBlocked() && lowerGateBlocked();
+  }
+
 }
 

@@ -5,8 +5,10 @@
 package frc.robot.commands.auto;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.Shooter;
 import frc.robot.commands.IntakeCommand;
@@ -59,7 +61,17 @@ public class auto_cmd_group2 extends SequentialCommandGroup {
       // ),
       new IntakeCommand(IntakeMode.Stop),
       new MoveIntake(DeployMode.Retract),
-      feed.withTimeout(0.1),
+
+      //if both lightgates aren't blocked after our first move, something is wrong, probably a ball stuck in intake
+      //try cycling intake to free it up
+      new ConditionalCommand(
+        new WaitCommand(0), //on true
+        new SequentialCommandGroup(
+          new MoveIntake(DeployMode.Deploy),
+          new MoveIntake(DeployMode.Retract)
+        ), //on false
+        ()->m_magazine.bothGatesBlocked()
+      ),
       //new VelShootCommand().withTimeout(1.8)
       new VelShootGatedCommand(new ShooterSettings(Shooter.autoVelocity-2, 0.0, 0, Shooter.DefaultRPMTolerance), RobotContainer.RC().m_driveController.magazineController).withTimeout(1.8)
     );
