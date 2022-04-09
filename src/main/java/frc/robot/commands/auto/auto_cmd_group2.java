@@ -16,6 +16,7 @@ import frc.robot.commands.MagazineController;
 import frc.robot.commands.MoveIntake;
 import frc.robot.commands.IntakeCommand.IntakeMode;
 import frc.robot.commands.MoveIntake.DeployMode;
+import frc.robot.commands.Shoot.LimeLightAim;
 import frc.robot.commands.Shoot.VelShootGatedCommand;
 import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.subsystems.Magazine_Subsystem;
@@ -53,12 +54,7 @@ public class auto_cmd_group2 extends SequentialCommandGroup {
     addCommands(
       new MoveIntake(DeployMode.Deploy),
       new IntakeCommand(IntakeMode.InstantLoad),
-      finalAuto,
-
-      // new ParallelDeadlineGroup( //all run at same time; group ends when 1st command ends
-      //   finalAuto,
-      //   new IntakeCommand(IntakeMode.LoadCargo)
-      // ),
+      finalAuto, //drive to pick up first ball
       new IntakeCommand(IntakeMode.Stop),
       new MoveIntake(DeployMode.Retract),
 
@@ -72,8 +68,18 @@ public class auto_cmd_group2 extends SequentialCommandGroup {
         ), //on false
         ()->m_magazine.bothGatesBlocked()
       ),
-      //new VelShootCommand().withTimeout(1.8)
-      new VelShootGatedCommand(new ShooterSettings(Shooter.autoVelocity-2, 0.0, 0, Shooter.DefaultRPMTolerance), RobotContainer.RC().m_driveController.magazineController).withTimeout(1.8)
+
+      //if limelight is functioning well at competition, this will use LL to aim and pick RPM
+      //if SW16 is on it will skip and just shoot based on pose odometery position
+      new ConditionalCommand(
+        new VelShootGatedCommand(new ShooterSettings(Shooter.autoVelocity-2, 0.0, 0, Shooter.DefaultRPMTolerance), 
+            RobotContainer.RC().m_driveController.magazineController).withTimeout(1.8), //if SW16 is ON, shoot with fixed RPM and no aiming
+        new SequentialCommandGroup( //if SW16 is OFF aim and shoot with LL
+            new LimeLightAim().withTimeout(2),
+            new VelShootGatedCommand(RobotContainer.RC().m_driveController.magazineController, null)
+        ),
+        () -> RobotContainer.RC().driverControls.readSideboard(SBButton.Sw16)
+      )
     );
   }
 
