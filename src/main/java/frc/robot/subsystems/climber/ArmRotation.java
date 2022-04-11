@@ -148,6 +148,10 @@ public class ArmRotation {
         return encoder.getPosition();
     }
 
+    public double getVelocity() {
+        return encoder.getVelocity();
+    }
+
 void sleep(long ms) {
     try {
       Thread.sleep(ms);

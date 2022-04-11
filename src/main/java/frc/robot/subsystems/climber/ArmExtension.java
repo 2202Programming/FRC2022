@@ -127,4 +127,8 @@ public class ArmExtension {
         //account for sign here
         return -this.encoder.getPosition();
     }
+
+    public double getVelocity() {
+        return -encoder.getVelocity();
+    }
 }
