@@ -239,10 +239,11 @@ public class DriveController  extends CommandBase implements SolutionProvider {
   }
 
   //should estimate how many degrees to offset LL target in X direction to compensate for perpendicular velocity*hangtime
+  //also calculates how much to adjust shooting speed based on robot velocity towards/away from target
   //should be run only when we are shooting and on target, so can assume we are facing hub
   public void setVelocityOffset(){
 
-    final double HANGTIME = 1.5; //needs to be measured, probably a trendline equation
+    final double HANGTIME = 1.5; //in sec; needs to be measured, probably a trendline equation
 
     double[] u = {drivetrain.getChassisSpeeds().vxMetersPerSecond, drivetrain.getChassisSpeeds().vyMetersPerSecond}; //robot's direction vector
     double velocity = Math.sqrt(Math.pow(u[0], 2) + Math.pow(u[1], 2)); //raw velocity magnitude;
@@ -259,7 +260,7 @@ public class DriveController  extends CommandBase implements SolutionProvider {
     double perpendicularDriftDistance = perpendicularVelocity * HANGTIME; // horizontal drift distance given perpendicular velocity and hang time
     Rotation2d LLAngleOffset = new Rotation2d(Math.atan(perpendicularDriftDistance / distance));  //angle offset of LL given known drift distance and distance to hub
 
-    m_hubCentricDrive.setLimelightTarget(LLAngleOffset.getDegrees()); //sign?
-    ((VelShootCommand) shootCommand).setCalculatedVel(((VelShootCommand) shootCommand).getCalculatedVel() + shootingVelOffset); //minus?
+    m_hubCentricDrive.setLimelightTarget(LLAngleOffset.getDegrees()); //sign? Units should be degrees offset angle
+    ((VelShootCommand) shootCommand).setCalculatedVel(((VelShootCommand) shootCommand).getCalculatedVel() + shootingVelOffset); //minus?  units are m/s?
   }
 }
