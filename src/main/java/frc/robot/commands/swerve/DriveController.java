@@ -126,7 +126,7 @@ public class DriveController  extends CommandBase implements SolutionProvider {
     } 
     if (currentlyShooting) { 
         NThasSolution.setBoolean(isOnTarget());
-        if(isOnTarget()) setVelocityOffset(); //if we are shooting, and on target, start to run velocity offset method for run-n-gun
+        setVelocityOffset(); //if we are shooting, start to run velocity offset method for run-n-gun
     }
   }
 
@@ -262,7 +262,7 @@ public class DriveController  extends CommandBase implements SolutionProvider {
     Rotation2d LLAngleOffset = new Rotation2d(Math.atan(perpendicularDriftDistance / distance));  //angle offset of LL given known drift distance and distance to hub
 
     m_hubCentricDrive.setLimelightTarget(LLAngleOffset.getDegrees()); //sign? Units should be degrees offset angle
-    ((VelShootCommand) shootCommand).setCalculatedVel(((VelShootCommand) shootCommand).getCalculatedVel() + shootingVelOffset); //minus?  units are m/s?
+    ((VelShootCommand) shootCommand).setVelocityOffset(shootingVelOffset); //minus?  units are m/s?
 
     //Debug prints
     SmartDashboard.putNumber("velocity Mag", velocity);

@@ -19,7 +19,6 @@ import frc.robot.Constants.Shooter;
 import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.ifx.DriverControls;
-import frc.robot.util.PoseMath;
 
 /* Current driving behavior:
   Starts in field centric
@@ -52,7 +51,7 @@ public class HubCentricDrive extends CommandBase {
   double r_limelight_kI = limelight_kI;
   double r_limelight_kD = limelight_kD;
 
-  double limelightTarget = 0.0;
+  double limelightTarget;
 
   // Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
   final SlewRateLimiter xspeedLimiter = new SlewRateLimiter(3);
@@ -68,7 +67,6 @@ public class HubCentricDrive extends CommandBase {
   Rotation2d currentAngle;
   Rotation2d angleError;
   Rotation2d targetAngle;
-  Rotation2d velocityCorrectionAngle;
 
   double min_rot_rate = 6.0;        //about 7.5 deg is min we measured
   double r_min_rot_rate = min_rot_rate;
@@ -86,7 +84,6 @@ public class HubCentricDrive extends CommandBase {
     // anglePid = new PIDController(angle_kp, angle_ki, angle_kd);
     limelightPid = new PIDController(limelight_kP, limelight_kI, limelight_kD);
     limelightPid.setTolerance(pos_tol, vel_tol);
-//limelightPid.setTolerance(Shooter.angleErrorTolerance, Shooter.angleVelErrorTolerance);
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
     NTangleError = table.getEntry("/HubCentric/angleError");
 
@@ -96,6 +93,7 @@ public class HubCentricDrive extends CommandBase {
 
   @Override
   public void initialize() {
+    limelightTarget = 0.0;
     updateNT();
   }
 
@@ -114,10 +112,7 @@ public class HubCentricDrive extends CommandBase {
 
     // limelight is on the shooter side, so we don't need to worry about flipping target angles
     limelightPid.setSetpoint(limelightTarget);
-
-    //uncomment this below and comment line above when ready to test velocity correction
-    //limelightPid.setSetpoint(velocityCorrectionAngle.getDegrees()*Shooter.degPerPixel); // 0 is towards target, 
-   
+  
     limelightPidOutput = limelightPid.calculate(llx);
     angleError = Rotation2d.fromDegrees(limelight.getX()); //approximation of degrees off center
 

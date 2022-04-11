@@ -51,6 +51,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
     ShooterSettings  cmdSS;         // instance the shooter sees
     
     double calculatedVel = 20;
+    double velocityOffset = 0;
 
     boolean finished = false;
     //private boolean solution = true;
@@ -143,6 +144,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
 
     @Override
     public void initialize(){
+        velocityOffset = 0;
         cmdSS = m_shooterSettings; 
         stage = Stage.DoNothing;
         shooter.off();
@@ -158,8 +160,8 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         //if autovelocity is true will calculate a new RPM speed based on the distance
         //otherwise RPMs should be constant based on the constructor parameters
         if (autoVelocity) {
-            if(calculatedVel != cmdSS.vel){
-                cmdSS.vel = calculatedVel;   // = new ShooterSettings(calculatedVel, 0);
+            if((calculatedVel + velocityOffset) != cmdSS.vel){
+                cmdSS.vel = calculatedVel + velocityOffset;   // = new ShooterSettings(calculatedVel, 0);
                 shooter.spinup(cmdSS);
             }
         } 
@@ -248,8 +250,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         } else {
             calculatedVel = m_slope*currentDistance + m_intercept; //distnce vs. velocity trendline for long range positioner
         }
-
-            
+         
         if (calculatedVel > Shooter.kMaxFPS){
             outOfRange = true;
             calculatedVel = Shooter.kMaxFPS; //don't ask shooter to go above max FPS otherwise can get stuck waiting for impossible goals
@@ -264,6 +265,15 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
 
     public void setCalculatedVel(double velocity){
         calculatedVel = velocity;
+    }
+
+    public double getVelocityOffset(){
+        return velocityOffset;
+    }
+
+    //since calculatedVel is constantly recalculated, use a 2nd variable for the offset due to robot motion which comes in from the DriveController.
+    public void setVelocityOffset(double offset){
+        velocityOffset = offset;
     }
 
     private void NTupdates(){
