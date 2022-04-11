@@ -258,6 +258,14 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         }
     }
 
+    public double getCalculatedVel(){
+        return calculatedVel;
+    }
+
+    public void setCalculatedVel(double velocity){
+        calculatedVel = velocity;
+    }
+
     private void NTupdates(){
         log_counter++;
         if ((log_counter%20)==0) {

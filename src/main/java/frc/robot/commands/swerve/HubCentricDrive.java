@@ -52,6 +52,8 @@ public class HubCentricDrive extends CommandBase {
   double r_limelight_kI = limelight_kI;
   double r_limelight_kD = limelight_kD;
 
+  double limelightTarget = 0.0;
+
   // Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
   final SlewRateLimiter xspeedLimiter = new SlewRateLimiter(3);
   final SlewRateLimiter yspeedLimiter = new SlewRateLimiter(3);
@@ -111,7 +113,7 @@ public class HubCentricDrive extends CommandBase {
     ySpeed = MathUtil.clamp(ySpeed, -Constants.DriveTrain.kMaxSpeed, Constants.DriveTrain.kMaxSpeed);
 
     // limelight is on the shooter side, so we don't need to worry about flipping target angles
-    limelightPid.setSetpoint(0);
+    limelightPid.setSetpoint(limelightTarget);
 
     //uncomment this below and comment line above when ready to test velocity correction
     //limelightPid.setSetpoint(velocityCorrectionAngle.getDegrees()*Shooter.degPerPixel); // 0 is towards target, 
@@ -160,45 +162,12 @@ public class HubCentricDrive extends CommandBase {
     return limelightPid.atSetpoint();
   }
 
-  //returns a position for the hub adjusted for robot movement
-  public Pose2d adjustHubPosition(){
-    final double HANGTIME = 1.5; //needs to be measured, probably a trendline equation
-    double[] u = {drivetrain.getChassisSpeeds().vxMetersPerSecond, drivetrain.getChassisSpeeds().vxMetersPerSecond}; //robot's direction vector
-    double robotX = drivetrain.getPose().getX(); //x position of robot
-    double robotY = drivetrain.getPose().getY(); //y position of robot
-    double hubX = Constants.Autonomous.hubPose.getX(); //real hub x
-    double hubY = Constants.Autonomous.hubPose.getY(); //real hub y
-    double[] v = {hubY-robotY, robotX-hubX}; //tangent vector to hub
-    Rotation2d oneAndTwo = Rotation2d.fromDegrees(drivetrain.getBearing()).plus(PoseMath.getHeading2Target(drivetrain.getPose(), Constants.Autonomous.hubPose));
-    Rotation2d angle3 = new Rotation2d(90).minus(oneAndTwo); //angle in degrees
-
-    /*find projection of u onto v*/
-    double projectionMagnitude = (u[0]*v[0]+u[1]*v[1]) / (Math.pow(v[0], 2) + Math.pow(v[1],2));
-    double[] tangentVector = {projectionMagnitude*v[0], projectionMagnitude*v[1]};
-
-    double offsetDistance = Math.sqrt(Math.pow(tangentVector[0], 2) + Math.pow(tangentVector[1], 2)) * HANGTIME;
-
-    Rotation2d temp = angle3.plus(new Rotation2d(180));
-    double xOffset = Math.cos(temp.getDegrees())*offsetDistance; 
-    double yOffset = Math.sin(temp.getDegrees())*offsetDistance;
-
-    double newX = xOffset + hubX;
-    double newY = yOffset + hubY;
-
-    return new Pose2d(newX, newY, new Rotation2d());
+  public void setLimelightTarget(double target) {
+    limelightTarget = target;
   }
 
-  //should return how many degrees to offset LL target in X direction to compensate for perpendicular velocity*hangtime.
-  public double getVelocityOffset(){
-    double xOffset = 0;
-
-    final double HANGTIME = 1.5; //needs to be measured, probably a trendline equation
-    double[] u = {drivetrain.getChassisSpeeds().vxMetersPerSecond, drivetrain.getChassisSpeeds().vyMetersPerSecond}; //robot's direction vector
-    Rotation2d facing = drivetrain.getPose().getRotation(); //direction we are facing, presumably towards target
-    Rotation2d bearing = Rotation2d.fromDegrees(drivetrain.getBearing()); //should be direction of travel.  Hopefully accurate even if odometery is off 
-    double distance = limelight.estimateDistance(); //distance to target
-
-    return xOffset;
+  public double getLimelightTarget(){
+    return limelightTarget;
   }
 
   private void pidPrint(){

@@ -4,6 +4,8 @@
 
 package frc.robot.commands.swerve;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -12,14 +14,17 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.NTStrings;
 import frc.robot.Constants.Shooter;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.commands.MagazineController;
 import frc.robot.commands.Shoot.SolutionProvider;
+import frc.robot.commands.Shoot.VelShootCommand;
 import frc.robot.commands.Shoot.VelShootGatedCommand;
 import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.ifx.DriverControls;
 import frc.robot.subsystems.shooter.Shooter_Subsystem;
+import frc.robot.util.PoseMath;
 
 public class DriveController  extends CommandBase implements SolutionProvider {
 
@@ -118,8 +123,9 @@ public class DriveController  extends CommandBase implements SolutionProvider {
       requestedDriveMode = lastDriveMode;
       CommandScheduler.getInstance().cancel(shootCommand);
     } 
-    if (currentlyShooting) { //if angle error is small, set solution to be true to allow shooter to shoot
-        NThasSolution.setBoolean(Math.abs(m_hubCentricDrive.getAngleError().getDegrees()) > Shooter.angleErrorTolerance);
+    if (currentlyShooting) { 
+        NThasSolution.setBoolean(isOnTarget());
+        if(isOnTarget()) setVelocityOffset(); //if we are shooting, and on target, start to run velocity offset method for run-n-gun
     }
   }
 
@@ -230,5 +236,30 @@ public class DriveController  extends CommandBase implements SolutionProvider {
     if (Math.abs(rollAngleDegrees)>kOffBalanceAngleThresholdDegrees){
       //System.out.println("***ROLL WARNING: Roll Angle:"+rollAngleDegrees);
     }
+  }
+
+  //should estimate how many degrees to offset LL target in X direction to compensate for perpendicular velocity*hangtime
+  //should be run only when we are shooting and on target, so can assume we are facing hub
+  public void setVelocityOffset(){
+
+    final double HANGTIME = 1.5; //needs to be measured, probably a trendline equation
+
+    double[] u = {drivetrain.getChassisSpeeds().vxMetersPerSecond, drivetrain.getChassisSpeeds().vyMetersPerSecond}; //robot's direction vector
+    double velocity = Math.sqrt(Math.pow(u[0], 2) + Math.pow(u[1], 2)); //raw velocity magnitude;
+    Rotation2d facing = drivetrain.getPose().getRotation(); //direction we are facing, presumably towards target
+    Rotation2d bearing = Rotation2d.fromDegrees(drivetrain.getBearing()); //should be direction of travel.  Hopefully accurate even if odometery is off.  Check filter time?
+    double distance = limelight.estimateDistance(); //distance to target based on LL angle
+    Rotation2d LLCoordinatesBearing = bearing.minus(facing); //bearing in LL coordinates (target is at 0)
+
+    double perpendicularVelocity = velocity * Math.cos(LLCoordinatesBearing.getRadians()); //horizontal/perpendicular component of velocity vector
+    double parallelVelocity = velocity * Math.sin(LLCoordinatesBearing.getRadians()); //vertical/parallel component of velocity vector
+
+    double shootingVelOffset = parallelVelocity; //shooting requested velocity should be in same units
+
+    double perpendicularDriftDistance = perpendicularVelocity * HANGTIME; // horizontal drift distance given perpendicular velocity and hang time
+    Rotation2d LLAngleOffset = new Rotation2d(Math.atan(perpendicularDriftDistance / distance));  //angle offset of LL given known drift distance and distance to hub
+
+    m_hubCentricDrive.setLimelightTarget(LLAngleOffset.getDegrees()); //sign?
+    ((VelShootCommand) shootCommand).setCalculatedVel(((VelShootCommand) shootCommand).getCalculatedVel() + shootingVelOffset); //minus?
   }
 }
