@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -262,5 +263,14 @@ public class DriveController  extends CommandBase implements SolutionProvider {
 
     m_hubCentricDrive.setLimelightTarget(LLAngleOffset.getDegrees()); //sign? Units should be degrees offset angle
     ((VelShootCommand) shootCommand).setCalculatedVel(((VelShootCommand) shootCommand).getCalculatedVel() + shootingVelOffset); //minus?  units are m/s?
+
+    //Debug prints
+    SmartDashboard.putNumber("velocity Mag", velocity);
+    SmartDashboard.putNumber("LLCoordinatesBearing", LLCoordinatesBearing.getDegrees());
+    SmartDashboard.putNumber("perpendicularVelocity", perpendicularVelocity);
+    SmartDashboard.putNumber("parallelVelocity", parallelVelocity);
+    SmartDashboard.putNumber("perpendicularDriftDistance", perpendicularDriftDistance);
+    SmartDashboard.putNumber("LLAngleOffset", LLAngleOffset.getDegrees());
+
   }
 }
