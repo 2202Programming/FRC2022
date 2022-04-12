@@ -273,7 +273,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
     }
 
     //since currentDistance is constantly recalculated, use a 2nd variable for the offset due to robot motion which comes in from the DriveController.
-    public void setdistanceOffeset(double offset){
+    public void setdistanceOffset(double offset){
         distanceOffeset = offset;
     }
 

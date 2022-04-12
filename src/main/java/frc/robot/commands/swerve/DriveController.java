@@ -16,7 +16,6 @@ import frc.robot.Constants.NTStrings;
 import frc.robot.RobotContainer;
 import frc.robot.commands.MagazineController;
 import frc.robot.commands.Shoot.SolutionProvider;
-import frc.robot.commands.Shoot.VelShootCommand;
 import frc.robot.commands.Shoot.VelShootGatedCommand;
 import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
@@ -48,7 +47,7 @@ public class DriveController  extends CommandBase implements SolutionProvider {
   FieldCentricDrive m_fieldCentricDrive;
   HubCentricDrive m_hubCentricDrive;
   IntakeCentricDrive m_intakeCentricDrive;
-  Command shootCommand;
+  VelShootGatedCommand shootCommand;
 
   Command currentCmd;
   DriveModes requestedDriveMode = DriveModes.fieldCentric;
@@ -256,7 +255,7 @@ public class DriveController  extends CommandBase implements SolutionProvider {
     Rotation2d LLAngleOffset = new Rotation2d(Math.atan2(perpendicularDriftDistance,distance));  //angle offset of LL given known drift distance and distance to hub
 
     m_hubCentricDrive.setLimelightTarget(LLAngleOffset.getDegrees()); //sign? Units should be degrees offset angle
-    ((VelShootCommand) shootCommand).setdistanceOffeset(parallelDriftDistance); //add drift distance in parallel direction to calculated distance, in meters.
+    shootCommand.setdistanceOffset(parallelDriftDistance); //add drift distance in parallel direction to calculated distance, in meters.
 
     //Debug prints
     SmartDashboard.putNumber("perpendicularVelocity", perpendicularVelocity);
