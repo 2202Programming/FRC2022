@@ -97,8 +97,8 @@ public class VelShootGatedCommand extends VelShootCommand{
         //if autovelocity is true will calculate a new RPM speed based on the distance and adjust positioner
         //otherwise RPMs should be constant based on the constructor parameters
         if (autoVelocity) {
-            if (mag_ctrl.safeToSpinUp() && ((calculatedVel + velocityOffset) != cmdSS.vel)) {
-                cmdSS.vel = calculatedVel + velocityOffset;   //shouldn't have to create new object, just change vel
+            if (mag_ctrl.safeToSpinUp() && (calculatedVel != cmdSS.vel)) {
+                cmdSS.vel = calculatedVel ;   //shouldn't have to create new object, just change vel
                 shooter.spinup(cmdSS);
             }
         } 

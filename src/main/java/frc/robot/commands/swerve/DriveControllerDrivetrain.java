@@ -14,16 +14,14 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.NTStrings;
 import frc.robot.RobotContainer;
-import frc.robot.commands.MagazineController;
 import frc.robot.commands.Shoot.SolutionProvider;
 import frc.robot.commands.Shoot.VelShootCommand;
-import frc.robot.commands.Shoot.VelShootGatedCommand;
 import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.ifx.DriverControls;
 import frc.robot.subsystems.shooter.Shooter_Subsystem;
 
-public class DriveController  extends CommandBase implements SolutionProvider {
+public class DriveControllerDrivetrain extends CommandBase implements SolutionProvider {
 
   public enum DriveModes {
     robotCentric("Robot Centric"),
@@ -42,13 +40,11 @@ public class DriveController  extends CommandBase implements SolutionProvider {
   SwerveDrivetrain drivetrain;
   DriverControls dc;
   Shooter_Subsystem shooter;
-  public MagazineController magazineController;
   Limelight_Subsystem limelight;
   RobotCentricDrive m_robotCentricDrive;
   FieldCentricDrive m_fieldCentricDrive;
   HubCentricDrive m_hubCentricDrive;
   IntakeCentricDrive m_intakeCentricDrive;
-  Command shootCommand;
 
   Command currentCmd;
   DriveModes requestedDriveMode = DriveModes.fieldCentric;
@@ -68,25 +64,18 @@ public class DriveController  extends CommandBase implements SolutionProvider {
   
   int log_counter = 0;
 
-  public DriveController(MagazineController magazineController)  {
+  public DriveControllerDrivetrain()  {
     System.out.println("Drive Controller Constructed");
     this.drivetrain = RobotContainer.RC().drivetrain;
     this.dc = RobotContainer.RC().driverControls;
-    this.shooter = RobotContainer.RC().shooter;
-    this.magazineController = magazineController;
     this.limelight = RobotContainer.RC().limelight;
 
     m_robotCentricDrive = new RobotCentricDrive(drivetrain, dc);
     m_fieldCentricDrive = new FieldCentricDrive(drivetrain, dc);
     m_hubCentricDrive = new HubCentricDrive(drivetrain, dc, limelight);
     m_intakeCentricDrive = new IntakeCentricDrive(drivetrain, dc);
-    //shootCommand = new VelShootCommand(45,false);  //right now just use fixed velocity; eventually replace with limelight distance estimated velocity
-    
-    //use this one when ready for solution provider and velocity auto adjustment
-    shootCommand = new VelShootGatedCommand(magazineController, this);
 
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
-    shooterTable = NetworkTableInstance.getDefault().getTable(NT_ShooterName);
     positionTable = NetworkTableInstance.getDefault().getTable(NTStrings.NT_Name_Position);
     driveMode = table.getEntry("/DriveController/driveMode");
     NThasSolution = shooterTable.getEntry("/DriveController/HasSolution");
@@ -113,12 +102,10 @@ public class DriveController  extends CommandBase implements SolutionProvider {
       currentlyShooting = true;
       limelight.enableLED();
       requestedDriveMode = DriveModes.hubCentric;
-      CommandScheduler.getInstance().schedule(shootCommand); //right now just use fixed velocity; eventually replace with limelight distance estimated velocity
-    } else if (currentlyShooting && !shootingRequested){ //stop shooting
+          } else if (currentlyShooting && !shootingRequested){ //stop shooting
       currentlyShooting = false;
       limelight.disableLED();
       requestedDriveMode = lastDriveMode;
-      CommandScheduler.getInstance().cancel(shootCommand);
     } 
     if (currentlyShooting) { 
         NThasSolution.setBoolean(isOnTarget());
@@ -256,8 +243,7 @@ public class DriveController  extends CommandBase implements SolutionProvider {
     Rotation2d LLAngleOffset = new Rotation2d(Math.atan2(perpendicularDriftDistance,distance));  //angle offset of LL given known drift distance and distance to hub
 
     m_hubCentricDrive.setLimelightTarget(LLAngleOffset.getDegrees()); //sign? Units should be degrees offset angle
-    ((VelShootCommand) shootCommand).setdistanceOffeset(parallelDriftDistance); //add drift distance in parallel direction to calculated distance, in meters.
-
+    
     //Debug prints
     SmartDashboard.putNumber("perpendicularVelocity", perpendicularVelocity);
     SmartDashboard.putNumber("parallelVelocity", parallelVelocity);

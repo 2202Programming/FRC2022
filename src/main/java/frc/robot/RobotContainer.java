@@ -27,6 +27,7 @@ import frc.robot.commands.climber.PitAlignClimber;
 import frc.robot.commands.climber.SwingCheck;
 import frc.robot.commands.climber.TraverseClimb;
 import frc.robot.commands.swerve.DriveController;
+import frc.robot.commands.swerve.DriveControllerDrivetrain;
 import frc.robot.commands.swerve.LimelightDriveCmd;
 import frc.robot.commands.test.ClimberTestRotRate;
 import frc.robot.subsystems.Intake_Subsystem;
@@ -66,6 +67,7 @@ public class RobotContainer {
   public static String auto_path_name = "NONE";
 
   public DriveController m_driveController = null;
+  public DriveControllerDrivetrain m_dDriveControllerDrivetrain = null;
   MagazineGatedCommand mag_default_cmd;
 
   // modifiable commands
@@ -109,6 +111,10 @@ public class RobotContainer {
       // drivetrain.setDefaultCommand(m_driveController);
     }
 
+    if(!Constants.IS_COMPETITION_BOT){
+      m_dDriveControllerDrivetrain = new DriveControllerDrivetrain();
+    }
+
     //TEST CODE  - Swingcheck wont return but puts values on Nettable
     driverControls.bind(Id.SwitchBoard, SBButton.Sw26).whileHeld(new SwingCheck(SwingCheck.Axis.Pitch, -40,-42, -1.0, 1.0).withTimeout(60.0));  
 
@@ -149,7 +155,7 @@ public class RobotContainer {
    */
   void setDriverButtons() {
     // B - Toggle drive mode
-    if (Constants.HAS_DRIVETRAIN) {
+    if (Constants.HAS_DRIVETRAIN && Constants.IS_COMPETITION_BOT) {
       driverControls.bind(Id.Driver, XboxButton.B).whenPressed(m_driveController::cycleDriveMode);
       driverControls.bind(Id.Driver, XboxButton.Y).whenPressed(new InstantCommand(() -> { drivetrain.resetAnglePose(Rotation2d.fromDegrees(-180)); })); //-180 reset if intake faces drivers
       driverControls.bind(Id.Driver, XboxAxis.TRIGGER_LEFT).whenPressed(m_driveController::setRobotCentric);
@@ -157,6 +163,15 @@ public class RobotContainer {
       driverControls.bind(Id.Driver, XboxAxis.TRIGGER_RIGHT).whenPressed(m_driveController::turnOnShootingMode);
       driverControls.bind(Id.Driver, XboxAxis.TRIGGER_RIGHT).whenReleased(m_driveController::turnOffShootingMode);
     }
+    if (Constants.HAS_DRIVETRAIN && !Constants.IS_COMPETITION_BOT) {
+      driverControls.bind(Id.Driver, XboxButton.B).whenPressed(m_dDriveControllerDrivetrain::cycleDriveMode);
+      driverControls.bind(Id.Driver, XboxButton.Y).whenPressed(new InstantCommand(() -> { drivetrain.resetAnglePose(Rotation2d.fromDegrees(-180)); })); //-180 reset if intake faces drivers
+      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_LEFT).whenPressed(m_dDriveControllerDrivetrain::setRobotCentric);
+      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_LEFT).whenReleased(m_dDriveControllerDrivetrain::setFieldCentric);   
+      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_RIGHT).whenPressed(m_dDriveControllerDrivetrain::turnOnShootingMode);
+      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_RIGHT).whenReleased(m_dDriveControllerDrivetrain::turnOffShootingMode);
+    }
+
 
     // RB limelight toggle
     driverControls.bind(Id.Driver, XboxButton.X).whenPressed(new InstantCommand(limelight::toggleLED));
