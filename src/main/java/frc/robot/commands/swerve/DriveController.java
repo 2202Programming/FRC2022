@@ -246,27 +246,22 @@ public class DriveController  extends CommandBase implements SolutionProvider {
 
     final double HANGTIME = 1.5; //in sec; needs to be measured, probably a trendline equation
 
-    double[] u = {drivetrain.getChassisSpeeds().vxMetersPerSecond, drivetrain.getChassisSpeeds().vyMetersPerSecond}; //robot's direction vector
-    double velocity = Math.sqrt(Math.pow(u[0], 2) + Math.pow(u[1], 2)); //raw velocity magnitude;
-    Rotation2d facing = drivetrain.getPose().getRotation(); //direction we are facing, presumably towards target
-    Rotation2d bearing = Rotation2d.fromDegrees(drivetrain.getBearing()); //should be direction of travel.  Hopefully accurate even if odometery is off.  Check filter time?
+    //Note: Robot coordinates are same as LL coordinates rotated 180 deg
+    double[] u = {drivetrain.getChassisSpeeds().vxMetersPerSecond, drivetrain.getChassisSpeeds().vyMetersPerSecond}; //robot's direction vector (in robot frame of reference, intake is forward 0 deg)
+  
     double distance = limelight.estimateDistance(); //distance to target based on LL angle
-    Rotation2d LLCoordinatesBearing = bearing.minus(facing); //bearing in LL coordinates (target is at 0)
-
-    double perpendicularVelocity = velocity * Math.cos(LLCoordinatesBearing.getRadians()); //horizontal/perpendicular component of velocity vector
-    double parallelVelocity = velocity * Math.sin(LLCoordinatesBearing.getRadians()); //vertical/parallel component of velocity vector
-
-    double shootingVelOffset = parallelVelocity; //shooting requested velocity should be in same units
+     
+    double perpendicularVelocity = -u[1]; //inverted since we shoot out the back of the robot
+    double parallelVelocity = -u[0]; //inverted since we shoot out the back of the robot
 
     double perpendicularDriftDistance = perpendicularVelocity * HANGTIME; // horizontal drift distance given perpendicular velocity and hang time
-    Rotation2d LLAngleOffset = new Rotation2d(Math.atan(perpendicularDriftDistance / distance));  //angle offset of LL given known drift distance and distance to hub
+    Rotation2d LLAngleOffset = new Rotation2d(Math.atan2(perpendicularDriftDistance,distance));  //angle offset of LL given known drift distance and distance to hub
 
     m_hubCentricDrive.setLimelightTarget(LLAngleOffset.getDegrees()); //sign? Units should be degrees offset angle
-    ((VelShootCommand) shootCommand).setVelocityOffset(shootingVelOffset); //minus?  units are m/s?
+    ((VelShootCommand) shootCommand).setVelocityOffset(parallelVelocity); //minus?  units are m/s? 
+    //switch this to parallel distance offset and then update distance instead of velocity
 
     //Debug prints
-    SmartDashboard.putNumber("velocity Mag", velocity);
-    SmartDashboard.putNumber("LLCoordinatesBearing", LLCoordinatesBearing.getDegrees());
     SmartDashboard.putNumber("perpendicularVelocity", perpendicularVelocity);
     SmartDashboard.putNumber("parallelVelocity", parallelVelocity);
     SmartDashboard.putNumber("perpendicularDriftDistance", perpendicularDriftDistance);
