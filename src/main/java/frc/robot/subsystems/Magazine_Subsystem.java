@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.DigitalIO;
@@ -21,6 +22,8 @@ public class Magazine_Subsystem extends SubsystemBase {
   final DigitalInput lightGateLower = new DigitalInput(DigitalIO.MAGAZINE_GATE1);
   final DigitalInput lightGateUpper = new DigitalInput(DigitalIO.MAGAZINE_GATE2);
 
+  private int logCounter = 0;
+
   //Constructor
   public Magazine_Subsystem() {
     // copy the PID settings to the hardware
@@ -30,6 +33,7 @@ public class Magazine_Subsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    log();
   }
 
   //sets the belts to a speed
@@ -62,6 +66,15 @@ public class Magazine_Subsystem extends SubsystemBase {
 
   public boolean bothGatesBlocked() {
     return upperGateBlocked() && lowerGateBlocked();
+  }
+
+  private void log(){
+    logCounter++;
+    if (logCounter%10 == 0) {
+      SmartDashboard.putBoolean("Ball in Upper", upperGateBlocked());
+      SmartDashboard.putBoolean("Ball in Lower", lowerGateBlocked());
+    }
+
   }
 
 }
