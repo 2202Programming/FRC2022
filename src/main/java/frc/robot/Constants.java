@@ -25,11 +25,13 @@ import frc.robot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
  */
 public final class Constants {
 
-  public static final boolean HAS_INTAKE = true;
-  public static final boolean HAS_SHOOTER = true;
-  public static final boolean HAS_MAGAZINE = true;
+  public static final boolean IS_COMPETITION_BOT = true;
+  public static final boolean HAS_INTAKE = IS_COMPETITION_BOT ? true : false;
+  public static final boolean HAS_SHOOTER = IS_COMPETITION_BOT ? true : false;
+  public static final boolean HAS_MAGAZINE = IS_COMPETITION_BOT ? true : false;
+  public static final boolean HAS_CLIMBER = IS_COMPETITION_BOT ? true : false;
+
   public static final boolean HAS_DRIVETRAIN = true;
-  public static final boolean HAS_CLIMBER = true;
   
   public static final double FTperM = 3.28084;
   public static final double MperFT = 1.0 / FTperM;
@@ -238,8 +240,8 @@ public final class Constants {
         // Kinematics model - wheel offsets from center of robot (0, 0)
         // Left Front given below, symmetry used for others 
         // Betabot is 21.516" left-right and 24.87" front-back
-        public static final double XwheelOffset = MperFT*(21.516/12)/2;     
-        public static final double YwheelOffset = MperFT*(24.87/12)/2; 
+        public static final double XwheelOffset = IS_COMPETITION_BOT ? MperFT*(21.516/12)/2 : 10.5 / 12;     
+        public static final double YwheelOffset = IS_COMPETITION_BOT ? MperFT*(24.87/12)/2 : 10.5 / 12; 
         public static final double wheelCorrectionFactor = 1; //measured on swervebot 
         public static final double wheelDiameter = 99.5 /1000.0 * wheelCorrectionFactor;   //measured 2/28/22 mm [m]
 
