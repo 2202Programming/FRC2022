@@ -256,12 +256,12 @@ public class DriveController  extends CommandBase implements SolutionProvider {
     for (int i=0; i < 5; i++) {
       perpendicularDriftDistance = perpendicularVelocity * HANGTIME; // horizontal drift distance given perpendicular velocity and hang time
       parallelDriftDistance = parallelVelocity * HANGTIME; // drift distance to/away from target given parellel velocity and hang time
-      HANGTIME = getHangtime(distance + parallelDriftDistance);
+      HANGTIME = getHangtime(distance - parallelDriftDistance);
     }
     Rotation2d LLAngleOffset = new Rotation2d(Math.atan2(perpendicularDriftDistance, distance));  //angle offset of LL given known drift distance and distance to hub
     
-    double parallelMagicNumber = 0.8;
-    double perpendicularMagicNumber = 0.7;
+    double parallelMagicNumber = 0.5;
+    double perpendicularMagicNumber = 0.5;
 
     m_hubCentricDrive.setLimelightTarget(-LLAngleOffset.getDegrees() * perpendicularMagicNumber); //sign? Units should be degrees offset angle
     shootCommand.setdistanceOffset(-parallelDriftDistance * parallelMagicNumber); //add drift distance in parallel direction to calculated distance, in meters.

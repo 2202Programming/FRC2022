@@ -288,7 +288,7 @@ public final class Constants {
       public static final double METERS_TO_INCHES = 39.37;
 
 
-      public static final double limelight_default_p = 8; //was 4  // [deg/s  / deg-err]
+      public static final double limelight_default_p = 6; //was 4  // [deg/s  / deg-err]
       public static final double limelight_default_i = 0;
       public static final double limelight_default_d = 0;
 
