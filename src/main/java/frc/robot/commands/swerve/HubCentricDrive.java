@@ -142,9 +142,9 @@ public class HubCentricDrive extends CommandBase {
   }
 
   void updateNT() {
-    SmartDashboard.putBoolean("Limelight Solution Ready", isReady());
-    SmartDashboard.putNumber("Limelight PID Position Error", limelightPid.getPositionError());
-    SmartDashboard.putNumber("Limelight PID Velocity Error", limelightPid.getVelocityError());
+    // SmartDashboard.putBoolean("Limelight Solution Ready", isReady());
+    // SmartDashboard.putNumber("Limelight PID Position Error", limelightPid.getPositionError());
+    // SmartDashboard.putNumber("Limelight PID Velocity Error", limelightPid.getVelocityError());
     log_counter++;
     if ((log_counter%20)==0) {
       // update network tables

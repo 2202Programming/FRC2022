@@ -150,7 +150,7 @@ public class Limelight_Subsystem extends SubsystemBase {
       NT_hasTarget.setBoolean(target);
       outputTv.setValue(target);
       outputTx.setDouble(x);
-      SmartDashboard.putBoolean("Target Lock", target);
+      // SmartDashboard.putBoolean("Target Lock", target);
     }
   }
 

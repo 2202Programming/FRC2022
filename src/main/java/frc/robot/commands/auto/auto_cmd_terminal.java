@@ -57,7 +57,7 @@ public class auto_cmd_terminal extends SequentialCommandGroup {
       new MoveIntake(DeployMode.Deploy),
       new IntakeCommand(IntakeMode.InstantLoad),
       finalAuto, //drive to terminal
-      new BallWaitCmd().withTimeout(10), //wait for human player 
+      new BallWaitCmd().withTimeout(2), //wait for human player no more than 2 seconds max
       finalAutoB, //drive to shooting postion
       new IntakeCommand(IntakeMode.Stop),
       new MoveIntake(DeployMode.Retract),
