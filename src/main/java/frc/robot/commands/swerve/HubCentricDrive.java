@@ -194,6 +194,7 @@ public class HubCentricDrive extends CommandBase {
     SmartDashboard.putNumber("Current Limelight I", limelightPid.getI());
     SmartDashboard.putNumber("Current Limelight D", limelightPid.getD());
     SmartDashboard.putNumber("Current min rotation rate", min_rot_rate);
+    SmartDashboard.putNumber("Current Max rot rate", max_rot_rate);
   }
 
   private void pidSet(){
