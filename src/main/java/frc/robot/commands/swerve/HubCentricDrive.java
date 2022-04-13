@@ -50,7 +50,6 @@ public class HubCentricDrive extends CommandBase {
   double r_limelight_kP = limelight_kP;
   double r_limelight_kI = limelight_kI;
   double r_limelight_kD = limelight_kD;
-
   double limelightTarget;
 
   // Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
@@ -68,11 +67,15 @@ public class HubCentricDrive extends CommandBase {
   Rotation2d angleError;
   Rotation2d targetAngle;
 
+  double max_rot_rate = 60.0;  //[deg/s]
   double min_rot_rate = 6;    //6    //about 7.5 deg is min we measured
   double r_min_rot_rate = min_rot_rate;
+  double r_max_rot_rate = max_rot_rate;
 
   final double vel_tol = 30.0;
   final double pos_tol = 3.0;
+
+  final boolean PID_TUNING = false;
 
   public HubCentricDrive(SwerveDrivetrain drivetrain, DriverControls dc, Limelight_Subsystem limelight) {
     this.drivetrain = drivetrain;
@@ -95,10 +98,10 @@ public class HubCentricDrive extends CommandBase {
   public void initialize() {
     limelightTarget = 0.0;
     updateNT();
+    if (PID_TUNING) firstPIDPrint();
   }
 
   void calculate() {
-    final double max_rot_rate = 60.0;  //[deg/s]
     double llx = limelight.getFilteredX();  //[deg error]
 
     // Get the x speed. We are inverting this because Xbox controllers return
@@ -129,8 +132,10 @@ public class HubCentricDrive extends CommandBase {
 
   @Override
   public void execute() {
-    //pidPrint();  //these are for PID tuning only
-    //pidSet();
+    if (PID_TUNING) {
+      pidPrint();  //these are for PID tuning only
+      pidSet();
+    }
     calculate();
     drivetrain.drive(output_states);
     updateNT();
@@ -169,15 +174,26 @@ public class HubCentricDrive extends CommandBase {
     return limelightTarget;
   }
 
+
+  private void firstPIDPrint(){
+    SmartDashboard.putNumber("Current Limelight P", limelightPid.getP());
+    SmartDashboard.putNumber("Current Limelight I", limelightPid.getI());
+    SmartDashboard.putNumber("Current Limelight D", limelightPid.getD());
+    SmartDashboard.putNumber("Current min rotation rate", min_rot_rate);
+    SmartDashboard.putNumber("Current Max rot rate", max_rot_rate);
+
+    SmartDashboard.putNumber("Requested Limelight P", r_limelight_kP);
+    SmartDashboard.putNumber("Requested Limelight I", r_limelight_kI);
+    SmartDashboard.putNumber("Requested Limelight D", r_limelight_kD);
+    SmartDashboard.putNumber("Requested min rotation rate", r_min_rot_rate);
+    SmartDashboard.putNumber("Requested Max rot rate", r_max_rot_rate);
+  }
+
   private void pidPrint(){
     SmartDashboard.putNumber("Current Limelight P", limelightPid.getP());
     SmartDashboard.putNumber("Current Limelight I", limelightPid.getI());
     SmartDashboard.putNumber("Current Limelight D", limelightPid.getD());
     SmartDashboard.putNumber("Current min rotation rate", min_rot_rate);
-
-    // SmartDashboard.putNumber("Requested Limelight P", r_limelight_kP);
-    // SmartDashboard.putNumber("Requested Limelight I", r_limelight_kI);
-    // SmartDashboard.putNumber("Requested Limelight D", r_limelight_kD);
   }
 
   private void pidSet(){
@@ -185,6 +201,8 @@ public class HubCentricDrive extends CommandBase {
     r_limelight_kI = SmartDashboard.getNumber("Requested Limelight I", r_limelight_kI);
     r_limelight_kD = SmartDashboard.getNumber("Requested Limelight D", r_limelight_kD);
     r_min_rot_rate = SmartDashboard.getNumber("Requested min rotation rate", r_min_rot_rate);
+    r_max_rot_rate = SmartDashboard.getNumber("Requested Max rot rate", r_max_rot_rate);
+
     if((r_limelight_kP!=limelight_kP) || (r_limelight_kI!=limelight_kI) || (r_limelight_kD != limelight_kD)){
       limelight_kP=r_limelight_kP;
       limelight_kI=r_limelight_kI;
@@ -193,7 +211,7 @@ public class HubCentricDrive extends CommandBase {
       limelightPid.reset();
       System.out.println("***PID UPDATED***");
     }
-
+    max_rot_rate = r_max_rot_rate;
     min_rot_rate = r_min_rot_rate;
 
   }
