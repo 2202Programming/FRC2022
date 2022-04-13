@@ -238,22 +238,27 @@ public class DriveController  extends CommandBase implements SolutionProvider {
   //also calculates how much to adjust shooting distance based on robot velocity towards/away from target
   //should be run only when we are shooting and on target, so can assume we are roughly facing hub
   public void setVelocityOffset(){
+    double perpendicularDriftDistance=0.0;
+    double parallelDriftDistance=0.0;
+    double HANGTIME;
+    double distance;
 
-    
     //Note: Robot coordinates are same as LL coordinates rotated 180 deg
     double[] u = {drivetrain.getChassisSpeeds().vxMetersPerSecond, drivetrain.getChassisSpeeds().vyMetersPerSecond}; 
     //in m/s - robot's direction vector (in robot frame of reference, intake is forward 0 deg)
   
-    double distance = limelight.estimateDistance(); //distance to target based on LL angle
-     
+    distance = limelight.estimateDistance(); //distance to target based on LL angle
+    HANGTIME = getHangtime(distance);
     double perpendicularVelocity = -u[1]; //inverted since we shoot out the back of the robot so left/right is reversed
     double parallelVelocity = -u[0]; //inverted since we shoot out the back of the robot so forward/back is reversed
 
-    double HANGTIME = getHangtime(distance);
-
-    double perpendicularDriftDistance = perpendicularVelocity * HANGTIME; // horizontal drift distance given perpendicular velocity and hang time
-    double parallelDriftDistance = parallelVelocity * HANGTIME; // drift distance to/away from target given parellel velocity and hang time
-    Rotation2d LLAngleOffset = new Rotation2d(Math.atan2(perpendicularDriftDistance,distance));  //angle offset of LL given known drift distance and distance to hub
+    //Adjust hangtime based on a our curve and dist estimates.
+    for (int i=0; i < 5; i++) {
+      perpendicularDriftDistance = perpendicularVelocity * HANGTIME; // horizontal drift distance given perpendicular velocity and hang time
+      parallelDriftDistance = parallelVelocity * HANGTIME; // drift distance to/away from target given parellel velocity and hang time
+      HANGTIME = getHangtime(distance + parallelDriftDistance);
+    }
+    Rotation2d LLAngleOffset = new Rotation2d(Math.atan2(perpendicularDriftDistance, distance));  //angle offset of LL given known drift distance and distance to hub
     
     double parallelMagicNumber = 0.8;
     double perpendicularMagicNumber = 0.7;
