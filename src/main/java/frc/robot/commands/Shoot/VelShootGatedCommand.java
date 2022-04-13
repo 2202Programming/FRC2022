@@ -77,6 +77,7 @@ public class VelShootGatedCommand extends VelShootCommand{
 
     public VelShootGatedCommand(MagazineController mag_ctrl, SolutionProvider solutionProvider)
     {
+        //CHANGE HERE FOR SPIN ADJUSTMENT
         this(new ShooterSettings(20, -5.0, 0.0, 0.1), mag_ctrl, solutionProvider, true); //negative is front spin
     }
 
