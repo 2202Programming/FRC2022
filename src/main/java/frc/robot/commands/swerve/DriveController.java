@@ -255,15 +255,18 @@ public class DriveController  extends CommandBase implements SolutionProvider {
     double parallelDriftDistance = parallelVelocity * HANGTIME; // drift distance to/away from target given parellel velocity and hang time
     Rotation2d LLAngleOffset = new Rotation2d(Math.atan2(perpendicularDriftDistance,distance));  //angle offset of LL given known drift distance and distance to hub
     
-    m_hubCentricDrive.setLimelightTarget(-LLAngleOffset.getDegrees()); //sign? Units should be degrees offset angle
-    shootCommand.setdistanceOffset(-parallelDriftDistance); //add drift distance in parallel direction to calculated distance, in meters.
+    double parallelMagicNumber = 0.8;
+    double perpendicularMagicNumber = 0.7;
+
+    m_hubCentricDrive.setLimelightTarget(-LLAngleOffset.getDegrees() * perpendicularMagicNumber); //sign? Units should be degrees offset angle
+    shootCommand.setdistanceOffset(-parallelDriftDistance * parallelMagicNumber); //add drift distance in parallel direction to calculated distance, in meters.
 
     //Debug prints
     SmartDashboard.putNumber("perpendicularVelocity", perpendicularVelocity);
     SmartDashboard.putNumber("parallelVelocity", parallelVelocity);
     SmartDashboard.putNumber("perpendicularDriftDistance", perpendicularDriftDistance);
-    SmartDashboard.putNumber("parallelDriftDistance", -parallelDriftDistance);
-    SmartDashboard.putNumber("LLAngleOffset", -LLAngleOffset.getDegrees());
+    SmartDashboard.putNumber("parallelDriftDistance", -parallelDriftDistance * parallelMagicNumber);
+    SmartDashboard.putNumber("LLAngleOffset", -LLAngleOffset.getDegrees() * perpendicularMagicNumber);
     SmartDashboard.putNumber("Hangtime", HANGTIME);
     SmartDashboard.putNumber("LL Distance", distance);
   }

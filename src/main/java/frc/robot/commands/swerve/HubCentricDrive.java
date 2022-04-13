@@ -68,11 +68,11 @@ public class HubCentricDrive extends CommandBase {
   Rotation2d angleError;
   Rotation2d targetAngle;
 
-  double min_rot_rate = 6.0;        //about 7.5 deg is min we measured
+  double min_rot_rate = 6;    //6    //about 7.5 deg is min we measured
   double r_min_rot_rate = min_rot_rate;
 
-  final double vel_tol = 10.0;
-  final double pos_tol = 2.0;
+  final double vel_tol = 30.0;
+  final double pos_tol = 3.0;
 
   public HubCentricDrive(SwerveDrivetrain drivetrain, DriverControls dc, Limelight_Subsystem limelight) {
     this.drivetrain = drivetrain;
@@ -142,10 +142,14 @@ public class HubCentricDrive extends CommandBase {
   }
 
   void updateNT() {
+    SmartDashboard.putBoolean("Limelight Solution Ready", isReady());
+    SmartDashboard.putNumber("Limelight PID Position Error", limelightPid.getPositionError());
+    SmartDashboard.putNumber("Limelight PID Velocity Error", limelightPid.getVelocityError());
     log_counter++;
     if ((log_counter%20)==0) {
       // update network tables
       NTangleError.setDouble(angleError.getDegrees());
+
     }
   }
 
