@@ -262,7 +262,7 @@ public final class Constants {
 
     public static final class Shooter {
       public static final double DefaultRPMTolerance = .05;  // percent of RPM
-      public static final ShooterSettings DefaultSettings = new ShooterSettings(20.0, 0.0);  //ft/s, rot/s
+      public static final ShooterSettings DefaultSettings = new ShooterSettings(20.0, -20.0);  //ft/s, rot/s
 
       // Power Cell info
       // public static final double PowerCellMass = 3.0 / 16.0; // lbs
@@ -288,9 +288,9 @@ public final class Constants {
       public static final double METERS_TO_INCHES = 39.37;
 
 
-      public static final double limelight_default_p = 6; //was 4  // [deg/s  / deg-err]
-      public static final double limelight_default_i = 0;
-      public static final double limelight_default_d = 0;
+      public static final double limelight_default_p = 7; //was 4  // [deg/s  / deg-err]
+      public static final double limelight_default_i = 0.1;
+      public static final double limelight_default_d = 0.1;
 
 
       // constraints

@@ -67,8 +67,8 @@ public class HubCentricDrive extends CommandBase {
   Rotation2d angleError;
   Rotation2d targetAngle;
 
-  double max_rot_rate = 60.0;  //[deg/s]
-  double min_rot_rate = 6;    //6    //about 7.5 deg is min we measured
+  double max_rot_rate = 180.0;  //[deg/s]
+  double min_rot_rate = 7;    //6    //about 7.5 deg is min we measured
   double r_min_rot_rate = min_rot_rate;
   double r_max_rot_rate = max_rot_rate;
 
@@ -103,7 +103,7 @@ public class HubCentricDrive extends CommandBase {
 
   void calculate() {
     double llx = limelight.getFilteredX();  //[deg error]
-
+    //double llx = limelight.getX();
     // Get the x speed. We are inverting this because Xbox controllers return
     // negative values when we push forward.
     xSpeed = xspeedLimiter.calculate(dc.getVelocityX()) * DriveTrain.kMaxSpeed;
