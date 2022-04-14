@@ -64,6 +64,10 @@ public class DriveController  extends CommandBase implements SolutionProvider {
   private NetworkTableEntry NThasSolution;
   public final String NT_Name = "DC"; 
   public final String NT_ShooterName = "Shooter"; 
+
+  //shooting kinematics
+  double Vb;
+  double ToF;
   
   int log_counter = 0;
 
@@ -252,6 +256,8 @@ public class DriveController  extends CommandBase implements SolutionProvider {
     double perpendicularVelocity = -u[1]; //inverted since we shoot out the back of the robot so left/right is reversed
     double parallelVelocity = -u[0]; //inverted since we shoot out the back of the robot so forward/back is reversed
 
+    getHangTime2(distance);
+
     //Adjust hangtime based on a our curve and dist estimates.
     for (int i=0; i < 5; i++) {
       perpendicularDriftDistance = perpendicularVelocity * HANGTIME; // horizontal drift distance given perpendicular velocity and hang time
@@ -267,16 +273,38 @@ public class DriveController  extends CommandBase implements SolutionProvider {
     shootCommand.setdistanceOffset(-parallelDriftDistance * parallelMagicNumber); //add drift distance in parallel direction to calculated distance, in meters.
 
     //Debug prints
-    // SmartDashboard.putNumber("perpendicularVelocity", perpendicularVelocity);
-    // SmartDashboard.putNumber("parallelVelocity", parallelVelocity);
-    // SmartDashboard.putNumber("perpendicularDriftDistance", perpendicularDriftDistance);
-    // SmartDashboard.putNumber("parallelDriftDistance", -parallelDriftDistance * parallelMagicNumber);
-    // SmartDashboard.putNumber("LLAngleOffset", -LLAngleOffset.getDegrees() * perpendicularMagicNumber);
-    // SmartDashboard.putNumber("Hangtime", HANGTIME);
-    // SmartDashboard.putNumber("LL Distance", distance);
+    SmartDashboard.putNumber("perpendicularVelocity", perpendicularVelocity);
+    SmartDashboard.putNumber("parallelVelocity", parallelVelocity);
+    SmartDashboard.putNumber("perpendicularDriftDistance", perpendicularDriftDistance);
+    SmartDashboard.putNumber("parallelDriftDistance", -parallelDriftDistance * parallelMagicNumber);
+    SmartDashboard.putNumber("LLAngleOffset", -LLAngleOffset.getDegrees() * perpendicularMagicNumber);
+    SmartDashboard.putNumber("Hangtime", HANGTIME);
+    SmartDashboard.putNumber("LL Distance", distance);
+    SmartDashboard.putNumber("TOF", this.ToF);
+    SmartDashboard.putNumber("Vball", this.Vb);
   }
 
-  private double getHangtime(double distance){
+  double getHangtime(double distance){
     return (distance-1.73) / 1.4;
+  }
+
+  double getHangTime2(double d) {
+    final double  g = 9.81; // [m/s^2]
+    final double  th = 73.0*Math.PI/360.0;  //[rad] shooter angle
+    final double  h = 2.44 - .45;  //[m] goal h - shooter h
+    final double  c_th = Math.cos(th);
+    final double  c_th2 = c_th*c_th;
+    final double  t_th = Math.tan(th);
+
+    //solve for V of ball as function of geometry and distance, d
+    double V2 = g*d*d/((d*t_th - h)*2*c_th2);
+    double v = Math.sqrt(V2);
+    
+    //time of flight = dist
+    double tof = d/(v*c_th);
+    //for dashboard
+    this.ToF = tof;
+    this.Vb = v;
+    return tof;
   }
 }
