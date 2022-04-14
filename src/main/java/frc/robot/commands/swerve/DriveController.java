@@ -114,9 +114,9 @@ public class DriveController  extends CommandBase implements SolutionProvider {
       limelight.enableLED();
       requestedDriveMode = DriveModes.hubCentric;
       CommandScheduler.getInstance().schedule(shootCommand); //right now just use fixed velocity; eventually replace with limelight distance estimated velocity
-    } else if (currentlyShooting && !shootingRequested){ //stop shooting
+    } else if (currentlyShooting && (!shootingRequested || !limelight.getTarget())){ //stop shooting
       currentlyShooting = false;
-      limelight.disableLED();
+      //limelight.disableLED();
       requestedDriveMode = lastDriveMode;
       CommandScheduler.getInstance().cancel(shootCommand);
     } 
@@ -267,13 +267,13 @@ public class DriveController  extends CommandBase implements SolutionProvider {
     shootCommand.setdistanceOffset(-parallelDriftDistance * parallelMagicNumber); //add drift distance in parallel direction to calculated distance, in meters.
 
     //Debug prints
-    SmartDashboard.putNumber("perpendicularVelocity", perpendicularVelocity);
-    SmartDashboard.putNumber("parallelVelocity", parallelVelocity);
-    SmartDashboard.putNumber("perpendicularDriftDistance", perpendicularDriftDistance);
-    SmartDashboard.putNumber("parallelDriftDistance", -parallelDriftDistance * parallelMagicNumber);
-    SmartDashboard.putNumber("LLAngleOffset", -LLAngleOffset.getDegrees() * perpendicularMagicNumber);
-    SmartDashboard.putNumber("Hangtime", HANGTIME);
-    SmartDashboard.putNumber("LL Distance", distance);
+    // SmartDashboard.putNumber("perpendicularVelocity", perpendicularVelocity);
+    // SmartDashboard.putNumber("parallelVelocity", parallelVelocity);
+    // SmartDashboard.putNumber("perpendicularDriftDistance", perpendicularDriftDistance);
+    // SmartDashboard.putNumber("parallelDriftDistance", -parallelDriftDistance * parallelMagicNumber);
+    // SmartDashboard.putNumber("LLAngleOffset", -LLAngleOffset.getDegrees() * perpendicularMagicNumber);
+    // SmartDashboard.putNumber("Hangtime", HANGTIME);
+    // SmartDashboard.putNumber("LL Distance", distance);
   }
 
   private double getHangtime(double distance){
