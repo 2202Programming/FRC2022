@@ -271,15 +271,15 @@ public class DriveController  extends CommandBase implements SolutionProvider {
     shootCommand.setdistanceOffset(-parallelDriftDistance * parallelMagicNumber); //add drift distance in parallel direction to calculated distance, in meters.
 
     //Debug prints
-    SmartDashboard.putNumber("perpendicularVelocity", perpendicularVelocity);
-    SmartDashboard.putNumber("parallelVelocity", parallelVelocity);
-    SmartDashboard.putNumber("perpendicularDriftDistance", perpendicularDriftDistance);
-    SmartDashboard.putNumber("parallelDriftDistance", -parallelDriftDistance * parallelMagicNumber);
-    SmartDashboard.putNumber("LLAngleOffset", -LLAngleOffset.getDegrees() * perpendicularMagicNumber);
-    SmartDashboard.putNumber("Hangtime", HANGTIME);
-    SmartDashboard.putNumber("LL Distance", distance);
-    SmartDashboard.putNumber("TOF", this.ToF);
-    SmartDashboard.putNumber("Vball", this.Vb);
+    // SmartDashboard.putNumber("perpendicularVelocity", perpendicularVelocity);
+    // SmartDashboard.putNumber("parallelVelocity", parallelVelocity);
+    // SmartDashboard.putNumber("perpendicularDriftDistance", perpendicularDriftDistance);
+    // SmartDashboard.putNumber("parallelDriftDistance", -parallelDriftDistance * parallelMagicNumber);
+    // SmartDashboard.putNumber("LLAngleOffset", -LLAngleOffset.getDegrees() * perpendicularMagicNumber);
+    // SmartDashboard.putNumber("Hangtime", HANGTIME);
+    // SmartDashboard.putNumber("LL Distance", distance);
+    // SmartDashboard.putNumber("TOF", this.ToF);
+    // SmartDashboard.putNumber("Vball", this.Vb);
   }
 
   double getHangtime(double distance){
