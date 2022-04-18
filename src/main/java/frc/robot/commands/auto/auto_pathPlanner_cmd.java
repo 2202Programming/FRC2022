@@ -114,7 +114,9 @@ public class auto_pathPlanner_cmd extends CommandBase {
     if (path == null) {
       return new InstantCommand();  // no path selected
     }
-      
+    
+    RobotContainer.RC().drivetrain.m_field.getObject("Path1").setTrajectory(path);
+
     // get initial state from the trajectory
     PathPlannerState initialState = path.getInitialState();
     Pose2d startingPose = new Pose2d(initialState.poseMeters.getTranslation(), initialState.holonomicRotation);
@@ -162,6 +164,8 @@ public class auto_pathPlanner_cmd extends CommandBase {
       return new InstantCommand();  // no path selected
     }
     
+    RobotContainer.RC().drivetrain.m_field.getObject("Path2").setTrajectory(path);
+
     // get initial state from the trajectory
     PathPlannerState initialState = path.getInitialState();
     Pose2d startingPose = new Pose2d(initialState.poseMeters.getTranslation(), initialState.holonomicRotation);
@@ -209,6 +213,8 @@ public class auto_pathPlanner_cmd extends CommandBase {
       return new InstantCommand();  // no path selected
     }
       
+    RobotContainer.RC().drivetrain.m_field.getObject("Path3").setTrajectory(path);
+
     // get initial state from the trajectory
     PathPlannerState initialState = path.getInitialState();
     Pose2d startingPose = new Pose2d(initialState.poseMeters.getTranslation(), initialState.holonomicRotation);

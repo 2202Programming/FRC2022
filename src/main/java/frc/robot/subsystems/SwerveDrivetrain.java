@@ -9,6 +9,8 @@ import com.revrobotics.CANSparkMax;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -104,6 +106,8 @@ public class SwerveDrivetrain extends SubsystemBase {
   private LinearFilter bearingFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
   private LinearFilter velocityFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
 
+  public final Field2d m_field = new Field2d();
+
   public SwerveDrivetrain() {
     sensors = RobotContainer.RC().sensors;
 
@@ -147,6 +151,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     posBR = table.getEntry("/POS BR");
     robotVel = postionTable.getEntry("/RobotVel");
 
+    SmartDashboard.putData("Field", m_field);
 
     // display PID coefficients on SmartDashboard if tuning drivetrain
     /*
@@ -230,6 +235,7 @@ public class SwerveDrivetrain extends SubsystemBase {
       robotVel.setDouble(filteredVelocity);
       timer = 0;
 
+      m_field.setRobotPose(m_odometry.getPoseMeters());
       //if Drivetrain tuning
       //pidTuning();
     }
