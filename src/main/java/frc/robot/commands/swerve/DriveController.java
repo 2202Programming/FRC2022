@@ -4,7 +4,9 @@
 
 package frc.robot.commands.swerve;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -13,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.NTStrings;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.commands.MagazineController;
 import frc.robot.commands.Shoot.SolutionProvider;
@@ -236,6 +239,23 @@ public class DriveController  extends CommandBase implements SolutionProvider {
     if (Math.abs(rollAngleDegrees)>kOffBalanceAngleThresholdDegrees){
       //System.out.println("***ROLL WARNING: Roll Angle:"+rollAngleDegrees);
     }
+  }
+
+  //If limelight has target and is locked on, update odometery pose with new estimate of position
+  public void estimatePoseFromLimelight(){
+    double distance = limelight.estimateDistance(); //distance from hub in meters
+
+    //vector from robot to hub
+    Translation2d hubVector = new Translation2d(distance, drivetrain.getPose().getRotation()); 
+
+    //vector from origin to hub
+    Translation2d hubCenter = new Translation2d(Constants.Autonomous.hubPose.getX(), Constants.Autonomous.hubPose.getY());
+
+    //add together to get vector from origin to robot?
+    hubVector.plus(hubCenter);
+
+    //reset pose with new X Y estimate, don't change heading
+    drivetrain.setPose(new Pose2d(hubVector.getX(), hubVector.getY(), drivetrain.getPose().getRotation()));
   }
 
   //should estimate how many degrees to offset LL target in X direction to compensate for perpendicular velocity*hangtime
