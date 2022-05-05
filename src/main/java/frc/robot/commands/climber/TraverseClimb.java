@@ -42,8 +42,8 @@ public class TraverseClimb extends SequentialCommandGroup {
             ///new MoveArmsTo(climber, "extend to trav", travers_start_ext, pulluprotForward, true, true)
             ///        .withTimeout(TO),
                 new MoveArmsTo(climber, "rotateunder2", travers_start_ext, 53, true, true).withTimeout(TO),
-                new MoveArmsTo(climber, "extend-under", 24, 53, true, true).withTimeout(TO),
-                new MoveArmsTo(climber, "rotateforgrab  +35", 24, 35, true, true).withTimeout(2),
+                new MoveArmsTo(climber, "extend-under", 23, 53, true, true).withTimeout(TO),
+                new MoveArmsTo(climber, "rotateforgrab  +35", 23, 35, true, true).withTimeout(2),
                 new MoveArmsTo(climber, "partial-pullup 0", partialpullupext, 0, true, true).withTimeout(TO),
                 //put magic counterswing cmd here...
                 new MoveArmsTo(climber, "partial-pullup -18", partialpullupext, -22, true, true).withTimeout(TO),

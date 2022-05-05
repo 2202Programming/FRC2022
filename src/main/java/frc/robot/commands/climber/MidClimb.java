@@ -15,7 +15,7 @@ public class MidClimb extends SequentialCommandGroup {
     public static final double midrot = -10;
     public static final double partialpullupext = 5;
 
-    public static final double pullupext = -2.70;
+    public static final double pullupext = -2.80;
     public static final double pulluprotForward = 8; // max forward on rotation
     public static final double travers_start_ext = 10;
     public static final double travers_start_rot = 15;
