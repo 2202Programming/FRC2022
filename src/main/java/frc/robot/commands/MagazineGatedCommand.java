@@ -9,6 +9,7 @@ import frc.robot.RobotContainer;
 import frc.robot.commands.MovePositioner.PositionerMode;
 import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.subsystems.Magazine_Subsystem;
+import frc.robot.subsystems.ifx.DriverControls.Id;
 
 /**
  * 
@@ -103,6 +104,8 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
     final NetworkTableEntry nte_ballcount;
     final NetworkTableEntry nte_sides;
 
+    boolean rumbling = false;
+
     // Constructor
     public MagazineGatedCommand(double magazineSpeed) {
         this.magazine = RobotContainer.RC().magazine; // just get the magazine from RC
@@ -170,7 +173,8 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
     public void execute() {
         boolean lower_lg = magazine.lowerGateBlocked();
         boolean upper_lg = magazine.upperGateBlocked();
-
+        rumbleMag();
+        
         // handle driver requests or execute magazine state machine
         if (feed_request) {
             spinup_safe = true;
@@ -419,5 +423,18 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
             controller.feederOff();
         }
 
+    }
+    //rumble controllers if magazine is full
+    void rumbleMag(){
+        if (ball_count==2 && !rumbling){ //turn on rumble
+        RobotContainer.RC().driverControls.turnOnRumble(Id.Driver);
+        RobotContainer.RC().driverControls.turnOnRumble(Id.Assistant);
+        rumbling = true;
+        }
+        else if (ball_count<2 && rumbling) { //turn off rumble
+        RobotContainer.RC().driverControls.turnOffRumble(Id.Driver);
+        RobotContainer.RC().driverControls.turnOffRumble(Id.Assistant);
+        rumbling = false;
+        }
     }
 }

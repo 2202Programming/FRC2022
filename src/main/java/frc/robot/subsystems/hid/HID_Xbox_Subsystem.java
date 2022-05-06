@@ -7,6 +7,7 @@
 
 package frc.robot.subsystems.hid;
 
+import edu.wpi.first.wpilibj.GenericHID;
 // import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -311,6 +312,29 @@ public boolean initialSideboard(SBButton buttonId) {
   int switches = getInitialButtons(Id.SwitchBoard);
   int mask = 1 << (buttonId.value -1);
   return (switches & mask) !=0 ? true : false ;
+}
+
+
+public void turnOnRumble(Id id){
+  switch (id) {
+    case Driver:
+      driver.setRumble(GenericHID.RumbleType.kLeftRumble, 1);
+      driver.setRumble(GenericHID.RumbleType.kRightRumble, 1);
+    case Assistant:
+      assistant.setRumble(GenericHID.RumbleType.kLeftRumble, 1);
+      assistant.setRumble(GenericHID.RumbleType.kRightRumble, 1);
+  }
+}
+
+public void turnOffRumble(Id id){
+  switch (id) {
+    case Driver:
+      driver.setRumble(GenericHID.RumbleType.kLeftRumble, 0);
+      driver.setRumble(GenericHID.RumbleType.kRightRumble, 0);
+    case Assistant:
+      assistant.setRumble(GenericHID.RumbleType.kLeftRumble, 0);
+      assistant.setRumble(GenericHID.RumbleType.kRightRumble, 0);
+  }
 }
 
 }
