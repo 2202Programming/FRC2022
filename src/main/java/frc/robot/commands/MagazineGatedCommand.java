@@ -5,6 +5,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.RobotContainer;
 import frc.robot.commands.MovePositioner.PositionerMode;
 import frc.robot.subsystems.Intake_Subsystem;
@@ -426,15 +427,13 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
     }
     //rumble controllers if magazine is full
     void rumbleMag(){
-        if (ball_count==2 && !rumbling){ //turn on rumble
-        RobotContainer.RC().driverControls.turnOnRumble(Id.Driver);
-        RobotContainer.RC().driverControls.turnOnRumble(Id.Assistant);
-        rumbling = true;
+        if (ball_count==2 && !rumbling){ //turn on rumble for fixed duration
+            CommandScheduler.getInstance().schedule(new JoystickRumble(Id.Driver, 1));
+            CommandScheduler.getInstance().schedule(new JoystickRumble(Id.Assistant, 1));
+            rumbling = true;
         }
-        else if (ball_count<2 && rumbling) { //turn off rumble
-        RobotContainer.RC().driverControls.turnOffRumble(Id.Driver);
-        RobotContainer.RC().driverControls.turnOffRumble(Id.Assistant);
-        rumbling = false;
+        else if (ball_count<2 && rumbling) { //turn off rumble boolean; rumble will timeout on it's own but this boolean prevents multiple rumbles for the same full mag
+            rumbling = false;
         }
     }
 }
