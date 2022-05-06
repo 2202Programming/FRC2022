@@ -129,6 +129,7 @@ public class DriveController  extends CommandBase implements SolutionProvider {
     } 
     if (currentlyShooting) { 
         NThasSolution.setBoolean(isOnTarget());
+        if (isOnTarget()) estimatePoseFromLimelight(); //if shooting and is on target, update pose
     }
   }
 
@@ -252,10 +253,14 @@ public class DriveController  extends CommandBase implements SolutionProvider {
     Translation2d hubCenter = new Translation2d(Constants.Autonomous.hubPose.getX(), Constants.Autonomous.hubPose.getY());
 
     //add together to get vector from origin to robot?
-    hubVector.plus(hubCenter);
+    hubVector.minus(hubCenter);
+    Pose2d updatedPose = new Pose2d(hubVector.getX(), hubVector.getY(), drivetrain.getPose().getRotation());
+
+    System.out.println("Original Pose: " + drivetrain.getPose());
+    System.out.println("Updated Pose: " + updatedPose);
 
     //reset pose with new X Y estimate, don't change heading
-    drivetrain.setPose(new Pose2d(hubVector.getX(), hubVector.getY(), drivetrain.getPose().getRotation()));
+    drivetrain.setPose(updatedPose);
   }
 
   //should estimate how many degrees to offset LL target in X direction to compensate for perpendicular velocity*hangtime

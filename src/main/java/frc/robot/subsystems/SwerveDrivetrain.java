@@ -297,6 +297,13 @@ public class SwerveDrivetrain extends SubsystemBase {
       return  kinematics.toChassisSpeeds(meas_states);
   }
 
+  public ChassisSpeeds getFieldRelativeSpeeds(){    
+    return new ChassisSpeeds(
+      getChassisSpeeds().vxMetersPerSecond * sensors.getRotation2d().getCos() - getChassisSpeeds().vyMetersPerSecond * sensors.getRotation2d().getSin(),
+      getChassisSpeeds().vyMetersPerSecond * sensors.getRotation2d().getCos() + getChassisSpeeds().vxMetersPerSecond * sensors.getRotation2d().getSin(),
+      getChassisSpeeds().omegaRadiansPerSecond);
+  }
+
   /**
    * stop() - zero the current state's velocity component and leave angles as they are
    */
