@@ -56,6 +56,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
     int side_off_count_down;
 
     int ball_count;
+    int last_ball_count;
 
     public enum MagazineState {
         ConfirmEmpty("confirming empty"), // ball in deadzone?
@@ -105,8 +106,6 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
     final NetworkTableEntry nte_ballcount;
     final NetworkTableEntry nte_sides;
 
-    boolean rumbling = false;
-
     // Constructor
     public MagazineGatedCommand(double magazineSpeed) {
         this.magazine = RobotContainer.RC().magazine; // just get the magazine from RC
@@ -154,6 +153,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
         // read gates, save as previous values for edge detection
         prev_upper_lg = magazine.upperGateBlocked();
         prev_lower_lg = magazine.lowerGateBlocked();
+        last_ball_count = 0;
 
         // sort out gates and ball positions for state machine
         state = (prev_lower_lg) ? MagazineState.OneBall_Lower : MagazineState.Empty;
@@ -427,13 +427,14 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
     }
     //rumble controllers if magazine is full
     void rumbleMag(){
-        if (ball_count==2 && !rumbling){ //turn on rumble for fixed duration
-            CommandScheduler.getInstance().schedule(new JoystickRumble(Id.Driver, 1));
-            CommandScheduler.getInstance().schedule(new JoystickRumble(Id.Assistant, 1));
-            rumbling = true;
+        if (ball_count==2 && last_ball_count==1){ //turn on rumble for double ball notification
+            CommandScheduler.getInstance().schedule(new JoystickRumble(Id.Driver, 1, 2));
+            CommandScheduler.getInstance().schedule(new JoystickRumble(Id.Assistant, 1, 2));
         }
-        else if (ball_count<2 && rumbling) { //turn off rumble boolean; rumble will timeout on it's own but this boolean prevents multiple rumbles for the same full mag
-            rumbling = false;
+        if (ball_count==1 && last_ball_count==0){ //turn on rumble for single ball notification
+            CommandScheduler.getInstance().schedule(new JoystickRumble(Id.Driver, 0.5, 1));
+            CommandScheduler.getInstance().schedule(new JoystickRumble(Id.Assistant, 0.5, 1));
         }
+        last_ball_count = ball_count;
     }
 }
