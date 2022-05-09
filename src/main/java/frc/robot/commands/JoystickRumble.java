@@ -17,9 +17,20 @@ public class JoystickRumble extends CommandBase {
   Timer timer;
   Id id;
   double duration;
+  int segments;
+  int current_segment;
+  double segment_duration;
+  double silent_duration;
+  boolean finished = false;
+  boolean silent_segment = false;
 
   //rumble the joystick given by id, duration in sec
   public JoystickRumble(Id id, double duration) {
+    this(id, duration, 1);
+  }
+
+  //divide duration up into equal SEGMENTS with a 5% silent gap between.  Segments are the # of rumble segments.
+  public JoystickRumble(Id id, double duration, int segments) {
     dc = RobotContainer.RC().driverControls;
     this.id = id;
     this.duration = duration;
@@ -31,12 +42,38 @@ public class JoystickRumble extends CommandBase {
   public void initialize() {
     timer.reset();
     timer.start();
+    current_segment = 1;
+    segment_duration = duration/segments;
+    silent_duration = segment_duration * 0.05;
+    segment_duration *= 0.95;
     RobotContainer.RC().driverControls.turnOnRumble(id);
+    silent_segment = false;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    if (silent_segment) {
+      if(timer.hasElapsed(silent_duration)){ //silent segment over, start rumble again
+        silent_segment = false;
+        timer.reset();
+        timer.start();
+        RobotContainer.RC().driverControls.turnOnRumble(id);
+      }
+    }
+    else if (timer.hasElapsed(segment_duration)){ 
+      current_segment++;
+      if (current_segment > segments){ //all done
+        finished = true;
+      }
+      else { //more segments to go, start a silent segment (these don't count against total segment count)
+        silent_segment = true;
+        RobotContainer.RC().driverControls.turnOffRumble(id);
+        timer.reset();
+        timer.start();
+      }
+    }
+  }
 
   // Called once the command ends or is interrupted.
   @Override
@@ -48,6 +85,6 @@ public class JoystickRumble extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (timer.hasElapsed(duration));
+    return finished;
   }
 }
