@@ -116,22 +116,20 @@ public class DriveController  extends CommandBase implements SolutionProvider {
     updateNT();
   }
 
+  //Check if we are ready to shoot (LL has target) AND driver wants to shoot
+  //change drive mode to hub centric and start shooting command if driver ready to shoot and we see a LL target
   private void checkShooter(){
-    if (!currentlyShooting && shootingRequested && limelight.getTarget() && limelight.getLEDStatus()){ //start shooting if requested and limelight has target
+    if (!currentlyShooting && shootingRequested && limelight.getTarget()){ //start shooting if requested and limelight has target
       currentlyShooting = true;
-      limelight.enableLED();
       requestedDriveMode = DriveModes.hubCentric;
       CommandScheduler.getInstance().schedule(shootCommand); //right now just use fixed velocity; eventually replace with limelight distance estimated velocity
     } else if (currentlyShooting && (!shootingRequested || !limelight.getTarget())){ //stop shooting
       currentlyShooting = false;
-      //limelight.disableLED();
-      requestedDriveMode = lastDriveMode;
+      requestedDriveMode = lastDriveMode; //no LL target means hub centric won't work
       CommandScheduler.getInstance().cancel(shootCommand);
     } 
-    if (currentlyShooting) { 
-        NThasSolution.setBoolean(isOnTarget());
-        if (isOnTarget()) estimatePoseFromLimelight(); //if shooting and is on target, update pose
-    }
+    //currentlyshooting implies driver believes you are generally facing LL; don't want a random light to trigger a pose update
+    if (currentlyShooting && limelight.getTarget()) estimatePoseFromLimelight(); //if shooting and LL sees target, update pose
   }
 
 
@@ -226,6 +224,7 @@ public class DriveController  extends CommandBase implements SolutionProvider {
     log_counter++;
     if ((log_counter%20)==0) {
       // update network tables
+      NThasSolution.setBoolean(isOnTarget());
       driveMode.setString(currentDriveMode.toString());
     }
   }
@@ -246,9 +245,19 @@ public class DriveController  extends CommandBase implements SolutionProvider {
   //If limelight has target and is locked on, update odometery pose with new estimate of position
   public void estimatePoseFromLimelight(){
     double distance = limelight.estimateDistance(); //distance from hub in meters
+    double LLangle = RobotContainer.RC().limelight.getX();
+
+    Rotation2d correctionVectorRot = RobotContainer.RC().drivetrain.getPose().getRotation().minus(Rotation2d.fromDegrees(90));
+   
+    //correction vector if LL angle is not zero
+    //Mag is distance * sine angle
+    //angle is correctionVectorRot
+    Translation2d correctionVector = new Translation2d(distance * Math.sin(Math.toRadians(LLangle)),correctionVectorRot);
 
     //vector from robot to hub
     Translation2d hubVector = new Translation2d(distance, drivetrain.getPose().getRotation()); 
+    
+    hubVector.plus(correctionVector);
 
     //vector from origin to hub
     Translation2d hubCenter = new Translation2d(Constants.Autonomous.hubPose.getX(), Constants.Autonomous.hubPose.getY());
@@ -259,6 +268,7 @@ public class DriveController  extends CommandBase implements SolutionProvider {
 
     System.out.println("Original Pose: " + drivetrain.getPose());
     System.out.println("Updated Pose: " + updatedPose);
+    System.out.println("Update occurred during a LL error of: " + LLangle);
 
     //reset pose with new X Y estimate, don't change heading
     drivetrain.setPose(updatedPose);

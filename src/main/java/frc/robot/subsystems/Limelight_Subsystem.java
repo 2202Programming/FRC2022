@@ -72,7 +72,7 @@ public class Limelight_Subsystem extends SubsystemBase {
     x = tx.getDouble(0.0);
     y = ty.getDouble(0.0);
     area = ta.getDouble(0.0);
-    target = (tv.getDouble(0) == 0) ? (false) : (true);
+    target = (tv.getDouble(0) == 0) ? (false) : (true); //tv is only 0.0 or 1.0 per LL docs
     filteredX = x_iir.calculate(x);
     filteredArea = area_iir.calculate(area);
     ledStatus = (leds.getDouble(0) == 3) ? (true) : (false);
