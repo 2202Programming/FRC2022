@@ -125,7 +125,7 @@ public class RobotContainer {
     setAssistantButtons();
     
     // Sideboard 
-    if (Constants.HAS_CLIMBER) { driverControls.bind(Id.SwitchBoard, SBButton.Sw21).whileHeld(new 
+    if (Constants.HAS_CLIMBER) { driverControls.bind(Id.Driver, XboxButton.A).whileHeld(new 
       // warning - PitAlign command use Driver's DPAD, RB and, LB. DPL-can we run this in TEST mode?
      PitAlignClimber(driverControls, Id.Driver, climber, 2.0, 5.0)); //[in/s] [deg/s]
       driverControls.bind(Id.SwitchBoard, SBButton.Sw22).whenPressed(new MidClimb(climber));
