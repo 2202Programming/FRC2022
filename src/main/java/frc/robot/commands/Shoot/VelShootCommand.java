@@ -60,20 +60,6 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
 
     double log_counter = 0;
 
-    //for velocity calculations
-    //cut over distance between two distance/speed linear relationships
-    final double FARDISTANCE = 10.0;
-
-    //close slope/intercept.  Slope will change multiplier between distance and RPM.  Intercept will add RPMs to all distances equally.
-    final double SLOPE = 4.872;
-    final double INTERCEPT = 26.8 * 1.0; //10% chance 10k lakes practice adjustment shooting short
-
-    //change slope multiplier to increase FPS at far distances.
-    final double FARSLOPE = SLOPE*1.30;
-    final double FARINTERCEPT =  FARDISTANCE * SLOPE + INTERCEPT;
-
-  
-
     final static ShooterSettings defaultShooterSettings = new ShooterSettings(20.0, 0.0, USE_CURRENT_ANGLE, 0.01);
 
     public enum Stage{
@@ -241,15 +227,15 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
     }
 
     public void calculateVelocity(){    
-        double m_slope = SLOPE;
-        double m_intercept = INTERCEPT;  
+        double m_slope = Shooter.SLOPE;
+        double m_intercept = Shooter.INTERCEPT;  
 
-        if (currentDistance > FARDISTANCE){
-            m_slope = FARSLOPE;
-            m_intercept = FARINTERCEPT;
-            calculatedVel = m_slope*(currentDistance-FARDISTANCE) + m_intercept; //distnce vs. velocity trendline for long range positioner
+        if (currentDistance > Shooter.FARDISTANCE){
+            m_slope = Shooter.FARSLOPE;
+            m_intercept = Shooter.FARINTERCEPT;
+            calculatedVel = m_slope * (currentDistance - Shooter.FARDISTANCE) + m_intercept; //distnce vs. velocity trendline for long range positioner
         } else {
-            calculatedVel = m_slope*currentDistance + m_intercept; //distnce vs. velocity trendline for long range positioner
+            calculatedVel = m_slope * currentDistance + m_intercept; //distnce vs. velocity trendline for long range positioner
         }
          
         if (calculatedVel > Shooter.kMaxFPS){

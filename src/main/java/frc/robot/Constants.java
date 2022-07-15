@@ -301,6 +301,30 @@ public final class Constants {
       public static final double degPerPixel = 59.6 / 320; //limelight conversion
       public static final double angleErrorTolerance = 2.0; // [deg] allowed angle error to shoot in guided shooting modes
       public static final double angleVelErrorTolerance = 1.0; // [deg/s] allowed angle error to shoot in guided shooting modes
+
+      // !!
+      // !!
+      // stuff to touchy touchy
+      // !!
+      // !!
+
+      //for velocity calculations
+      //cut over distance between two distance/speed linear relationships
+      public static final double FARDISTANCE = 4.8;
+
+      //close slope/intercept.  Slope will change multiplier between distance and RPM.  Intercept will add RPMs to all distances equally.
+      public static final double SLOPE = 4.872;
+      public static final double INTERCEPT = 26.8 * 1.1; //10% chance 10k lakes practice adjustment shooting short
+
+      //change slope multiplier to increase FPS at far distances.
+      public static final double FARSLOPE = SLOPE*1.4;
+      public static final double FARINTERCEPT =  FARDISTANCE * SLOPE + INTERCEPT;
+
+      // !!
+      // !!
+      // end stuff to touchy touch
+      // !!
+      // !!
       
       // Flywheel info
       // Flywheel maxOpenLoopRPM and gear ratio are used to calculate kFF in shooter
