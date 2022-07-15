@@ -62,14 +62,14 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
 
     //for velocity calculations
     //cut over distance between two distance/speed linear relationships
-    final double FARDISTANCE = 4.8;
+    final double FARDISTANCE = 10.0;
 
     //close slope/intercept.  Slope will change multiplier between distance and RPM.  Intercept will add RPMs to all distances equally.
     final double SLOPE = 4.872;
-    final double INTERCEPT = 26.8 * 1.1; //10% chance 10k lakes practice adjustment shooting short
+    final double INTERCEPT = 26.8 * 1.0; //10% chance 10k lakes practice adjustment shooting short
 
     //change slope multiplier to increase FPS at far distances.
-    final double FARSLOPE = SLOPE*1.4;
+    final double FARSLOPE = SLOPE*1.30;
     final double FARINTERCEPT =  FARDISTANCE * SLOPE + INTERCEPT;
 
   
