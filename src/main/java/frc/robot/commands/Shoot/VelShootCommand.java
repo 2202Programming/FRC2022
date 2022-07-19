@@ -16,19 +16,19 @@ import frc.robot.util.PoseMath;
 /**
  * Use the gated version - it ties into the light gates on the magazine
  */
-public class VelShootCommand extends CommandBase implements SolutionProvider{ 
+public class VelShootCommand extends CommandBase implements SolutionProvider {
 
     public static final double USE_CURRENT_ANGLE = 0.0;
 
     final Magazine_Subsystem magazine;
     final Intake_Subsystem intake;
     final Shooter_Subsystem shooter;
-    final SolutionProvider solutionProvider;  
+    final SolutionProvider solutionProvider;
     final double TESTANGLE = 0.0;
     final double TESTTOL = 0.02;
     final int BackupPeriod;
 
-    //how long to wait for a solution before shooting without it
+    // how long to wait for a solution before shooting without it
     final int maxSolutionWait = 1000;
 
     int ballCount = 999;
@@ -38,23 +38,27 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
 
     NetworkTable table;
     NetworkTable drivetrainTable;
-    NetworkTableEntry ntUpperRPM;   //FW speeds (output)
+    NetworkTableEntry ntUpperRPM; // FW speeds (output)
     NetworkTableEntry ntLowerRPM;
-    NetworkTableEntry ntBallVel;    // ball physics (input) 
+    NetworkTableEntry ntBallVel; // ball physics (input)
     NetworkTableEntry shooterState;
     NetworkTableEntry distance;
     NetworkTableEntry NToutOfRange;
-    final String NT_Name = "Shooter"; 
+    final String NT_Name = "Shooter";
 
+    // testing NT entries
+    NetworkTableEntry ntInterceptMultiplier;
+    NetworkTableEntry ntFarMultiplier;
+    NetworkTableEntry ntFarDistance;
 
     ShooterSettings m_shooterSettings;
-    ShooterSettings  cmdSS;         // instance the shooter sees
-    
+    ShooterSettings cmdSS; // instance the shooter sees
+
     double calculatedVel = 20;
     double distanceOffeset = 0.0;
 
     boolean finished = false;
-    //private boolean solution = true;
+    // private boolean solution = true;
     boolean outOfRange = false;
     boolean autoVelocity = true;
 
@@ -62,7 +66,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
 
     final static ShooterSettings defaultShooterSettings = new ShooterSettings(20.0, 0.0, USE_CURRENT_ANGLE, 0.01);
 
-    public enum Stage{
+    public enum Stage {
         DoNothing("Do Nothing"),
         WaitingForFlyWheel("Waiting for flywheel"),
         BackingMagazine("Backing  Mag"),
@@ -72,26 +76,26 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
 
         String name;
 
-        private Stage(String name){
+        private Stage(String name) {
             this.name = name;
         }
 
-        public String toString(){
+        public String toString() {
             return name;
         }
     }
-    
+
     Stage stage;
-    
-    public VelShootCommand(ShooterSettings shooterSettings, int backupFrameCount, SolutionProvider solutionProvider){
+
+    public VelShootCommand(ShooterSettings shooterSettings, int backupFrameCount, SolutionProvider solutionProvider) {
         this.intake = RobotContainer.RC().intake;
         this.shooter = RobotContainer.RC().shooter;
         this.magazine = RobotContainer.RC().magazine;
         // the default solution provider is always true
-        this.solutionProvider = (solutionProvider ==null) ? this : solutionProvider;
+        this.solutionProvider = (solutionProvider == null) ? this : solutionProvider;
         m_shooterSettings = shooterSettings;
-        BackupPeriod = backupFrameCount;  //number of frames to move mag back slowly 5-20
-        addRequirements(magazine,shooter);
+        BackupPeriod = backupFrameCount; // number of frames to move mag back slowly 5-20
+        addRequirements(magazine, shooter);
 
         table = NetworkTableInstance.getDefault().getTable(NT_Name);
 
@@ -99,83 +103,86 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
         shooterState = table.getEntry("/VelShootCmd/ShooterState");
         distance = table.getEntry("/VelShootCmd/Distance");
         NToutOfRange = table.getEntry("/VelShootCmd/OutOfRange");
+
+        ntInterceptMultiplier = table.getEntry("/VelShootCmd/InterceptMultiplier");
+        ntFarMultiplier = table.getEntry("/VelShootCmd/FarMultiplier");
+        ntFarDistance = table.getEntry("/VelShootCmd/FarDistance");
     }
 
-    public VelShootCommand(ShooterSettings shooterSettings, int backupFrameCount)
-    {
+    public VelShootCommand(ShooterSettings shooterSettings, int backupFrameCount) {
         this(shooterSettings, backupFrameCount, null);
     }
 
-    public VelShootCommand(double requestedVelocity){  //velocity only overload
+    public VelShootCommand(double requestedVelocity) { // velocity only overload
         this(new ShooterSettings(requestedVelocity, 0.0, 0.0, 0.1), 20, null);
     }
 
-    //overload constructor to allow for shooting with autovelocity RPM adjustment off (defaults to true in other constructors)
-    public VelShootCommand(boolean autoVelocity){
+    // overload constructor to allow for shooting with autovelocity RPM adjustment
+    // off (defaults to true in other constructors)
+    public VelShootCommand(boolean autoVelocity) {
         this(defaultShooterSettings, 20, null);
-        this.autoVelocity = autoVelocity;        
+        this.autoVelocity = autoVelocity;
     }
 
-    //overload constructor to allow for shooting with autovelocity RPM adjustment off
-    public VelShootCommand(double requestedVelocity, boolean autoVelocity){
+    // overload constructor to allow for shooting with autovelocity RPM adjustment
+    // off
+    public VelShootCommand(double requestedVelocity, boolean autoVelocity) {
         this(new ShooterSettings(requestedVelocity, 0.0, 0.0, 0.1), 20, null);
-        this.autoVelocity = autoVelocity;        
+        this.autoVelocity = autoVelocity;
     }
 
-    public VelShootCommand()
-    {
+    public VelShootCommand() {
         this(defaultShooterSettings, 20, null);
     }
-
 
     @Override
-    public void initialize(){
+    public void initialize() {
         distanceOffeset = 0;
-        cmdSS = m_shooterSettings; 
+        cmdSS = m_shooterSettings;
         stage = Stage.DoNothing;
         shooter.off();
         magazine.driveWheelOff();
     }
 
     @Override
-    public void execute(){
+    public void execute() {
         NTupdates();
         calculateDistance();
         calculateVelocity();
-        
-        //if autovelocity is true will calculate a new RPM speed based on the distance
-        //otherwise RPMs should be constant based on the constructor parameters
+
+        // if autovelocity is true will calculate a new RPM speed based on the distance
+        // otherwise RPMs should be constant based on the constructor parameters
         if (autoVelocity) {
-            if((calculatedVel) != cmdSS.vel){
-                cmdSS.vel = calculatedVel;   // = new ShooterSettings(calculatedVel, 0);
+            if ((calculatedVel) != cmdSS.vel) {
+                cmdSS.vel = calculatedVel; // = new ShooterSettings(calculatedVel, 0);
                 shooter.spinup(cmdSS);
             }
-        } 
+        }
 
-        switch(stage){
+        switch (stage) {
             case DoNothing:
                 backupCounter = 0;
                 stage = Stage.BackingMagazine;
                 magazine.expellCargo(0.1);
-            break;
+                break;
 
-            case BackingMagazine:                
+            case BackingMagazine:
                 backupCounter++;
                 if (backupCounter > BackupPeriod) {
-                    // issues commands for next stage 
+                    // issues commands for next stage
                     stage = Stage.WaitingForFlyWheel;
                     backupCounter = 0;
-                    magazine.driveWheelOff();           // balls are off the flywheels
+                    magazine.driveWheelOff(); // balls are off the flywheels
                     intake.off();
-                    shooter.spinup(cmdSS);              // spin shooter up
-                }                
-            break;
+                    shooter.spinup(cmdSS); // spin shooter up
+                }
+                break;
 
             case WaitingForFlyWheel:
                 if (shooter.isReadyToShoot()) {
                     stage = Stage.WaitingForSolution;
                 }
-            break;
+                break;
 
             case WaitingForSolution:
                 solutionTimer++;
@@ -188,90 +195,100 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
                 break;
 
             case Shooting:
-                if (!shooter.isReadyToShoot()){
+                if (!shooter.isReadyToShoot()) {
                     magazine.driveWheelOff();
                     intake.off();
-                    shooter.spinup(cmdSS); //in case a new velocity has been set due to a new distance
+                    shooter.spinup(cmdSS); // in case a new velocity has been set due to a new distance
                     stage = Stage.WaitingForFlyWheel;
                 }
-            break;
+                break;
             default:
                 break;
         }
     }
 
     @Override
-    public void end(boolean interrupted){
+    public void end(boolean interrupted) {
         stage = Stage.DoNothing;
         magazine.driveWheelOff();
         intake.off();
         shooter.off();
     }
 
-    public void setFinished(){
+    public void setFinished() {
         finished = true;
     }
-    
+
     @Override
-    public boolean isFinished(){
+    public boolean isFinished() {
         return finished;
     }
 
-    public void calculateDistance(){
-        currentDistance = PoseMath.poseDistance(RobotContainer.RC().drivetrain.getPose(), Autonomous.hubPose); //crappy estimate from odometery
-        if (RobotContainer.RC().limelight.getTarget() && RobotContainer.RC().limelight.getLEDStatus()){
-            //calculate current distance with limelight area instead of odometery
-            currentDistance = RobotContainer.RC().limelight.estimateDistance(); 
+    public void calculateDistance() {
+        currentDistance = PoseMath.poseDistance(RobotContainer.RC().drivetrain.getPose(), Autonomous.hubPose); // crappy
+                                                                                                               // estimate
+                                                                                                               // from
+                                                                                                               // odometery
+        if (RobotContainer.RC().limelight.getTarget() && RobotContainer.RC().limelight.getLEDStatus()) {
+            // calculate current distance with limelight area instead of odometery
+            currentDistance = RobotContainer.RC().limelight.estimateDistance();
         }
-        currentDistance += distanceOffeset;  //add in velocity based distance offset
+        currentDistance += distanceOffeset; // add in velocity based distance offset
     }
 
-    public void calculateVelocity(){    
+    public void calculateVelocity() {
         double m_slope = Shooter.SLOPE;
-        double m_intercept = Shooter.INTERCEPT;  
+        double m_intercept = Shooter.INTERCEPT * ntInterceptMultiplier.getDouble(1);
 
-        if (currentDistance > Shooter.FARDISTANCE){
-            m_slope = Shooter.FARSLOPE;
-            m_intercept = Shooter.FARINTERCEPT;
-            calculatedVel = m_slope * (currentDistance - Shooter.FARDISTANCE) + m_intercept; //distnce vs. velocity trendline for long range positioner
+        if (currentDistance > Shooter.FARDISTANCE) {
+            m_intercept +=
+                    // Shooter.FARINTERCEPT;
+                    ntFarDistance.getDouble(10) * m_slope;
+            m_slope *= ntFarMultiplier.getDouble(1);
+
+            calculatedVel = m_slope * (currentDistance - Shooter.FARDISTANCE) + m_intercept; // distnce vs. velocity
+                                                                                             // trendline for long range
+                                                                                             // positioner
         } else {
-            calculatedVel = m_slope * currentDistance + m_intercept; //distnce vs. velocity trendline for long range positioner
+            calculatedVel = m_slope * currentDistance + m_intercept; // distnce vs. velocity trendline for long range
+                                                                     // positioner
         }
-         
-        if (calculatedVel > Shooter.kMaxFPS){
+
+        if (calculatedVel > Shooter.kMaxFPS) {
             outOfRange = true;
-            calculatedVel = Shooter.kMaxFPS; //don't ask shooter to go above max FPS otherwise can get stuck waiting for impossible goals
+            calculatedVel = Shooter.kMaxFPS; // don't ask shooter to go above max FPS otherwise can get stuck waiting
+                                             // for impossible goals
         } else {
             outOfRange = false;
         }
     }
 
-    public double getCalculatedVel(){
+    public double getCalculatedVel() {
         return calculatedVel;
     }
 
-    public void setCalculatedVel(double velocity){
+    public void setCalculatedVel(double velocity) {
         calculatedVel = velocity;
     }
 
-    public double getDistanceOffset(){
+    public double getDistanceOffset() {
         return distanceOffeset;
     }
 
-    //since currentDistance is constantly recalculated, use a 2nd variable for the offset due to robot motion which comes in from the DriveController.
-    public void setdistanceOffset(double offset){
+    // since currentDistance is constantly recalculated, use a 2nd variable for the
+    // offset due to robot motion which comes in from the DriveController.
+    public void setdistanceOffset(double offset) {
         distanceOffeset = offset;
     }
 
-    private void NTupdates(){
+    private void NTupdates() {
         log_counter++;
-        if ((log_counter%20)==0) {
+        if ((log_counter % 20) == 0) {
             ntBallVel.setDouble(calculatedVel);
             shooterState.setString(stage.toString());
             distance.setDouble(currentDistance);
             NToutOfRange.setBoolean(outOfRange);
         }
     }
-
 
 }
