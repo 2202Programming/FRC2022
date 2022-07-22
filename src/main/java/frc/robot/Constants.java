@@ -242,7 +242,7 @@ public final class Constants {
         // Betabot is 21.516" left-right and 24.87" front-back
         public static final double XwheelOffset = IS_COMPETITION_BOT ? MperFT*(21.516/12)/2 : 10.5 / 12;     
         public static final double YwheelOffset = IS_COMPETITION_BOT ? MperFT*(24.87/12)/2 : 10.5 / 12; 
-        public static final double wheelCorrectionFactor = 0.995; // Move 2cm further in auto //measured on swervebot 
+        public static final double wheelCorrectionFactor = 0.9925; // Move 2cm further in auto //measured on swervebot --> -0.0025 7/21/22 
         public static final double wheelDiameter = 99.5 /1000.0 * wheelCorrectionFactor;   //measured 2/28/22 mm [m]
 
         // Gear ratios - confirmed https://www.swervedrivespecialties.com/products/mk3-swerve-module?variant=39420433203313
@@ -310,14 +310,14 @@ public final class Constants {
 
       //for velocity calculations
       //cut over distance between two distance/speed linear relationships
-      public static final double FARDISTANCE = 4.8;
+      public static final double FARDISTANCE = 20.0;
 
       //close slope/intercept.  Slope will change multiplier between distance and RPM.  Intercept will add RPMs to all distances equally.
       public static final double SLOPE = 4.872;
-      public static final double INTERCEPT = 26.8 * 1.1; //10% chance 10k lakes practice adjustment shooting short
+      public static final double INTERCEPT = 26.8 * 1.0; //10% chance 10k lakes practice adjustment shooting short
 
       //change slope multiplier to increase FPS at far distances.
-      public static final double FARSLOPE = SLOPE*1.4;
+      public static final double FARSLOPE = SLOPE*1.35;
       public static final double FARINTERCEPT =  FARDISTANCE * SLOPE + INTERCEPT;
 
       // !!
