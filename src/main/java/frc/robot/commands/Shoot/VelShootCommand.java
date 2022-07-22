@@ -238,13 +238,11 @@ public class VelShootCommand extends CommandBase implements SolutionProvider {
 
     public void calculateVelocity() {
         double m_slope = Shooter.SLOPE;
-        double m_intercept = Shooter.INTERCEPT * ntInterceptMultiplier.getDouble(1);
+        double m_intercept = Shooter.INTERCEPT;
 
         if (currentDistance > Shooter.FARDISTANCE) {
-            m_intercept +=
-                    // Shooter.FARINTERCEPT;
-                    ntFarDistance.getDouble(10) * m_slope;
-            m_slope *= ntFarMultiplier.getDouble(1);
+            m_intercept = Shooter.FARINTERCEPT;
+            m_slope = Shooter.FARSLOPE;
 
             calculatedVel = m_slope * (currentDistance - Shooter.FARDISTANCE) + m_intercept; // distnce vs. velocity
                                                                                              // trendline for long range
