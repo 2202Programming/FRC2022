@@ -17,6 +17,7 @@ public class VelShootGatedCommand extends VelShootCommand{
     final NetworkTableEntry nte_shooterState;
     final NetworkTableEntry nte_distance;
     final NetworkTableEntry nte_outOfRange;
+    final NetworkTableEntry test;
      
     //Gated Stages are different.
     enum GStage{
@@ -63,6 +64,7 @@ public class VelShootGatedCommand extends VelShootCommand{
         nte_shooterState = table.getEntry("/VelGateShootCmd/ShooterState");
         nte_distance = table.getEntry("/VelGateShootCmd/Distance");
         nte_outOfRange = table.getEntry("/VelGateShootCmd/OutOfRange");
+        test = table.getEntry("/VelGateShootCmd/test");
     }
 
     public VelShootGatedCommand(ShooterSettings shooterSettings, MagazineController mag_ctrl)
@@ -161,6 +163,7 @@ public class VelShootGatedCommand extends VelShootCommand{
             nte_shooterState.setString(stage.toString());
             nte_distance.setDouble(currentDistance);
             nte_outOfRange.setBoolean(outOfRange);
+            test.setDouble(1);
         }
     }
 }
