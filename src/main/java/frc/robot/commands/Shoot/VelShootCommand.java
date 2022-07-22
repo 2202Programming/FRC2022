@@ -104,9 +104,9 @@ public class VelShootCommand extends CommandBase implements SolutionProvider {
         distance = table.getEntry("/VelShootCmd/Distance");
         NToutOfRange = table.getEntry("/VelShootCmd/OutOfRange");
 
-        ntInterceptMultiplier = table.getEntry("/VelShootCmd/InterceptMultiplier");
-        ntFarMultiplier = table.getEntry("/VelShootCmd/FarMultiplier");
-        ntFarDistance = table.getEntry("/VelShootCmd/FarDistance");
+        ntInterceptMultiplier = table.getEntry("/InterceptMultiplier");
+        ntFarMultiplier = table.getEntry("/FarMultiplier");
+        ntFarDistance = table.getEntry("/FarDistance");
     }
 
     public VelShootCommand(ShooterSettings shooterSettings, int backupFrameCount) {

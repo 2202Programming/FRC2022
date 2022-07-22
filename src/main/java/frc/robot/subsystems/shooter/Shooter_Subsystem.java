@@ -17,8 +17,7 @@ import edu.wpi.first.math.numbers.N2;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.Shooter;
 
-
-public class Shooter_Subsystem extends SubsystemBase  {
+public class Shooter_Subsystem extends SubsystemBase {
   public static final double USE_CURRENT_ANGLE = 0.0;
 
   /**
@@ -46,10 +45,11 @@ public class Shooter_Subsystem extends SubsystemBase  {
    * inputs
    * 
    * DPL 1/30/2022 removed autoshoot state, do that in a command if we need it.
-   * Cleaned up some naming conventions for public and private api.  Removed
+   * Cleaned up some naming conventions for public and private api. Removed
    * public access to motors.
    * 
-   * Terminology: PC stands for Power Cell, which is the same as Cargo or Ball in 2022.
+   * Terminology: PC stands for Power Cell, which is the same as Cargo or Ball in
+   * 2022.
    */
 
   private NetworkTable table;
@@ -60,48 +60,62 @@ public class Shooter_Subsystem extends SubsystemBase  {
   private NetworkTableEntry nt_upperRPMErr;
   private NetworkTableEntry nt_lowerRPMErr;
   private NetworkTableEntry nt_setpoint;
-  
-  // Flywheels 
-  final FlyWheel  upper_shooter; 
-  final FlyWheel  lower_shooter; 
-  
+
+  private NetworkTableEntry ntInterceptMultiplier;
+  private NetworkTableEntry ntFarMultiplier;
+  private NetworkTableEntry ntFarDistance;
+
+  // Flywheels
+  final FlyWheel upper_shooter;
+  final FlyWheel lower_shooter;
+
   /**
    * ShooterSettings - simple struture to group the shooters settings.
    * 
-   *   Rotations/sec is used as input, remember to convert to RADIAN/SEC
-   *   to calculate speeds
+   * Rotations/sec is used as input, remember to convert to RADIAN/SEC
+   * to calculate speeds
    */
-  public static class ShooterSettings 
-  {
-    public double vel;   // power cell ft/sec 
-    public double rps;   // power cell rotations/sec 
+  public static class ShooterSettings {
+    public double vel; // power cell ft/sec
+    public double rps; // power cell rotations/sec
     public double angle; // angle to set the shooter output
     public double velTol; // percent velocity Shooter must be at or below to fire
 
     public ShooterSettings(double vel, double rps, double angle, double velTol) {
-      this.vel = vel; 
+      this.vel = vel;
       this.rps = rps;
       this.angle = angle;
       this.velTol = velTol;
     }
-    public ShooterSettings(double vel, double rps) {this(vel, rps, USE_CURRENT_ANGLE, Shooter.DefaultRPMTolerance);}
-    public ShooterSettings(ShooterSettings s) {this(s.vel, s.rps, s.angle, s.velTol);}
-    public ShooterSettings() {this(0.0, 0.0, USE_CURRENT_ANGLE, Shooter.DefaultRPMTolerance);}
+
+    public ShooterSettings(double vel, double rps) {
+      this(vel, rps, USE_CURRENT_ANGLE, Shooter.DefaultRPMTolerance);
+    }
+
+    public ShooterSettings(ShooterSettings s) {
+      this(s.vel, s.rps, s.angle, s.velTol);
+    }
+
+    public ShooterSettings() {
+      this(0.0, 0.0, USE_CURRENT_ANGLE, Shooter.DefaultRPMTolerance);
+    }
 
     /**
      * equals - does a deep == on all terms
      * 
-     * Note: == on floats means exact match, use with care. Only use is detecting changes
+     * Note: == on floats means exact match, use with care. Only use is detecting
+     * changes
      * from a UX for sending new values to the device.
-     * @param other  - other shooter settings to compare.
-     * @return    true - exactly equal all terms
-     *            false - any bit of difference use with care.
+     * 
+     * @param other - other shooter settings to compare.
+     * @return true - exactly equal all terms
+     *         false - any bit of difference use with care.
      */
     public boolean equals(ShooterSettings other) {
       return (this.vel == other.vel) &&
-             (this.rps == other.rps) &&
-             (this.angle == other.angle) &&
-             (this.velTol == other.velTol);
+          (this.rps == other.rps) &&
+          (this.angle == other.angle) &&
+          (this.velTol == other.velTol);
     }
   }
 
@@ -110,14 +124,14 @@ public class Shooter_Subsystem extends SubsystemBase  {
   FlyWheelRPM target = new FlyWheelRPM();
   FlyWheelRPM error = new FlyWheelRPM();
 
-  //Transfrom from [ w, V] [W_lower, W_upper]
-  final Matrix<N2,N2> VelToRPM = new Matrix<>(Nat.N2(), Nat.N2() );
+  // Transfrom from [ w, V] [W_lower, W_upper]
+  final Matrix<N2, N2> VelToRPM = new Matrix<>(Nat.N2(), Nat.N2());
   Vector<N2> vel = new Vector<N2>(Nat.N2());
-  
-  //state variables
-  private boolean m_readyToShoot = false;  
-  ShooterSettings m_setpoint;     // reference to current shooter setpoint, angle, flywheel speeds
-  
+
+  // state variables
+  private boolean m_readyToShoot = false;
+  ShooterSettings m_setpoint; // reference to current shooter setpoint, angle, flywheel speeds
+
   /**
    * 
    */
@@ -134,60 +148,64 @@ public class Shooter_Subsystem extends SubsystemBase  {
     nt_upperRPMErr = table.getEntry("/UpperRPM/err");
     nt_lowerRPMErr = table.getEntry("/LowerRPM/err");
     nt_setpoint = table.getEntry("/TargetVel");
-    
+
+    ntInterceptMultiplier = table.getEntry("/InterceptMultiplier");
+    ntFarMultiplier = table.getEntry("/FarMultiplier");
+    ntFarDistance = table.getEntry("/FarDistance");
+
     // build out matrix to calculate FW RPM from [omega , Vel] for power cell
     VelToRPM.set(0, 0, Shooter.PCEffectiveRadius / Shooter.lowerFWConfig.flywheelRadius);
-    VelToRPM.set(0, 1,  1.0 / Shooter.lowerFWConfig.flywheelRadius);
+    VelToRPM.set(0, 1, 1.0 / Shooter.lowerFWConfig.flywheelRadius);
     VelToRPM.set(1, 0, -Shooter.PCEffectiveRadius / Shooter.upperFWConfig.flywheelRadius);
     VelToRPM.set(1, 1, 1.0 / Shooter.upperFWConfig.flywheelRadius);
-    VelToRPM.times(0.5);  // common factor 1/2 //TODO I think this should be a factor of 2, not 1/2
+    VelToRPM.times(0.5); // common factor 1/2 //TODO I think this should be a factor of 2, not 1/2
 
     m_setpoint = Shooter.DefaultSettings;
   }
 
   @Override
   public void periodic() {
-    //measure flywheel rpm and calculate our error 
+    // measure flywheel rpm and calculate our error
     actual.set(upper_shooter.getRPM(), lower_shooter.getRPM());
     error.minus(target, actual);
- 
-    // monitor if the  shooter flywheel rpms to see if they are at setpoint
+
+    // monitor if the shooter flywheel rpms to see if they are at setpoint
     double tol = m_setpoint.velTol;
-    m_readyToShoot = ((Math.abs(error.upper) < (target.upper*tol)) &&
-                      (Math.abs(error.lower) < (target.lower*tol)) );   
+    m_readyToShoot = ((Math.abs(error.upper) < (target.upper * tol)) &&
+        (Math.abs(error.lower) < (target.lower * tol)));
     log();
   }
 
   /**
-   * Set the Shooter RPM goals from power cell velocity and rotation rate.  
+   * Set the Shooter RPM goals from power cell velocity and rotation rate.
    * 
    * Uses a transformation matrix
    * 
-   *   [ VelToRPM<2,2>] * [w, vel ]^T =  [RPM_lower,  RPM_upper]^T
-   *   
-   *    @param ShooterSettings  
-   *       @param pc_omeg_rps   Power Cell w = rotations / sec 
-   *       @param pc_fps        Power Cell Vel = ft / sec
+   * [ VelToRPM<2,2>] * [w, vel ]^T = [RPM_lower, RPM_upper]^T
+   * 
+   * @param ShooterSettings
+   * @param pc_omeg_rps     Power Cell w = rotations / sec
+   * @param pc_fps          Power Cell Vel = ft / sec
    * 
    *
    * @return FlyWheelRPM goal
    */
-   FlyWheelRPM calculateGoals(ShooterSettings s) {
-    final double radPerSec2revPerMin = 60 / (2.0*Math.PI);
+  FlyWheelRPM calculateGoals(ShooterSettings s) {
+    final double radPerSec2revPerMin = 60 / (2.0 * Math.PI);
     // order of input vector must match VelToRPM matrix order
-    vel.set(0, 0, s.rps*2.0*Math.PI); //rad/s
-    vel.set(1, 0, s.vel);             //ft/s  
+    vel.set(0, 0, s.rps * 2.0 * Math.PI); // rad/s
+    vel.set(1, 0, s.vel); // ft/s
     var omega = VelToRPM.times(vel).times(radPerSec2revPerMin);
-    return new FlyWheelRPM(omega.get(0,0), omega.get(1,0));  
+    return new FlyWheelRPM(omega.get(0, 0), omega.get(1, 0));
   }
 
   /**
    * setShooterSettings(ShooterSettings s)
    * 
-   * Controls the setpoint of the shooter and all its possible 
+   * Controls the setpoint of the shooter and all its possible
    * settings. Null will reset to defaults.
    * 
-   * @param s  - new settings, null resets to defaults
+   * @param s - new settings, null resets to defaults
    */
   public void setShooterSettings(ShooterSettings s) {
     // default setting will shoot from any angle
@@ -195,8 +213,8 @@ public class Shooter_Subsystem extends SubsystemBase  {
     m_setpoint = s;
     nt_setpoint.setDouble(m_setpoint.vel);
   }
-  
-  public ShooterSettings getShooterSettings() { 
+
+  public ShooterSettings getShooterSettings() {
     return m_setpoint;
   }
 
@@ -220,14 +238,14 @@ public class Shooter_Subsystem extends SubsystemBase  {
   /**
    * spinupShooter(ShooterSettings s)
    * Enables flywheels with a new setpoint.
-   *   shorthand for:
-   *      setShooterSettings(s);
-   *      spinupShooter();
+   * shorthand for:
+   * setShooterSettings(s);
+   * spinupShooter();
    * 
-   * @param s   new setpoint for shooter
+   * @param s new setpoint for shooter
    */
   public void spinup(ShooterSettings s) {
-     setShooterSettings(s);
+    setShooterSettings(s);
     // shooter will run at the target goals
     on(calculateGoals(m_setpoint));
   }
@@ -236,12 +254,12 @@ public class Shooter_Subsystem extends SubsystemBase  {
    * Commands shooter flwwheels to target RPM
    * Motors are turned on with the given goals.
    * 
-   * @param goals   (flywheel rpm goals)
+   * @param goals (flywheel rpm goals)
    */
   public void on(FlyWheelRPM goals) {
     // save the targets for at goal calcs
     target.copy(goals);
-    
+
     upper_shooter.setRPM(target.upper);
     lower_shooter.setRPM(target.lower);
   }
@@ -250,8 +268,8 @@ public class Shooter_Subsystem extends SubsystemBase  {
    * Shouldn't use this api, debugging only.
    */
   public void onPercent(double upperPct, double lowerPct) {
-      upper_shooter.setPercent(upperPct); 
-      lower_shooter.setPercent(lowerPct); 
+    upper_shooter.setPercent(upperPct);
+    lower_shooter.setPercent(lowerPct);
   }
 
   public void off() {
@@ -261,73 +279,72 @@ public class Shooter_Subsystem extends SubsystemBase  {
     lower_shooter.setPercent(0.0);
   }
 
- 
   public void getFlyWheelRPM(FlyWheelRPM ref) {
-    ref.copy(actual);  //puts actual values into ref
+    ref.copy(actual); // puts actual values into ref
   }
 
   public void getFlywheelTargetRPM(FlyWheelRPM ref) {
-    ref.copy(target);  //puts values into given ref
+    ref.copy(target); // puts values into given ref
   }
 
-  
   /**
    * isReadyToShoot - public API, calculated in periodic from m_setpoint
-   * @return  true  angle/speed ready
-   *          false something is not ready
+   * 
+   * @return true angle/speed ready
+   *         false something is not ready
    */
-  public boolean isReadyToShoot() {return m_readyToShoot;}
+  public boolean isReadyToShoot() {
+    return m_readyToShoot;
+  }
 
-  
   public void log() {
     // Put any useful log message here, called about 10x per second
     nt_lowerRPM.setDouble(actual.lower);
     nt_upperRPM.setDouble(actual.upper);
     nt_lowerRPMErr.setDouble(error.lower);
     nt_upperRPMErr.setDouble(error.upper);
-    nt_upperGoal.setDouble(actual.upper-error.upper);
-    nt_lowerGoal.setDouble(actual.lower-error.lower);
+    nt_upperGoal.setDouble(actual.upper - error.upper);
+    nt_lowerGoal.setDouble(actual.lower - error.lower);
   }
 
-  public void setPIDUpper(double kP, double kI, double kD, double kF){
+  public void setPIDUpper(double kP, double kI, double kD, double kF) {
     upper_shooter.setPID(kP, kI, kD, kF);
   }
 
-  public void setPIDLower(double kP, double kI, double kD, double kF){
+  public void setPIDLower(double kP, double kI, double kD, double kF) {
     lower_shooter.setPID(kP, kI, kD, kF);
   }
 
-  public double getlowerP(){
+  public double getlowerP() {
     return lower_shooter.getP();
   }
 
-  public double getlowerI(){
+  public double getlowerI() {
     return lower_shooter.getI();
   }
 
-  public double getlowerD(){
+  public double getlowerD() {
     return lower_shooter.getD();
   }
 
-  public double getUpperP(){
+  public double getUpperP() {
     return upper_shooter.getP();
   }
 
-  public double getUpperI(){
+  public double getUpperI() {
     return upper_shooter.getI();
   }
 
-  public double getUpperD(){
+  public double getUpperD() {
     return upper_shooter.getD();
   }
 
-  public double getUpperF(){
-    return upper_shooter.getF();
-  }
-  public double getLowerF(){
+  public double getUpperF() {
     return upper_shooter.getF();
   }
 
+  public double getLowerF() {
+    return upper_shooter.getF();
+  }
 
 }
-
