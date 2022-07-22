@@ -46,11 +46,6 @@ public class VelShootCommand extends CommandBase implements SolutionProvider {
     NetworkTableEntry NToutOfRange;
     final String NT_Name = "Shooter";
 
-    // testing NT entries
-    NetworkTableEntry ntInterceptMultiplier;
-    NetworkTableEntry ntFarMultiplier;
-    NetworkTableEntry ntFarDistance;
-
     ShooterSettings m_shooterSettings;
     ShooterSettings cmdSS; // instance the shooter sees
 
@@ -103,10 +98,6 @@ public class VelShootCommand extends CommandBase implements SolutionProvider {
         shooterState = table.getEntry("/VelShootCmd/ShooterState");
         distance = table.getEntry("/VelShootCmd/Distance");
         NToutOfRange = table.getEntry("/VelShootCmd/OutOfRange");
-
-        ntInterceptMultiplier = table.getEntry("/InterceptMultiplier");
-        ntFarMultiplier = table.getEntry("/FarMultiplier");
-        ntFarDistance = table.getEntry("/FarDistance");
     }
 
     public VelShootCommand(ShooterSettings shooterSettings, int backupFrameCount) {
@@ -238,17 +229,16 @@ public class VelShootCommand extends CommandBase implements SolutionProvider {
 
     public void calculateVelocity() {
         double m_slope = Shooter.SLOPE;
-        double m_intercept = Shooter.INTERCEPT * ntInterceptMultiplier.getDouble(1);
+        double m_intercept = Shooter.INTERCEPT;
 
-        if (currentDistance > Shooter.FARDISTANCE) {
-            m_intercept +=
-                    // Shooter.FARINTERCEPT;
-                    ntFarDistance.getDouble(10) * m_slope;
-            m_slope *= ntFarMultiplier.getDouble(1);
+        if (currentDistance > Shooter.FAR_DISTANCE) {
+            m_intercept = Shooter.FAR_INTERCEPT;
+            m_slope *= Shooter.FAR_SLOPE_MULTIPLIER;
 
-            calculatedVel = m_slope * (currentDistance - Shooter.FARDISTANCE) + m_intercept; // distnce vs. velocity
-                                                                                             // trendline for long range
-                                                                                             // positioner
+            calculatedVel = m_slope * (currentDistance - Shooter.FAR_DISTANCE) + m_intercept; // distnce vs. velocity
+                                                                                              // trendline for long
+                                                                                              // range
+                                                                                              // positioner
         } else {
             calculatedVel = m_slope * currentDistance + m_intercept; // distnce vs. velocity trendline for long range
                                                                      // positioner

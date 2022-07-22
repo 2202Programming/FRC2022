@@ -32,7 +32,7 @@ public final class Constants {
   public static final boolean HAS_CLIMBER = IS_COMPETITION_BOT ? true : false;
 
   public static final boolean HAS_DRIVETRAIN = true;
-  
+
   public static final double FTperM = 3.28084;
   public static final double MperFT = 1.0 / FTperM;
 
@@ -81,7 +81,7 @@ public final class Constants {
     public static final int MAG_R_SIDE_MTR = 12;
     public static final int MAG_L_SIDE_MTR = 13;
     public static final int MAG_TOP_WHEEL = 16;
-    
+
     // Intake motor
     public static final int INTAKE_MTR = 14;
 
@@ -101,16 +101,16 @@ public final class Constants {
     public static final int CMB_LEFT_Rotate = 36;
     public static final int CMB_RIGHT_Rotate = 37;
 
-    //IMU
+    // IMU
     public static final int PIGEON_IMU_CAN = 60;
 
     // Whether to burn flash or not
-    public static final boolean BURN_FLASH = false; //swerve-mk3
+    public static final boolean BURN_FLASH = false; // swerve-mk3
   }
 
   // PWM assignments on the Rio
   public static final class PWM {
-    //dpl unused public static final int INTAKE = 0;
+    // dpl unused public static final int INTAKE = 0;
   }
 
   // Digital IO on the RIO
@@ -123,7 +123,7 @@ public final class Constants {
 
   public static final class AnalogIn {
     // public static final int MAGAZINE_ANGLE = 0;
- }
+  }
 
   // PWM assignments on the Rio
   public static final class PCM1 {
@@ -135,9 +135,11 @@ public final class Constants {
   }
 
   // if we use a second PCM
-  public static final class PCM2 { }
+  public static final class PCM2 {
+  }
 
-  public static final class RobotPhysical {}
+  public static final class RobotPhysical {
+  }
 
   // Magazine constants
   public static final class Magazine {
@@ -151,18 +153,17 @@ public final class Constants {
     public static PIDFController extendPID_vel = new PIDFController(0.015, 0.00019, 0.08, 0.08); // [in/s] - slot 0
     public static PIDFController extendPID_pos = new PIDFController(0.05, 0.0, 0.0, 0.0); // [in] - slot 1
 
-    //ext pid ki was .00015
+    // ext pid ki was .00015
 
     // Position/vel tolerance for outer position loops
     public static final double TOLERANCE_EXT = .30; // [in]
     public static final double TOLERANCE_EXT_VEL = 0.18; // [in/s]
     public static final double TOLERANCE_ROT = 2.0; // [deg]
     public static final double TOLERANCE_ROT_RATE = 3.0; // [deg/s]
-    
-    //limit integrator windup (default =1.0)
+
+    // limit integrator windup (default =1.0)
     public static final double ROT_INTEGRATOR_MIN = 0.0; // [deg/s]
     public static final double ROT_INTEGRATOR_MAX = 5.0; // [deg/s]
-    
 
     // Software outer loop rate limits
     public static final double MAX_VELOCITY_EXT = 10; // [in/s] 100% DutyCycle at 13.5
@@ -176,180 +177,188 @@ public final class Constants {
     public static final double KILL_COUNT = 30;
   }
 
+  // Intake Constants
+  public static final class Intake {
+    // PID values to get copied to the hardware
+    public static PIDFController r_side_mtrPIDF = new PIDFController(1.0, 0.0, 0.0, 0.0);
+    public static PIDFController l_side_mtrPIDF = new PIDFController(1.0, 0.0, 0.0, 0.0);
+  }
 
-      //Intake Constants
-      public static final class Intake {
-        // PID values to get copied to the hardware
-        public static PIDFController r_side_mtrPIDF = new PIDFController(1.0, 0.0, 0.0, 0.0);  
-        public static PIDFController l_side_mtrPIDF = new PIDFController(1.0, 0.0, 0.0, 0.0); 
-      }
-      
+  // Driver Preferences
+  public static final class DriverPrefs {
+    public static final double VelExpo = 0.3; // non-dim [0.0 - 1.0]
+    public static final double RotationExpo = 0.9; // non-dim [0.0 - 1.0]
+    public static final double StickDeadzone = 0.05; // non-dim [0.0 - 1.0]
+  }
 
-      //Driver Preferences
-      public static final class DriverPrefs {
-          public static final double VelExpo = 0.3;        // non-dim [0.0 - 1.0]
-          public static final double RotationExpo = 0.9;   // non-dim [0.0 - 1.0]
-          public static final double StickDeadzone = 0.05; // non-dim [0.0 - 1.0]
-      }
+  public static final class DriveTrain {
+    // motor constraints
+    public static final double motorMaxRPM = 5600; // motor limit
 
-    public static final class DriveTrain {
-        // motor constraints
-        public static final double motorMaxRPM = 5600;    // motor limit
+    // Constraints on speeds enforeced in DriveTrain
+    public static final double kMaxSpeed = 12.0 * MperFT; // [m/s]
+    public static final double kMaxAngularSpeed = 2 * Math.PI; // [rad/s]
 
-        // Constraints on speeds enforeced in DriveTrain
-        public static final double kMaxSpeed = 12.0*MperFT; // [m/s]
-        public static final double kMaxAngularSpeed = 2*Math.PI; // [rad/s] 
+    /****
+     * ### REMINDER - enable these once we have basics working
+     * // Other constraints
+     * public static final int smartCurrentMax = 60; //amps in SparkMax, max setting
+     * public static final int smartCurrentLimit = 35; //amps in SparkMax, inital
+     * setting
+     */
+    // Acceleration limits
+    /// public static final double slewRateMax = 2; //sec limits adjusting slewrate
+    // public static final boolean safetyEnabled = false;
 
-        /****
-         * ### REMINDER - enable these once we have basics working
-        // Other constraints
-        public static final int smartCurrentMax = 60;  //amps in SparkMax, max setting
-        public static final int smartCurrentLimit = 35; //amps in SparkMax, inital setting
-        */
-        // Acceleration limits
-        ///public static final double slewRateMax = 2;      //sec limits adjusting slewrate 
-        //public static final boolean safetyEnabled = false; 
+    // SmartMax PID values [kp, ki, kd, kff] - these get sent to hardware controller
+    // DEBUG - SET FF first for drive, then add KP
 
-        // SmartMax PID values [kp, ki, kd, kff] - these get sent to hardware controller
-        // DEBUG - SET FF first for drive, then add KP
-        
-        //public static final PIDFController drivePIDF = new PIDFController(0.09*MperFT, 0.0, 0.0, 0.08076*MperFT);  
-        public static final PIDFController drivePIDF = new PIDFController(0.09*FTperM, 0.0, 0.0, 0.08076*FTperM);  
-        public static final PIDFController anglePIDF = new PIDFController(0.01, 0.0, 0.0, 0.0); //maybe 1.0,0.0,0.1 from SDS sample code?
-        
-        
-        // CANCoder offsets for absolure calibration - stored in the magnet offset of the CC. [degrees]
-        // public static final double CC_FL_OFFSET = -99.58;
-        // public static final double CC_BL_OFFSET = 90.351;
-        // public static final double CC_FR_OFFSET = -173.84;
-        // public static final double CC_BR_OFFSET = -27.24;
-      
-        /* FOR SWERVEBOT
-        public static final double CC_FL_OFFSET =   -100.142; //-99.842; //  -99.667;
-        public static final double CC_BL_OFFSET =    91.33; //91.83;  //   90.43;
-        public static final double CC_FR_OFFSET =   -175.135; //-174.635; // -175.25;
-        public static final double CC_BR_OFFSET =   -28.215; //-28.415; //  -28.38;
-        */
+    // public static final PIDFController drivePIDF = new
+    // PIDFController(0.09*MperFT, 0.0, 0.0, 0.08076*MperFT);
+    public static final PIDFController drivePIDF = new PIDFController(0.09 * FTperM, 0.0, 0.0, 0.08076 * FTperM);
+    public static final PIDFController anglePIDF = new PIDFController(0.01, 0.0, 0.0, 0.0); // maybe 1.0,0.0,0.1 from
+                                                                                            // SDS sample code?
 
-        //FOR BETABOT - degrees
-        public static final double CC_FL_OFFSET =    -175.60; 
-        public static final double CC_BL_OFFSET =    -115.40; 
-        public static final double CC_FR_OFFSET =   -162.15; 
-        public static final double CC_BR_OFFSET =   158.81; 
+    // CANCoder offsets for absolure calibration - stored in the magnet offset of
+    // the CC. [degrees]
+    // public static final double CC_FL_OFFSET = -99.58;
+    // public static final double CC_BL_OFFSET = 90.351;
+    // public static final double CC_FR_OFFSET = -173.84;
+    // public static final double CC_BR_OFFSET = -27.24;
 
-        // Kinematics model - wheel offsets from center of robot (0, 0)
-        // Left Front given below, symmetry used for others 
-        // Betabot is 21.516" left-right and 24.87" front-back
-        public static final double XwheelOffset = IS_COMPETITION_BOT ? MperFT*(21.516/12)/2 : 10.5 / 12;     
-        public static final double YwheelOffset = IS_COMPETITION_BOT ? MperFT*(24.87/12)/2 : 10.5 / 12; 
-        public static final double wheelCorrectionFactor = 0.9925; // Move 2cm further in auto //measured on swervebot --> -0.0025 7/21/22 for off-season 
-        public static final double wheelDiameter = 99.5 /1000.0 * wheelCorrectionFactor;   //measured 2/28/22 mm [m]
+    /*
+     * FOR SWERVEBOT
+     * public static final double CC_FL_OFFSET = -100.142; //-99.842; // -99.667;
+     * public static final double CC_BL_OFFSET = 91.33; //91.83; // 90.43;
+     * public static final double CC_FR_OFFSET = -175.135; //-174.635; // -175.25;
+     * public static final double CC_BR_OFFSET = -28.215; //-28.415; // -28.38;
+     */
 
-        // Gear ratios - confirmed https://www.swervedrivespecialties.com/products/mk3-swerve-module?variant=39420433203313
-        public static final double kSteeringGR = 12.8;   // [mo-turns to 1 angle wheel turn]
-        public static final double kDriveGR = 8.14;      // [mo-turn to 1 drive wheel turn]  //New mk4 is 8.14:1; old swerve bot was 8.16:1
-    } 
-    
-    public final static class NTStrings {
-      public final static String NT_Name_Position = "Position";
+    // FOR BETABOT - degrees
+    public static final double CC_FL_OFFSET = -175.60;
+    public static final double CC_BL_OFFSET = -115.40;
+    public static final double CC_FR_OFFSET = -162.15;
+    public static final double CC_BR_OFFSET = 158.81;
+
+    // Kinematics model - wheel offsets from center of robot (0, 0)
+    // Left Front given below, symmetry used for others
+    // Betabot is 21.516" left-right and 24.87" front-back
+    public static final double XwheelOffset = IS_COMPETITION_BOT ? MperFT * (21.516 / 12) / 2 : 10.5 / 12;
+    public static final double YwheelOffset = IS_COMPETITION_BOT ? MperFT * (24.87 / 12) / 2 : 10.5 / 12;
+    public static final double wheelCorrectionFactor = 0.9925; // Move 2cm further in auto //measured on swervebot -->
+                                                               // -0.0025 7/21/22 for off-season
+    public static final double wheelDiameter = 99.5 / 1000.0 * wheelCorrectionFactor; // measured 2/28/22 mm [m]
+
+    // Gear ratios - confirmed
+    // https://www.swervedrivespecialties.com/products/mk3-swerve-module?variant=39420433203313
+    public static final double kSteeringGR = 12.8; // [mo-turns to 1 angle wheel turn]
+    public static final double kDriveGR = 8.14; // [mo-turn to 1 drive wheel turn] //New mk4 is 8.14:1; old swerve bot
+                                                // was 8.16:1
+  }
+
+  public final static class NTStrings {
+    public final static String NT_Name_Position = "Position";
+  }
+
+  public final static class MagazineSettings {
+    public final static double defaultFrontIntakeSpeed = 0.5;
+    public final static double defaultSideIntakeSpeed = 0.3;
+    public final static double defaultMagazineSpeed = 1.0;
+  }
+
+  public static final class Shooter {
+    public static final double DefaultRPMTolerance = .05; // percent of RPM
+    public static final ShooterSettings DefaultSettings = new ShooterSettings(20.0, -20.0); // ft/s, rot/s
+
+    // Power Cell info
+    // public static final double PowerCellMass = 3.0 / 16.0; // lbs
+    public static final double PCNominalRadius = 10 / 2.0 / 12.0; // feet - power cell
+    public static final double PCEffectiveRadius = 8 / 2.0 / 12.0; // feet - compressed radius
+
+    public static final double shortVelocity = 40;
+    public static final double shortMediumVelocity = 44;
+    public static final double mediumVelocity = 50;
+    public static final double longVelocity = 60;
+    public static final double autoVelocity = 46;
+
+    // limelight distance constants
+    // how many degrees back is your limelight rotated from perfectly vertical?
+    public static final double LL_MOUNT_ANGLE_DEG = 28.0;
+    // distance from the center of the Limelight lens to the floor
+    public static final double LL_LENS_HEIGHT_INCHES = 27.0;
+    // distance from the target to the floor
+    public static final double GOAL_HEIGHT_TO_FLOOR_INCHES = 104.0;
+    // adjustment from edge to centre of target
+    public static final double EDGE_TO_CENTER_INCHES = 24.0;
+    // adjustment factor
+    public static final double METERS_TO_INCHES = 39.37;
+
+    public static final double limelight_default_p = 7; // was 4 // [deg/s / deg-err]
+    public static final double limelight_default_i = 0.1;
+    public static final double limelight_default_d = 0.1;
+
+    // constraints
+    public static final double kMaxFPS = 80; // max FPS
+    public static final double maxLongRage = 8; // maximum range in long distance shooting mode
+    public static final double minLongRange = 1.8; // minimum range in long distance shooting mode
+    public static final double maxShortRange = 2; // maximum range in short distance shooting mode
+    public static final double degPerPixel = 59.6 / 320; // limelight conversion
+    public static final double angleErrorTolerance = 2.0; // [deg] allowed angle error to shoot in guided shooting modes
+    public static final double angleVelErrorTolerance = 1.0; // [deg/s] allowed angle error to shoot in guided shooting
+                                                             // modes
+
+    // !!
+    // !!
+    // stuff to change
+    // !!
+    // !!
+
+    // for velocity calculations
+    // cut over distance between two distance/speed linear relationships
+    public static final double FAR_DISTANCE = 20.0;
+
+    // close slope/intercept. Slope will change multiplier between distance and RPM.
+    // Intercept will add RPMs to all distances equally.
+    public static final double SLOPE = 4.872;
+    public static final double ORIGINAL_INTERCEPT = 26.8;
+    public static final double INTERCEPT_MULTIPLIER = 1.0; // +0.1 = 10% chance 10k lakes practice adjustment shooting
+                                                           // short
+    public static final double INTERCEPT = ORIGINAL_INTERCEPT * INTERCEPT_MULTIPLIER;
+
+    // change slope multiplier to increase FPS at far distances.
+    public static final double FAR_SLOPE_MULTIPLIER = 1.35;
+    public static final double FAR_INTERCEPT = FAR_DISTANCE * SLOPE * FAR_SLOPE_MULTIPLIER + INTERCEPT;
+
+    // !!
+    // !!
+    // end stuff to change
+    // !!
+    // !!
+
+    // Flywheel info
+    // Flywheel maxOpenLoopRPM and gear ratio are used to calculate kFF in shooter
+    public static FlyWheelConfig upperFWConfig = new FlyWheelConfig();
+    static {
+      upperFWConfig.maxOpenLoopRPM = 4000; // estimated from 2000 RPM test
+      upperFWConfig.gearRatio = 1.0; // upper encoder:fw is 1:1
+      upperFWConfig.sensorPhase = true;
+      upperFWConfig.inverted = false;
+      upperFWConfig.flywheelRadius = 2 / 12.0; // feet
+      upperFWConfig.pid = new PIDFController(0.12, 0.0, 4.0, 0.034); // kP kI kD kFF
+      upperFWConfig.pid.setIzone(1800);
     }
 
-    public final static class MagazineSettings {
-      public final static double defaultFrontIntakeSpeed = 0.5; 
-      public final static double defaultSideIntakeSpeed = 0.3; 
-      public final static double defaultMagazineSpeed = 1.0;
+    public static FlyWheelConfig lowerFWConfig = new FlyWheelConfig();
+    static {
+      lowerFWConfig.maxOpenLoopRPM = 4000;
+      lowerFWConfig.gearRatio = 1.0; // lower encoder:fw is 1:1
+      lowerFWConfig.sensorPhase = false;
+      lowerFWConfig.inverted = false;
+      lowerFWConfig.flywheelRadius = 2 / 12.0; // feet
+      lowerFWConfig.pid = new PIDFController(0.12, 0.0, 4.0, 0.034); // kP kI kD kFF
+      lowerFWConfig.pid.setIzone(1800);
     }
 
-    public static final class Shooter {
-      public static final double DefaultRPMTolerance = .05;  // percent of RPM
-      public static final ShooterSettings DefaultSettings = new ShooterSettings(20.0, -20.0);  //ft/s, rot/s
-
-      // Power Cell info
-      // public static final double PowerCellMass = 3.0 / 16.0; // lbs
-      public static final double PCNominalRadius = 10 / 2.0 / 12.0; // feet - power cell
-      public static final double PCEffectiveRadius = 8 / 2.0 / 12.0; // feet - compressed radius
-      
-      public static final double shortVelocity = 40;
-      public static final double shortMediumVelocity = 44;
-      public static final double mediumVelocity = 50;
-      public static final double longVelocity = 60;
-      public static final double autoVelocity = 46;
-
-      // limelight distance constants
-        // how many degrees back is your limelight rotated from perfectly vertical?
-      public static final double LL_MOUNT_ANGLE_DEG = 28.0;
-        // distance from the center of the Limelight lens to the floor
-      public static final double LL_LENS_HEIGHT_INCHES = 27.0;
-        // distance from the target to the floor
-      public static final double GOAL_HEIGHT_TO_FLOOR_INCHES = 104.0;
-        // adjustment from edge to centre of target
-      public static final double EDGE_TO_CENTER_INCHES = 24.0;
-        // adjustment factor
-      public static final double METERS_TO_INCHES = 39.37;
-
-
-      public static final double limelight_default_p = 7; //was 4  // [deg/s  / deg-err]
-      public static final double limelight_default_i = 0.1;
-      public static final double limelight_default_d = 0.1;
-
-
-      // constraints
-      public static final double kMaxFPS = 80;      //max FPS
-      public static final double maxLongRage = 8; //maximum range in long distance shooting mode
-      public static final double minLongRange = 1.8; //minimum range in long distance shooting mode
-      public static final double maxShortRange = 2; //maximum range in short distance shooting mode
-      public static final double degPerPixel = 59.6 / 320; //limelight conversion
-      public static final double angleErrorTolerance = 2.0; // [deg] allowed angle error to shoot in guided shooting modes
-      public static final double angleVelErrorTolerance = 1.0; // [deg/s] allowed angle error to shoot in guided shooting modes
-
-      // !!
-      // !!
-      // stuff to touchy touchy
-      // !!
-      // !!
-
-      //for velocity calculations
-      //cut over distance between two distance/speed linear relationships
-      public static final double FARDISTANCE = 20.0;
-
-      //close slope/intercept.  Slope will change multiplier between distance and RPM.  Intercept will add RPMs to all distances equally.
-      public static final double SLOPE = 4.872;
-      public static final double INTERCEPT = 26.8 * 1.0; //10% chance 10k lakes practice adjustment shooting short
-
-      //change slope multiplier to increase FPS at far distances.
-      public static final double FARSLOPE = SLOPE*1.35;
-      public static final double FARINTERCEPT =  FARDISTANCE * SLOPE + INTERCEPT;
-
-      // !!
-      // !!
-      // end stuff to touchy touch
-      // !!
-      // !!
-      
-      // Flywheel info
-      // Flywheel maxOpenLoopRPM and gear ratio are used to calculate kFF in shooter
-      public static FlyWheelConfig upperFWConfig = new FlyWheelConfig();
-      static {
-        upperFWConfig.maxOpenLoopRPM = 4000;  // estimated from 2000 RPM test
-        upperFWConfig.gearRatio = 1.0;         // upper encoder:fw is 1:1 
-        upperFWConfig.sensorPhase = true;
-        upperFWConfig.inverted = false;
-        upperFWConfig.flywheelRadius = 2 / 12.0; // feet
-        upperFWConfig.pid = new PIDFController(0.12, 0.0, 4.0, 0.034); // kP kI kD kFF
-        upperFWConfig.pid.setIzone(1800);
-      }
-
-      public static FlyWheelConfig lowerFWConfig = new FlyWheelConfig();
-      static {
-        lowerFWConfig.maxOpenLoopRPM = 4000;
-        lowerFWConfig.gearRatio = 1.0;         // lower encoder:fw is 1:1
-        lowerFWConfig.sensorPhase = false;
-        lowerFWConfig.inverted = false; 
-        lowerFWConfig.flywheelRadius = 2 / 12.0;   //feet 
-        lowerFWConfig.pid = new PIDFController(0.12, 0.0, 4.0, 0.034); // kP kI kD kFF
-        lowerFWConfig.pid.setIzone(1800);
-      }
-
-    }
+  }
 
 }
