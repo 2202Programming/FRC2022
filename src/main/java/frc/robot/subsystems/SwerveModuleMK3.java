@@ -1,5 +1,9 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.ErrorCode;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.CANCoderConfiguration;
 import com.revrobotics.RelativeEncoder;
@@ -27,16 +31,21 @@ public class SwerveModuleMK3 {
 
   private int frameCounter = 0;
 
-  // Rev devices
-  private final CANSparkMax driveMotor;
-  private final CANSparkMax angleMotor;
-  private final SparkMaxPIDController driveMotorPID;
-  private final SparkMaxPIDController angleMotorPID; // sparkmax PID can only use internal NEO encoders
-  private final RelativeEncoder angleEncoder; // aka internalAngle
-  private final RelativeEncoder driveEncoder;
+  // // Rev devices --> no longer necessary
+  // private final CANSparkMax driveMotor;
+  // private final CANSparkMax angleMotor;
+  // private final SparkMaxPIDController driveMotorPID;
+  // private final SparkMaxPIDController angleMotorPID; // sparkmax PID can only
+  // use internal NEO encoders
+  // private final RelativeEncoder angleEncoder; // aka internalAngle
+  // private final RelativeEncoder driveEncoder;
+
   // CTRE devices
-  private final CANCoder absEncoder; // aka externalAngle (external to Neo/Smartmax)
+  private final CANCoder absEncoder;
   private double angleCmdInvert;
+  // new CTRE devices
+  private final WPI_TalonFX driveMotor;
+  private final WPI_TalonFX angleMotor;
 
   /**
    * Warning CANCoder and CANEncoder are very close in name but very different.
@@ -57,19 +66,21 @@ public class SwerveModuleMK3 {
   // tables...
   double m_internalAngle; // measured Neo unbounded [deg]
   double m_externalAngle; // measured CANCoder bounded +/-180 [deg]
-  double m_velocity;      // measured velocity [wheel's-units/s] [m/s]
-  double m_position;      // measure wheel positon for calibraiton  [m]
-  double m_angle_target;  // desired angle unbounded [deg]
-  double m_vel_target;    // desired velocity [wheel's-units/s]  [m/s]  
+  double m_velocity; // measured velocity [wheel's-units/s] [m/s]
+  double m_position; // measure wheel positon for calibraiton [m]
+  double m_angle_target; // desired angle unbounded [deg]
+  double m_vel_target; // desired velocity [wheel's-units/s] [m/s]
   /**
    * SwerveModuleMK3 -
    * 
    * SmartMax controllers used for angle and velocity motors.
    * 
    * SmartMax Velocity mode is used to close the velocity loop. Units will match
-   * the units of the drive-wheel-diameter. 
+   * the units of the drive-wheel-diameter.
    * 
    * Angle in degrees is controlled using position mode on the SmartMax. The angle
+   * // deleted brushless motor parameter, no further changes needed -- talon fx =
+   * // falcon 500 only (for now), always brushless
    * positon is not constrainted to +/- 180 degrees because the Neo has 32bit
    * float resolution, so we can just let the postion grow or shrink based on the
    * how many degrees we need to change. We could rotate 1000's of time without
@@ -87,7 +98,7 @@ public class SwerveModuleMK3 {
    */
   public String myprefix;
 
-  public SwerveModuleMK3(CANSparkMax driveMtr, CANSparkMax angleMtr, double offsetDegrees, CANCoder absEnc,
+  public SwerveModuleMK3(WPI_TalonFX driveMtr, WPI_TalonFX angleMtr, double offsetDegrees, CANCoder absEnc,
       boolean invertAngleMtr, boolean invertAngleCmd, boolean invertDrive, String prefix) {
     driveMotor = driveMtr;
     angleMotor = angleMtr;
@@ -95,8 +106,8 @@ public class SwerveModuleMK3 {
     myprefix = prefix;
 
     // Always restore factory defaults - it removes gremlins
-    driveMotor.restoreFactoryDefaults();
-    angleMotor.restoreFactoryDefaults();
+    driveMotor.configFactoryDefault(); // resetFactoryDefault() --> configFactoryDefault()
+    angleMotor.configFactoryDefault(); // resetFactoryDefault() --> configFactoryDefault()
 
     // account for command sign differences if needed
     angleCmdInvert = (invertAngleCmd) ? -1.0 : 1.0;
@@ -104,31 +115,64 @@ public class SwerveModuleMK3 {
 
     // Drive Motor config
     driveMotor.setInverted(invertDrive);
-    driveMotor.setIdleMode(IdleMode.kBrake);
-    driveMotorPID = driveMotor.getPIDController();
-    driveEncoder = driveMotor.getEncoder();
+    driveMotor.setNeutralMode(NeutralMode.Brake); // setIdleMode(IdleMode.kBrake) --> setNeutralMode(NeutralMode.Brake)
+
+    // No longer necessary -- PIDs are built-in, so are encoders
+    // driveMotorPID = driveMotor.getPIDController();
+    // driveEncoder = driveMotor.getEncoder();
+
     // set driveEncoder to use units of the wheelDiameter, meters
-    driveEncoder.setPositionConversionFactor(Math.PI * DriveTrain.wheelDiameter / DriveTrain.kDriveGR); // mo-rot to wheel units
-    driveEncoder.setVelocityConversionFactor((Math.PI * DriveTrain.wheelDiameter / DriveTrain.kDriveGR) / 60.0); // mo-rpm wheel units 
+    // driveEncoder.setPositionConversionFactor(Math.PI * DriveTrain.wheelDiameter / DriveTrain.kDriveGR); // mo-rot to
+    //                                                                                                     // wheel units
+    // driveEncoder.setVelocityConversionFactor((Math.PI * DriveTrain.wheelDiameter / DriveTrain.kDriveGR) / 60.0); // mo-rpm
+    //                                                                                                              // wheel
+    //                                                                                                              // units
+
+        // TODO: check gear ratio -- 2048 counts per rev in internal falcon 500s
+        // TODO: check units also -- do we need to convert? There are no separate velocity / conversion factors; 
+        // TODO: create separate methods for getting velocity and position instead of from encoder necessary?
+      driveMotor.configSelectedFeedbackCoefficient(Math.PI * DriveTrain.wheelDiameter / DriveTrain.kDriveGR);
+
     sleep(100);
     // Angle Motor config
     angleMotor.setInverted(invertAngleMtr);
-    angleMotor.setIdleMode(IdleMode.kBrake);
-    angleMotorPID = angleMotor.getPIDController();
-    angleEncoder = angleMotor.getEncoder();
+    angleMotor.setNeutralMode(NeutralMode.Brake); // setIdleMode(IdleMode.kBrake) --> setNeutralMode(NeutralMode.Brake)
 
-    // set angle endcoder to return values in deg and deg/s
-    angleEncoder.setPositionConversionFactor(360.0 / DriveTrain.kSteeringGR); // mo-rotations to degrees
-    angleEncoder.setVelocityConversionFactor(360.0 / DriveTrain.kSteeringGR / 60.0); // rpm to deg/s
+    // No longer necessary -- PID, encoder built in
+    // angleMotorPID = angleMotor.getPIDController();
+    // angleEncoder = angleMotor.getEncoder();
 
-    // SparkMax PID values
-    DriveTrain.anglePIDF.copyTo(angleMotorPID, kSlot); // position mode
-    DriveTrain.drivePIDF.copyTo(driveMotorPID, kSlot); // velocity mode
+    // // set angle endcoder to return values in deg and deg/s
+    // angleEncoder.setPositionConversionFactor(360.0 / DriveTrain.kSteeringGR); // mo-rotations to degrees
+    // angleEncoder.setVelocityConversionFactor(360.0 / DriveTrain.kSteeringGR / 60.0); // rpm to deg/s
+
+        // TODO: check gear ratio -- 2048 counts per rev in internal falcon 500s
+        // TODO: check units also -- do we need to convert? There are no separate velocity / conversion factors; 
+        // TODO: create separate methods for getting velocity and position instead of from encoder necessary?
+      driveMotor.configSelectedFeedbackCoefficient(360.0 / DriveTrain.kSteeringGR / 60.0);
+
+    // // SparkMax PID values
+    // DriveTrain.anglePIDF.copyTo(angleMotorPID, kSlot); // position mode --> pid is now built in, bind directly to falcon 500s
+    // DriveTrain.drivePIDF.copyTo(driveMotorPID, kSlot); // velocity mode --> pid is now built in, bind directly to falcon 500s
+
+    // --> directo to motor b/c PID built in
+    angleMotor.config_kP(kSlot, DriveTrain.anglePIDF.getP());
+    angleMotor.config_kI(kSlot, DriveTrain.anglePIDF.getI());
+    angleMotor.config_kD(kSlot, DriveTrain.anglePIDF.getD());
+    angleMotor.config_kF(kSlot, DriveTrain.anglePIDF.getF());
+    angleMotor.config_IntegralZone(kSlot, DriveTrain.anglePIDF.getIzone());
+
+    driveMotor.config_kI(kSlot, DriveTrain.drivePIDF.getI());
+    driveMotor.config_kD(kSlot, DriveTrain.drivePIDF.getD());
+    driveMotor.config_kP(kSlot, DriveTrain.drivePIDF.getP());
+    driveMotor.config_kF(kSlot, DriveTrain.drivePIDF.getF());
+    driveMotor.config_IntegralZone(kSlot, DriveTrain.drivePIDF.getIzone());
     sleep(100);
 
     // burn the motor flash if BURN_FLASH is true in frc.robot.Constants.CAN
     if (Constants.CAN.BURN_FLASH) {
-      REVLibError angleError = angleMotor.burnFlash();
+      ErrorCode angleError = angleMotor.getLastError(); // REVLibError --> ErrorCode, burnFlash() --> getLastError()
+      // TODO: Is getLastError() the best alternative? I think it is but unsure. Same comment for driveMotor below
       sleep(1500); // takes 1 sec to burn per Dean
 
       int counter = 0;
@@ -143,7 +187,8 @@ public class SwerveModuleMK3 {
       }
       System.out.println(myprefix + " Angle motor flash success.");
 
-      REVLibError driveError = driveMotor.burnFlash();
+      ErrorCode driveError = driveMotor.getLastError(); // REVLibError --> ErrorCode, burnFlash() --> getLastError()
+      // TODO: Is getLastError() the best alternative? I think it is but unsure. Same comment for angleMotor above
       sleep(1500); // takes 1 sec to burn per Dean
       counter = 0;
       while (driveError.value != 0) {
@@ -174,14 +219,20 @@ public class SwerveModuleMK3 {
   }
 
   // PID accessor for use in Test/Tune Commands
-  public void setDrivePID(PIDFController temp)
-  {
-    temp.copyTo(driveMotorPID, kSlot); 
+  public void setDrivePID(PIDFController temp) {
+    driveMotor.config_kI(kSlot, temp.getI());
+    driveMotor.config_kD(kSlot, temp.getD());
+    driveMotor.config_kP(kSlot, temp.getP());
+    driveMotor.config_kF(kSlot, temp.getF());
+    driveMotor.config_IntegralZone(kSlot, temp.getIzone());
   }
 
-  public void setAnglePID(PIDFController temp)
-  {
-    temp.copyTo(angleMotorPID, kSlot); 
+  public void setAnglePID(PIDFController temp) {
+    angleMotor.config_kI(kSlot, temp.getI());
+    angleMotor.config_kD(kSlot, temp.getD());
+    angleMotor.config_kP(kSlot, temp.getP());
+    angleMotor.config_kF(kSlot, temp.getF());
+    angleMotor.config_IntegralZone(kSlot, temp.getIzone());
   }
 
   /**
@@ -215,58 +266,64 @@ public class SwerveModuleMK3 {
     // Average a couple of samples of the absolute encoder
     double pos_deg = absEncoder.getAbsolutePosition();
     sleep(10);
-    pos_deg = (pos_deg + absEncoder.getAbsolutePosition())/2.0;
-    
-    angleEncoder.setPosition(angleCmdInvert * pos_deg);
-    sleep(100); // sparkmax gremlins
-    double temp = angleEncoder.getPosition();
-    sleep(100); // sparkmax gremlins
+    pos_deg = (pos_deg + absEncoder.getAbsolutePosition()) / 2.0;
+
+    angleMotor.setSelectedSensorPosition(angleCmdInvert * pos_deg * 256/45); // setPosition --> setSelectedSensorPosition
+    // added 256/45 for conversion of 360deg in 1 rev which has 2048 encoder counts, angleEncoder --> angleMotor b/c enc built in
+    sleep(100); // sparkmax gremlins TODO: still necessary? Test
+    double temp = angleMotor.getSelectedSensorPosition(); // getPosition --> getSelectedSensorPosition
+    sleep(100); // sparkmax gremlins TODO: still necessary? Test
 
     int counter = 0;
     while (Math.abs(pos_deg - temp) > 0.1) { // keep trying to set encoder angle if it's not matching
-      angleEncoder.setPosition(angleCmdInvert * pos_deg);
+      angleMotor.setSelectedSensorPosition(angleCmdInvert * pos_deg * 256/45); // angleEncoder --> angleMotor, now built in
+      // added 256/45 for conversion of 360deg in 1 rev which has 2048 encoder counts, angleEncoder --> angleMotor b/c enc built in 
       sleep(100); // sparkmax gremlins
-      temp = angleEncoder.getPosition();
-      sleep(100); // sparkmax gremlins
+      temp = angleMotor.getSelectedSensorPosition() * 45/256; // angleEncoder --> angleMotor, now built in
+      // added 45/256 for conversion of 360deg in 1 rev which has 2048 encoder counts, angleEncoder --> angleMotor b/c enc built in 
+      sleep(100); // sparkmax gremlins TODO: still necessary? Test
       if (counter++ > 20) {
         System.out.println("*** Angle position set failed after 20 tries ***");
         break;
       }
     }
 
-    realityCheckSparkMax(angleCmdInvert * pos_deg, temp);
+    realityCheckTalonFx(angleCmdInvert * pos_deg, temp); // it's TalonFX now, hence name change
 
   }
 
-  void realityCheckSparkMax(double angle_cancoder, double internal_angle) {
+  // it's TalonFX now, hence name change
+  void realityCheckTalonFx(double angle_cancoder, double internal_angle) {
     boolean result = true;
 
-    if (Math.abs(
-        driveEncoder.getPositionConversionFactor() - Math.PI * DriveTrain.wheelDiameter / DriveTrain.kDriveGR) > 0.1) {
-      System.out.println("*** ERROR *** " + myprefix + " position conversion factor incorrect for drive");
-      System.out.println("Expected Position CF: " + Math.PI * DriveTrain.wheelDiameter / DriveTrain.kDriveGR);
-      System.out.println("Returned Position CF: " + driveEncoder.getPositionConversionFactor());
-      result = false;
-    }
-    if (Math.abs(driveEncoder.getVelocityConversionFactor()
-        - Math.PI * DriveTrain.wheelDiameter / DriveTrain.kDriveGR / 60.0) > 0.1) {
-      System.out.println("*** ERROR *** " + myprefix + " velocity conversion factor incorrect for drive");
-      System.out.println("Expected Vel CF: " + Math.PI * DriveTrain.wheelDiameter / DriveTrain.kDriveGR / 60.0);
-      System.out.println("Returned Vel CF: " + driveEncoder.getVelocityConversionFactor());
-      result = false;
-    }
-    if (Math.abs(angleEncoder.getPositionConversionFactor() - (360.0 / DriveTrain.kSteeringGR)) > 0.1) {
-      System.out.println("*** ERROR *** " + myprefix + " position conversion factor incorrect for angle");
-      System.out.println("Expected Angle Pos CF: " + 360.0 / DriveTrain.kSteeringGR);
-      System.out.println("Returned Angle Pos CF: " + angleEncoder.getPositionConversionFactor());
-      result = false;
-    }
-    if (Math.abs(angleEncoder.getVelocityConversionFactor() - (360.0 / DriveTrain.kSteeringGR / 60)) > 0.1) {
-      System.out.println("*** ERROR *** " + myprefix + " velocity conversion factor incorrect for angle");
-      System.out.println("Expected Angle Vel CF: " + (360.0 / DriveTrain.kSteeringGR / 60));
-      System.out.println("Returned Angle Vel CF: " + angleEncoder.getVelocityConversionFactor());
-      result = false;
-    }
+    // TODO: unsure if these checks are possible now -- no getCoefficient or anything method on the motors, alternative way?
+    // if (Math.abs(
+    //     driveEncoder.getPositionConversionFactor() - Math.PI * DriveTrain.wheelDiameter / DriveTrain.kDriveGR) > 0.1) {
+    //   System.out.println("*** ERROR *** " + myprefix + " position conversion factor incorrect for drive");
+    //   System.out.println("Expected Position CF: " + Math.PI * DriveTrain.wheelDiameter / DriveTrain.kDriveGR);
+    //   System.out.println("Returned Position CF: " + driveEncoder.getPositionConversionFactor());
+    //   result = false;
+    // }
+    // if (Math.abs(driveEncoder.getVelocityConversionFactor()
+    //     - Math.PI * DriveTrain.wheelDiameter / DriveTrain.kDriveGR / 60.0) > 0.1) {
+    //   System.out.println("*** ERROR *** " + myprefix + " velocity conversion factor incorrect for drive");
+    //   System.out.println("Expected Vel CF: " + Math.PI * DriveTrain.wheelDiameter / DriveTrain.kDriveGR / 60.0);
+    //   System.out.println("Returned Vel CF: " + driveEncoder.getVelocityConversionFactor());
+    //   result = false;
+    // }
+    // if (Math.abs(angleEncoder.getPositionConversionFactor() - (360.0 / DriveTrain.kSteeringGR)) > 0.1) {
+    //   System.out.println("*** ERROR *** " + myprefix + " position conversion factor incorrect for angle");
+    //   System.out.println("Expected Angle Pos CF: " + 360.0 / DriveTrain.kSteeringGR);
+    //   System.out.println("Returned Angle Pos CF: " + angleEncoder.getPositionConversionFactor());
+    //   result = false;
+    // }
+    // if (Math.abs(angleEncoder.getVelocityConversionFactor() - (360.0 / DriveTrain.kSteeringGR / 60)) > 0.1) {
+    //   System.out.println("*** ERROR *** " + myprefix + " velocity conversion factor incorrect for angle");
+    //   System.out.println("Expected Angle Vel CF: " + (360.0 / DriveTrain.kSteeringGR / 60));
+    //   System.out.println("Returned Angle Vel CF: " + angleEncoder.getVelocityConversionFactor());
+    //   result = false;
+    // }
+
     if (Math.abs(angle_cancoder - internal_angle) > 0.1) {
       System.out.println("*** ERROR *** " + myprefix + " angle encoder save error");
       System.out.println("Expected internal angle: " + angle_cancoder);
@@ -310,9 +367,13 @@ public class SwerveModuleMK3 {
 
   public void periodic() {
     // measure everything at same time; these get updated every cycle
-    m_internalAngle = angleEncoder.getPosition() * angleCmdInvert;
-    m_velocity = driveEncoder.getVelocity();
-    m_position = driveEncoder.getPosition();
+    m_internalAngle = angleMotor.getSelectedSensorPosition() * angleCmdInvert * 45/256; // angleEncoder --> angleMotor, built in
+    // getPosition --> getSelectedSensorPosition, added 45/256 coefficient to go from 2048 counts/rev to 360deg/rev
+    m_velocity = driveMotor.getSelectedSensorVelocity() * 10 * 45/256; // driveEncoder --> driveMotor, built in
+    // getVelocity --> getSelectedSensorVelocity, added 45/256 coefficient to go from 2048 counts/rev to 360deg/rev 
+    // added 10 multiplier for 100ms --> 1sec therefore units in deg/sec TODO: change units?
+    m_position = driveMotor.getSelectedSensorPosition(); // driveEncoder --> driveMotor, built in
+    // getPosition --> getSelectedSensorPosition, added 45/256 coefficient to go from 2048 counts/rev to 360deg/rev
 
     // these are for human consumption, update slower
     if (frameCounter++ == 10) {
@@ -353,22 +414,20 @@ public class SwerveModuleMK3 {
 
   /**
    * 
-   * @return velocity wheel's units [m] 
+   * @return velocity wheel's units [m]
    */
   public double getVelocity() {
     return m_velocity;
   }
 
- /**
+  /**
    * 
-   * @return velocity wheel's units [m] 
+   * @return velocity wheel's units [m]
    */
   public double getPosition() {
     return m_position;
   }
 
-
-  
   /**
    * Set the speed + rotation of the swerve module from a SwerveModuleState object
    * 
@@ -376,10 +435,14 @@ public class SwerveModuleMK3 {
    *                     of the module
    */
   public void setDesiredState(SwerveModuleState state) {
-    SwerveModuleState m_state = SwerveModuleState.optimize(state, Rotation2d.fromDegrees(m_internalAngle)); // should favor reversing direction over
-                                                                                // turning > 90 degrees
+    SwerveModuleState m_state = SwerveModuleState.optimize(state, Rotation2d.fromDegrees(m_internalAngle)); // should
+                                                                                                            // favor
+                                                                                                            // reversing
+                                                                                                            // direction
+                                                                                                            // over
+    // turning > 90 degrees
 
-    state = m_state;   //uncomment to use optimized angle command
+    state = m_state; // uncomment to use optimized angle command
     // use position control on angle with INTERNAL encoder, scaled internally for
     // degrees
     m_angle_target = m_state.angle.getDegrees();
@@ -391,10 +454,16 @@ public class SwerveModuleMK3 {
       delta = 0;
 
     // now add that delta to unbounded Neo angle, m_internal isn't range bound
-    angleMotorPID.setReference(angleCmdInvert * (m_internalAngle + delta), ControlType.kPosition);
+    angleMotor.set(ControlMode.Position, angleCmdInvert * (m_internalAngle + delta) * 256/45); 
+    // setReference --> set -- equivalent
+    // angleMotorPID --> angleMotor -- built in, ControlType.kPosition --> ControlMode.Position -- equivalent
+    // flipped parameters because methods are different, added 256/45 multiplier to go from 360deg/rev to 2048count/rev
 
     // use velocity control
-    driveMotorPID.setReference(m_state.speedMetersPerSecond, ControlType.kVelocity);
+    driveMotor.set(ControlMode.Velocity, m_state.speedMetersPerSecond * 256/45);
+    // setReference --> set -- equivalent
+    // driveMotorPID --> driveMotor -- built in, ControlType.kPosition --> ControlMode.Position -- equivalent
+    // flipped parameters because methods are different, added 256/45 multiplier to go from 360deg/rev to 2048count/rev
   }
 
   /**
@@ -436,8 +505,8 @@ public class SwerveModuleMK3 {
     nte_position.setDouble(m_position);
     nte_angle_target.setDouble(m_angle_target);
     nte_vel_target.setDouble(m_vel_target);
-    nte_motor_current.setDouble(driveMotor.getOutputCurrent());
-    nte_applied_output.setDouble(driveMotor.getAppliedOutput());
+    nte_motor_current.setDouble(driveMotor.getStatorCurrent()); // getOutputCurrent --> getStatorCurrent
+    nte_applied_output.setDouble(driveMotor.getMotorOutputPercent()); // getAppliedOutput --> getMotorOutputPercent
   }
 
   void sleep(long ms) {
@@ -447,22 +516,22 @@ public class SwerveModuleMK3 {
     }
   }
 
-  SparkMaxPIDController getDrivePID(){
-    return driveMotorPID;
+  // built in, get the motors instead?? Or TODO: Create new config of PID values?
+  // SparkMaxPIDController getDrivePID() {
+  //   return driveMotorPID;
+  // }
+
+  // SparkMaxPIDController getAnglePID() {
+  //   return angleMotorPID;
+  // }
+
+  public void setBrakeMode() {
+    driveMotor.setNeutralMode(NeutralMode.Brake); // setIdleMode(IdleMode.kBrake) --> setNeutralMode(NeutralMode.Brake)
+    angleMotor.setNeutralMode(NeutralMode.Brake); // setIdleMode(IdleMode.kBrake) --> setNeutralMode(NeutralMode.Brake)
   }
 
-  SparkMaxPIDController getAnglePID(){
-    return angleMotorPID;
+  public void setCoastMode() {
+    driveMotor.setNeutralMode(NeutralMode.Coast); // setIdleMode(IdleMode.kCoast) --> setNeutralMode(NeutralMode.Coast)
+    angleMotor.setNeutralMode(NeutralMode.Coast); // setIdleMode(IdleMode.kCoast) --> setNeutralMode(NeutralMode.Coast)
   }
-
-  public void setBrakeMode(){
-    driveMotor.setIdleMode(IdleMode.kBrake);
-    angleMotor.setIdleMode(IdleMode.kBrake);
-  }
-
-  public void setCoastMode(){
-    driveMotor.setIdleMode(IdleMode.kCoast);
-    angleMotor.setIdleMode(IdleMode.kCoast);
-  }
-
 }
