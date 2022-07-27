@@ -131,7 +131,7 @@ public class SwerveModuleMK3 {
         // TODO: check gear ratio -- 2048 counts per rev in internal falcon 500s
         // TODO: check units also -- do we need to convert? There are no separate velocity / conversion factors; 
         // TODO: create separate methods for getting velocity and position instead of from encoder necessary?
-      driveMotor.configSelectedFeedbackCoefficient(Math.PI * DriveTrain.wheelDiameter / DriveTrain.kDriveGR);
+      //driveMotor.configSelectedFeedbackCoefficient(Math.PI * DriveTrain.wheelDiameter / DriveTrain.kDriveGR); --> accounted for in set/get methods
 
     sleep(100);
     // Angle Motor config
@@ -149,7 +149,7 @@ public class SwerveModuleMK3 {
         // TODO: check gear ratio -- 2048 counts per rev in internal falcon 500s
         // TODO: check units also -- do we need to convert? There are no separate velocity / conversion factors; 
         // TODO: create separate methods for getting velocity and position instead of from encoder necessary?
-      driveMotor.configSelectedFeedbackCoefficient(360.0 / DriveTrain.kSteeringGR / 60.0);
+      //driveMotor.configSelectedFeedbackCoefficient(360.0 / DriveTrain.kSteeringGR / 60.0); --> accounted for in set/get methods
 
     // // SparkMax PID values
     // DriveTrain.anglePIDF.copyTo(angleMotorPID, kSlot); // position mode --> pid is now built in, bind directly to falcon 500s
@@ -268,18 +268,16 @@ public class SwerveModuleMK3 {
     sleep(10);
     pos_deg = (pos_deg + absEncoder.getAbsolutePosition()) / 2.0;
 
-    angleMotor.setSelectedSensorPosition(angleCmdInvert * pos_deg * 256/45); // setPosition --> setSelectedSensorPosition
-    // added 256/45 for conversion of 360deg in 1 rev which has 2048 encoder counts, angleEncoder --> angleMotor b/c enc built in
+    setAnglePosition(angleCmdInvert * pos_deg); // setAnglePosition (own method)
     sleep(100); // sparkmax gremlins TODO: still necessary? Test
-    double temp = angleMotor.getSelectedSensorPosition(); // getPosition --> getSelectedSensorPosition
+    double temp = getAnglePosition(); // getAnglePosition (own method)
     sleep(100); // sparkmax gremlins TODO: still necessary? Test
 
     int counter = 0;
     while (Math.abs(pos_deg - temp) > 0.1) { // keep trying to set encoder angle if it's not matching
-      angleMotor.setSelectedSensorPosition(angleCmdInvert * pos_deg * 256/45); // angleEncoder --> angleMotor, now built in
-      // added 256/45 for conversion of 360deg in 1 rev which has 2048 encoder counts, angleEncoder --> angleMotor b/c enc built in 
+      setAnglePosition(angleCmdInvert * pos_deg); // setAnglePosition (own method)
       sleep(100); // sparkmax gremlins
-      temp = angleMotor.getSelectedSensorPosition() * 45/256; // angleEncoder --> angleMotor, now built in
+      temp = getDrivePosition(); // angleEncoder --> angleMotor, now built in --> getDrivePosition (own method)
       // added 45/256 for conversion of 360deg in 1 rev which has 2048 encoder counts, angleEncoder --> angleMotor b/c enc built in 
       sleep(100); // sparkmax gremlins TODO: still necessary? Test
       if (counter++ > 20) {
@@ -367,14 +365,9 @@ public class SwerveModuleMK3 {
 
   public void periodic() {
     // measure everything at same time; these get updated every cycle
-    m_internalAngle = angleMotor.getSelectedSensorPosition() * angleCmdInvert * 45/256; // angleEncoder --> angleMotor, built in
-    // getPosition --> getSelectedSensorPosition, added 45/256 coefficient to go from 2048 counts/rev to 360deg/rev
-    m_velocity = driveMotor.getSelectedSensorVelocity() * 10 * 45/256; // driveEncoder --> driveMotor, built in
-    // getVelocity --> getSelectedSensorVelocity, added 45/256 coefficient to go from 2048 counts/rev to 360deg/rev 
-    // added 10 multiplier for 100ms --> 1sec therefore units in deg/sec TODO: change units?
-    m_position = driveMotor.getSelectedSensorPosition(); // driveEncoder --> driveMotor, built in
-    // getPosition --> getSelectedSensorPosition, added 45/256 coefficient to go from 2048 counts/rev to 360deg/rev
-
+    m_internalAngle = getAnglePosition(); // getAnglePosition (own method)
+    m_velocity = getDriveVelocity(); // getDriveVelocity (own method)
+    m_position = getDrivePosition(); // getDrivePosition (own method)
     // these are for human consumption, update slower
     if (frameCounter++ == 10) {
       m_externalAngle = absEncoder.getAbsolutePosition();
@@ -533,5 +526,72 @@ public class SwerveModuleMK3 {
   public void setCoastMode() {
     driveMotor.setNeutralMode(NeutralMode.Coast); // setIdleMode(IdleMode.kCoast) --> setNeutralMode(NeutralMode.Coast)
     angleMotor.setNeutralMode(NeutralMode.Coast); // setIdleMode(IdleMode.kCoast) --> setNeutralMode(NeutralMode.Coast)
+  }
+
+  public void setAnglePosition(double position) {
+    double adjustedCount = position;
+
+    // Divided by 360 to go from degrees to revolutions
+    // Multiply by 2048 to go from revolutions to encoderCounts
+    // multiply by gear ratio because it's an internal encoder
+    double rawCount = adjustedCount / 360 * 2048 * DriveTrain.kSteeringGR;
+
+    angleMotor.setSelectedSensorPosition(rawCount);
+  }
+
+  public double getAnglePosition() {
+    double rawCount = angleMotor.getSelectedSensorPosition();  
+
+    // Divided by 2048 to go from encoder counts to revolutions
+    // Multiplied by 360 to go into degrees
+    // divided by gear ratio because it's an internal encoder
+    double adjustedCount = rawCount / 2048 * 360 / DriveTrain.kSteeringGR;
+
+    return adjustedCount;
+  }
+
+  public double getAngleVelocity() {
+    double rawCount = angleMotor.getSelectedSensorVelocity();
+
+    // Multiply by ten to go from distance every 100ms to 1sec
+    // Divide by 2048 to go from encoder counts to distance
+    // Multiply by 360 to get into degrees
+    double adjustedCount = rawCount * 10 / 2048 * 360;
+
+    return adjustedCount;
+  }
+
+  public void setDrivePosition(double position) {
+    double adjustedCount = position;
+
+    // Multiplt by 2048 to go from revolutions to encoder units
+    // Divide by pi and diameter because divide by circumference -- angular to linear
+    // Multiply by gear ratio because internal encoder
+    double rawCount = adjustedCount * 2048 / Math.PI / DriveTrain.wheelDiameter * DriveTrain.kDriveGR;
+
+    driveMotor.setSelectedSensorPosition(rawCount);
+  }
+
+  public double getDrivePosition() {
+    double rawCount = driveMotor.getSelectedSensorPosition();
+
+    // Divide by 2048 to go from encoder counts to revolutions
+    // Multiply by pi and diameter because multiply from circumference -- angular to linear
+    // Divide by gear ratio because internal encoder
+    double adjustedCount = rawCount / 2048 * Math.PI * DriveTrain.wheelDiameter / DriveTrain.kDriveGR;
+
+    return adjustedCount;
+  }
+
+  public double getDriveVelocity() {
+    double rawCount = driveMotor.getSelectedSensorVelocity();
+
+    // Multiply by 10 to go from per 100ms to per 1sec
+    // Divide by 2048 to go from encoder counts to revolutions
+    // Multiply by pi and diameter because multiply from circumference -- angular to linear
+    // Divide by gear ratio because internal encoder
+    double adjustedCount = rawCount * 10 / 2048 * Math.PI * DriveTrain.wheelDiameter / DriveTrain.kDriveGR;
+
+    return adjustedCount;
   }
 }
