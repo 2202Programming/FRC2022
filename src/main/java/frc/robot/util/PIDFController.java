@@ -1,6 +1,8 @@
 package frc.robot.util;
 
 import static frc.robot.Constants.DT;
+
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.SparkMaxPIDController;
 
@@ -116,5 +118,13 @@ public class PIDFController extends PIDController {
       dest.config_kF(slot, this.getF());
       dest.config_IntegralZone(slot, this.getIzone());
     }
+
+    public void copyTo(WPI_TalonFX dest, int slot ) {
+        dest.config_kP(slot, this.getP());
+        dest.config_kI(slot,this.getI());
+        dest.config_kD(slot, this.getD());
+        dest.config_kF(slot, this.getF());
+        dest.config_IntegralZone(slot, this.getIzone());
+      }
 
 }

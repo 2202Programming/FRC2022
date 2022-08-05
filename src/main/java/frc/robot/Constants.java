@@ -67,11 +67,7 @@ public final class Constants {
     public static final int PDP = 0; // this must be 0
     public static final int PCM1 = 1; // default ID for PCM
 
-    // drive train CANCoders
-    public static final int DT_BL_CANCODER = 28;
-    public static final int DT_BR_CANCODER = 31;
-    public static final int DT_FR_CANCODER = 30;
-    public static final int DT_FL_CANCODER = 7;
+    
 
     // Shooter CAN devices
     public static final int SHOOTER_UPPER_TALON = 10;
@@ -85,16 +81,6 @@ public final class Constants {
     // Intake motor
     public static final int INTAKE_MTR = 14;
 
-    // drive train drive / angle motors - sparkmax neo
-    public static final int DT_FL_DRIVE = 20;
-    public static final int DT_FL_ANGLE = 21;
-    public static final int DT_BL_DRIVE = 22;
-    public static final int DT_BL_ANGLE = 23;
-    public static final int DT_BR_DRIVE = 24;
-    public static final int DT_BR_ANGLE = 25;
-    public static final int DT_FR_DRIVE = 26;
-    public static final int DT_FR_ANGLE = 27;
-
     // Climber Arms
     public static final int CMB_LEFT_Extend = 34;
     public static final int CMB_RIGHT_Extend = 35;
@@ -106,6 +92,28 @@ public final class Constants {
 
     // Whether to burn flash or not
     public static final boolean BURN_FLASH = false; // swerve-mk3
+  }
+
+  // intent is to move drivetrain to own CAN bus using CANivore
+  public static final class CANivore {
+    // bus name
+    public static final String BUS_NAME = "Drivetrain";
+    
+    // drive train CANCoders
+    public static final int DT_BL_CANCODER = 28;
+    public static final int DT_BR_CANCODER = 31;
+    public static final int DT_FR_CANCODER = 30;
+    public static final int DT_FL_CANCODER = 7;
+
+    // drive train drive / angle motors - falcon 500s(?)
+    public static final int DT_FL_DRIVE = 20;
+    public static final int DT_FL_ANGLE = 21;
+    public static final int DT_BL_DRIVE = 22;
+    public static final int DT_BL_ANGLE = 23;
+    public static final int DT_BR_DRIVE = 24;
+    public static final int DT_BR_ANGLE = 25;
+    public static final int DT_FR_DRIVE = 26;
+    public static final int DT_FR_ANGLE = 27;
   }
 
   // PWM assignments on the Rio

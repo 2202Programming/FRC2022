@@ -22,6 +22,7 @@ import edu.wpi.first.math.trajectory.constraint.SwerveDriveKinematicsConstraint;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.CAN;
+import frc.robot.Constants.CANivore;
 import frc.robot.Constants.DriveTrain;
 import frc.robot.Constants.NTStrings;
 import frc.robot.subsystems.Sensors_Subsystem.EncoderID;
@@ -117,19 +118,27 @@ public class SwerveDrivetrain extends SubsystemBase {
 
     modules = new SwerveModuleMK3[] {
         // Front Left
-        new SwerveModuleMK3(new WPI_TalonFX(CAN.DT_FL_DRIVE), new WPI_TalonFX(CAN.DT_FL_ANGLE),
+        new SwerveModuleMK3(
+            new WPI_TalonFX(CANivore.DT_FL_DRIVE, CANivore.BUS_NAME), 
+            new WPI_TalonFX(CANivore.DT_FL_ANGLE, CANivore.BUS_NAME),
             DriveTrain.CC_FL_OFFSET, sensors.getCANCoder(EncoderID.FrontLeft), kAngleMotorInvert_Left,
             kAngleCmdInvert_Left, kDriveMotorInvert_Left, "FL"),
         // Front Right
-        new SwerveModuleMK3(new WPI_TalonFX(CAN.DT_FR_DRIVE), new WPI_TalonFX(CAN.DT_FR_ANGLE),
+        new SwerveModuleMK3(
+            new WPI_TalonFX(CANivore.DT_FR_DRIVE, CANivore.BUS_NAME), 
+            new WPI_TalonFX(CANivore.DT_FR_ANGLE, CANivore.BUS_NAME),
             DriveTrain.CC_FR_OFFSET, sensors.getCANCoder(EncoderID.FrontRight), kAngleMotorInvert_Right,
             kAngleCmdInvert_Right, kDriveMotorInvert_Right, "FR"),
         // Back Left
-        new SwerveModuleMK3(new WPI_TalonFX(CAN.DT_BL_DRIVE), new WPI_TalonFX(CAN.DT_BL_ANGLE),
+        new SwerveModuleMK3(
+            new WPI_TalonFX(CANivore.DT_BL_DRIVE, CANivore.BUS_NAME), 
+            new WPI_TalonFX(CANivore.DT_BL_ANGLE, CANivore.BUS_NAME),
             DriveTrain.CC_BL_OFFSET, sensors.getCANCoder(EncoderID.BackLeft), kAngleMotorInvert_Left,
             kAngleCmdInvert_Left, kDriveMotorInvert_Left, "BL"),
         // Back Right
-        new SwerveModuleMK3(new WPI_TalonFX(CAN.DT_BR_DRIVE), new WPI_TalonFX(CAN.DT_BR_ANGLE),
+        new SwerveModuleMK3(
+            new WPI_TalonFX(CANivore.DT_BR_DRIVE, CANivore.BUS_NAME), 
+            new WPI_TalonFX(CANivore.DT_BR_ANGLE, CANivore.BUS_NAME),
             DriveTrain.CC_BR_OFFSET, sensors.getCANCoder(EncoderID.BackRight), kAngleMotorInvert_Right,
             kAngleCmdInvert_Right, kDriveMotorInvert_Right, "BR") };
 
