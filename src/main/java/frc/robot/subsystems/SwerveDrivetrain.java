@@ -5,7 +5,6 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -18,10 +17,9 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.trajectory.constraint.SwerveDriveKinematicsConstraint;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
-import frc.robot.Constants.CAN;
 import frc.robot.Constants.CANivore;
 import frc.robot.Constants.DriveTrain;
 import frc.robot.Constants.NTStrings;
@@ -113,8 +111,6 @@ public class SwerveDrivetrain extends SubsystemBase {
 
   public SwerveDrivetrain() {
     sensors = RobotContainer.RC().sensors;
-
-    var MT = CANSparkMax.MotorType.kBrushless;
 
     modules = new SwerveModuleMK3[] {
         // Front Left
@@ -225,7 +221,7 @@ public class SwerveDrivetrain extends SubsystemBase {
 
     // velocity assuming period is 0.02 seconds - this is the standard FRC main loop
     // period
-    filteredVelocity = velocityFilter.calculate(PoseMath.poseDistance(m_pose, old_pose) / 0.02);
+    filteredVelocity = velocityFilter.calculate(PoseMath.poseDistance(m_pose, old_pose) / Constants.DT);
 
     // updates CAN status data every 4 cycles
     timer++;
@@ -336,53 +332,4 @@ public class SwerveDrivetrain extends SubsystemBase {
     }
     System.out.println("***BRAKES RELEASED***");
   }
-
-  // TODO: Move to a TEST/Tuning command - DPL 2/21/22
-  // private void pidTuning() { //if drivetrain tuning
-
-  // // read PID coefficients from SmartDashboard if tuning drivetrain
-  // double drive_p = SmartDashboard.getNumber("Drive P Gain",
-  // DriveTrain.drivePIDF.getP());
-  // double drive_i = SmartDashboard.getNumber("Drive I Gain",
-  // DriveTrain.drivePIDF.getI());
-  // double drive_d = SmartDashboard.getNumber("Drive D Gain",
-  // DriveTrain.drivePIDF.getD());
-  // double drive_ff = SmartDashboard.getNumber("Drive Feed Forward",
-  // DriveTrain.drivePIDF.getF());
-  // double angle_p = SmartDashboard.getNumber("Angle P Gain",
-  // DriveTrain.anglePIDF.getP());
-  // double angle_i = SmartDashboard.getNumber("Angle I Gain",
-  // DriveTrain.anglePIDF.getI());
-  // double angle_d = SmartDashboard.getNumber("Angle D Gain",
-  // DriveTrain.anglePIDF.getD());
-  // double angle_ff = SmartDashboard.getNumber("Angle Feed Forward",
-  // DriveTrain.anglePIDF.getF());
-
-  // // if anything changes in drive PID, update all the modules with a new drive
-  // PID
-  // if ((drive_p != drive_kP) || (drive_i != drive_kI) || (drive_d != drive_kD)
-  // || (drive_ff != drive_kFF)) {
-  // drive_kP = drive_p;
-  // drive_kI = drive_i;
-  // drive_kD = drive_d;
-  // drive_kFF = drive_ff;
-  // for (SwerveModuleMK3 i : modules) {
-  // i.setDrivePID(new PIDFController(drive_kP, drive_kI, drive_kD, drive_kFF));
-  // }
-  // }
-
-  // // if anything changes in angle PID, update all the modules with a new angle
-  // PID
-  // if ((angle_p != angle_kP) || (angle_i != angle_kI) || (angle_d != angle_kD)
-  // || (angle_ff != angle_kFF)) {
-  // angle_kP = angle_p;
-  // angle_kI = angle_i;
-  // angle_kD = angle_d;
-  // angle_kFF = angle_ff;
-  // for (SwerveModuleMK3 i : modules) {
-  // i.setAnglePID(new PIDFController(angle_kP, angle_kI, angle_kD, angle_kFF));
-  // }
-  // }
-  // }
-
 }

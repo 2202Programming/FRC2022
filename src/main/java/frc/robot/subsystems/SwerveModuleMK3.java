@@ -1,25 +1,21 @@
 package frc.robot.subsystems;
+/**
+ * CANivor version - WIP
+ * Nathanael Ren - summer 2022
+ * 
+ * Switched to use Falcon / Talon
+ */
 
-import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.CANCoderConfiguration;
-import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.REVLibError;
-import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMax.ControlType;
-
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import frc.robot.Constants;
 import frc.robot.Constants.DriveTrain;
 import frc.robot.util.ModMath;
 import frc.robot.util.PIDFController;
@@ -28,7 +24,7 @@ public class SwerveModuleMK3 {
   final int COUNTS_PER_REV = 4096;
 
   // in units of seconds
-  final double VEL_SAMPLE_PERIOD = 0.1; // 0.1 is default for TalonFX, could be changed
+  final double VEL_SAMPLE_PERIOD = 0.1; // 0.1 is default for TalonFX, could be changed (TODO: do we need for Falcon version? )
   final double VEL_SAMPLE_CONST = 1 / VEL_SAMPLE_PERIOD;
 
   public final String NT_Name = "DT"; // expose data under DriveTrain table
@@ -94,14 +90,12 @@ public class SwerveModuleMK3 {
    * Batteries will need changing before then.
    * 
    */
-  public String myprefix;
 
   public SwerveModuleMK3(WPI_TalonFX driveMtr, WPI_TalonFX angleMtr, double offsetDegrees, CANCoder absEnc,
       boolean invertAngleMtr, boolean invertAngleCmd, boolean invertDrive, String prefix) {
     driveMotor = driveMtr;
     angleMotor = angleMtr;
     absEncoder = absEnc;
-    myprefix = prefix;
 
     // Always restore factory defaults - it removes gremlins
     driveMotor.configFactoryDefault();
@@ -115,83 +109,16 @@ public class SwerveModuleMK3 {
     driveMotor.setInverted(invertDrive);
     driveMotor.setNeutralMode(NeutralMode.Brake);
 
-    // No longer necessary -- PIDs are built-in, so are encoders
-    // driveMotorPID = driveMotor.getPIDController();
-    // driveEncoder = driveMotor.getEncoder();
-
-    // set driveEncoder to use units of the wheelDiameter, meters
-    // driveEncoder.setPositionConversionFactor(Math.PI * DriveTrain.wheelDiameter / DriveTrain.kDriveGR); // mo-rot to
-    //                                                                                                     // wheel units
-    // driveEncoder.setVelocityConversionFactor((Math.PI * DriveTrain.wheelDiameter / DriveTrain.kDriveGR) / 60.0); // mo-rpm
-    //                                                                                                              // wheel
-    //        
-
-                                                                                                        // units
-
-        // TODO: check gear ratio -- COUNTS_PER_REV counts per rev in internal falcon 500s
-        // TODO: check units also -- do we need to convert? There are no separate velocity / conversion factors; 
-        // TODO: create separate methods for getting velocity and position instead of from encoder necessary?
-      //driveMotor.configSelectedFeedbackCoefficient(Math.PI * DriveTrain.wheelDiameter / DriveTrain.kDriveGR); --> accounted for in set/get methods
-
-    sleep(100);
+    sleep(100);   //hack on config setup - TODO: needed for Talon?
     // Angle Motor config
     angleMotor.setInverted(invertAngleMtr);
     angleMotor.setNeutralMode(NeutralMode.Brake); // setIdleMode(IdleMode.kBrake) --> setNeutralMode(NeutralMode.Brake)
 
-    // No longer necessary -- PID, encoder built in
-    // angleMotorPID = angleMotor.getPIDController();
-    // angleEncoder = angleMotor.getEncoder();
-
-    // // set angle endcoder to return values in deg and deg/s
-    // angleEncoder.setPositionConversionFactor(360.0 / DriveTrain.kSteeringGR); // mo-rotations to degrees
-    // angleEncoder.setVelocityConversionFactor(360.0 / DriveTrain.kSteeringGR / 60.0); // rpm to deg/s
-
-        // TODO: check gear ratio -- COUNTS_PER_REV counts per rev in internal falcon 500s
-        // TODO: check units also -- do we need to convert? There are no separate velocity / conversion factors; 
-        // TODO: create separate methods for getting velocity and position instead of from encoder necessary?
-      //driveMotor.configSelectedFeedbackCoefficient(360.0 / DriveTrain.kSteeringGR / 60.0); --> accounted for in set/get methods
-
-    // // SparkMax PID values
-    // DriveTrain.anglePIDF.copyTo(angleMotorPID, kSlot); // position mode --> pid is now built in, bind directly to falcon 500s
-    // DriveTrain.drivePIDF.copyTo(driveMotorPID, kSlot); // velocity mode --> pid is now built in, bind directly to falcon 500s
-
+    // write the PIDF values to the hardware in our assigned slot
     DriveTrain.anglePIDF.copyTo(angleMotor, kSlot);
     DriveTrain.drivePIDF.copyTo(driveMotor, kSlot);
-    sleep(100);
+    sleep(100);  // hack 
 
-    // burn the motor flash if BURN_FLASH is true in frc.robot.Constants.CAN
-    if (Constants.CAN.BURN_FLASH) {
-      ErrorCode angleError = angleMotor.getLastError();
-      sleep(1500); // takes 1 sec to burn per Dean
-
-      int counter = 0;
-      while (angleError.value != 0) {
-        System.out.println(prefix + " angle error: " + angleError.value);
-        counter++;
-        if (counter > 20) {
-          System.out.println("*** ERROR *** " + prefix + " Angle Motor Flash Failed.");
-          break;
-        }
-        sleep(100);
-      }
-      System.out.println(myprefix + " Angle motor flash success.");
-
-      ErrorCode driveError = driveMotor.getLastError();
-      sleep(1500); // takes 1 sec to burn per Dean
-      counter = 0;
-      while (driveError.value != 0) {
-        System.out.println(prefix + " drive error: " + driveError.value);
-        counter++;
-        if (counter > 20) {
-          System.out.println("*** ERROR *** " + prefix + " Drive Motor Flash Failed.");
-          break;
-        }
-        sleep(100);
-      }
-      System.out.println(myprefix + " Drive motor flash success.");
-    } else {
-      System.out.println("Skipped burning flash.");
-    }
     /*
      * setNTPrefix - causes the network table entries to be created and updated on
      * the periodic() call.
@@ -199,11 +126,8 @@ public class SwerveModuleMK3 {
      * Use a short string to indicate which MK unit this is.
      */
     NTPrefix = "/MK3-" + prefix;
-    myprefix = prefix;
     NTConfig();
-
     calibrate();
-
   }
 
   // PID accessor for use in Test/Tune Commands
@@ -240,7 +164,6 @@ public class SwerveModuleMK3 {
    * to be done at power up, or when the unbounded encoder gets close to its
    * overflow point.
    */
-  // TODO: read 50 times over 5ms(?) delay --> better accuracy? 7/27/22
   void calibrate() {
     // read absEncoder position, set internal angleEncoder to that value adjust for
     // cmd inversion.
@@ -249,16 +172,16 @@ public class SwerveModuleMK3 {
     sleep(10); // timeout between encoder samples
     pos_deg = (pos_deg + absEncoder.getAbsolutePosition()) / 2.0; // averaging two samples
 
-    setAnglePosition(angleCmdInvert * pos_deg); // setAnglePosition (own method) TODO: change 7/27/22
+    setAnglePosition(angleCmdInvert * pos_deg);
     sleep(100); // sparkmax gremlins TODO: still necessary? Test
-    double temp = getAnglePosition(); // getAnglePosition (own method) TODO: change 7/27/22
+    double angle_measured = getAnglePosition();
     sleep(100); // sparkmax gremlins TODO: still necessary? Test
 
     int counter = 0;
-    while (Math.abs(pos_deg - temp) > 0.1) { // keep trying to set encoder angle if it's not matching
-      setAnglePosition(angleCmdInvert * pos_deg); // setAnglePosition (own method) TODO: change 7/27/22
+    while (Math.abs(pos_deg - angle_measured) > 0.1) { // keep trying to set encoder angle if it's not matching
+      setAnglePosition(angleCmdInvert * pos_deg);
       sleep(100); // sparkmax gremlins
-      temp = getDrivePosition(); // angleEncoder --> angleMotor, now built in --> getDrivePosition (own method) TODO: change 7/27/22
+      angle_measured = getDrivePosition();
       // added 45/256 for conversion of 360deg in 1 rev which has COUNTS_PER_REV encoder counts, angleEncoder --> angleMotor b/c enc built in 
       sleep(100); // sparkmax gremlins TODO: still necessary? Test
       if (counter++ > 20) {
@@ -267,52 +190,20 @@ public class SwerveModuleMK3 {
       }
     }
 
-    realityCheckTalonFx(angleCmdInvert * pos_deg, temp); // it's TalonFX now, hence name change
-
+    realityCheckTalonFx(angleCmdInvert * pos_deg, angle_measured); // it's TalonFX now, hence name change
   }
 
   // it's TalonFX now, hence name change
   void realityCheckTalonFx(double angle_cancoder, double internal_angle) {
-    boolean result = true;
-
-    // TODO: unsure if these checks are possible now -- no getCoefficient or anything method on the motors, alternative way?
-    // if (Math.abs(
-    //     driveEncoder.getPositionConversionFactor() - Math.PI * DriveTrain.wheelDiameter / DriveTrain.kDriveGR) > 0.1) {
-    //   System.out.println("*** ERROR *** " + myprefix + " position conversion factor incorrect for drive");
-    //   System.out.println("Expected Position CF: " + Math.PI * DriveTrain.wheelDiameter / DriveTrain.kDriveGR);
-    //   System.out.println("Returned Position CF: " + driveEncoder.getPositionConversionFactor());
-    //   result = false;
-    // }
-    // if (Math.abs(driveEncoder.getVelocityConversionFactor()
-    //     - Math.PI * DriveTrain.wheelDiameter / DriveTrain.kDriveGR / 60.0) > 0.1) {
-    //   System.out.println("*** ERROR *** " + myprefix + " velocity conversion factor incorrect for drive");
-    //   System.out.println("Expected Vel CF: " + Math.PI * DriveTrain.wheelDiameter / DriveTrain.kDriveGR / 60.0);
-    //   System.out.println("Returned Vel CF: " + driveEncoder.getVelocityConversionFactor());
-    //   result = false;
-    // }
-    // if (Math.abs(angleEncoder.getPositionConversionFactor() - (360.0 / DriveTrain.kSteeringGR)) > 0.1) {
-    //   System.out.println("*** ERROR *** " + myprefix + " position conversion factor incorrect for angle");
-    //   System.out.println("Expected Angle Pos CF: " + 360.0 / DriveTrain.kSteeringGR);
-    //   System.out.println("Returned Angle Pos CF: " + angleEncoder.getPositionConversionFactor());
-    //   result = false;
-    // }
-    // if (Math.abs(angleEncoder.getVelocityConversionFactor() - (360.0 / DriveTrain.kSteeringGR / 60)) > 0.1) {
-    //   System.out.println("*** ERROR *** " + myprefix + " velocity conversion factor incorrect for angle");
-    //   System.out.println("Expected Angle Vel CF: " + (360.0 / DriveTrain.kSteeringGR / 60));
-    //   System.out.println("Returned Angle Vel CF: " + angleEncoder.getVelocityConversionFactor());
-    //   result = false;
-    // }
-
+  
     if (Math.abs(angle_cancoder - internal_angle) > 0.1) {
-      System.out.println("*** ERROR *** " + myprefix + " angle encoder save error");
+      System.out.println("*** ERROR *** " + NTPrefix + " angle encoder save error");
       System.out.println("Expected internal angle: " + angle_cancoder);
       System.out.println("Returned internal angle: " + internal_angle);
-      result = false;
     }
-    if (result) {
-      System.out.println(myprefix + " passed reality checks.");
+    else {
+      System.out.println(NTPrefix + " passed reality checks.");
     }
-    return;
   }
 
   // _set<> for testing during bring up.
@@ -329,18 +220,7 @@ public class SwerveModuleMK3 {
     driveMotor.setInverted(invert);
   }
 
-  /**
-   * setNTPrefix - causes the network table entries to be created and updated on
-   * the periodic() call.
-   * 
-   * Use a short string to indicate which MK unit this is.
-   * 
-   *
-   * public SwerveModuleMK3 setNTPrefix(String prefix) { NTPrefix = "/MK3-" +
-   * prefix; myprefix = prefix; NTConfig(); return this; }
-   */
-
-  public String getNTPrefix() {
+    public String getNTPrefix() {
     return NTPrefix;
   }
 
@@ -435,6 +315,7 @@ public class SwerveModuleMK3 {
 
     // use velocity control
     driveMotor.set(ControlMode.Velocity, m_state.speedMetersPerSecond * 4096/360);
+    // Notes on Rev vs Talon
     // setReference --> set -- equivalent
     // driveMotorPID --> driveMotor -- built in, ControlType.kPosition --> ControlMode.Position -- equivalent
     // flipped parameters because methods are different, added multiplier to go from 360deg/rev to 4096count/rev
@@ -489,15 +370,6 @@ public class SwerveModuleMK3 {
     } catch (Exception e) {
     }
   }
-
-  // built in, get the motors instead?? Or TODO: Create new config of PID values?
-  // SparkMaxPIDController getDrivePID() {
-  //   return driveMotorPID;
-  // }
-
-  // SparkMaxPIDController getAnglePID() {
-  //   return angleMotorPID;
-  // }
 
   public void setBrakeMode() {
     driveMotor.setNeutralMode(NeutralMode.Brake); // setIdleMode(IdleMode.kBrake) --> setNeutralMode(NeutralMode.Brake)
