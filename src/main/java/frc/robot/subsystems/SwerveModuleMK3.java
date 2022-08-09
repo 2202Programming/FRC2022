@@ -1,7 +1,8 @@
 package frc.robot.subsystems;
+
 /**
  * CANivor version - WIP
- * Nathanael Ren - summer 2022
+ * Nathanael Ren, Derek Laufenberg - summer 2022
  * 
  * Switched to use Falcon / Talon
  */
