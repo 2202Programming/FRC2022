@@ -78,7 +78,7 @@ public class DriveControllerDrivetrain extends CommandBase implements SolutionPr
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
     positionTable = NetworkTableInstance.getDefault().getTable(NTStrings.NT_Name_Position);
     driveMode = table.getEntry("/DriveController/driveMode");
-    NThasSolution = shooterTable.getEntry("/DriveController/HasSolution");
+    //NThasSolution = shooterTable.getEntry("/DriveController/HasSolution");
   }
 
   @Override
@@ -90,8 +90,8 @@ public class DriveControllerDrivetrain extends CommandBase implements SolutionPr
 
   @Override
   public void execute() {
-    checkTip();
-    checkShooter();
+    //checkTip();
+    //checkShooter();
     checkDropout();
     checkRequests();
     updateNT();
@@ -108,7 +108,7 @@ public class DriveControllerDrivetrain extends CommandBase implements SolutionPr
       requestedDriveMode = lastDriveMode;
     } 
     if (currentlyShooting) { 
-        NThasSolution.setBoolean(isOnTarget());
+        //NThasSolution.setBoolean(isOnTarget());
         setVelocityOffset(); //if we are shooting, start to run velocity offset method for run-n-gun
     }
   }

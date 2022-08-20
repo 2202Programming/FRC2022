@@ -28,6 +28,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    LiveWindow.setEnabled(false);
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
@@ -89,8 +90,8 @@ public class Robot extends TimedRobot {
     RobotContainer.RC().limelight.enableLED();
     robotContainer.drivetrain.setBrakeMode(); //brake mode for gameplay
     CommandScheduler.getInstance().cancelAll();
-    if(RobotContainer.RC().m_driveController != null){
-      CommandScheduler.getInstance().schedule(RobotContainer.RC().m_driveController);
+    if(RobotContainer.RC().drivetrainCommand != null){
+      CommandScheduler.getInstance().schedule(RobotContainer.RC().drivetrainCommand);
       //CommandScheduler.getInstance().schedule(new RPMShootCommandTune());
     }
   }
@@ -105,7 +106,7 @@ public class Robot extends TimedRobot {
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
     CommandScheduler.getInstance().schedule(new RPMShootCommandTune());
-    CommandScheduler.getInstance().schedule(RobotContainer.RC().m_driveController);
+    CommandScheduler.getInstance().schedule(RobotContainer.RC().drivetrainCommand);
   }
 
   /** This function is called periodically during test mode. */

@@ -39,10 +39,10 @@ public class FieldCentricDrive extends CommandBase {
 
   double log_counter = 0;
 
-  public FieldCentricDrive(SwerveDrivetrain drivetrain, DriverControls dc2) {
+  public FieldCentricDrive(SwerveDrivetrain drivetrain, DriverControls dc) {
     this.drivetrain = drivetrain;
     addRequirements(drivetrain);
-    this.dc = dc2;
+    this.dc = dc;
     this.kinematics = drivetrain.getKinematics();
   }
 

@@ -30,6 +30,7 @@ public final class Constants {
   public static final boolean HAS_SHOOTER = IS_COMPETITION_BOT ? true : false;
   public static final boolean HAS_MAGAZINE = IS_COMPETITION_BOT ? true : false;
   public static final boolean HAS_CLIMBER = IS_COMPETITION_BOT ? true : false;
+  public static final boolean HAS_POSITIONER = IS_COMPETITION_BOT ? true : false;
 
   public static final boolean HAS_DRIVETRAIN = true;
   
@@ -192,6 +193,20 @@ public final class Constants {
           public static final double StickDeadzone = 0.05; // non-dim [0.0 - 1.0]
       }
 
+    public static final class WheelOffsets{
+        public final double CC_FL_OFFSET;
+        public final double CC_BL_OFFSET;
+        public final double CC_FR_OFFSET;
+        public final double CC_BR_OFFSET;
+
+        public WheelOffsets(double FL, double BL, double FR, double BR){
+          this.CC_FL_OFFSET = FL;
+          this.CC_BL_OFFSET = BL;
+          this.CC_FR_OFFSET = FR;
+          this.CC_BR_OFFSET = BR;
+        }
+    }
+
     public static final class DriveTrain {
         // motor constraints
         public static final double motorMaxRPM = 5600;    // motor limit
@@ -224,18 +239,34 @@ public final class Constants {
         // public static final double CC_FR_OFFSET = -173.84;
         // public static final double CC_BR_OFFSET = -27.24;
       
-        /* FOR SWERVEBOT
-        public static final double CC_FL_OFFSET =   -100.142; //-99.842; //  -99.667;
-        public static final double CC_BL_OFFSET =    91.33; //91.83;  //   90.43;
-        public static final double CC_FR_OFFSET =   -175.135; //-174.635; // -175.25;
-        public static final double CC_BR_OFFSET =   -28.215; //-28.415; //  -28.38;
+        //FOR SWERVEBOT
+        public static final WheelOffsets swerveBotOffsets = 
+          new WheelOffsets(-98.942, 91.33, -177.035, -28.215);
+
+        /*public static final double S_CC_FL_OFFSET =   -100.142; //-99.842; //  -99.667;
+        public static final double S_CC_BL_OFFSET =    91.33; //91.83;  //   90.43;
+        public static final double S_CC_FR_OFFSET =   -175.135; //-174.635; // -175.25;
+        public static final double S_CC_BR_OFFSET =   -28.215; //-28.415; //  -28.38;
         */
 
-        //FOR BETABOT - degrees
-        public static final double CC_FL_OFFSET =    -175.60; 
-        public static final double CC_BL_OFFSET =    -115.40; 
-        public static final double CC_FR_OFFSET =   -162.15; 
-        public static final double CC_BR_OFFSET =   158.81; 
+        //FOR Competion Bot - degrees
+        public static final WheelOffsets compBotOffsets = 
+          new WheelOffsets(-175.60, -115.40, -162.15, 158.81);
+
+        public static final WheelOffsets offsets = IS_COMPETITION_BOT ? compBotOffsets : swerveBotOffsets;
+/*
+          public static final double C_CC_FL_OFFSET =    -175.60; 
+          public static final double C_CC_BL_OFFSET =    -115.40; 
+          public static final double C_CC_FR_OFFSET =   -162.15; 
+          public static final double C_CC_BR_OFFSET =   158.81; 
+ */
+
+ /*
+          public static final double CC_FL_OFFSET =  IS_COMPETITION_BOT ? C_CC_FL_OFFSET; 
+          public static final double CC_BL_OFFSET =    -115.40; 
+          public static final double CC_FR_OFFSET =   -162.15; 
+          public static final double CC_BR_OFFSET =   158.81;   
+*/
 
         // Kinematics model - wheel offsets from center of robot (0, 0)
         // Left Front given below, symmetry used for others 

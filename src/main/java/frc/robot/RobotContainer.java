@@ -62,12 +62,13 @@ public class RobotContainer {
   public Magazine_Subsystem magazine = null;
   public Climber climber = null;
   public final Limelight_Subsystem limelight;
-  public final Positioner_Subsystem positioner;
+  public Positioner_Subsystem positioner = null;
 
   public static String auto_path_name = "NONE";
 
   public DriveController m_driveController = null;
-  public DriveControllerDrivetrain m_dDriveControllerDrivetrain = null;
+  public DriveControllerDrivetrain m_driveControllerDrivetrain = null;
+  public Command drivetrainCommand = null;
   MagazineGatedCommand mag_default_cmd;
 
   // modifiable commands
@@ -84,7 +85,6 @@ public class RobotContainer {
     sensors = new Sensors_Subsystem();
     dashboard = new Dashboard(rc);
     limelight = new Limelight_Subsystem();
-    positioner = new Positioner_Subsystem();
     driverControls = new HID_Xbox_Subsystem(DriverPrefs.VelExpo, DriverPrefs.RotationExpo, DriverPrefs.StickDeadzone);
 
     // These are hardware specific
@@ -94,10 +94,10 @@ public class RobotContainer {
       shooter = new Shooter_Subsystem();
     if (Constants.HAS_MAGAZINE)
       magazine = new Magazine_Subsystem();
-    if (Constants.HAS_INTAKE) {
+    if (Constants.HAS_POSITIONER)
+      positioner = new Positioner_Subsystem();
+    if (Constants.HAS_INTAKE) 
       intake = new Intake_Subsystem();
-    
-    }
     if (Constants.HAS_CLIMBER)
       climber = new Climber();
 
@@ -109,14 +109,16 @@ public class RobotContainer {
       // swd = new LimelightDriveCmd(drivetrain, driverControls, limelight);
       m_driveController = new DriveController(mag_default_cmd);
       // drivetrain.setDefaultCommand(m_driveController);
+      drivetrainCommand = m_driveController;
     }
 
-    if(!Constants.IS_COMPETITION_BOT){
-      m_dDriveControllerDrivetrain = new DriveControllerDrivetrain();
+    else if(!Constants.IS_COMPETITION_BOT){
+      m_driveControllerDrivetrain = new DriveControllerDrivetrain();
+      drivetrainCommand = m_driveControllerDrivetrain;
     }
 
     //TEST CODE  - Swingcheck wont return but puts values on Nettable
-    driverControls.bind(Id.SwitchBoard, SBButton.Sw26).whileHeld(new SwingCheck(SwingCheck.Axis.Pitch, -40,-42, -1.0, 1.0).withTimeout(60.0));  
+    //driverControls.bind(Id.SwitchBoard, SBButton.Sw26).whileHeld(new SwingCheck(SwingCheck.Axis.Pitch, -40,-42, -1.0, 1.0).withTimeout(60.0));  
 
     // //setup the dashboard programatically, creates any choosers, screens
     // dashboard = new Dashboard(this);
@@ -164,12 +166,12 @@ public class RobotContainer {
       driverControls.bind(Id.Driver, XboxAxis.TRIGGER_RIGHT).whenReleased(m_driveController::turnOffShootingMode);
     }
     if (Constants.HAS_DRIVETRAIN && !Constants.IS_COMPETITION_BOT) {
-      driverControls.bind(Id.Driver, XboxButton.B).whenPressed(m_dDriveControllerDrivetrain::cycleDriveMode);
+      driverControls.bind(Id.Driver, XboxButton.B).whenPressed(m_driveControllerDrivetrain::cycleDriveMode);
       driverControls.bind(Id.Driver, XboxButton.Y).whenPressed(new InstantCommand(() -> { drivetrain.resetAnglePose(Rotation2d.fromDegrees(-180)); })); //-180 reset if intake faces drivers
-      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_LEFT).whenPressed(m_dDriveControllerDrivetrain::setRobotCentric);
-      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_LEFT).whenReleased(m_dDriveControllerDrivetrain::setFieldCentric);   
-      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_RIGHT).whenPressed(m_dDriveControllerDrivetrain::turnOnShootingMode);
-      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_RIGHT).whenReleased(m_dDriveControllerDrivetrain::turnOffShootingMode);
+      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_LEFT).whenPressed(m_driveControllerDrivetrain::setRobotCentric);
+      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_LEFT).whenReleased(m_driveControllerDrivetrain::setFieldCentric);   
+      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_RIGHT).whenPressed(m_driveControllerDrivetrain::turnOnShootingMode);
+      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_RIGHT).whenReleased(m_driveControllerDrivetrain::turnOffShootingMode);
     }
 
 
