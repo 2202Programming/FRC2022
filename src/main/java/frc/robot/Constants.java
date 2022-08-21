@@ -193,6 +193,32 @@ public final class Constants {
           public static final double StickDeadzone = 0.05; // non-dim [0.0 - 1.0]
       }
 
+
+
+    public static final class ChassisConfig{
+
+        // Kinematics model - wheel offsets from center of robot (0, 0)
+        // Left Front given below, symmetry used for others 
+        public final double XwheelOffset;  //meters, half of X wheelbase
+        public final double YwheelOffset; //meters, half of Y wheelbase
+
+        public final double wheelCorrectionFactor; //percent
+        public final double wheelDiameter; //meters
+        public final double kSteeringGR;   // [mo-turns to 1 angle wheel turn]
+        public final double kDriveGR;      // [mo-turn to 1 drive wheel turn] 
+
+        public ChassisConfig(double XwheelOffset, double YwheelOffset, double wheelCorrectionFactor, double wheelDiameter, double kSteeringGR,
+          double kDriveGR){
+            this.XwheelOffset = XwheelOffset;
+            this.YwheelOffset = YwheelOffset;
+            this.wheelCorrectionFactor = wheelCorrectionFactor;
+            this.wheelDiameter = wheelDiameter * wheelCorrectionFactor;
+            this.kSteeringGR = kSteeringGR;
+            this.kDriveGR = kDriveGR;
+        }
+    }
+
+    // CANCoder offsets for absolure calibration - stored in the magnet offset of the CC. [degrees]  
     public static final class WheelOffsets{
         public final double CC_FL_OFFSET;
         public final double CC_BL_OFFSET;
@@ -233,52 +259,23 @@ public final class Constants {
         public static final PIDFController anglePIDF = new PIDFController(0.01, 0.0, 0.0, 0.0); //maybe 1.0,0.0,0.1 from SDS sample code?
         
         
-        // CANCoder offsets for absolure calibration - stored in the magnet offset of the CC. [degrees]
-        // public static final double CC_FL_OFFSET = -99.58;
-        // public static final double CC_BL_OFFSET = 90.351;
-        // public static final double CC_FR_OFFSET = -173.84;
-        // public static final double CC_BR_OFFSET = -27.24;
+        
       
         //FOR SWERVEBOT
         public static final WheelOffsets swerveBotOffsets = 
           new WheelOffsets(-98.942, 91.33, -177.035, -28.215);
-
-        /*public static final double S_CC_FL_OFFSET =   -100.142; //-99.842; //  -99.667;
-        public static final double S_CC_BL_OFFSET =    91.33; //91.83;  //   90.43;
-        public static final double S_CC_FR_OFFSET =   -175.135; //-174.635; // -175.25;
-        public static final double S_CC_BR_OFFSET =   -28.215; //-28.415; //  -28.38;
-        */
+        public static final ChassisConfig swerveBotChassisConfig =
+          new ChassisConfig(10.5 / 12, 10.5 / 12, 0.995, 99.5/1000.0, 12.8, 8.14);
 
         //FOR Competion Bot - degrees
         public static final WheelOffsets compBotOffsets = 
           new WheelOffsets(-175.60, -115.40, -162.15, 158.81);
+        public static final ChassisConfig compBotChassisConfig =
+          new ChassisConfig(MperFT*(21.516/12)/2, MperFT*(24.87/12)/2, 0.995, 99.5/1000.0, 12.8, 8.14);
 
         public static final WheelOffsets offsets = IS_COMPETITION_BOT ? compBotOffsets : swerveBotOffsets;
-/*
-          public static final double C_CC_FL_OFFSET =    -175.60; 
-          public static final double C_CC_BL_OFFSET =    -115.40; 
-          public static final double C_CC_FR_OFFSET =   -162.15; 
-          public static final double C_CC_BR_OFFSET =   158.81; 
- */
+        public static final ChassisConfig chassisConfig = IS_COMPETITION_BOT ? compBotChassisConfig : swerveBotChassisConfig;
 
- /*
-          public static final double CC_FL_OFFSET =  IS_COMPETITION_BOT ? C_CC_FL_OFFSET; 
-          public static final double CC_BL_OFFSET =    -115.40; 
-          public static final double CC_FR_OFFSET =   -162.15; 
-          public static final double CC_BR_OFFSET =   158.81;   
-*/
-
-        // Kinematics model - wheel offsets from center of robot (0, 0)
-        // Left Front given below, symmetry used for others 
-        // Betabot is 21.516" left-right and 24.87" front-back
-        public static final double XwheelOffset = IS_COMPETITION_BOT ? MperFT*(21.516/12)/2 : 10.5 / 12;     
-        public static final double YwheelOffset = IS_COMPETITION_BOT ? MperFT*(24.87/12)/2 : 10.5 / 12; 
-        public static final double wheelCorrectionFactor = 0.995; // Move 2cm further in auto //measured on swervebot 
-        public static final double wheelDiameter = 99.5 /1000.0 * wheelCorrectionFactor;   //measured 2/28/22 mm [m]
-
-        // Gear ratios - confirmed https://www.swervedrivespecialties.com/products/mk3-swerve-module?variant=39420433203313
-        public static final double kSteeringGR = 12.8;   // [mo-turns to 1 angle wheel turn]
-        public static final double kDriveGR = 8.14;      // [mo-turn to 1 drive wheel turn]  //New mk4 is 8.14:1; old swerve bot was 8.16:1
     } 
     
     public final static class NTStrings {

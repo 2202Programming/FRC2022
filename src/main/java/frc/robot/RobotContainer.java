@@ -112,7 +112,7 @@ public class RobotContainer {
       drivetrainCommand = m_driveController;
     }
 
-    else if(!Constants.IS_COMPETITION_BOT){
+    else if(!Constants.IS_COMPETITION_BOT){ //set up driveController version for swervebot
       m_driveControllerDrivetrain = new DriveControllerDrivetrain();
       drivetrainCommand = m_driveControllerDrivetrain;
     }

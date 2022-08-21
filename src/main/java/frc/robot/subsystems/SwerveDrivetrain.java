@@ -19,7 +19,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.trajectory.constraint.SwerveDriveKinematicsConstraint;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.CAN;
@@ -52,10 +51,10 @@ public class SwerveDrivetrain extends SubsystemBase {
    * https://docs.wpilib.org/en/stable/docs/software/kinematics-and-odometry/swerve-drive-kinematics.html#constructing-the-kinematics-object
    */
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
-      new Translation2d(DriveTrain.XwheelOffset, DriveTrain.YwheelOffset), // Front Left
-      new Translation2d(DriveTrain.XwheelOffset, -DriveTrain.YwheelOffset), // Front Right
-      new Translation2d(-DriveTrain.XwheelOffset, DriveTrain.YwheelOffset), // Back Left
-      new Translation2d(-DriveTrain.XwheelOffset, -DriveTrain.YwheelOffset) // Back Right
+      new Translation2d(DriveTrain.chassisConfig.XwheelOffset, DriveTrain.chassisConfig.YwheelOffset), // Front Left
+      new Translation2d(DriveTrain.chassisConfig.XwheelOffset, -DriveTrain.chassisConfig.YwheelOffset), // Front Right
+      new Translation2d(-DriveTrain.chassisConfig.XwheelOffset, DriveTrain.chassisConfig.YwheelOffset), // Back Left
+      new Translation2d(-DriveTrain.chassisConfig.XwheelOffset, -DriveTrain.chassisConfig.YwheelOffset) // Back Right
   );
   private SwerveDriveOdometry m_odometry;
   private Pose2d m_pose;

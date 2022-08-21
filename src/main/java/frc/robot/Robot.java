@@ -91,7 +91,7 @@ public class Robot extends TimedRobot {
     robotContainer.drivetrain.setBrakeMode(); //brake mode for gameplay
     CommandScheduler.getInstance().cancelAll();
     if(RobotContainer.RC().drivetrainCommand != null){
-      CommandScheduler.getInstance().schedule(RobotContainer.RC().drivetrainCommand);
+      CommandScheduler.getInstance().schedule(RobotContainer.RC().drivetrainCommand); //start driverController
       //CommandScheduler.getInstance().schedule(new RPMShootCommandTune());
     }
   }
