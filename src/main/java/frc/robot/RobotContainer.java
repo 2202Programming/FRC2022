@@ -75,6 +75,23 @@ public class RobotContainer {
   // DriveCmd swd;
   LimelightDriveCmd swd;
 
+  public enum RobotNames {
+    SwerveBot("SwerveBot"), 
+    CompetitionBot("CompetitionBot"),
+    UnknownBot("UnknownBot");
+    String name;
+
+    private RobotNames(String name) {
+        this.name = name;
+    }
+
+    public String toString() {
+        return name;
+    }
+  }
+
+  public RobotNames myRobotName;
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -222,6 +239,14 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
     return new auto_cmd();
+  }
+
+  //takes the roborio serial # and sets the robot name
+  public void setRobotName(String serialNo){
+
+    myRobotName = RobotNames.UnknownBot;
+    System.out.println("***RoboRio SERIAL NUM: " + serialNo);
+    System.out.println("***Robot identified as: " + myRobotName);
   }
 
 }
