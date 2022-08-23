@@ -25,15 +25,33 @@ import frc.robot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
  */
 public final class Constants {
 
-  public static final boolean IS_COMPETITION_BOT = true;
-  public static final boolean HAS_INTAKE = IS_COMPETITION_BOT ? true : false;
-  public static final boolean HAS_SHOOTER = IS_COMPETITION_BOT ? true : false;
-  public static final boolean HAS_MAGAZINE = IS_COMPETITION_BOT ? true : false;
-  public static final boolean HAS_CLIMBER = IS_COMPETITION_BOT ? true : false;
-  public static final boolean HAS_POSITIONER = IS_COMPETITION_BOT ? true : false;
+  public static final class SubsystemConfig{
 
-  public static final boolean HAS_DRIVETRAIN = true;
-  
+    public final boolean HAS_INTAKE;
+    public final boolean HAS_SHOOTER;
+    public final boolean IS_COMPETITION_BOT;
+    public final boolean HAS_MAGAZINE;
+    public final boolean HAS_CLIMBER;
+    public final boolean HAS_POSITIONER;
+    public final boolean HAS_DRIVETRAIN;
+    public final boolean HAS_LIMELIGHT;
+
+    public SubsystemConfig(boolean HAS_INTAKE, boolean HAS_SHOOTER,boolean IS_COMPETITION_BOT, boolean HAS_MAGAZINE, boolean HAS_CLIMBER,
+      boolean HAS_POSITIONER, boolean HAS_DRIVETRAIN, boolean HAS_LIMELIGHT) {
+        this.HAS_INTAKE = HAS_INTAKE;
+        this.HAS_SHOOTER = HAS_SHOOTER;
+        this.IS_COMPETITION_BOT = IS_COMPETITION_BOT;
+        this.HAS_MAGAZINE = HAS_MAGAZINE;
+        this.HAS_CLIMBER = HAS_CLIMBER;
+        this.HAS_POSITIONER = HAS_POSITIONER;
+        this.HAS_DRIVETRAIN = HAS_DRIVETRAIN;
+        this.HAS_LIMELIGHT = HAS_LIMELIGHT;
+      }
+    }
+
+  public static final SubsystemConfig swerveBotSubsystemConfig = new SubsystemConfig(false, false, false, false, false, false, true, false);
+  public static final SubsystemConfig compBotSubsystemConfig = new SubsystemConfig(true, true, true, true, true, true, true, true);
+
   public static final double FTperM = 3.28084;
   public static final double MperFT = 1.0 / FTperM;
 
@@ -193,8 +211,6 @@ public final class Constants {
           public static final double StickDeadzone = 0.05; // non-dim [0.0 - 1.0]
       }
 
-
-
     public static final class ChassisConfig{
 
         // Kinematics model - wheel offsets from center of robot (0, 0)
@@ -272,9 +288,6 @@ public final class Constants {
           new WheelOffsets(-175.60, -115.40, -162.15, 158.81);
         public static final ChassisConfig compBotChassisConfig =
           new ChassisConfig(MperFT*(21.516/12)/2, MperFT*(24.87/12)/2, 0.995, 99.5/1000.0, 12.8, 8.14);
-
-        public static final WheelOffsets offsets = IS_COMPETITION_BOT ? compBotOffsets : swerveBotOffsets;
-        public static final ChassisConfig chassisConfig = IS_COMPETITION_BOT ? compBotChassisConfig : swerveBotChassisConfig;
 
     } 
     

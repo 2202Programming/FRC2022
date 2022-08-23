@@ -35,7 +35,6 @@ public class Robot extends TimedRobot {
     // todo() don't use statics
     robotContainer.limelight.disableLED();
     robotContainer.drivetrain.setCoastMode(); //make robot easier to push around to set up correctly
-    robotContainer.setRobotName(System.getenv("serialnum"));
   }
 
   /**
