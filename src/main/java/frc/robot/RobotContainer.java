@@ -25,7 +25,7 @@ import frc.robot.commands.climber.MidClimb;
 import frc.robot.commands.climber.MoveArmsTo;
 import frc.robot.commands.climber.PitAlignClimber;
 import frc.robot.commands.climber.TraverseClimb;
-import frc.robot.commands.swerve.DriveController;
+import frc.robot.commands.swerve.DriveControllerWithShooter;
 import frc.robot.commands.swerve.DriveControllerDrivetrain;
 import frc.robot.commands.swerve.LimelightDriveCmd;
 import frc.robot.commands.test.ClimberTestRotRate;
@@ -67,7 +67,7 @@ public class RobotContainer {
 
   public static String auto_path_name = "NONE";
 
-  public DriveController m_driveController = null;
+  public DriveControllerWithShooter m_driveController = null;
   public DriveControllerDrivetrain m_driveControllerDrivetrain = null;
   public Command drivetrainCommand = null;
   public RobotSpecs m_robotSpecs;
@@ -113,7 +113,7 @@ public class RobotContainer {
       magazine.setDefaultCommand(mag_default_cmd);
       // swd = new DriveCmd(drivetrain, driverControls);
       // swd = new LimelightDriveCmd(drivetrain, driverControls, limelight);
-      m_driveController = new DriveController(mag_default_cmd);
+      m_driveController = new DriveControllerWithShooter(mag_default_cmd);
       // drivetrain.setDefaultCommand(m_driveController);
       drivetrainCommand = m_driveController;
     }

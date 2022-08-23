@@ -7,76 +7,28 @@ package frc.robot.commands.swerve;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.NTStrings;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.commands.MagazineController;
-import frc.robot.commands.Shoot.SolutionProvider;
 import frc.robot.commands.Shoot.VelShootGatedCommand;
-import frc.robot.subsystems.Limelight_Subsystem;
-import frc.robot.subsystems.SwerveDrivetrain;
-import frc.robot.subsystems.ifx.DriverControls;
-import frc.robot.subsystems.ifx.DriverControls.Id;
-import frc.robot.subsystems.shooter.Shooter_Subsystem;
 
-public class DriveController  extends CommandBase implements SolutionProvider {
+public class DriveControllerWithShooter extends DriveControllerDrivetrain {
 
-  public enum DriveModes {
-    robotCentric("Robot Centric"),
-    fieldCentric("Field Centric"),
-    hubCentric("Hub Centric"),
-    intakeCentric("Intake Centric");
-    private String name;
-    private DriveModes(String name) {
-      this.name = name;
-    }
-    public String toString() {
-      return name;
-    }
-  }
-
-  SwerveDrivetrain drivetrain;
-  DriverControls dc;
-  Shooter_Subsystem shooter;
   public MagazineController magazineController;
-  Limelight_Subsystem limelight;
-  RobotCentricDrive m_robotCentricDrive;
-  FieldCentricDrive m_fieldCentricDrive;
-  HubCentricDrive m_hubCentricDrive;
-  IntakeCentricDrive m_intakeCentricDrive;
   VelShootGatedCommand shootCommand;
 
-  Command currentCmd;
-  DriveModes requestedDriveMode = DriveModes.fieldCentric;
-  DriveModes currentDriveMode = DriveModes.fieldCentric;
-  DriveModes lastDriveMode = DriveModes.fieldCentric;
-  boolean currentlyShooting = false;
-  boolean shootingRequested = false;
-  boolean hasSolution = false;
-
-  NetworkTable table;
-  NetworkTable shooterTable;
-  NetworkTable positionTable;
-  private NetworkTableEntry driveMode;
   private NetworkTableEntry NThasSolution;
-  public final String NT_Name = "DC"; 
-  public final String NT_ShooterName = "Shooter"; 
 
   //shooting kinematics
   double Vb;
   double ToF;
   
-  int log_counter = 0;
 
-  public DriveController(MagazineController magazineController)  {
-    System.out.println("Drive Controller Constructed");
+  public DriveControllerWithShooter(MagazineController magazineController)  {
     this.drivetrain = RobotContainer.RC().drivetrain;
     this.dc = RobotContainer.RC().driverControls;
     this.shooter = RobotContainer.RC().shooter;
@@ -97,13 +49,6 @@ public class DriveController  extends CommandBase implements SolutionProvider {
     positionTable = NetworkTableInstance.getDefault().getTable(NTStrings.NT_Name_Position);
     driveMode = table.getEntry("/DriveController/driveMode");
     NThasSolution = shooterTable.getEntry("/DriveController/HasSolution");
-  }
-
-  @Override
-  public void initialize() {
-    System.out.println("Drive Controller Initialized");
-    currentCmd = m_fieldCentricDrive;
-    CommandScheduler.getInstance().schedule(currentCmd); // start default drive mode
   }
 
   @Override
@@ -132,94 +77,6 @@ public class DriveController  extends CommandBase implements SolutionProvider {
     if (currentlyShooting && limelight.getTarget()) estimatePoseFromLimelight(); //if shooting and LL sees target, update pose
   }
 
-
-  /**
-   * isOnTarget provides feedback to shoot command being run.
-   */
-  @Override
-  public boolean isOnTarget(){
-    // free shoot mode - just return true 
-    if (currentDriveMode == DriveModes.hubCentric)
-      return m_hubCentricDrive.isReady();
-    return true;   //all other modes driver is the targeting solution
-  }
-
-  private void checkDropout(){
-    if ((Math.abs(dc.getXYRotation())>0.1) && (currentDriveMode==DriveModes.intakeCentric)){
-      //driver is trying to rotate while in intakeCentric, drop out of intake mode
-      requestedDriveMode = DriveModes.fieldCentric;
-    }
-  }
-
-  private void checkRequests(){
-    if (requestedDriveMode != currentDriveMode){ //new drive mode requested
-      lastDriveMode = currentDriveMode;
-      currentDriveMode = requestedDriveMode;
-      currentCmd.end(true); //stop prior command
-      switch (currentDriveMode){
-        case robotCentric:
-          currentCmd = m_robotCentricDrive;
-          break;
-  
-        case fieldCentric:
-          currentCmd = m_fieldCentricDrive;
-          break;    
-
-        case hubCentric:
-          currentCmd = m_hubCentricDrive;
-          break;      
-        
-        case intakeCentric:
-          currentCmd = m_intakeCentricDrive;
-          break;
-      }
-      CommandScheduler.getInstance().schedule(currentCmd);
-    }
-  }
-
-  public void cycleDriveMode() {
-    //Current use case is only to allow toggling between field and intake centric
-    //Make sure if in hubcentric (trigger held) that toggling drops back to default fieldcentric
-    switch (currentDriveMode) {
-      case robotCentric:
-      case hubCentric:
-      case fieldCentric:
-        requestedDriveMode = DriveModes.intakeCentric;
-        break;
-
-      case intakeCentric:
-        requestedDriveMode = DriveModes.fieldCentric;
-        break;
-    }
-  }
-
-  public void setRobotCentric() {
-    requestedDriveMode = DriveModes.robotCentric;
-  }
-
-  public void setFieldCentric() {
-    requestedDriveMode = DriveModes.fieldCentric;
-  }
-
-  public void turnOnShootingMode(){
-    shootingRequested = true;
-    limelight.enableLED();
-  }
-
-  public void turnOffShootingMode(){
-    shootingRequested = false;
-  }
-
-  @Override
-  public void end(boolean interrupted) {
-    currentCmd.end(true);
-  }
-
-  @Override
-  public boolean isFinished() {
-    return false;
-  }
-
   void updateNT() {
     log_counter++;
     if ((log_counter%20)==0) {
@@ -229,18 +86,6 @@ public class DriveController  extends CommandBase implements SolutionProvider {
     }
   }
 
-  //for future use in autobalance
-  private void checkTip(){
-    double kOffBalanceAngleThresholdDegrees = 5;
-    double pitchAngleDegrees = RobotContainer.RC().sensors.getPitch();    
-    double rollAngleDegrees = RobotContainer.RC().sensors.getRoll();
-    if (Math.abs(pitchAngleDegrees)>kOffBalanceAngleThresholdDegrees){
-      //System.out.println("***PITCH WARNING: Pitch angle:"+pitchAngleDegrees);
-    }
-    if (Math.abs(rollAngleDegrees)>kOffBalanceAngleThresholdDegrees){
-      //System.out.println("***ROLL WARNING: Roll Angle:"+rollAngleDegrees);
-    }
-  }
 
   //If limelight has target and is locked on, update odometery pose with new estimate of position
   public void estimatePoseFromLimelight(){
