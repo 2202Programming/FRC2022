@@ -51,10 +51,10 @@ public class SwerveDrivetrain extends SubsystemBase {
    * https://docs.wpilib.org/en/stable/docs/software/kinematics-and-odometry/swerve-drive-kinematics.html#constructing-the-kinematics-object
    */
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
-      new Translation2d(RobotContainer.RC().m_robotSpecs.getChassisConfig().XwheelOffset, RobotContainer.RC().m_robotSpecs.getChassisConfig().YwheelOffset), // Front Left
-      new Translation2d(RobotContainer.RC().m_robotSpecs.getChassisConfig().XwheelOffset, -RobotContainer.RC().m_robotSpecs.getChassisConfig().YwheelOffset), // Front Right
-      new Translation2d(-RobotContainer.RC().m_robotSpecs.getChassisConfig().XwheelOffset, RobotContainer.RC().m_robotSpecs.getChassisConfig().YwheelOffset), // Back Left
-      new Translation2d(-RobotContainer.RC().m_robotSpecs.getChassisConfig().XwheelOffset, -RobotContainer.RC().m_robotSpecs.getChassisConfig().YwheelOffset) // Back Right
+      new Translation2d(RobotContainer.RC().m_robotSpecs.chassisConfig.XwheelOffset, RobotContainer.RC().m_robotSpecs.chassisConfig.YwheelOffset), // Front Left
+      new Translation2d(RobotContainer.RC().m_robotSpecs.chassisConfig.XwheelOffset, -RobotContainer.RC().m_robotSpecs.chassisConfig.YwheelOffset), // Front Right
+      new Translation2d(-RobotContainer.RC().m_robotSpecs.chassisConfig.XwheelOffset, RobotContainer.RC().m_robotSpecs.chassisConfig.YwheelOffset), // Back Left
+      new Translation2d(-RobotContainer.RC().m_robotSpecs.chassisConfig.XwheelOffset, -RobotContainer.RC().m_robotSpecs.chassisConfig.YwheelOffset) // Back Right
   );
   private SwerveDriveOdometry m_odometry;
   private Pose2d m_pose;
@@ -114,19 +114,19 @@ public class SwerveDrivetrain extends SubsystemBase {
     modules = new SwerveModuleMK3[] {
         // Front Left
         new SwerveModuleMK3(new CANSparkMax(CAN.DT_FL_DRIVE, MT), new CANSparkMax(CAN.DT_FL_ANGLE, MT),
-            RobotContainer.RC().m_robotSpecs.getWheelOffset().CC_FL_OFFSET, sensors.getCANCoder(EncoderID.FrontLeft), kAngleMotorInvert_Left,
+            RobotContainer.RC().m_robotSpecs.wheelOffsets.CC_FL_OFFSET, sensors.getCANCoder(EncoderID.FrontLeft), kAngleMotorInvert_Left,
             kAngleCmdInvert_Left, kDriveMotorInvert_Left, "FL"),
         // Front Right
         new SwerveModuleMK3(new CANSparkMax(CAN.DT_FR_DRIVE, MT), new CANSparkMax(CAN.DT_FR_ANGLE, MT),
-            RobotContainer.RC().m_robotSpecs.getWheelOffset().CC_FR_OFFSET, sensors.getCANCoder(EncoderID.FrontRight), kAngleMotorInvert_Right,
+            RobotContainer.RC().m_robotSpecs.wheelOffsets.CC_FR_OFFSET, sensors.getCANCoder(EncoderID.FrontRight), kAngleMotorInvert_Right,
             kAngleCmdInvert_Right, kDriveMotorInvert_Right, "FR"),
         // Back Left
         new SwerveModuleMK3(new CANSparkMax(CAN.DT_BL_DRIVE, MT), new CANSparkMax(CAN.DT_BL_ANGLE, MT),
-            RobotContainer.RC().m_robotSpecs.getWheelOffset().CC_BL_OFFSET, sensors.getCANCoder(EncoderID.BackLeft), kAngleMotorInvert_Left,
+            RobotContainer.RC().m_robotSpecs.wheelOffsets.CC_BL_OFFSET, sensors.getCANCoder(EncoderID.BackLeft), kAngleMotorInvert_Left,
             kAngleCmdInvert_Left, kDriveMotorInvert_Left, "BL"),
         // Back Right
         new SwerveModuleMK3(new CANSparkMax(CAN.DT_BR_DRIVE, MT), new CANSparkMax(CAN.DT_BR_ANGLE, MT),
-            RobotContainer.RC().m_robotSpecs.getWheelOffset().CC_BR_OFFSET, sensors.getCANCoder(EncoderID.BackRight), kAngleMotorInvert_Right,
+            RobotContainer.RC().m_robotSpecs.wheelOffsets.CC_BR_OFFSET, sensors.getCANCoder(EncoderID.BackRight), kAngleMotorInvert_Right,
             kAngleCmdInvert_Right, kDriveMotorInvert_Right, "BR") };
 
     m_odometry = new SwerveDriveOdometry(kinematics, sensors.getRotation2d());

@@ -8,6 +8,10 @@
 package frc.robot;
 
 import frc.robot.util.PIDFController;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.subsystems.shooter.FlyWheel.FlyWheelConfig;
@@ -49,11 +53,44 @@ public final class Constants {
       }
     }
 
-  public static final SubsystemConfig swerveBotSubsystemConfig = new SubsystemConfig(false, false, false, false, false, false, true, false);
-  public static final SubsystemConfig compBotSubsystemConfig = new SubsystemConfig(true, true, true, true, true, true, true, true);
+    public enum RobotSpecs {
+      COMPETITION_BOT(swerveBotSubsystemConfig, swerveBotChassisConfig, swerveBotOffsets),
+      SWERVE_BOT(compBotSubsystemConfig, compBotChassisConfig, compBotOffsets),
+      ;
+
+      public final SubsystemConfig subsysConfig;
+      public final ChassisConfig chassisConfig;
+      public final WheelOffsets wheelOffsets;
+      private RobotSpecs(SubsystemConfig subsysConfig, ChassisConfig chassisConfig, WheelOffsets wheelOffsets) {
+        this.subsysConfig = subsysConfig;
+        this.chassisConfig = chassisConfig;
+        this.wheelOffsets = wheelOffsets;
+      }
+    }
+
+    public static final Map<String, RobotSpecs> keysAndBots = new HashMap<String, RobotSpecs>(Map.ofEntries(
+      Map.entry("asdf", RobotSpecs.COMPETITION_BOT),
+      Map.entry("zxcv", RobotSpecs.SWERVE_BOT)
+    ));
 
   public static final double FTperM = 3.28084;
   public static final double MperFT = 1.0 / FTperM;
+
+  //FOR SWERVEBOT
+    public static final WheelOffsets swerveBotOffsets = 
+    new WheelOffsets(-98.942, 91.33, -177.035, -28.215);
+  public static final ChassisConfig swerveBotChassisConfig =
+    new ChassisConfig(10.5 / 12, 10.5 / 12, 0.995, 99.5/1000.0, 12.8, 8.14);
+  public static final SubsystemConfig swerveBotSubsystemConfig = 
+    new SubsystemConfig(false, false, false, false, false, false, true, false);
+
+  //FOR Competion Bot - degrees
+  public static final WheelOffsets compBotOffsets = 
+    new WheelOffsets(-175.60, -115.40, -162.15, 158.81);
+  public static final ChassisConfig compBotChassisConfig =
+    new ChassisConfig(MperFT*(21.516/12)/2, MperFT*(24.87/12)/2, 0.995, 99.5/1000.0, 12.8, 8.14);
+  public static final SubsystemConfig compBotSubsystemConfig = 
+    new SubsystemConfig(true, true, true, true, true, true, true, true);
 
   public static final double DT = 0.02; // 20ms framerate 50Hz
   public static final double Tperiod = 0.02; // framerate period 20ms, 50Hz
@@ -273,21 +310,6 @@ public final class Constants {
         //public static final PIDFController drivePIDF = new PIDFController(0.09*MperFT, 0.0, 0.0, 0.08076*MperFT);  
         public static final PIDFController drivePIDF = new PIDFController(0.09*FTperM, 0.0, 0.0, 0.08076*FTperM);  
         public static final PIDFController anglePIDF = new PIDFController(0.01, 0.0, 0.0, 0.0); //maybe 1.0,0.0,0.1 from SDS sample code?
-        
-        
-        
-      
-        //FOR SWERVEBOT
-        public static final WheelOffsets swerveBotOffsets = 
-          new WheelOffsets(-98.942, 91.33, -177.035, -28.215);
-        public static final ChassisConfig swerveBotChassisConfig =
-          new ChassisConfig(10.5 / 12, 10.5 / 12, 0.995, 99.5/1000.0, 12.8, 8.14);
-
-        //FOR Competion Bot - degrees
-        public static final WheelOffsets compBotOffsets = 
-          new WheelOffsets(-175.60, -115.40, -162.15, 158.81);
-        public static final ChassisConfig compBotChassisConfig =
-          new ChassisConfig(MperFT*(21.516/12)/2, MperFT*(24.87/12)/2, 0.995, 99.5/1000.0, 12.8, 8.14);
 
     } 
     
