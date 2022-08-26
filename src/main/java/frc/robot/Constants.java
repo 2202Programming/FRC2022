@@ -57,6 +57,8 @@ public final class Constants {
       COMPETITION_BOT(swerveBotSubsystemConfig, swerveBotChassisConfig, swerveBotOffsets),
       SWERVE_BOT(compBotSubsystemConfig, compBotChassisConfig, compBotOffsets),
       ;
+  public static final SubsystemConfig swerveBotSubsystemConfig = new SubsystemConfig(false, false, false, false, false, false, true, true);
+  public static final SubsystemConfig compBotSubsystemConfig = new SubsystemConfig(true, true, true, true, true, true, true, true);
 
       public final SubsystemConfig subsysConfig;
       public final ChassisConfig chassisConfig;
