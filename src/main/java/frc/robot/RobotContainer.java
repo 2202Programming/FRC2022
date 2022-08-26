@@ -92,6 +92,8 @@ public class RobotContainer {
     driverControls = new HID_Xbox_Subsystem(DriverPrefs.VelExpo, DriverPrefs.RotationExpo, DriverPrefs.StickDeadzone);
     rioSN = System.getenv("serialnum");
     m_robotSpecs = Constants.keysAndBots.get(rioSN);
+    System.out.println("***** Rio S/N: " + rioSN + " *****");
+    System.out.println("***** Robot Type: " + m_robotSpecs.toString() + " *****");
 
     // These are hardware specific
     if (m_robotSpecs.subsysConfig.HAS_DRIVETRAIN)
