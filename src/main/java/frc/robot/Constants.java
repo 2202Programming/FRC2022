@@ -69,7 +69,7 @@ public final class Constants {
     }
 
     public static final Map<String, RobotSpecs> keysAndBots = new HashMap<String, RobotSpecs>(Map.ofEntries(
-      Map.entry("asdf", RobotSpecs.COMPETITION_BOT),
+      Map.entry("03238151", RobotSpecs.COMPETITION_BOT),
       Map.entry("031b7511", RobotSpecs.SWERVE_BOT)
     ));
 
