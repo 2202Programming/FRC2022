@@ -72,7 +72,12 @@ public class RobotSpecs {
   
   //takes the roborio serial # and returns the robot name
   public RobotNames getRobotName(String serialNo){
-    RobotNames tempRobotName = RobotNames.UnknownBot;
+    RobotNames tempRobotName;
+
+    if (serialNo.compareTo("031b7511")==0)
+        tempRobotName = RobotNames.SwerveBot;
+    else tempRobotName = RobotNames.UnknownBot;
+
     System.out.println("***RoboRio SERIAL NUM: " + serialNo);
     System.out.println("***Robot identified as: " + tempRobotName);
     return tempRobotName;

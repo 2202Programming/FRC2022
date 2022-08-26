@@ -10,7 +10,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Constants.NTStrings;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.commands.MagazineController;
@@ -29,25 +28,17 @@ public class DriveControllerWithShooter extends DriveControllerDrivetrain {
   
 
   public DriveControllerWithShooter(MagazineController magazineController)  {
-    this.drivetrain = RobotContainer.RC().drivetrain;
-    this.dc = RobotContainer.RC().driverControls;
+    super();
     this.shooter = RobotContainer.RC().shooter;
     this.magazineController = magazineController;
-    this.limelight = RobotContainer.RC().limelight;
 
-    m_robotCentricDrive = new RobotCentricDrive(drivetrain, dc);
-    m_fieldCentricDrive = new FieldCentricDrive(drivetrain, dc);
-    m_hubCentricDrive = new HubCentricDrive(drivetrain, dc, limelight);
-    m_intakeCentricDrive = new IntakeCentricDrive(drivetrain, dc);
     //shootCommand = new VelShootCommand(45,false);  //right now just use fixed velocity; eventually replace with limelight distance estimated velocity
     
     //use this one when ready for solution provider and velocity auto adjustment
     shootCommand = new VelShootGatedCommand(magazineController, this);
 
-    table = NetworkTableInstance.getDefault().getTable(NT_Name);
+    
     shooterTable = NetworkTableInstance.getDefault().getTable(NT_ShooterName);
-    positionTable = NetworkTableInstance.getDefault().getTable(NTStrings.NT_Name_Position);
-    driveMode = table.getEntry("/DriveController/driveMode");
     NThasSolution = shooterTable.getEntry("/DriveController/HasSolution");
   }
 

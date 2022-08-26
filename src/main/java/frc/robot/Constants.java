@@ -49,7 +49,7 @@ public final class Constants {
       }
     }
 
-  public static final SubsystemConfig swerveBotSubsystemConfig = new SubsystemConfig(false, false, false, false, false, false, true, false);
+  public static final SubsystemConfig swerveBotSubsystemConfig = new SubsystemConfig(false, false, false, false, false, false, true, true);
   public static final SubsystemConfig compBotSubsystemConfig = new SubsystemConfig(true, true, true, true, true, true, true, true);
 
   public static final double FTperM = 3.28084;
