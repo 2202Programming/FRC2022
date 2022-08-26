@@ -76,6 +76,8 @@ public class RobotSpecs {
 
     if (serialNo.compareTo("031b7511")==0)
         tempRobotName = RobotNames.SwerveBot;
+    if (serialNo.compareTo("03238151")==0)
+        tempRobotName = RobotNames.CompetitionBot;
     else tempRobotName = RobotNames.UnknownBot;
 
     System.out.println("***RoboRio SERIAL NUM: " + serialNo);
