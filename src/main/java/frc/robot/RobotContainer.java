@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.Autonomous;
 import frc.robot.Constants.DriverPrefs;
+import frc.robot.Constants.RobotSpecs;
 import frc.robot.Constants.Shooter;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.IntakeCommand.IntakeMode;
@@ -43,8 +44,6 @@ import frc.robot.subsystems.hid.XboxButton;
 import frc.robot.subsystems.hid.XboxPOV;
 import frc.robot.subsystems.ifx.DriverControls.Id;
 import frc.robot.subsystems.shooter.Shooter_Subsystem;
-import frc.robot.util.RobotSpecs;
-import frc.robot.util.RobotSpecs.RobotNames;
 import frc.robot.ux.Dashboard;
 
 public class RobotContainer {
@@ -70,14 +69,16 @@ public class RobotContainer {
   public DriveControllerWithShooter m_driveController = null;
   public DriveControllerDrivetrain m_driveControllerDrivetrain = null;
   public Command drivetrainCommand = null;
+
+
   public RobotSpecs m_robotSpecs;
+  public String rioSN;
+
   MagazineGatedCommand mag_default_cmd;
 
   // modifiable commands
   // DriveCmd swd;
   LimelightDriveCmd swd;
-
-  public RobotNames myRobotName;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -89,25 +90,28 @@ public class RobotContainer {
     sensors = new Sensors_Subsystem();
     dashboard = new Dashboard(rc);
     driverControls = new HID_Xbox_Subsystem(DriverPrefs.VelExpo, DriverPrefs.RotationExpo, DriverPrefs.StickDeadzone);
-    m_robotSpecs = new RobotSpecs(System.getenv("serialnum"));
+    rioSN = System.getenv("serialnum");
+    m_robotSpecs = Constants.keysAndBots.get(rioSN);
+    System.out.println("***** Rio S/N: " + rioSN + " *****");
+    System.out.println("***** Robot Type: " + m_robotSpecs.toString() + " *****");
 
     // These are hardware specific
-    if (m_robotSpecs.getSubsystemConfig().HAS_DRIVETRAIN)
+    if (m_robotSpecs.subsysConfig.HAS_DRIVETRAIN)
       drivetrain = new SwerveDrivetrain();
-    if (m_robotSpecs.getSubsystemConfig().HAS_SHOOTER)
+    if (m_robotSpecs.subsysConfig.HAS_SHOOTER)
       shooter = new Shooter_Subsystem();
-    if (m_robotSpecs.getSubsystemConfig().HAS_MAGAZINE)
+    if (m_robotSpecs.subsysConfig.HAS_MAGAZINE)
       magazine = new Magazine_Subsystem();
-    if (m_robotSpecs.getSubsystemConfig().HAS_POSITIONER)
+    if (m_robotSpecs.subsysConfig.HAS_POSITIONER)
       positioner = new Positioner_Subsystem();
-    if (m_robotSpecs.getSubsystemConfig().HAS_INTAKE) 
+    if (m_robotSpecs.subsysConfig.HAS_INTAKE) 
       intake = new Intake_Subsystem();
-    if (m_robotSpecs.getSubsystemConfig().HAS_CLIMBER)
+    if (m_robotSpecs.subsysConfig.HAS_CLIMBER)
       climber = new Climber();
-    if (m_robotSpecs.getSubsystemConfig().HAS_LIMELIGHT)
+    if (m_robotSpecs.subsysConfig.HAS_LIMELIGHT)
       limelight = new Limelight_Subsystem();
 
-    if (m_robotSpecs.getSubsystemConfig().HAS_DRIVETRAIN && m_robotSpecs.getSubsystemConfig().HAS_SHOOTER && m_robotSpecs.getSubsystemConfig().HAS_MAGAZINE) {
+    if (m_robotSpecs.subsysConfig.HAS_DRIVETRAIN && m_robotSpecs.subsysConfig.HAS_SHOOTER && m_robotSpecs.subsysConfig.HAS_MAGAZINE) {
        // set default commands
       mag_default_cmd = new MagazineGatedCommand(1.0);
       magazine.setDefaultCommand(mag_default_cmd);
@@ -118,7 +122,7 @@ public class RobotContainer {
       drivetrainCommand = m_driveController;
     }
 
-    else if(!m_robotSpecs.getSubsystemConfig().IS_COMPETITION_BOT){ //set up driveController version for swervebot
+    else if(!m_robotSpecs.subsysConfig.IS_COMPETITION_BOT){ //set up driveController version for swervebot
       m_driveControllerDrivetrain = new DriveControllerDrivetrain();
       drivetrainCommand = m_driveControllerDrivetrain;
     }
@@ -133,7 +137,7 @@ public class RobotContainer {
     setAssistantButtons();
     
     // Sideboard 
-    if (m_robotSpecs.getSubsystemConfig().HAS_CLIMBER) { driverControls.bind(Id.SwitchBoard, SBButton.Sw21).whileHeld(new 
+    if (m_robotSpecs.subsysConfig.HAS_CLIMBER) { driverControls.bind(Id.SwitchBoard, SBButton.Sw21).whileHeld(new 
       // warning - PitAlign command use Driver's DPAD, RB and, LB. DPL-can we run this in TEST mode?
      PitAlignClimber(driverControls, Id.Driver, climber, 2.0, 5.0)); //[in/s] [deg/s]
       driverControls.bind(Id.SwitchBoard, SBButton.Sw22).whenPressed(new MidClimb(climber));
@@ -163,7 +167,7 @@ public class RobotContainer {
    */
   void setDriverButtons() {
     // B - Toggle drive mode
-    if (m_robotSpecs.getSubsystemConfig().HAS_DRIVETRAIN && m_robotSpecs.getSubsystemConfig().IS_COMPETITION_BOT) {
+    if (m_robotSpecs.subsysConfig.HAS_DRIVETRAIN && m_robotSpecs.subsysConfig.IS_COMPETITION_BOT) {
       driverControls.bind(Id.Driver, XboxButton.B).whenPressed(m_driveController::cycleDriveMode);
       driverControls.bind(Id.Driver, XboxButton.Y).whenPressed(new InstantCommand(() -> { drivetrain.resetAnglePose(Rotation2d.fromDegrees(-180)); })); //-180 reset if intake faces drivers
       driverControls.bind(Id.Driver, XboxAxis.TRIGGER_LEFT).whenPressed(m_driveController::setRobotCentric);
@@ -171,7 +175,7 @@ public class RobotContainer {
       driverControls.bind(Id.Driver, XboxAxis.TRIGGER_RIGHT).whenPressed(m_driveController::turnOnShootingMode);
       driverControls.bind(Id.Driver, XboxAxis.TRIGGER_RIGHT).whenReleased(m_driveController::turnOffShootingMode);
     }
-    if (m_robotSpecs.getSubsystemConfig().HAS_DRIVETRAIN && !m_robotSpecs.getSubsystemConfig().IS_COMPETITION_BOT) {
+    if (m_robotSpecs.subsysConfig.HAS_DRIVETRAIN && !m_robotSpecs.subsysConfig.IS_COMPETITION_BOT) {
       driverControls.bind(Id.Driver, XboxButton.B).whenPressed(m_driveControllerDrivetrain::cycleDriveMode);
       driverControls.bind(Id.Driver, XboxButton.Y).whenPressed(new InstantCommand(() -> { drivetrain.resetAnglePose(Rotation2d.fromDegrees(-180)); })); //-180 reset if intake faces drivers
       driverControls.bind(Id.Driver, XboxAxis.TRIGGER_LEFT).whenPressed(m_driveControllerDrivetrain::setRobotCentric);
@@ -182,7 +186,7 @@ public class RobotContainer {
 
 
     // RB limelight toggle
-    if (m_robotSpecs.getSubsystemConfig().HAS_LIMELIGHT)
+    if (m_robotSpecs.subsysConfig.HAS_LIMELIGHT)
       driverControls.bind(Id.Driver, XboxButton.X).whenPressed(new InstantCommand(limelight::toggleLED));
 
     //temporary for navx/pigeon testing
@@ -204,14 +208,14 @@ public class RobotContainer {
     // RT - spin shooter and index while held
     driverControls.bind(Id.SwitchBoard, SBButton.Sw13).whenActive(new ResetPosition(Autonomous.startPose3));
 
-    if (m_robotSpecs.getSubsystemConfig().HAS_INTAKE) {
+    if (m_robotSpecs.subsysConfig.HAS_INTAKE) {
       driverControls.bind(Id.Assistant, XboxButton.LB).whenPressed(new MoveIntake(DeployMode.Toggle));
       //vertical intake controls - manual control of intake and side rollers,not the magazine
       driverControls.bind(Id.Assistant, XboxButton.A).whileHeld(new IntakeCommand((() -> 0.6), () -> 0.5, IntakeMode.LoadCargo));
       driverControls.bind(Id.Assistant, XboxButton.B).whileHeld(new IntakeCommand((() -> 0.35), () -> 0.5, IntakeMode.ExpellCargo));
     }
 
-    if (m_robotSpecs.getSubsystemConfig().HAS_MAGAZINE && m_robotSpecs.getSubsystemConfig().HAS_SHOOTER) {
+    if (m_robotSpecs.subsysConfig.HAS_MAGAZINE && m_robotSpecs.subsysConfig.HAS_SHOOTER) {
       // Positioner binds :)
       driverControls.bind(Id.Assistant, XboxButton.RB).whenPressed(new MovePositioner(PositionerMode.Toggle));
 
