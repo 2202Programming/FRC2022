@@ -29,6 +29,41 @@ import frc.robot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
  */
 public final class Constants {
 
+  public static final double FTperM = 3.28084;
+  public static final double MperFT = 1.0 / FTperM;
+
+  //FOR SWERVEBOT
+  static final WheelOffsets swerveBotOffsets = 
+    new WheelOffsets(-98.942, 91.33, -177.035, -28.215);
+  static final ChassisConfig swerveBotChassisConfig =
+    new ChassisConfig(10.5 / 12, 10.5 / 12, 0.995, 99.5/1000.0, 12.8, 8.14);
+  static final SubsystemConfig swerveBotSubsystemConfig = 
+    new SubsystemConfig(
+      false, // intake
+      false, // shooter
+      false, // competition bot
+      false, // magazine
+      false, // climber
+      false, // positioner
+      true,  // drivetrain
+      true); // limelight (can be true even without one)
+
+  //FOR Competion Bot - degrees
+  static final WheelOffsets compBotOffsets = 
+    new WheelOffsets(-175.60, -115.40, -162.15, 158.81);
+  static final ChassisConfig compBotChassisConfig =
+    new ChassisConfig(MperFT*(21.516/12)/2, MperFT*(24.87/12)/2, 0.995, 99.5/1000.0, 12.8, 8.14);
+  static final SubsystemConfig compBotSubsystemConfig = 
+    new SubsystemConfig(
+      true, // intake
+      true, // shooter
+      true, // competition bot
+      true, // magazine
+      true, // climber
+      true, // positioner
+      true,  // drivetrain
+      true); // limelight (can be true even without one)
+
   public static final class SubsystemConfig{
 
     public final boolean HAS_INTAKE;
@@ -54,8 +89,8 @@ public final class Constants {
     }
 
     public enum RobotSpecs {
-      COMPETITION_BOT(swerveBotSubsystemConfig, swerveBotChassisConfig, swerveBotOffsets),
-      SWERVE_BOT(compBotSubsystemConfig, compBotChassisConfig, compBotOffsets),
+      SWERVE_BOT(swerveBotSubsystemConfig, swerveBotChassisConfig, swerveBotOffsets),
+      COMPETITION_BOT(compBotSubsystemConfig, compBotChassisConfig, compBotOffsets),
       ;
   
       public final SubsystemConfig subsysConfig;
@@ -72,25 +107,6 @@ public final class Constants {
       Map.entry("03238151", RobotSpecs.COMPETITION_BOT),
       Map.entry("031b7511", RobotSpecs.SWERVE_BOT)
     ));
-
-  public static final double FTperM = 3.28084;
-  public static final double MperFT = 1.0 / FTperM;
-
-  //FOR SWERVEBOT
-    public static final WheelOffsets swerveBotOffsets = 
-    new WheelOffsets(-98.942, 91.33, -177.035, -28.215);
-  public static final ChassisConfig swerveBotChassisConfig =
-    new ChassisConfig(10.5 / 12, 10.5 / 12, 0.995, 99.5/1000.0, 12.8, 8.14);
-  public static final SubsystemConfig swerveBotSubsystemConfig = 
-    new SubsystemConfig(false, false, false, false, false, false, true, false);
-
-  //FOR Competion Bot - degrees
-  public static final WheelOffsets compBotOffsets = 
-    new WheelOffsets(-175.60, -115.40, -162.15, 158.81);
-  public static final ChassisConfig compBotChassisConfig =
-    new ChassisConfig(MperFT*(21.516/12)/2, MperFT*(24.87/12)/2, 0.995, 99.5/1000.0, 12.8, 8.14);
-  public static final SubsystemConfig compBotSubsystemConfig = 
-    new SubsystemConfig(true, true, true, true, true, true, true, true);
 
   public static final double DT = 0.02; // 20ms framerate 50Hz
   public static final double Tperiod = 0.02; // framerate period 20ms, 50Hz
