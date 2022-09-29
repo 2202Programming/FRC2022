@@ -305,8 +305,8 @@ public class Sensors_Subsystem extends SubsystemBase {
       nt_activeIMU.setString(c_gryo_status.toString());
       nt_yaw.setDouble(getYaw());
       nt_rotation.setDouble(getRotation2d().getDegrees());
-      // nt_roll.setDouble(m_ahrs.getRoll());
-      // nt_pitch.setDouble(m_ahrs.getPitch());
+      nt_roll.setDouble(getRoll());
+      nt_pitch.setDouble(getPitch());
     }
   }
 
