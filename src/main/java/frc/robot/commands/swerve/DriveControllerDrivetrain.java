@@ -24,7 +24,8 @@ public class DriveControllerDrivetrain extends CommandBase implements SolutionPr
     robotCentric("Robot Centric"),
     fieldCentric("Field Centric"),
     hubCentric("Hub Centric"),
-    intakeCentric("Intake Centric");
+    intakeCentric("Intake Centric"),
+    tipCorrection("Tip Correction");
     private String name;
     private DriveModes(String name) {
       this.name = name;
@@ -42,6 +43,7 @@ public class DriveControllerDrivetrain extends CommandBase implements SolutionPr
   FieldCentricDrive m_fieldCentricDrive;
   HubCentricDrive m_hubCentricDrive;
   IntakeCentricDrive m_intakeCentricDrive;
+  tipCorrectionDrive m_tipCorrectionDrive;
 
   Command currentCmd;
   DriveModes requestedDriveMode = DriveModes.fieldCentric;
@@ -69,6 +71,7 @@ public class DriveControllerDrivetrain extends CommandBase implements SolutionPr
     m_fieldCentricDrive = new FieldCentricDrive(drivetrain, dc);
     m_hubCentricDrive = new HubCentricDrive(drivetrain, dc, limelight);
     m_intakeCentricDrive = new IntakeCentricDrive(drivetrain, dc);
+    m_tipCorrectionDrive = new tipCorrectionDrive(drivetrain, dc);
 
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
     positionTable = NetworkTableInstance.getDefault().getTable(NTStrings.NT_Name_Position);
@@ -128,6 +131,10 @@ public class DriveControllerDrivetrain extends CommandBase implements SolutionPr
         case intakeCentric:
           currentCmd = m_intakeCentricDrive;
           break;
+
+        case tipCorrection:
+          currentCmd = m_tipCorrectionDrive;
+          break;
       }
       CommandScheduler.getInstance().schedule(currentCmd);
     }
@@ -186,15 +193,36 @@ public class DriveControllerDrivetrain extends CommandBase implements SolutionPr
 
   //for future use in autobalance
   void checkTip(){
-    double kOffBalanceAngleThresholdDegrees = 5;
+
+    //Competition bot has coupled pitch/roll of 2.5 degrees during yaw
+
+    double kOffBalanceAngleThresholdDegrees = 5.0;
+    double kOnBalanceAngleThresholdDegrees = 3.0;
+
     double pitchAngleDegrees = RobotContainer.RC().sensors.getPitch();    
     double rollAngleDegrees = RobotContainer.RC().sensors.getRoll();
-    if (Math.abs(pitchAngleDegrees)>kOffBalanceAngleThresholdDegrees){
-      System.out.println("***PITCH WARNING: Pitch angle:"+pitchAngleDegrees);
+
+    if(currentDriveMode != DriveModes.tipCorrection){
+      if (Math.abs(pitchAngleDegrees)>kOffBalanceAngleThresholdDegrees){
+        System.out.println("***PITCH WARNING: Pitch angle:"+pitchAngleDegrees);
+        requestedDriveMode = DriveModes.tipCorrection;
+      }
+      if (Math.abs(rollAngleDegrees)>kOffBalanceAngleThresholdDegrees){
+        System.out.println("***ROLL WARNING: Roll Angle:"+rollAngleDegrees);
+        requestedDriveMode = DriveModes.tipCorrection;
+      }
+    } else {
+      if (Math.abs(pitchAngleDegrees)<kOnBalanceAngleThresholdDegrees){
+        System.out.println("***PITCH FIXED: Pitch angle:"+pitchAngleDegrees);
+        requestedDriveMode = lastDriveMode;
+      }
+      if (Math.abs(rollAngleDegrees)<kOnBalanceAngleThresholdDegrees){
+        System.out.println("***ROLL FIXED: Roll Angle:"+rollAngleDegrees);
+        requestedDriveMode = lastDriveMode;
+      }
     }
-    if (Math.abs(rollAngleDegrees)>kOffBalanceAngleThresholdDegrees){
-      System.out.println("***ROLL WARNING: Roll Angle:"+rollAngleDegrees);
-    }
+
+
   }
 
 }
