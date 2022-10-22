@@ -241,16 +241,18 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
     }
 
     public void calculateVelocity(){    
-        double m_slope = SLOPE;
-        double m_intercept = INTERCEPT;  
+        
+        calculatedVel = (2.2 * currentDistance) + 28;
+        // double m_slope = SLOPE;
+        // double m_intercept = INTERCEPT;  
 
-        if (currentDistance > FARDISTANCE){
-            m_slope = FARSLOPE;
-            m_intercept = FARINTERCEPT;
-            calculatedVel = m_slope*(currentDistance-FARDISTANCE) + m_intercept; //distnce vs. velocity trendline for long range positioner
-        } else {
-            calculatedVel = m_slope*currentDistance + m_intercept; //distnce vs. velocity trendline for long range positioner
-        }
+        // if (currentDistance > FARDISTANCE){
+        //     m_slope = FARSLOPE;
+        //     m_intercept = FARINTERCEPT;
+        //     calculatedVel = m_slope*(currentDistance-FARDISTANCE) + m_intercept; //distnce vs. velocity trendline for long range positioner
+        // } else {
+        //     calculatedVel = m_slope*currentDistance + m_intercept; //distnce vs. velocity trendline for long range positioner
+        // }
          
         if (calculatedVel > Shooter.kMaxFPS){
             outOfRange = true;

@@ -348,11 +348,11 @@ public final class Constants {
       public static final double PCNominalRadius = 10 / 2.0 / 12.0; // feet - power cell
       public static final double PCEffectiveRadius = 8 / 2.0 / 12.0; // feet - compressed radius
       
-      public static final double shortVelocity = 40;
-      public static final double shortMediumVelocity = 44;
-      public static final double mediumVelocity = 50;
-      public static final double longVelocity = 60;
-      public static final double autoVelocity = 46;
+      public static final double shortVelocity = 36;
+      public static final double shortMediumVelocity = 38;
+      public static final double mediumVelocity = 40;
+      public static final double longVelocity = 42;
+      public static final double autoVelocity = 26;
 
       // limelight distance constants
         // how many degrees back is your limelight rotated from perfectly vertical?
@@ -360,7 +360,7 @@ public final class Constants {
         // distance from the center of the Limelight lens to the floor
       public static final double LL_LENS_HEIGHT_INCHES = 27.0;
         // distance from the target to the floor
-      public static final double GOAL_HEIGHT_TO_FLOOR_INCHES = 104.0;
+      public static final double GOAL_HEIGHT_TO_FLOOR_INCHES = 61.0;
         // adjustment from edge to centre of target
       public static final double EDGE_TO_CENTER_INCHES = 24.0;
         // adjustment factor

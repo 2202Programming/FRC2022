@@ -243,7 +243,7 @@ public class Shooter_Subsystem extends SubsystemBase  {
     target.copy(goals);
     
     upper_shooter.setRPM(target.upper);
-    lower_shooter.setRPM(target.lower);
+    lower_shooter.setRPM(target.lower * 0.9);
   }
 
   /**
