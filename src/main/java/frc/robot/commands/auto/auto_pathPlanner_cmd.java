@@ -8,17 +8,31 @@ import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
+
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.SwerveDrivetrain;
+
+
+/*
+  TODO: There is a lot of clean up needed here.
+
+    1) Multiple copies of the cmd were created as a hack to run sequential paths.  Not sure why that was needed.
+       There should only be one.
+    2) Make sure this will work at a higher command frequency
+
+    3) PID values are very rough.  Rotation and X, Y all have same consts.  meters and radians wouldn't 
+       likely have the same values.  See what can be tuned.
+    4) Attempts at rate-limiting rotation had to be pulled out, ProfiledPIDController no longer works
+       Figure out some way to include rotation rate limits if needed?
+*/
 
 public class auto_pathPlanner_cmd extends CommandBase {
   /** Creates a new auto_pathPlanner_cmd. */
@@ -69,9 +83,14 @@ public class auto_pathPlanner_cmd extends CommandBase {
     PathPlannerState initialState = path.getInitialState();
     Pose2d startingPose = new Pose2d(initialState.poseMeters.getTranslation(), initialState.holonomicRotation);
 
-      PIDController xController = new PIDController(4.0, 0.0, 0.0);
-      PIDController yController = new PIDController(4.0, 0.0, 0.0);
+      PIDController xController = new PIDController(4.0, 0.0, 0.0, Constants.DT);   // [m]
+      PIDController yController = new PIDController(4.0, 0.0, 0.0, Constants.DT);   // [m]
+      PIDController thetaController = new PIDController(4, 0, 0, Constants.DT);     // [rad]
+       /*
+      DPL - 10/26/22 profiled pid not allowed in PPSwerveController..
       ProfiledPIDController thetaController = new ProfiledPIDController(4, 0, 0, new TrapezoidProfile.Constraints(3, 3));
+      */
+
       //Units are radians for thetaController; PPSwerveController is using radians internally.
       thetaController.enableContinuousInput(-Math.PI, Math.PI); //prevent piroutte paths over continuity
 
@@ -85,7 +104,7 @@ public class auto_pathPlanner_cmd extends CommandBase {
           yController,
           thetaController,
           m_robotDrive::drive,
-          m_robotDrive
+          (Subsystem)m_robotDrive
       );
         
     // Run path following command, then stop at the end.
@@ -121,9 +140,9 @@ public class auto_pathPlanner_cmd extends CommandBase {
     PathPlannerState initialState = path.getInitialState();
     Pose2d startingPose = new Pose2d(initialState.poseMeters.getTranslation(), initialState.holonomicRotation);
 
-      PIDController xController = new PIDController(4.0, 0.0, 0.0);
-      PIDController yController = new PIDController(4.0, 0.0, 0.0);
-      ProfiledPIDController thetaController = new ProfiledPIDController(4, 0, 0, new TrapezoidProfile.Constraints(3, 3));
+    PIDController xController = new PIDController(4.0, 0.0, 0.0, Constants.DT);   // [m]
+    PIDController yController = new PIDController(4.0, 0.0, 0.0, Constants.DT);   // [m]
+    PIDController thetaController = new PIDController(4, 0, 0, Constants.DT);     // [rad]
       //Units are radians for thetaController; PPSwerveController is using radians internally.
       thetaController.enableContinuousInput(-Math.PI, Math.PI); //prevent piroutte paths over continuity
 
@@ -170,9 +189,9 @@ public class auto_pathPlanner_cmd extends CommandBase {
     PathPlannerState initialState = path.getInitialState();
     Pose2d startingPose = new Pose2d(initialState.poseMeters.getTranslation(), initialState.holonomicRotation);
 
-      PIDController xController = new PIDController(4.0, 0.0, 0.0);
-      PIDController yController = new PIDController(4.0, 0.0, 0.0);
-      ProfiledPIDController thetaController = new ProfiledPIDController(4, 0, 0, new TrapezoidProfile.Constraints(3, 3));
+    PIDController xController = new PIDController(4.0, 0.0, 0.0, Constants.DT);   // [m]
+    PIDController yController = new PIDController(4.0, 0.0, 0.0, Constants.DT);   // [m]
+    PIDController thetaController = new PIDController(4, 0, 0, Constants.DT);     // [rad]
       //Units are radians for thetaController; PPSwerveController is using radians internally.
       thetaController.enableContinuousInput(-Math.PI, Math.PI); //prevent piroutte paths over continuity
 
@@ -219,9 +238,9 @@ public class auto_pathPlanner_cmd extends CommandBase {
     PathPlannerState initialState = path.getInitialState();
     Pose2d startingPose = new Pose2d(initialState.poseMeters.getTranslation(), initialState.holonomicRotation);
 
-      PIDController xController = new PIDController(4.0, 0.0, 0.0);
-      PIDController yController = new PIDController(4.0, 0.0, 0.0);
-      ProfiledPIDController thetaController = new ProfiledPIDController(4, 0, 0, new TrapezoidProfile.Constraints(3, 3));
+    PIDController xController = new PIDController(4.0, 0.0, 0.0, Constants.DT);   // [m]
+    PIDController yController = new PIDController(4.0, 0.0, 0.0, Constants.DT);   // [m]
+    PIDController thetaController = new PIDController(4, 0, 0, Constants.DT);     // [rad]
       //Units are radians for thetaController; PPSwerveController is using radians internally.
       thetaController.enableContinuousInput(-Math.PI, Math.PI); //prevent piroutte paths over continuity
 
