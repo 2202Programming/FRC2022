@@ -20,17 +20,17 @@ import frc.robot.subsystems.ifx.DriverControls;
   If in intake centric and you try to rotate with left joystick, will drop back to field centric mode.
 */
 
-
+    // Drive Can 25 is spinning instead of Drive Can 22 on Roll towards negative 
 public class tipCorrectionDrive extends FieldCentricDrive {
 
   double log_counter = 0;
-
+    // Right is negative
   PIDController tipRollPid;
   double roll_kP = 1.0;
   double roll_kI = 0.0;
   double roll_kD = 0.0;
   double tipRollPidOutput = 0.0;
-
+    // Back is negative
   PIDController tipPitchPid;
   double pitch_kP = 1.0;
   double pitch_kI = 0.0;

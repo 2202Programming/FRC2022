@@ -134,6 +134,7 @@ public class DriveControllerDrivetrain extends CommandBase implements SolutionPr
 
         case tipCorrection:
           currentCmd = m_tipCorrectionDrive;
+          System.out.println("switched");
           break;
       }
       CommandScheduler.getInstance().schedule(currentCmd);
