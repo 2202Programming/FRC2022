@@ -21,6 +21,7 @@ import frc.robot.subsystems.ifx.DriverControls;
 */
 
     // Drive Can 25 is spinning instead of Drive Can 22 on Roll towards negative 
+    //Fairly sure all motors were spinning for pitch
 public class tipCorrectionDrive extends FieldCentricDrive {
 
   double log_counter = 0;
