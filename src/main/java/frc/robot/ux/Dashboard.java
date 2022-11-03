@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
+import frc.robot.commands.auto.auto_drivePath_cmd;
 
 /** Add your docs here. */
 public class Dashboard {
@@ -57,7 +58,7 @@ public class Dashboard {
     //  matchTab.add("Three PC", new SetPowerCellCount(3) );
     //  matchTab.add("Calibrate MagAngle", new MagazineCalibrate());
     //  matchTab.add("ResetPose", new ResetPosition(rc.driveTrain, new Pose2d(2.5, 2.5,new Rotation2d(0.0))));
-    //  matchTab.add("DrivePath", new auto_drivePath_cmd(rc.driveTrain, m_autopaths.getChooser()));
+    matchTab.add("DrivePath", new auto_drivePath_cmd(rc.drivetrain, m_autopaths.getChooser()));
     //  matchTab.add("MagLow", new MagazineAngle(rc.intake, Constants.ShooterOnCmd.dataLow));
     //  matchTab.add("MagHigh", new MagazineAngle(rc.intake, Constants.ShooterOnCmd.dataHigh));
     //  matchTab.add("ToggleIntakePose", new IntakePosition(rc.intake, IntakePosition.Direction.Toggle));

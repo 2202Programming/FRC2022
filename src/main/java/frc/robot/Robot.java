@@ -22,6 +22,10 @@ public class Robot extends TimedRobot {
   
   int disabledTimer = 0;
 
+  Robot()  {
+    super(Constants.DT);
+  }
+  
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.

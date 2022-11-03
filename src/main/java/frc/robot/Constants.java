@@ -108,7 +108,7 @@ public final class Constants {
       Map.entry("031b7511", RobotSpecs.SWERVE_BOT)
     ));
 
-  public static final double DT = 0.02; // 20ms framerate 50Hz
+  public static final double DT = 0.01; //  test 10ms 100Hz was 20ms framerate 50Hz
   public static final double Tperiod = 0.02; // framerate period 20ms, 50Hz
   public static final int NEO_COUNTS_PER_REVOLUTION = 42;
 
