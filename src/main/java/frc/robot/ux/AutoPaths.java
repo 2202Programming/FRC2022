@@ -13,6 +13,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -29,7 +32,7 @@ public class AutoPaths {
  final String PathsDir = Filesystem.getDeployDirectory() + File.separator + "paths";
   
  // what we find
- SendableChooser<Trajectory> pathChooser = new SendableChooser<>();
+ SendableChooser<PathPlannerTrajectory> pathChooser = new SendableChooser<>();
  Map<String, Trajectory> m_map = new LinkedHashMap<>();
  
  SendableChooser<Command> autoCommandChooser = new SendableChooser<Command>();
@@ -57,7 +60,7 @@ public class AutoPaths {
 
  }
 
- public SendableChooser<Trajectory> getChooser() { return pathChooser;}
+ public SendableChooser<PathPlannerTrajectory> getChooser() { return pathChooser;}
 
  public Command getAutonomousCommand() {
    return autoCommandChooser.getSelected();
@@ -92,18 +95,17 @@ public class AutoPaths {
    Path fn = file.getName(file.getNameCount()-1);
    String key = fn.toString().split("\\.")[0]; 
    System.out.println("**Key:" + key);
-   Trajectory traj = loadTrajectory(fn.toString());
+   PathPlannerTrajectory traj = loadTrajectory(fn.toString());
    pathChooser.addOption(key, traj);
    
    // keep a map so we can access any path we need
    m_map.put(key, traj);
  }
 
- Trajectory loadTrajectory(String filename) {
+ PathPlannerTrajectory loadTrajectory(String filename) {
    try {
-     Path trajectoryPath = Paths.get(PathsDir + File.separator + filename);
-     return TrajectoryUtil.fromPathweaverJson(trajectoryPath);
-   } catch (IOException ex) {
+     return PathPlanner.loadPath(filename, 1, 1);
+   } catch (Exception ex) {
      DriverStation.reportError("Unable to open trajectory: " + filename, ex.getStackTrace());
    }
    return null;

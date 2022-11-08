@@ -39,7 +39,7 @@ public class auto_cmd_group2 extends SequentialCommandGroup {
 
 
     Command finalAuto;
-    Command feed = RobotContainer.RC().m_driveController.magazineController.getFeedCmd();
+//    Command feed = RobotContainer.RC().m_driveController.magazineController.getFeedCmd();
     
     if(m_controls.readSideboard(SBButton.Sw11)){
       finalAuto = auto_pathPlanner_cmd.PathFactory(1,1, "AutoPath1");
@@ -50,6 +50,8 @@ public class auto_cmd_group2 extends SequentialCommandGroup {
     else{
       finalAuto = auto_pathPlanner_cmd.PathFactory(1,1, "AutoPath3");
     }
+
+    
     
     addCommands(
       new MoveIntake(DeployMode.Deploy),
