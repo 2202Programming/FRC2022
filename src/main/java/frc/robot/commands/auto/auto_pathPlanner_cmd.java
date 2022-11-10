@@ -62,7 +62,7 @@ public class auto_pathPlanner_cmd extends CommandBase {
         // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(drive);
 
-    this.path = path;
+    this.path = path; 
   }
 
   // Called when the command is initially scheduled.

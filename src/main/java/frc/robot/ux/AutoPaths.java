@@ -95,7 +95,7 @@ public class AutoPaths {
    Path fn = file.getName(file.getNameCount()-1);
    String key = fn.toString().split("\\.")[0]; 
    System.out.println("**Key:" + key);
-   PathPlannerTrajectory traj = loadTrajectory(fn.toString());
+   PathPlannerTrajectory traj = loadTrajectory(key);
    pathChooser.addOption(key, traj);
    
    // keep a map so we can access any path we need
