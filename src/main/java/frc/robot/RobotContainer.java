@@ -88,7 +88,6 @@ public class RobotContainer {
 
     // these can get created on any hardware setup
     sensors = new Sensors_Subsystem();
-    dashboard = new Dashboard(rc);
     driverControls = new HID_Xbox_Subsystem(DriverPrefs.VelExpo, DriverPrefs.RotationExpo, DriverPrefs.StickDeadzone);
     rioSN = System.getenv("serialnum");
     m_robotSpecs = Constants.keysAndBots.get(rioSN);
@@ -132,7 +131,7 @@ public class RobotContainer {
 
     // //setup the dashboard programatically, creates any choosers, screens
     // dashboard = new Dashboard(this);
-
+    dashboard = new Dashboard(rc);
     setDriverButtons();
     setAssistantButtons();
     

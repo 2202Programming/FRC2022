@@ -4,14 +4,20 @@
 
 package frc.robot.ux;
 
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+
+import com.pathplanner.lib.PathPlannerTrajectory;
+
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
+import frc.robot.Constants.DriverPrefs;
 import frc.robot.commands.auto.auto_drivePath_cmd;
+import frc.robot.commands.auto.auto_pathPlanner_cmd;
 
 /** Add your docs here. */
 public class Dashboard {
@@ -20,10 +26,10 @@ public class Dashboard {
 
   // create pre-defined dashboard tabs to organize for custom layouts
   ShuffleboardTab matchTab = Shuffleboard.getTab("Match");
-  // ShuffleboardTab driverTab = Shuffleboard.getTab("DriversChoice");
-  // ShuffleboardTab systemsTab = Shuffleboard.getTab("Sys");
-  //ShuffleboardTab commandTab = Shuffleboard.getTab("Command");
-  //ShuffleboardTab limelightTab = Shuffleboard.getTab("Limelight");
+  ShuffleboardTab driverTab = Shuffleboard.getTab("DriversChoice");
+  ShuffleboardTab systemsTab = Shuffleboard.getTab("Sys");
+  ShuffleboardTab commandTab = Shuffleboard.getTab("Command");
+  ShuffleboardTab limelightTab = Shuffleboard.getTab("Limelight");
 
   // Layouts 
   AutoPaths m_autopaths;
@@ -32,8 +38,8 @@ public class Dashboard {
   
 
   public Dashboard(RobotContainer rc) {
-    //ShuffleboardLayout layout;
-    ///layout = matchTab.getLayout("Paths", BuiltInLayouts.kGrid).withSize(3,3);
+    ShuffleboardLayout layout;
+    layout = matchTab.getLayout("Paths", BuiltInLayouts.kGrid).withSize(3,3);
  
     // layout = systemsTab.getLayout("Shooter", BuiltInLayouts.kList).withSize(2,3).withPosition(0, 0);
     // rc.intake.addDashboardWidgets(layout);
@@ -50,15 +56,15 @@ public class Dashboard {
     
     m_autopaths = new AutoPaths(matchTab);
 
-    // m_drivers = new DriverPreferences(driverTab);
+    //m_drivers = new DriverPreferences(driverTab);
 
-     // Shuffleboard runnable Commands - Soft buttons
+    // Shuffleboard runnable Commands - Soft buttons
     //  matchTab.add("Match Ready", new MatchReadyCmd());
     //  matchTab.add("Zero PC", new SetPowerCellCount(0) );
     //  matchTab.add("Three PC", new SetPowerCellCount(3) );
     //  matchTab.add("Calibrate MagAngle", new MagazineCalibrate());
     //  matchTab.add("ResetPose", new ResetPosition(rc.driveTrain, new Pose2d(2.5, 2.5,new Rotation2d(0.0))));
-    matchTab.add("DrivePath", new auto_drivePath_cmd(rc.drivetrain, m_autopaths.getChooser()));
+    matchTab.add("DrivePath", new auto_pathPlanner_cmd(rc.drivetrain, m_autopaths.getChooser().getSelected()));
     //  matchTab.add("MagLow", new MagazineAngle(rc.intake, Constants.ShooterOnCmd.dataLow));
     //  matchTab.add("MagHigh", new MagazineAngle(rc.intake, Constants.ShooterOnCmd.dataHigh));
     //  matchTab.add("ToggleIntakePose", new IntakePosition(rc.intake, IntakePosition.Direction.Toggle));
@@ -93,7 +99,7 @@ public class Dashboard {
    * Chooser<> get() methods
    * @return
    */
-  public SendableChooser<Trajectory> getTrajectoryChooser() {return m_autopaths.getChooser(); }
+  public SendableChooser<PathPlannerTrajectory> getTrajectoryChooser() {return m_autopaths.getChooser(); }
   // public DriverPreferences getDriverPreferences() {return m_drivers;}
   public Trajectory getTrajectory(String trajName) { return m_autopaths.get(trajName); }
   // public Command getAutonomousCommand() { return m_autopaths.getAutonomousCommand(); }

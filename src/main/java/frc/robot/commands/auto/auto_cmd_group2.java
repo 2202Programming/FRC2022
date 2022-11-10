@@ -39,7 +39,7 @@ public class auto_cmd_group2 extends SequentialCommandGroup {
 
 
     Command finalAuto;
-    Command feed = RobotContainer.RC().m_driveController.magazineController.getFeedCmd();
+//    Command feed = RobotContainer.RC().m_driveController.magazineController.getFeedCmd();
     
     if(m_controls.readSideboard(SBButton.Sw11)){
       finalAuto = auto_pathPlanner_cmd.PathFactory(1,1, "AutoPath1");
@@ -50,24 +50,26 @@ public class auto_cmd_group2 extends SequentialCommandGroup {
     else{
       finalAuto = auto_pathPlanner_cmd.PathFactory(1,1, "AutoPath3");
     }
+
+    
     
     addCommands(
-      new MoveIntake(DeployMode.Deploy),
-      new IntakeCommand(IntakeMode.InstantLoad),
-      finalAuto, //drive to pick up first ball
-      new IntakeCommand(IntakeMode.Stop),
-      new MoveIntake(DeployMode.Retract),
+      // new MoveIntake(DeployMode.Deploy),
+      // new IntakeCommand(IntakeMode.InstantLoad),
+      // finalAuto, //drive to pick up first ball
+      // new IntakeCommand(IntakeMode.Stop),
+      // new MoveIntake(DeployMode.Retract),
 
       //if both lightgates aren't blocked after our first move, something is wrong, probably a ball stuck in intake
       //try cycling intake to free it up
-      new ConditionalCommand(
-        new WaitCommand(0), //on true
-        new SequentialCommandGroup(
-          new MoveIntake(DeployMode.Deploy),
-          new MoveIntake(DeployMode.Retract)
-        ), //on false
-        ()->m_magazine.bothGatesBlocked()
-      ),
+      // new ConditionalCommand(
+      //   new WaitCommand(0), //on true
+      //   new SequentialCommandGroup(
+      //     new MoveIntake(DeployMode.Deploy),
+      //     new MoveIntake(DeployMode.Retract)
+      //   ), //on false
+      //   ()->m_magazine.bothGatesBlocked()
+      // ),
 
       //if limelight is functioning well at competition, this will use LL to aim and pick RPM
       //if SW16 is on it will skip and just shoot based on pose odometery position
