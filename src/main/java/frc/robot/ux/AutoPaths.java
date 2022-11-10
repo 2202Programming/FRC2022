@@ -29,7 +29,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 /** Add your docs here. */
 public class AutoPaths {
  // where to look
- final String PathsDir = Filesystem.getDeployDirectory() + File.separator + "paths";
+ final String PathsDir = Filesystem.getDeployDirectory() + File.separator + "pathplanner";
   
  // what we find
  SendableChooser<PathPlannerTrajectory> pathChooser = new SendableChooser<>();

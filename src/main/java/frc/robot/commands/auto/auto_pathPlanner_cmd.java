@@ -54,6 +54,17 @@ public class auto_pathPlanner_cmd extends CommandBase {
     path = PathPlanner.loadPath(pathname, 1, 1); //last two parameters are max velocity and max accelleration
   }
 
+  // TESTING ONLY
+  public auto_pathPlanner_cmd(SwerveDrivetrain drive, PathPlannerTrajectory path) {
+
+    m_robotDrive = drive;
+    this.pathname = ""; // directly importing path
+        // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(drive);
+
+    this.path = path;
+  }
+
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
