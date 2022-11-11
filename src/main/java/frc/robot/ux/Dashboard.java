@@ -35,7 +35,7 @@ public class Dashboard {
   AutoPaths m_autopaths;
 
   // DriverPreferences m_drivers;
-  
+  auto_pathPlanner_cmd ppCmd;
 
   public Dashboard(RobotContainer rc) {
     ShuffleboardLayout layout;
@@ -64,7 +64,8 @@ public class Dashboard {
     //  matchTab.add("Three PC", new SetPowerCellCount(3) );
     //  matchTab.add("Calibrate MagAngle", new MagazineCalibrate());
     //  matchTab.add("ResetPose", new ResetPosition(rc.driveTrain, new Pose2d(2.5, 2.5,new Rotation2d(0.0))));
-    matchTab.add("DrivePath", new auto_pathPlanner_cmd(rc.drivetrain, m_autopaths.getChooser().getSelected()));
+    ppCmd = new auto_pathPlanner_cmd(rc.drivetrain, m_autopaths.getChooser().getSelected());
+    matchTab.add("DrivePath", ppCmd);
     //  matchTab.add("MagLow", new MagazineAngle(rc.intake, Constants.ShooterOnCmd.dataLow));
     //  matchTab.add("MagHigh", new MagazineAngle(rc.intake, Constants.ShooterOnCmd.dataHigh));
     //  matchTab.add("ToggleIntakePose", new IntakePosition(rc.intake, IntakePosition.Direction.Toggle));
@@ -102,7 +103,7 @@ public class Dashboard {
   public SendableChooser<PathPlannerTrajectory> getTrajectoryChooser() {return m_autopaths.getChooser(); }
   // public DriverPreferences getDriverPreferences() {return m_drivers;}
   public Trajectory getTrajectory(String trajName) { return m_autopaths.get(trajName); }
-  // public Command getAutonomousCommand() { return m_autopaths.getAutonomousCommand(); }
+  public Command getAutonomousCommand() { return ppCmd.getPathCommand(); }
   // public Command getDefaultCommand()  {return m_defaultCommand;}
   // public void setDefaultCommand(Command cmd) { m_defaultCommand = cmd; }
 

@@ -231,7 +231,7 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return new auto_cmd();
+    return dashboard.getAutonomousCommand();//new auto_cmd();
   }
 
 }
