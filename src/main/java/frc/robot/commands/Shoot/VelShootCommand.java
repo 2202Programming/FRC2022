@@ -66,7 +66,7 @@ public class VelShootCommand extends CommandBase implements SolutionProvider{
 
     //close slope/intercept.  Slope will change multiplier between distance and RPM.  Intercept will add RPMs to all distances equally.
     final double SLOPE = 4.872;
-    final double INTERCEPT = 26.8 * 1.1; //10% chance 10k lakes practice adjustment shooting short
+    final double INTERCEPT = 26.8;
 
     //change slope multiplier to increase FPS at far distances.
     final double FARSLOPE = SLOPE*1.4;
