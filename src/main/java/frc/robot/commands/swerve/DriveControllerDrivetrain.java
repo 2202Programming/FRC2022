@@ -7,6 +7,7 @@ package frc.robot.commands.swerve;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -60,6 +61,8 @@ public class DriveControllerDrivetrain extends CommandBase implements SolutionPr
   public final String NT_Name = "DC"; 
   public final String NT_ShooterName = "Shooter"; 
   
+  double requestedPitch = 0;
+  double requestedRoll = 0;
   int log_counter = 0;
 
   public DriveControllerDrivetrain()  {
@@ -77,6 +80,9 @@ public class DriveControllerDrivetrain extends CommandBase implements SolutionPr
     positionTable = NetworkTableInstance.getDefault().getTable(NTStrings.NT_Name_Position);
     driveMode = table.getEntry("/DriveController/driveMode");
     //NThasSolution = shooterTable.getEntry("/DriveController/HasSolution");
+
+    SmartDashboard.putNumber("Simulated Pitch", requestedPitch);
+    SmartDashboard.putNumber("Simulated Roll", requestedRoll);
   }
 
   @Override
@@ -201,6 +207,10 @@ public class DriveControllerDrivetrain extends CommandBase implements SolutionPr
 
     double pitchAngleDegrees = RobotContainer.RC().sensors.getPitch();    
     double rollAngleDegrees = RobotContainer.RC().sensors.getRoll();
+
+    //Simulation mode, comment out when wanting real gryo data
+    pitchAngleDegrees = SmartDashboard.getNumber("Simulated Pitch", 0);
+    rollAngleDegrees = SmartDashboard.getNumber("Simulated Roll", 0);
 
     if(currentDriveMode != DriveModes.tipCorrection){
       if (Math.abs(pitchAngleDegrees)>kOffBalanceAngleThresholdDegrees){

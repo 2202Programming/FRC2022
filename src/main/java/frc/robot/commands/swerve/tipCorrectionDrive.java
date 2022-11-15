@@ -6,9 +6,9 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
-import frc.robot.Constants.DriveTrain;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.ifx.DriverControls;
 
@@ -37,6 +37,14 @@ public class tipCorrectionDrive extends FieldCentricDrive {
   double pitch_kD = 0.0;
   double tipPitchPidOutput = 0.0;
 
+  double requested_pitch_P = 1.0;
+  double requested_pitch_I = 0.0;
+  double requested_pitch_D = 0.0;
+
+  double requested_roll_P = 1.0;
+  double requested_roll_I = 0.0;
+  double requested_roll_D = 0.0;
+
   NetworkTable table;
   NetworkTableEntry nt_roll_factor;
   NetworkTableEntry nt_pitch_factor;
@@ -51,6 +59,14 @@ public class tipCorrectionDrive extends FieldCentricDrive {
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
     nt_roll_factor = table.getEntry("/DriveController/RollFactor");
     nt_pitch_factor = table.getEntry("/DriveController/PitchFactor");
+
+    SmartDashboard.putNumber("Requested Pitch P", requested_pitch_P);
+    SmartDashboard.putNumber("Requested Pitch I", requested_pitch_I);
+    SmartDashboard.putNumber("Requested Pitch D", requested_pitch_D);
+    SmartDashboard.putNumber("Requested Roll P", requested_roll_P);
+    SmartDashboard.putNumber("Requested Roll I", requested_roll_I);
+    SmartDashboard.putNumber("Requested Roll D", requested_roll_D);
+    
   }
 
   @Override
@@ -64,6 +80,36 @@ public class tipCorrectionDrive extends FieldCentricDrive {
     //xSpeed = xspeedLimiter.calculate(dc.getVelocityX()) * DriveTrain.kMaxSpeed;
     //ySpeed = yspeedLimiter.calculate(dc.getVelocityY()) * DriveTrain.kMaxSpeed;
     //rot = rotLimiter.calculate(dc.getXYRotation()) * DriveTrain.kMaxAngularSpeed;
+
+
+    //For Pitch/Roll PID Tuning, comment out when done.
+    requested_pitch_P = SmartDashboard.getNumber("Requested Pitch P", requested_pitch_P);
+    requested_pitch_I = SmartDashboard.getNumber("Requested Pitch I", requested_pitch_I);
+    requested_pitch_D = SmartDashboard.getNumber("Requested Pitch D", requested_pitch_D);
+    requested_roll_P = SmartDashboard.getNumber("Requested Roll P", requested_roll_P);
+    requested_roll_I = SmartDashboard.getNumber("Requested Roll I", requested_roll_I);
+    requested_roll_D = SmartDashboard.getNumber("Requested Roll D", requested_roll_D);
+
+    if (requested_pitch_P != tipPitchPid.getP()){
+      tipPitchPid.setP(requested_pitch_P);
+    }
+    if (requested_pitch_I != tipPitchPid.getI()){
+      tipPitchPid.setI(requested_pitch_I);
+    }
+    if (requested_pitch_D != tipPitchPid.getD()){
+      tipPitchPid.setD(requested_pitch_D);
+    }
+
+    if (requested_roll_P != tipRollPid.getP()){
+      tipRollPid.setP(requested_roll_P);
+    }
+    if (requested_roll_I != tipRollPid.getI()){
+      tipRollPid.setI(requested_roll_I);
+    }
+    if (requested_roll_D != tipRollPid.getD()){
+      tipRollPid.setD(requested_roll_D);
+    }
+
 
     tipRollPid.setSetpoint(0); 
     tipRollPidOutput = tipRollPid.calculate(-RobotContainer.RC().sensors.getRoll());
