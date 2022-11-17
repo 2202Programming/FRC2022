@@ -71,8 +71,8 @@ public class Magazine_Subsystem extends SubsystemBase {
   private void log(){
     logCounter++;
     if (logCounter%10 == 0) {
-      SmartDashboard.putBoolean("Ball in Upper", upperGateBlocked());
-      SmartDashboard.putBoolean("Ball in Lower", lowerGateBlocked());
+      //SmartDashboard.putBoolean("Ball in Upper", upperGateBlocked());
+      //SmartDashboard.putBoolean("Ball in Lower", lowerGateBlocked());
     }
 
   }
