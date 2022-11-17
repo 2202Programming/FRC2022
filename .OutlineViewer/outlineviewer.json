@@ -1,12 +1,20 @@
 {
-  "DT": {
-    "MK3-FR": {
+  "DC": {
+    "DriveController": {
       "open": true
     },
     "open": true
   },
+  "DT": {
+    "MK3-FR": {
+      "open": true
+    }
+  },
   "NetworkTables Settings": {
     "mode": "Client"
+  },
+  "Sensors": {
+    "open": true
   },
   "SmartDashboard": {
     "open": true

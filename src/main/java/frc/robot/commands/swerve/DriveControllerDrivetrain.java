@@ -209,24 +209,25 @@ public class DriveControllerDrivetrain extends CommandBase implements SolutionPr
     double rollAngleDegrees = RobotContainer.RC().sensors.getRoll();
 
     //Simulation mode, comment out when wanting real gryo data
-    pitchAngleDegrees = SmartDashboard.getNumber("Simulated Pitch", 0);
-    rollAngleDegrees = SmartDashboard.getNumber("Simulated Roll", 0);
+    //pitchAngleDegrees = SmartDashboard.getNumber("Simulated Pitch", 0);
+    //rollAngleDegrees = SmartDashboard.getNumber("Simulated Roll", 0);
 
     if(currentDriveMode != DriveModes.tipCorrection){
       if (Math.abs(pitchAngleDegrees)>kOffBalanceAngleThresholdDegrees){
         System.out.println("***PITCH WARNING: Pitch angle:"+pitchAngleDegrees);
         requestedDriveMode = DriveModes.tipCorrection;
       }
+      
       if (Math.abs(rollAngleDegrees)>kOffBalanceAngleThresholdDegrees){
         System.out.println("***ROLL WARNING: Roll Angle:"+rollAngleDegrees);
         requestedDriveMode = DriveModes.tipCorrection;
       }
+      
     } else {
-      if (Math.abs(pitchAngleDegrees)<kOnBalanceAngleThresholdDegrees){
+      if ((Math.abs(pitchAngleDegrees)<kOnBalanceAngleThresholdDegrees) &&
+          (Math.abs(rollAngleDegrees)<kOnBalanceAngleThresholdDegrees))
+      {
         System.out.println("***PITCH FIXED: Pitch angle:"+pitchAngleDegrees);
-        requestedDriveMode = lastDriveMode;
-      }
-      if (Math.abs(rollAngleDegrees)<kOnBalanceAngleThresholdDegrees){
         System.out.println("***ROLL FIXED: Roll Angle:"+rollAngleDegrees);
         requestedDriveMode = lastDriveMode;
       }

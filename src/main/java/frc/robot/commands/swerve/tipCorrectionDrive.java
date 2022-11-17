@@ -26,22 +26,22 @@ public class tipCorrectionDrive extends FieldCentricDrive {
   double log_counter = 0;
 
   PIDController tipRollPid;
-  double roll_kP = 1.0;
+  double roll_kP = 0.05;
   double roll_kI = 0.0;
   double roll_kD = 0.0;
   double tipRollPidOutput = 0.0;
 
   PIDController tipPitchPid;
-  double pitch_kP = 1.0;
+  double pitch_kP = 0.05;
   double pitch_kI = 0.0;
   double pitch_kD = 0.0;
   double tipPitchPidOutput = 0.0;
 
-  double requested_pitch_P = 1.0;
+  double requested_pitch_P = pitch_kP;
   double requested_pitch_I = 0.0;
   double requested_pitch_D = 0.0;
 
-  double requested_roll_P = 1.0;
+  double requested_roll_P = roll_kP;
   double requested_roll_I = 0.0;
   double requested_roll_D = 0.0;
 
@@ -116,25 +116,34 @@ public class tipCorrectionDrive extends FieldCentricDrive {
       System.out.println("****Tip Roll D adjusted to: " + tipRollPid.getD());
     }
 
+    //NOTE: PITCH IS FRONT/BACK OF ROBOT, Positive towards intake
+    //NOTE: ROLL IS POSITIVE WITH CLOCKWISE ROTATION (LOOKING FROM BACK TOWARDS INTAKE)
+    //Y direction is left/right, positive towards left when facing intake from back
+
     double pitchAngleDegrees = RobotContainer.RC().sensors.getPitch();
     double rollAngleDegrees = RobotContainer.RC().sensors.getRoll();
+    SmartDashboard.putNumber("Actual Pitch", pitchAngleDegrees);
+    SmartDashboard.putNumber("Actual Roll", rollAngleDegrees);
+
     //Simulation mode, comment out when wanting real gryo data
-    pitchAngleDegrees = SmartDashboard.getNumber("Simulated Pitch", 0);
-    rollAngleDegrees = SmartDashboard.getNumber("Simulated Roll", 0);
+    //pitchAngleDegrees = SmartDashboard.getNumber("Simulated Pitch", 0);
+    //rollAngleDegrees = SmartDashboard.getNumber("Simulated Roll", 0);
+
+    SmartDashboard.putNumber("Current Pitch", pitchAngleDegrees);
+    SmartDashboard.putNumber("Current Roll", rollAngleDegrees);
 
     tipRollPid.setSetpoint(0); 
-    tipRollPidOutput = tipRollPid.calculate(-rollAngleDegrees);
+    tipRollPidOutput = tipRollPid.calculate(rollAngleDegrees);
     nt_roll_factor.setDouble(tipRollPidOutput);
 
     tipPitchPid.setSetpoint(0); 
-    tipPitchPidOutput = tipPitchPid.calculate(pitchAngleDegrees);
+    tipPitchPidOutput = tipPitchPid.calculate(-pitchAngleDegrees);
     nt_pitch_factor.setDouble(tipPitchPidOutput);
 
     xSpeed = 0.0; //tipPitchPidOutput;
     ySpeed = tipRollPidOutput;
     rot = 0.0;
-    SmartDashboard.putNumber("Current Pitch", pitchAngleDegrees);
-    SmartDashboard.putNumber("Current Roll", tipRollPidOutput);
+
 
     // Clamp speeds/rot from the Joysticks
     xSpeed = MathUtil.clamp(xSpeed, -Constants.DriveTrain.kMaxSpeed, Constants.DriveTrain.kMaxSpeed);
