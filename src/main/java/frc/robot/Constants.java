@@ -105,7 +105,8 @@ public final class Constants {
 
     public static final Map<String, RobotSpecs> keysAndBots = new HashMap<String, RobotSpecs>(Map.ofEntries(
       Map.entry("03238151", RobotSpecs.COMPETITION_BOT),
-      Map.entry("031b7511", RobotSpecs.SWERVE_BOT)
+      Map.entry("031b7511", RobotSpecs.SWERVE_BOT),
+      Map.entry("sim", RobotSpecs.SWERVE_BOT)                     //simulation won't have a S/N 
     ));
 
   public static final double DT = 0.01; //  test 10ms 100Hz was 20ms framerate 50Hz
