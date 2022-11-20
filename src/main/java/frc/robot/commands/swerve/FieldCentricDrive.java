@@ -38,7 +38,9 @@ public class FieldCentricDrive extends CommandBase {
   final SlewRateLimiter rotLimiter = new SlewRateLimiter(3);
 
   double log_counter = 0;
-
+  double roll_correction = 0;
+  double pitch_correction = 0;
+  
   public FieldCentricDrive(SwerveDrivetrain drivetrain, DriverControls dc) {
     this.drivetrain = drivetrain;
     addRequirements(drivetrain);
@@ -53,8 +55,8 @@ public class FieldCentricDrive extends CommandBase {
   void calculate() {
     // Get the x speed. We are inverting this because Xbox controllers return
     // negative values when we push forward.
-    xSpeed = xspeedLimiter.calculate(dc.getVelocityX()) * DriveTrain.kMaxSpeed;
-    ySpeed = yspeedLimiter.calculate(dc.getVelocityY()) * DriveTrain.kMaxSpeed;
+    xSpeed = xspeedLimiter.calculate(dc.getVelocityX()) * DriveTrain.kMaxSpeed + pitch_correction;
+    ySpeed = yspeedLimiter.calculate(dc.getVelocityY()) * DriveTrain.kMaxSpeed + roll_correction;
     rot = rotLimiter.calculate(dc.getXYRotation()) * DriveTrain.kMaxAngularSpeed;
 
     // Clamp speeds/rot from the Joysticks
@@ -76,6 +78,16 @@ public class FieldCentricDrive extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     drivetrain.stop();
+  }
+
+  void setPitchCorrection(double factor)
+  {
+    pitch_correction = factor;
+  }
+
+  void setRollCorrection(double factor)
+  {
+    roll_correction = factor;
   }
 
 }
