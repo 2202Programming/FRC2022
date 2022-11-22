@@ -48,6 +48,12 @@ fieldset.scheduler-border {
     color: #FF7100 !important;
     text-decoration: underline;
   }
+  nav .nav-item a {
+    color: #fff !important;
+  }
+nav .nav-item a:hover {
+  color: #cccccc !important;
+}
   .centered {
     text-align: center;
   }
