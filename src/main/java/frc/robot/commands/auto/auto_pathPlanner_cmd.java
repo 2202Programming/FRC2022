@@ -54,17 +54,6 @@ public class auto_pathPlanner_cmd extends CommandBase {
     path = PathPlanner.loadPath(pathname, 1, 1); //last two parameters are max velocity and max accelleration
   }
 
-  // TESTING ONLY
-  public auto_pathPlanner_cmd(SwerveDrivetrain drive, PathPlannerTrajectory path) {
-
-    m_robotDrive = drive;
-    this.pathname = ""; // directly importing path
-        // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(drive);
-
-    this.path = path; 
-  }
-
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
@@ -181,24 +170,6 @@ public class auto_pathPlanner_cmd extends CommandBase {
       swerveControllerCommand,
       new InstantCommand(m_robotDrive::stop),
       new autoPrint("***Done Running Path " + pathname)
-      );
-  }
-
-  public static Command pathFactoryTest(PPSwerveControllerCommand swerveControllerCommand, PathPlannerTrajectory path) {
-    RobotContainer.RC().drivetrain.m_field.getObject("Path1").setTrajectory(path);
-
-    // get initial state from the trajectory
-    PathPlannerState initialState = path.getInitialState();
-    Pose2d startingPose = new Pose2d(initialState.poseMeters.getTranslation(), initialState.holonomicRotation);
-    
-    SwerveDrivetrain m_robotDrive = RobotContainer.RC().drivetrain;
-    return new SequentialCommandGroup(
-      new InstantCommand(()-> {
-        m_robotDrive.setPose(startingPose);
-        RobotContainer.RC().sensors.setAutoStartPose(startingPose);
-      }),
-      swerveControllerCommand,
-      new InstantCommand(m_robotDrive::stop)
       );
   }
   

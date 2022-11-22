@@ -102,7 +102,7 @@ public class Dashboard {
    * Chooser<> get() methods
    * @return
    */
-  public SendableChooser<PathPlannerTrajectory> getTrajectoryChooser() {return m_autopaths.getChooser(); }
+  public SendableChooser<String> getTrajectoryChooser() {return m_autopaths.getChooser(); }
   // public DriverPreferences getDriverPreferences() {return m_drivers;}
   public Trajectory getTrajectory(String trajName) { return m_autopaths.get(trajName); }
   public Command getAutonomousCommand() { 

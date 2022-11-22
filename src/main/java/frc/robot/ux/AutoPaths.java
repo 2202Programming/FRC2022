@@ -32,7 +32,7 @@ public class AutoPaths {
  final String PathsDir = Filesystem.getDeployDirectory() + File.separator + "pathplanner";
   
  // what we find
- SendableChooser<PathPlannerTrajectory> pathChooser = new SendableChooser<>();
+ SendableChooser<String> pathChooser = new SendableChooser<>();
  Map<String, Trajectory> m_map = new LinkedHashMap<>();
  
  SendableChooser<Command> autoCommandChooser = new SendableChooser<Command>();
@@ -60,7 +60,7 @@ public class AutoPaths {
 
  }
 
- public SendableChooser<PathPlannerTrajectory> getChooser() { return pathChooser;}
+ public SendableChooser<String> getChooser() { return pathChooser;}
 
  public Command getAutonomousCommand() {
    return autoCommandChooser.getSelected();
@@ -96,7 +96,7 @@ public class AutoPaths {
    String key = fn.toString().split("\\.")[0]; 
    System.out.println("**Key:" + key);
    PathPlannerTrajectory traj = loadTrajectory(key);
-   pathChooser.addOption(key, traj);
+   pathChooser.addOption(key, key);
    
    // keep a map so we can access any path we need
    m_map.put(key, traj);
