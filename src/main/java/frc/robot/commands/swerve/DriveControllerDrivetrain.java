@@ -261,9 +261,12 @@ public class DriveControllerDrivetrain extends CommandBase implements SolutionPr
       //zero out the factors if leaving tip correction mode
       roll_factor = 0;
       pitch_factor = 0;
+
       if (currentDriveMode == DriveModes.fieldCentric){
         m_fieldCentricDrive.setPitchCorrection(pitch_factor);
         m_fieldCentricDrive.setRollCorrection(roll_factor);
+        m_robotCentricDrive.setPitchCorrection(pitch_factor);
+        m_robotCentricDrive.setRollCorrection(roll_factor);
       }
     }
 
@@ -282,6 +285,8 @@ public class DriveControllerDrivetrain extends CommandBase implements SolutionPr
       if (currentDriveMode == DriveModes.fieldCentric || currentDriveMode == DriveModes.robotCentric){
         m_fieldCentricDrive.setPitchCorrection(pitch_factor);
         m_fieldCentricDrive.setRollCorrection(roll_factor);
+        m_robotCentricDrive.setPitchCorrection(pitch_factor);
+        m_robotCentricDrive.setRollCorrection(roll_factor);
       }
     }
 

@@ -63,6 +63,8 @@ public class HubCentricDrive extends CommandBase {
   public final String NT_Name = "Shooter"; 
 
   double log_counter = 0;
+  double roll_correction = 0;
+  double pitch_correction = 0;
   Rotation2d currentAngle;
   Rotation2d angleError;
   Rotation2d targetAngle;
@@ -106,8 +108,8 @@ public class HubCentricDrive extends CommandBase {
     //double llx = limelight.getX();
     // Get the x speed. We are inverting this because Xbox controllers return
     // negative values when we push forward.
-    xSpeed = xspeedLimiter.calculate(dc.getVelocityX()) * DriveTrain.kMaxSpeed;
-    ySpeed = yspeedLimiter.calculate(dc.getVelocityY()) * DriveTrain.kMaxSpeed;
+    xSpeed = xspeedLimiter.calculate(dc.getVelocityX()) * DriveTrain.kMaxSpeed + pitch_correction;
+    ySpeed = yspeedLimiter.calculate(dc.getVelocityY()) * DriveTrain.kMaxSpeed + roll_correction;
 
     // Clamp speeds/rot from the Joysticks
     xSpeed = MathUtil.clamp(xSpeed, -Constants.DriveTrain.kMaxSpeed, Constants.DriveTrain.kMaxSpeed);
@@ -215,6 +217,16 @@ public class HubCentricDrive extends CommandBase {
     max_rot_rate = r_max_rot_rate;
     min_rot_rate = r_min_rot_rate;
 
+  }
+
+  void setPitchCorrection(double factor)
+  {
+    pitch_correction = factor;
+  }
+
+  void setRollCorrection(double factor)
+  {
+    roll_correction = factor;
   }
 
 }

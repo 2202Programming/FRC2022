@@ -57,6 +57,8 @@ public class IntakeCentricDrive extends CommandBase {
   public final String NT_Name = "Shooter"; 
 
   double log_counter = 0;
+  double roll_correction = 0;
+  double pitch_correction = 0;
   Rotation2d m_targetAngle;
   Rotation2d m_angleError;
 
@@ -90,8 +92,8 @@ public class IntakeCentricDrive extends CommandBase {
   void calculate() {
     // Get the x speed. We are inverting this because Xbox controllers return
     // negative values when we push forward.
-    xSpeed = xspeedLimiter.calculate(dc.getVelocityX()) * DriveTrain.kMaxSpeed;
-    ySpeed = yspeedLimiter.calculate(dc.getVelocityY()) * DriveTrain.kMaxSpeed;
+    xSpeed = xspeedLimiter.calculate(dc.getVelocityX()) * DriveTrain.kMaxSpeed + pitch_correction;
+    ySpeed = yspeedLimiter.calculate(dc.getVelocityY()) * DriveTrain.kMaxSpeed + roll_correction;
     rot = rotLimiter.calculate(dc.getXYRotation()) * DriveTrain.kMaxAngularSpeed;
 
     filteredBearing = bearingFilter.calculate(getJoystickBearing().getRadians());
@@ -145,5 +147,15 @@ public class IntakeCentricDrive extends CommandBase {
       joystickBearing = lastBearing;
     }
     return joystickBearing;
+  }
+
+  void setPitchCorrection(double factor)
+  {
+    pitch_correction = factor;
+  }
+
+  void setRollCorrection(double factor)
+  {
+    roll_correction = factor;
   }
 }
