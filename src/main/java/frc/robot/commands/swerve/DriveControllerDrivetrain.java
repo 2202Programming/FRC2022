@@ -69,24 +69,24 @@ public class DriveControllerDrivetrain extends CommandBase implements SolutionPr
   boolean tip_correction_mode = false;
 
   PIDController tipRollPid;
-  double roll_kP = 0.05;
+  double roll_kP = 0.1;
   double roll_kI = 0.0;
   double roll_kD = 0.0;
   double tipRollPidOutput = 0.0;
 
   PIDController tipPitchPid;
-  double pitch_kP = 0.05;
+  double pitch_kP = 0.1;
   double pitch_kI = 0.0;
   double pitch_kD = 0.0;
   double tipPitchPidOutput = 0.0;
 
   double requested_pitch_P = pitch_kP;
-  double requested_pitch_I = 0.0;
-  double requested_pitch_D = 0.0;
+  double requested_pitch_I = pitch_kI;
+  double requested_pitch_D = pitch_kD;
 
   double requested_roll_P = roll_kP;
-  double requested_roll_I = 0.0;
-  double requested_roll_D = 0.0;
+  double requested_roll_I = roll_kI;
+  double requested_roll_D = roll_kD;
 
   public DriveControllerDrivetrain()  {
     this.drivetrain = RobotContainer.RC().drivetrain;
@@ -97,6 +97,9 @@ public class DriveControllerDrivetrain extends CommandBase implements SolutionPr
     m_fieldCentricDrive = new FieldCentricDrive(drivetrain, dc);
     m_hubCentricDrive = new HubCentricDrive(drivetrain, dc, limelight);
     m_intakeCentricDrive = new IntakeCentricDrive(drivetrain, dc);
+
+    tipRollPid = new PIDController(roll_kP, roll_kI, roll_kD);
+    tipPitchPid = new PIDController(pitch_kP, pitch_kI, pitch_kD);
 
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
     positionTable = NetworkTableInstance.getDefault().getTable(NTStrings.NT_Name_Position);
@@ -244,6 +247,7 @@ public class DriveControllerDrivetrain extends CommandBase implements SolutionPr
          Math.abs(rollAngleDegrees)>kOnBalanceAngleThresholdDegrees))
     {
       tip_correction_mode = true;
+      System.out.println("***TIP CORRECTION***");
     }
     
     //exit tip correction mode if both are low enough
@@ -252,6 +256,7 @@ public class DriveControllerDrivetrain extends CommandBase implements SolutionPr
                Math.abs(rollAngleDegrees)<kOffBalanceAngleThresholdDegrees))
     {
       tip_correction_mode = false;
+      System.out.println("***END TIP CORRECTION***");
 
       //zero out the factors if leaving tip correction mode
       roll_factor = 0;
@@ -274,7 +279,7 @@ public class DriveControllerDrivetrain extends CommandBase implements SolutionPr
       nt_pitch_factor.setDouble(pitch_factor);
 
       //pass correction factors down to drive command
-      if (currentDriveMode == DriveModes.fieldCentric){
+      if (currentDriveMode == DriveModes.fieldCentric || currentDriveMode == DriveModes.robotCentric){
         m_fieldCentricDrive.setPitchCorrection(pitch_factor);
         m_fieldCentricDrive.setRollCorrection(roll_factor);
       }
