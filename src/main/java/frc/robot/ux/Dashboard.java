@@ -23,6 +23,7 @@ import frc.robot.commands.auto.auto_pathPlanner_cmd;
 public class Dashboard {
 
   Command m_defaultCommand;
+  RobotContainer rc;
 
   // create pre-defined dashboard tabs to organize for custom layouts
   ShuffleboardTab matchTab = Shuffleboard.getTab("Match");
@@ -39,6 +40,7 @@ public class Dashboard {
 
   public Dashboard(RobotContainer rc) {
     ShuffleboardLayout layout;
+    this.rc = rc;
     layout = matchTab.getLayout("Paths", BuiltInLayouts.kGrid).withSize(3,3);
  
     // layout = systemsTab.getLayout("Shooter", BuiltInLayouts.kList).withSize(2,3).withPosition(0, 0);
@@ -103,7 +105,10 @@ public class Dashboard {
   public SendableChooser<PathPlannerTrajectory> getTrajectoryChooser() {return m_autopaths.getChooser(); }
   // public DriverPreferences getDriverPreferences() {return m_drivers;}
   public Trajectory getTrajectory(String trajName) { return m_autopaths.get(trajName); }
-  public Command getAutonomousCommand() { return ppCmd.getPathCommand(); }
+  public Command getAutonomousCommand() { 
+    ppCmd = new auto_pathPlanner_cmd(rc.drivetrain, m_autopaths.getChooser().getSelected());
+    return ppCmd.getPathCommand(); 
+  }
   // public Command getDefaultCommand()  {return m_defaultCommand;}
   // public void setDefaultCommand(Command cmd) { m_defaultCommand = cmd; }
 
