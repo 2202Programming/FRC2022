@@ -4,6 +4,9 @@
 
 package frc.robot.commands.auto;
 
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -13,16 +16,18 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.SwerveDrivetrain;
 
 public class auto_drivePath_cmd extends CommandBase {
   /** Creates a new auto_drivePath_cmd. */
 
   private final SwerveDrivetrain m_robotDrive;
-  SendableChooser<Trajectory> chooser;
-  Trajectory path;
+  SendableChooser<PathPlannerTrajectory> chooser;
+  PathPlannerTrajectory path;
 
-  public auto_drivePath_cmd(SwerveDrivetrain drive, SendableChooser<Trajectory> chooser) {
+  public auto_drivePath_cmd(SwerveDrivetrain drive, SendableChooser<PathPlannerTrajectory> chooser) {
     m_robotDrive = drive;
     this.chooser = chooser;
 
@@ -54,21 +59,23 @@ public class auto_drivePath_cmd extends CommandBase {
       return new InstantCommand();  // no path selected
     }
       
-      SwerveControllerCommand swerveControllerCommand =
-      new SwerveControllerCommand(
+    PIDController xController = new PIDController(4.0, 0.0, 0.0, Constants.DT);   // [m]
+    PIDController yController = new PIDController(4.0, 0.0, 0.0, Constants.DT);   // [m]
+    PIDController thetaController = new PIDController(4, 0, 0, Constants.DT);     // [rad]
+      //Units are radians for thetaController; PPSwerveController is using radians internally.
+      thetaController.enableContinuousInput(-Math.PI, Math.PI); //prevent piroutte paths over continuity
+    PPSwerveControllerCommand swerveControllerCommand =
+      new PPSwerveControllerCommand(
           path,
           m_robotDrive::getPose, // Functional interface to feed supplier
           m_robotDrive.getKinematics(),
           // Position controllers 
-          new PIDController(4.0, 0.0, 0.0),
-          new PIDController(4.0, 0.0, 0.0),
-          new ProfiledPIDController(4, 0, 0, new TrapezoidProfile.Constraints(.3, .3)),
-            // Here, our rotation profile constraints were a max velocity
-            // of 1 rotation per second and a max acceleration of 180 degrees
-            // per second squared
-            m_robotDrive::drive,
-            m_robotDrive
-            );
+          xController,
+          yController,
+          thetaController,
+          m_robotDrive::drive,
+          m_robotDrive
+      );
 
         // Reset odometry to the starting pose of the trajectory.
         m_robotDrive.setPose(path.getInitialPose());
@@ -76,6 +83,10 @@ public class auto_drivePath_cmd extends CommandBase {
     // Run path following command, then stop at the end.
     return swerveControllerCommand.andThen(() -> m_robotDrive.stop()).withTimeout(20);
 
+  }
+
+  public PathPlannerTrajectory getPath() {
+    return path;
   }
   // Called once the command ends or is interrupted.
   @Override

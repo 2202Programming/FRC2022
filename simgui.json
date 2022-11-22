@@ -42,7 +42,9 @@
       "/LiveWindow/Ungrouped/PIDController[37]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[38]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[39]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[3]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[40]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[4]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[7]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[8]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[9]": "PIDController",
@@ -52,6 +54,7 @@
       "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
       "/Shuffleboard/Match/AutoPath/PathChooser": "String Chooser",
       "/Shuffleboard/Match/Autonomous Command/AutoChooser": "String Chooser",
+      "/Shuffleboard/Match/DrivePath": "Command",
       "/SmartDashboard/Field": "Field2d"
     },
     "windows": {
@@ -63,7 +66,6 @@
         },
         "Robot": {
           "arrowWeight": 1.0,
-          "image": "C:\\Users\\jrube\\Desktop\\FRC\\2022-field.png",
           "style": "Box/Image",
           "weight": 1.0
         },
