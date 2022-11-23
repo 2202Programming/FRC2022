@@ -29,7 +29,7 @@ import frc.robot.subsystems.ifx.DriverControls;
 */
 
 
-public class HubCentricDrive extends CommandBase {
+public class HubCentricDrive extends DriveCmdClass {
 
   final SwerveDrivetrain drivetrain;
   final DriverControls dc;
@@ -63,8 +63,6 @@ public class HubCentricDrive extends CommandBase {
   public final String NT_Name = "Shooter"; 
 
   double log_counter = 0;
-  double roll_correction = 0;
-  double pitch_correction = 0;
   Rotation2d currentAngle;
   Rotation2d angleError;
   Rotation2d targetAngle;
@@ -217,16 +215,6 @@ public class HubCentricDrive extends CommandBase {
     max_rot_rate = r_max_rot_rate;
     min_rot_rate = r_min_rot_rate;
 
-  }
-
-  void setPitchCorrection(double factor)
-  {
-    pitch_correction = factor;
-  }
-
-  void setRollCorrection(double factor)
-  {
-    roll_correction = factor;
   }
 
 }

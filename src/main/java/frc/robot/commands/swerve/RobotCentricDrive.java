@@ -20,7 +20,7 @@ import frc.robot.subsystems.ifx.DriverControls;
 */
 
 
-public class RobotCentricDrive extends CommandBase {
+public class RobotCentricDrive extends DriveCmdClass {
 
   final SwerveDrivetrain drivetrain;
   final DriverControls dc;
@@ -36,8 +36,6 @@ public class RobotCentricDrive extends CommandBase {
   final SlewRateLimiter rotLimiter = new SlewRateLimiter(3);
 
   double log_counter = 0;
-  double roll_correction = 0;
-  double pitch_correction = 0;
 
   public RobotCentricDrive(SwerveDrivetrain drivetrain, DriverControls dc2) {
     this.drivetrain = drivetrain;
@@ -76,13 +74,5 @@ public class RobotCentricDrive extends CommandBase {
   public void end(boolean interrupted) {
     drivetrain.stop();
   }
-  void setPitchCorrection(double factor)
-  {
-    pitch_correction = factor;
-  }
 
-  void setRollCorrection(double factor)
-  {
-    roll_correction = factor;
-  }
 }

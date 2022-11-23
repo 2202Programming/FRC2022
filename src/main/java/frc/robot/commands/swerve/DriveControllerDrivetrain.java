@@ -45,7 +45,7 @@ public class DriveControllerDrivetrain extends CommandBase implements SolutionPr
   HubCentricDrive m_hubCentricDrive;
   IntakeCentricDrive m_intakeCentricDrive;
 
-  Command currentCmd;
+  DriveCmdClass currentCmd;
   DriveModes requestedDriveMode = DriveModes.fieldCentric;
   DriveModes currentDriveMode = DriveModes.fieldCentric;
   DriveModes lastDriveMode = DriveModes.fieldCentric;
@@ -262,12 +262,9 @@ public class DriveControllerDrivetrain extends CommandBase implements SolutionPr
       roll_factor = 0;
       pitch_factor = 0;
 
-      if (currentDriveMode == DriveModes.fieldCentric){
-        m_fieldCentricDrive.setPitchCorrection(pitch_factor);
-        m_fieldCentricDrive.setRollCorrection(roll_factor);
-        m_robotCentricDrive.setPitchCorrection(pitch_factor);
-        m_robotCentricDrive.setRollCorrection(roll_factor);
-      }
+      currentCmd.setPitchCorrection(pitch_factor);
+      currentCmd.setRollCorrection(roll_factor);
+      
     }
 
     //feed PIDs, get correction factors
@@ -282,12 +279,9 @@ public class DriveControllerDrivetrain extends CommandBase implements SolutionPr
       nt_pitch_factor.setDouble(pitch_factor);
 
       //pass correction factors down to drive command
-      if (currentDriveMode == DriveModes.fieldCentric || currentDriveMode == DriveModes.robotCentric){
-        m_fieldCentricDrive.setPitchCorrection(pitch_factor);
-        m_fieldCentricDrive.setRollCorrection(roll_factor);
-        m_robotCentricDrive.setPitchCorrection(pitch_factor);
-        m_robotCentricDrive.setRollCorrection(roll_factor);
-      }
+        //currentCmd.setPitchCorrection(pitch_factor);
+        currentCmd.setPitchCorrection(0); //for testing, adjust for roll only
+        currentCmd.setRollCorrection(roll_factor);
     }
 
     SmartDashboard.putNumber("Current Pitch", pitchAngleDegrees);

@@ -26,7 +26,7 @@ import frc.robot.subsystems.ifx.DriverControls;
 */
 
 
-public class IntakeCentricDrive extends CommandBase {
+public class IntakeCentricDrive extends DriveCmdClass {
 
   final SwerveDrivetrain drivetrain;
   final DriverControls dc;
@@ -57,8 +57,7 @@ public class IntakeCentricDrive extends CommandBase {
   public final String NT_Name = "Shooter"; 
 
   double log_counter = 0;
-  double roll_correction = 0;
-  double pitch_correction = 0;
+
   Rotation2d m_targetAngle;
   Rotation2d m_angleError;
 
@@ -149,13 +148,4 @@ public class IntakeCentricDrive extends CommandBase {
     return joystickBearing;
   }
 
-  void setPitchCorrection(double factor)
-  {
-    pitch_correction = factor;
-  }
-
-  void setRollCorrection(double factor)
-  {
-    roll_correction = factor;
-  }
 }
