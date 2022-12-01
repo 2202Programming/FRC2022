@@ -10,8 +10,8 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 /* Possibly could have been an interface but I didn't think that would work */
 
 public class DriveCmdClass extends CommandBase {
-    double roll_correction = 0;
-    double pitch_correction = 0;
+    public double roll_correction = 0;
+    public double pitch_correction = 0;
 
     void setPitchCorrection(double factor)
     {

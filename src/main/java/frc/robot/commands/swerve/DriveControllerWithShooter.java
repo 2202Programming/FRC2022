@@ -44,6 +44,7 @@ public class DriveControllerWithShooter extends DriveControllerDrivetrain {
 
   @Override
   public void execute() {
+    checkPid();
     checkTip();
     setVelocityOffset();
     checkShooter();

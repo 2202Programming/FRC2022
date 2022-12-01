@@ -69,13 +69,13 @@ public class DriveControllerDrivetrain extends CommandBase implements SolutionPr
   boolean tip_correction_mode = false;
 
   PIDController tipRollPid;
-  double roll_kP = 0.1;
+  double roll_kP = 0.3;
   double roll_kI = 0.0;
   double roll_kD = 0.0;
   double tipRollPidOutput = 0.0;
 
   PIDController tipPitchPid;
-  double pitch_kP = 0.1;
+  double pitch_kP = 0.3;
   double pitch_kI = 0.0;
   double pitch_kD = 0.0;
   double tipPitchPidOutput = 0.0;
@@ -227,7 +227,7 @@ public class DriveControllerDrivetrain extends CommandBase implements SolutionPr
     }
   }
 
-  void checkTip(){
+  public void checkTip(){
 
     //Competition bot has coupled pitch/roll of 2.5 degrees during yaw
     //NOTE: PITCH IS FRONT/BACK OF ROBOT, Positive towards intake
@@ -235,7 +235,7 @@ public class DriveControllerDrivetrain extends CommandBase implements SolutionPr
     //Y direction is left/right, positive towards left when facing intake from back
 
 
-    double kOffBalanceAngleThresholdDegrees = 5.0;
+    double kOffBalanceAngleThresholdDegrees = 4.0;
     double kOnBalanceAngleThresholdDegrees = 3.0;
 
     double pitchAngleDegrees = RobotContainer.RC().sensors.getPitch();    
@@ -279,9 +279,9 @@ public class DriveControllerDrivetrain extends CommandBase implements SolutionPr
       nt_pitch_factor.setDouble(pitch_factor);
 
       //pass correction factors down to drive command
-        //currentCmd.setPitchCorrection(pitch_factor);
-        currentCmd.setPitchCorrection(0); //for testing, adjust for roll only
-        currentCmd.setRollCorrection(roll_factor);
+      //negative for unclear reasons
+        currentCmd.setPitchCorrection(-pitch_factor);
+        currentCmd.setRollCorrection(-roll_factor);
     }
 
     SmartDashboard.putNumber("Current Pitch", pitchAngleDegrees);
@@ -292,7 +292,7 @@ public class DriveControllerDrivetrain extends CommandBase implements SolutionPr
 
    }
 
-  void checkPid(){
+  public void checkPid(){
        //For Pitch/Roll PID Tuning, comment out when done.
        requested_pitch_P = SmartDashboard.getNumber("Requested Pitch P", requested_pitch_P);
        requested_pitch_I = SmartDashboard.getNumber("Requested Pitch I", requested_pitch_I);
@@ -300,6 +300,7 @@ public class DriveControllerDrivetrain extends CommandBase implements SolutionPr
        requested_roll_P = SmartDashboard.getNumber("Requested Roll P", requested_roll_P);
        requested_roll_I = SmartDashboard.getNumber("Requested Roll I", requested_roll_I);
        requested_roll_D = SmartDashboard.getNumber("Requested Roll D", requested_roll_D);
+       SmartDashboard.putNumber("Current Roll P", tipRollPid.getP());
    
        if (requested_pitch_P != tipPitchPid.getP()){
          tipPitchPid.setP(requested_pitch_P);
