@@ -53,8 +53,8 @@ public class FieldCentricDrive extends DriveCmdClass {
   void calculate() {
     // Get the x speed. We are inverting this because Xbox controllers return
     // negative values when we push forward.
-    xSpeed = xspeedLimiter.calculate(dc.getVelocityX()) * DriveTrain.kMaxSpeed + pitch_correction;
-    ySpeed = yspeedLimiter.calculate(dc.getVelocityY()) * DriveTrain.kMaxSpeed + roll_correction;
+    xSpeed = xspeedLimiter.calculate(dc.getVelocityX()) * DriveTrain.kMaxSpeed;
+    ySpeed = yspeedLimiter.calculate(dc.getVelocityY()) * DriveTrain.kMaxSpeed;
     rot = rotLimiter.calculate(dc.getXYRotation()) * DriveTrain.kMaxAngularSpeed;
 
     // Clamp speeds/rot from the Joysticks
@@ -63,8 +63,15 @@ public class FieldCentricDrive extends DriveCmdClass {
     rot = MathUtil.clamp(rot, -Constants.DriveTrain.kMaxAngularSpeed, Constants.DriveTrain.kMaxAngularSpeed);
 
     currrentHeading = drivetrain.getPose().getRotation();
+    //convert field centric speeds to robot centric
+    ChassisSpeeds tempChassisSpeed = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, currrentHeading);
+
+    //tip correction is in robot centric
+    tempChassisSpeed.vxMetersPerSecond += pitch_correction;
+    tempChassisSpeed.vyMetersPerSecond += roll_correction;
+
     output_states = kinematics
-        .toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, currrentHeading));
+        .toSwerveModuleStates(tempChassisSpeed);
   }
 
   @Override
