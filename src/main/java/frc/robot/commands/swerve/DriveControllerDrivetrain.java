@@ -128,7 +128,7 @@ public class DriveControllerDrivetrain extends CommandBase implements SolutionPr
     checkDropout();
     checkRequests();
     updateNT();
-    checkPid();
+    //checkPid();
     checkTip();
   }
 
@@ -247,7 +247,7 @@ public class DriveControllerDrivetrain extends CommandBase implements SolutionPr
          Math.abs(rollAngleDegrees)>kOnBalanceAngleThresholdDegrees))
     {
       tip_correction_mode = true;
-      System.out.println("***TIP CORRECTION***");
+      //System.out.println("***TIP CORRECTION: Pitch="+pitchAngleDegrees);
     }
     
     //exit tip correction mode if both are low enough
@@ -256,7 +256,7 @@ public class DriveControllerDrivetrain extends CommandBase implements SolutionPr
                Math.abs(rollAngleDegrees)<kOffBalanceAngleThresholdDegrees))
     {
       tip_correction_mode = false;
-      System.out.println("***END TIP CORRECTION***");
+      //System.out.println("***END TIP CORRECTION***");
 
       //zero out the factors if leaving tip correction mode
       roll_factor = 0;

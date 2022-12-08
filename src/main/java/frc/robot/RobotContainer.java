@@ -131,7 +131,7 @@ public class RobotContainer {
 
     setDriverButtons();
 
-    if(driverControls.isConnected(Id.Assistant) && driverControls.isConnected(Id.SwitchBoard))
+    if(driverControls.isConnected(Id.Assistant))
     setAssistantButtons();
     
     if(driverControls.isConnected(Id.SwitchBoard)){ 
@@ -206,8 +206,10 @@ public class RobotContainer {
     // B - spin intake while held (to intake the ball)
     // A - spin intake while held (in reverse to expell the ball)
     // RT - spin shooter and index while held
-    driverControls.bind(Id.SwitchBoard, SBButton.Sw13).whenActive(new ResetPosition(Autonomous.startPose3));
-
+    if (driverControls.isConnected(Id.SwitchBoard)) {
+      driverControls.bind(Id.SwitchBoard, SBButton.Sw13).whenActive(new ResetPosition(Autonomous.startPose3));
+    }
+    
     if (m_robotSpecs.getSubsystemConfig().HAS_INTAKE) {
       driverControls.bind(Id.Assistant, XboxButton.LB).whenPressed(new MoveIntake(DeployMode.Toggle));
       //vertical intake controls - manual control of intake and side rollers,not the magazine
