@@ -74,6 +74,9 @@ public class RobotSpecs {
   public RobotNames getRobotName(String serialNo){
     RobotNames tempRobotName;
 
+    if (serialNo == null) 
+        return RobotNames.UnknownBot;
+
     if (serialNo.compareTo("031b7511")==0)
         tempRobotName = RobotNames.SwerveBot;
     if (serialNo.compareTo("03238151")==0)

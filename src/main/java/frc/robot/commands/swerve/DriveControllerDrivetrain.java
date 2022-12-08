@@ -279,9 +279,8 @@ public class DriveControllerDrivetrain extends CommandBase implements SolutionPr
       nt_pitch_factor.setDouble(pitch_factor);
 
       //pass correction factors down to drive command
-      //negative for unclear reasons
-        currentCmd.setPitchCorrection(-pitch_factor);
-        currentCmd.setRollCorrection(-roll_factor);
+        currentCmd.setPitchCorrection(pitch_factor);
+        currentCmd.setRollCorrection(roll_factor);
     }
 
     SmartDashboard.putNumber("Current Pitch", pitchAngleDegrees);
