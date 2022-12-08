@@ -337,4 +337,17 @@ public void turnOffRumble(Id id){
   }
 }
 
+public boolean isConnected(Id id){
+  switch (id){
+    case Driver:
+      return driver.isConnected();
+    case Assistant:
+      return assistant.isConnected();
+    case SwitchBoard:
+      return switchBoard.isConnected();
+    default:
+      return false;
+  }
+}
+
 }

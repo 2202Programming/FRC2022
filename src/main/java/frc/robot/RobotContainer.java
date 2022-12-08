@@ -130,25 +130,29 @@ public class RobotContainer {
     // dashboard = new Dashboard(this);
 
     setDriverButtons();
+
+    if(driverControls.isConnected(Id.Assistant) && driverControls.isConnected(Id.SwitchBoard))
     setAssistantButtons();
     
-    // Sideboard 
-    if (m_robotSpecs.getSubsystemConfig().HAS_CLIMBER) { driverControls.bind(Id.SwitchBoard, SBButton.Sw21).whileHeld(new 
-      // warning - PitAlign command use Driver's DPAD, RB and, LB. DPL-can we run this in TEST mode?
-     PitAlignClimber(driverControls, Id.Driver, climber, 2.0, 5.0)); //[in/s] [deg/s]
-      driverControls.bind(Id.SwitchBoard, SBButton.Sw22).whenPressed(new MidClimb(climber));
-      driverControls.bind(Id.SwitchBoard, SBButton.Sw23).whenPressed(new TraverseClimb(climber));
-      driverControls.bind(Id.SwitchBoard, SBButton.Sw24).whileHeld(new SequentialCommandGroup(
-        new MoveArmsTo(climber, "To Angle 0", (climber.getLeftExtInches() + climber.getRightExtInches())/2, 0, true, true),
-        new MoveArmsTo(climber, "To zero", 0, 0, true, true)));
-      //driverControls.bind(Id.SwitchBoard, SBButton.Sw25).whileHeld(new ClimberTestRotRate(climber, 20, -30, 65)); //use pit-zero to start
-      driverControls.bind(Id.SwitchBoard, SBButton.Sw25).whileHeld(
-        new ClimberTestRotRate(climber, 40.0, -70.0, 30.0));
-      
-            //new ClimberTestVelocity(climber, 4, 0.0, 12)); //use pit-zero to start
-            //new ClimberTestRotRate(climber, 15, -30, 60));
-            //new ClimberTestRotRatePercent(climber, 0.5, -20, 40));
-            //new ClimberTestRotOscillation(climber));
+    if(driverControls.isConnected(Id.SwitchBoard)){ 
+      // Sideboard 
+      if (m_robotSpecs.getSubsystemConfig().HAS_CLIMBER) { driverControls.bind(Id.SwitchBoard, SBButton.Sw21).whileHeld(new 
+        // warning - PitAlign command use Driver's DPAD, RB and, LB. DPL-can we run this in TEST mode?
+      PitAlignClimber(driverControls, Id.Driver, climber, 2.0, 5.0)); //[in/s] [deg/s]
+        driverControls.bind(Id.SwitchBoard, SBButton.Sw22).whenPressed(new MidClimb(climber));
+        driverControls.bind(Id.SwitchBoard, SBButton.Sw23).whenPressed(new TraverseClimb(climber));
+        driverControls.bind(Id.SwitchBoard, SBButton.Sw24).whileHeld(new SequentialCommandGroup(
+          new MoveArmsTo(climber, "To Angle 0", (climber.getLeftExtInches() + climber.getRightExtInches())/2, 0, true, true),
+          new MoveArmsTo(climber, "To zero", 0, 0, true, true)));
+        //driverControls.bind(Id.SwitchBoard, SBButton.Sw25).whileHeld(new ClimberTestRotRate(climber, 20, -30, 65)); //use pit-zero to start
+        driverControls.bind(Id.SwitchBoard, SBButton.Sw25).whileHeld(
+          new ClimberTestRotRate(climber, 40.0, -70.0, 30.0));
+        
+              //new ClimberTestVelocity(climber, 4, 0.0, 12)); //use pit-zero to start
+              //new ClimberTestRotRate(climber, 15, -30, 60));
+              //new ClimberTestRotRatePercent(climber, 0.5, -20, 40));
+              //new ClimberTestRotOscillation(climber));
+      }
     }
   }
 
