@@ -106,8 +106,8 @@ public class HubCentricDrive extends DriveCmdClass {
     //double llx = limelight.getX();
     // Get the x speed. We are inverting this because Xbox controllers return
     // negative values when we push forward.
-    xSpeed = xspeedLimiter.calculate(dc.getVelocityX()) * DriveTrain.kMaxSpeed + pitch_correction;
-    ySpeed = yspeedLimiter.calculate(dc.getVelocityY()) * DriveTrain.kMaxSpeed + roll_correction;
+    xSpeed = xspeedLimiter.calculate(dc.getVelocityX()) * DriveTrain.kMaxSpeed;
+    ySpeed = yspeedLimiter.calculate(dc.getVelocityY()) * DriveTrain.kMaxSpeed;
 
     // Clamp speeds/rot from the Joysticks
     xSpeed = MathUtil.clamp(xSpeed, -Constants.DriveTrain.kMaxSpeed, Constants.DriveTrain.kMaxSpeed);
@@ -125,8 +125,15 @@ public class HubCentricDrive extends DriveCmdClass {
     rot = MathUtil.clamp(limelightPidOutput + min_rot, -max_rot_rate, max_rot_rate) / 57.3;   //clamp in [deg/s] convert to [rad/s]
 
     currentAngle = drivetrain.getPose().getRotation();
+    //convert field centric speeds to robot centric
+    ChassisSpeeds tempChassisSpeed = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, currentAngle);
+
+    //tip correction is in robot centric
+    tempChassisSpeed.vxMetersPerSecond += pitch_correction;
+    tempChassisSpeed.vyMetersPerSecond += roll_correction;
+
     output_states = kinematics
-        .toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, currentAngle));
+        .toSwerveModuleStates(tempChassisSpeed);
 
   }
 

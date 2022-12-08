@@ -91,8 +91,8 @@ public class IntakeCentricDrive extends DriveCmdClass {
   void calculate() {
     // Get the x speed. We are inverting this because Xbox controllers return
     // negative values when we push forward.
-    xSpeed = xspeedLimiter.calculate(dc.getVelocityX()) * DriveTrain.kMaxSpeed + pitch_correction;
-    ySpeed = yspeedLimiter.calculate(dc.getVelocityY()) * DriveTrain.kMaxSpeed + roll_correction;
+    xSpeed = xspeedLimiter.calculate(dc.getVelocityX()) * DriveTrain.kMaxSpeed;
+    ySpeed = yspeedLimiter.calculate(dc.getVelocityY()) * DriveTrain.kMaxSpeed;
     rot = rotLimiter.calculate(dc.getXYRotation()) * DriveTrain.kMaxAngularSpeed;
 
     filteredBearing = bearingFilter.calculate(getJoystickBearing().getRadians());
@@ -110,8 +110,15 @@ public class IntakeCentricDrive extends DriveCmdClass {
     intakeAnglePid.setSetpoint(m_targetAngle.getDegrees()); //PID already tuned in degrees
     rot = intakeAnglePid.calculate(m_currentAngle.getDegrees());
     
+    //convert field centric speeds to robot centric
+    ChassisSpeeds tempChassisSpeed = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, m_currentAngle);
+
+    //tip correction is in robot centric
+    tempChassisSpeed.vxMetersPerSecond += pitch_correction;
+    tempChassisSpeed.vyMetersPerSecond += roll_correction;
+
     output_states = kinematics
-    .toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, m_currentAngle));
+        .toSwerveModuleStates(tempChassisSpeed);
 
   }
 
