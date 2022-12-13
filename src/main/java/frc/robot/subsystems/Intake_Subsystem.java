@@ -44,7 +44,7 @@ public class Intake_Subsystem extends SubsystemBase {
         Intake.l_side_mtrPIDF.copyTo(l_side_mtr.getPIDController(), slot);
         r_side_mtr.clearFaults();
         r_side_mtr.restoreFactoryDefaults();
-        r_side_mtr.setInverted(true);
+        r_side_mtr.setInverted(false); // nren 12-12-2022 electrical flipped this motor so changed from true to false
     
         l_side_mtr.clearFaults();
         l_side_mtr.restoreFactoryDefaults();

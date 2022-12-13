@@ -131,10 +131,8 @@ public class RobotContainer {
 
     setDriverButtons();
 
-    if(driverControls.isConnected(Id.Assistant))
     setAssistantButtons();
-    
-    if(driverControls.isConnected(Id.SwitchBoard)){ 
+     
       // Sideboard 
       if (m_robotSpecs.getSubsystemConfig().HAS_CLIMBER) { driverControls.bind(Id.SwitchBoard, SBButton.Sw21).whileHeld(new 
         // warning - PitAlign command use Driver's DPAD, RB and, LB. DPL-can we run this in TEST mode?
@@ -152,7 +150,6 @@ public class RobotContainer {
               //new ClimberTestRotRate(climber, 15, -30, 60));
               //new ClimberTestRotRatePercent(climber, 0.5, -20, 40));
               //new ClimberTestRotOscillation(climber));
-      }
     }
   }
 
