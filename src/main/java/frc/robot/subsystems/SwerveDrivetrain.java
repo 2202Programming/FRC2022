@@ -114,7 +114,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     this.sensors = RobotContainer.RC().sensors;
     RobotSpecs robotSpecs = RobotContainer.RC().m_robotSpecs;
 
-    new SwerveDriveKinematics(
+    kinematics = new SwerveDriveKinematics(
       new Translation2d(robotSpecs.getChassisConfig().XwheelOffset, robotSpecs.getChassisConfig().YwheelOffset), // Front Left
       new Translation2d(robotSpecs.getChassisConfig().XwheelOffset, -robotSpecs.getChassisConfig().YwheelOffset), // Front Right
       new Translation2d(-robotSpecs.getChassisConfig().XwheelOffset, robotSpecs.getChassisConfig().YwheelOffset), // Back Left

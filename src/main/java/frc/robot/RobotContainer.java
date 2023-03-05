@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Autonomous;
 import frc.robot.Constants.DriverPrefs;
 import frc.robot.Constants.Shooter;
@@ -100,7 +101,7 @@ public class RobotContainer {
       magazine = new Magazine_Subsystem();
     if (m_robotSpecs.getSubsystemConfig().HAS_POSITIONER)
       positioner = new Positioner_Subsystem();
-    if (m_robotSpecs.getSubsystemConfig().HAS_INTAKE) 
+    if (m_robotSpecs.getSubsystemConfig().HAS_INTAKE)
       intake = new Intake_Subsystem();
     if (m_robotSpecs.getSubsystemConfig().HAS_CLIMBER)
       climber = new Climber();
@@ -163,6 +164,7 @@ public class RobotContainer {
    * </ul>
    */
   void setDriverButtons() {
+    System.out.println("*****Trying to set driver controls");
     // B - Toggle drive mode
     if (m_robotSpecs.getSubsystemConfig().HAS_DRIVETRAIN && m_robotSpecs.getSubsystemConfig().IS_COMPETITION_BOT) {
       driverControls.bind(Id.Driver, XboxButton.B).onTrue(new InstantCommand(() -> {m_driveController.cycleDriveMode();}));
@@ -171,6 +173,7 @@ public class RobotContainer {
       driverControls.bind(Id.Driver, XboxAxis.TRIGGER_LEFT).whenReleased(m_driveController::setFieldCentric);   
       driverControls.bind(Id.Driver, XboxAxis.TRIGGER_RIGHT).whenPressed(m_driveController::turnOnShootingMode);
       driverControls.bind(Id.Driver, XboxAxis.TRIGGER_RIGHT).whenReleased(m_driveController::turnOffShootingMode);
+      System.out.println("Successfully set driver controls");
     }
     if (m_robotSpecs.getSubsystemConfig().HAS_DRIVETRAIN && !m_robotSpecs.getSubsystemConfig().IS_COMPETITION_BOT) {
       driverControls.bind(Id.Driver, XboxButton.B).whenPressed(m_driveControllerDrivetrain::cycleDriveMode);
@@ -199,6 +202,7 @@ public class RobotContainer {
   // * </ul>
   // */
   void setAssistantButtons() {
+    System.out.println("*****Trying to set driver controls");
     // LB - toggle intake deploy
     // B - spin intake while held (to intake the ball)
     // A - spin intake while held (in reverse to expell the ball)
@@ -208,10 +212,13 @@ public class RobotContainer {
     }
     
     if (m_robotSpecs.getSubsystemConfig().HAS_INTAKE) {
-      driverControls.bind(Id.Assistant, XboxButton.LB).whenPressed(new MoveIntake(DeployMode.Toggle));
+      CommandXboxController controller = new CommandXboxController(1);
+      controller.leftBumper().onTrue(new MoveIntake(DeployMode.Toggle));
+      //driverControls.bind(Id.Assistant, XboxButton.LB).onTrue(new MoveIntake(DeployMode.Toggle));
       //vertical intake controls - manual control of intake and side rollers,not the magazine
       driverControls.bind(Id.Assistant, XboxButton.A).whileHeld(new IntakeCommand((() -> 0.6), () -> 0.5, IntakeMode.LoadCargo));
       driverControls.bind(Id.Assistant, XboxButton.B).whileHeld(new IntakeCommand((() -> 0.35), () -> 0.5, IntakeMode.ExpellCargo));
+      System.out.println("Successfully set op controls for intake");
     }
 
     if (m_robotSpecs.getSubsystemConfig().HAS_MAGAZINE && m_robotSpecs.getSubsystemConfig().HAS_SHOOTER) {
@@ -227,6 +234,7 @@ public class RobotContainer {
       driverControls.bind(Id.Assistant, XboxPOV.POV_UP)        .whileHeld(new VelShootGatedCommand(Shooter.shortMediumVelocity, mag_default_cmd));
       driverControls.bind(Id.Assistant, XboxPOV.POV_DOWN)      .whileHeld(new VelShootGatedCommand(Shooter.mediumVelocity,      mag_default_cmd));
       driverControls.bind(Id.Assistant, XboxPOV.POV_RIGHT)     .whileHeld(new VelShootGatedCommand(Shooter.longVelocity,        mag_default_cmd));
+      System.out.println("Successfully set op controls for shooting");
     }
   }
 
