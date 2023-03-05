@@ -55,6 +55,10 @@ public class RobotContainer {
     return rc;
   }
 
+  // controllers
+  CommandXboxController driverController = new CommandXboxController(0);
+  CommandXboxController opController = new CommandXboxController(1);
+
   public final Dashboard dashboard;
   public Shooter_Subsystem shooter = null;
   public final HID_Xbox_Subsystem driverControls;
@@ -164,16 +168,14 @@ public class RobotContainer {
    * </ul>
    */
   void setDriverButtons() {
-    System.out.println("*****Trying to set driver controls");
     // B - Toggle drive mode
     if (m_robotSpecs.getSubsystemConfig().HAS_DRIVETRAIN && m_robotSpecs.getSubsystemConfig().IS_COMPETITION_BOT) {
-      driverControls.bind(Id.Driver, XboxButton.B).onTrue(new InstantCommand(() -> {m_driveController.cycleDriveMode();}));
-      driverControls.bind(Id.Driver, XboxButton.Y).onTrue(new InstantCommand(() -> { drivetrain.resetAnglePose(Rotation2d.fromDegrees(-180)); })); //-180 reset if intake faces drivers
-      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_LEFT).whenPressed(m_driveController::setRobotCentric);
-      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_LEFT).whenReleased(m_driveController::setFieldCentric);   
-      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_RIGHT).whenPressed(m_driveController::turnOnShootingMode);
-      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_RIGHT).whenReleased(m_driveController::turnOffShootingMode);
-      System.out.println("Successfully set driver controls");
+      driverController.b().onTrue(new InstantCommand(() -> {m_driveController.cycleDriveMode();}));
+      driverController.y().onTrue(new InstantCommand(() -> { drivetrain.resetAnglePose(Rotation2d.fromDegrees(-180)); })); //-180 reset if intake faces drivers
+      driverController.leftTrigger().onTrue(new InstantCommand(() -> {m_driveController.setRobotCentric();}));
+      driverController.leftTrigger().onFalse(new InstantCommand(() -> {m_driveController.setFieldCentric();}));   
+      driverController.rightTrigger().onTrue(new InstantCommand(() -> {m_driveController.turnOnShootingMode();}));
+      driverController.rightTrigger().onFalse(new InstantCommand(() -> {m_driveController.turnOffShootingMode();}));
     }
     if (m_robotSpecs.getSubsystemConfig().HAS_DRIVETRAIN && !m_robotSpecs.getSubsystemConfig().IS_COMPETITION_BOT) {
       driverControls.bind(Id.Driver, XboxButton.B).whenPressed(m_driveControllerDrivetrain::cycleDriveMode);
@@ -187,7 +189,7 @@ public class RobotContainer {
 
     // RB limelight toggle
     if (m_robotSpecs.getSubsystemConfig().HAS_LIMELIGHT)
-      driverControls.bind(Id.Driver, XboxButton.X).whenPressed(new InstantCommand(limelight::toggleLED));
+      driverController.x().onTrue(new InstantCommand(limelight::toggleLED));
 
     //temporary for navx/pigeon testing
     driverControls.bind(Id.Driver, XboxPOV.POV_UP).whenPressed(new InstantCommand(()->{ sensors.disableNavx(true); }));
@@ -202,7 +204,6 @@ public class RobotContainer {
   // * </ul>
   // */
   void setAssistantButtons() {
-    System.out.println("*****Trying to set driver controls");
     // LB - toggle intake deploy
     // B - spin intake while held (to intake the ball)
     // A - spin intake while held (in reverse to expell the ball)
@@ -212,29 +213,26 @@ public class RobotContainer {
     }
     
     if (m_robotSpecs.getSubsystemConfig().HAS_INTAKE) {
-      CommandXboxController controller = new CommandXboxController(1);
-      controller.leftBumper().onTrue(new MoveIntake(DeployMode.Toggle));
+      opController.leftBumper().onTrue(new MoveIntake(DeployMode.Toggle));
       //driverControls.bind(Id.Assistant, XboxButton.LB).onTrue(new MoveIntake(DeployMode.Toggle));
       //vertical intake controls - manual control of intake and side rollers,not the magazine
-      driverControls.bind(Id.Assistant, XboxButton.A).whileHeld(new IntakeCommand((() -> 0.6), () -> 0.5, IntakeMode.LoadCargo));
-      driverControls.bind(Id.Assistant, XboxButton.B).whileHeld(new IntakeCommand((() -> 0.35), () -> 0.5, IntakeMode.ExpellCargo));
-      System.out.println("Successfully set op controls for intake");
+      opController.a().whileTrue(new IntakeCommand((() -> 0.6), () -> 0.5, IntakeMode.LoadCargo));
+      opController.b().whileTrue(new IntakeCommand((() -> 0.35), () -> 0.5, IntakeMode.ExpellCargo));
     }
 
     if (m_robotSpecs.getSubsystemConfig().HAS_MAGAZINE && m_robotSpecs.getSubsystemConfig().HAS_SHOOTER) {
       // Positioner binds :)
-      driverControls.bind(Id.Assistant, XboxButton.RB).whenPressed(new MovePositioner(PositionerMode.Toggle));
+      opController.rightBumper().onTrue(new MovePositioner(PositionerMode.Toggle));
 
       // Magazine Commands with intake sides, and intake roller
-      driverControls.bind(Id.Assistant, XboxButton.X).whileHeld(mag_default_cmd.getFeedCmd());
-      driverControls.bind(Id.Assistant, XboxButton.Y).whileHeld(mag_default_cmd.getEjectCmd());
+      opController.x().whileTrue(mag_default_cmd.getFeedCmd());
+      opController.y().whileTrue(mag_default_cmd.getEjectCmd());
 
-      driverControls.bind(Id.Assistant, XboxAxis.TRIGGER_RIGHT).whileHeld(new VelShootGatedCommand(Shooter.DefaultSettings,     mag_default_cmd));
-      driverControls.bind(Id.Assistant, XboxPOV.POV_LEFT)      .whileHeld(new VelShootGatedCommand(Shooter.shortVelocity,       mag_default_cmd));
-      driverControls.bind(Id.Assistant, XboxPOV.POV_UP)        .whileHeld(new VelShootGatedCommand(Shooter.shortMediumVelocity, mag_default_cmd));
-      driverControls.bind(Id.Assistant, XboxPOV.POV_DOWN)      .whileHeld(new VelShootGatedCommand(Shooter.mediumVelocity,      mag_default_cmd));
-      driverControls.bind(Id.Assistant, XboxPOV.POV_RIGHT)     .whileHeld(new VelShootGatedCommand(Shooter.longVelocity,        mag_default_cmd));
-      System.out.println("Successfully set op controls for shooting");
+      opController.rightTrigger().whileTrue(new VelShootGatedCommand(Shooter.DefaultSettings,     mag_default_cmd));
+      opController.povLeft().whileTrue(new VelShootGatedCommand(Shooter.shortVelocity,       mag_default_cmd));
+      opController.povUp().whileTrue(new VelShootGatedCommand(Shooter.shortMediumVelocity, mag_default_cmd));
+      opController.povDown().whileTrue(new VelShootGatedCommand(Shooter.mediumVelocity,      mag_default_cmd));
+      opController.povRight().whileTrue(new VelShootGatedCommand(Shooter.longVelocity,        mag_default_cmd));
     }
   }
 
