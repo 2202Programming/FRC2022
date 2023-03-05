@@ -25,6 +25,5 @@
       }
     },
   ],
-  "java.test.defaultConfig": "WPIlibUnitTests",
-  "wpilib.selectDefaultSimulateExtension": true
+  "java.test.defaultConfig": "WPIlibUnitTests"
 }

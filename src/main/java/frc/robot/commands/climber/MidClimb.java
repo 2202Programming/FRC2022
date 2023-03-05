@@ -40,38 +40,5 @@ public class MidClimb extends SequentialCommandGroup {
         this.climber = climber;
 
         filter = LinearFilter.movingAverage(3);
-    }
-
-    @Override
-    public boolean isFinished() {
-        var doKill = false;
-        // if (RobotContainer.RC().driverControls.bind(Id.SwitchBoard, SBButton.Sw11).get()) {
-        //     System.out.println("** CLIMBER KILLED reason=sb-button");
-        //     doKill = true;
-        // }
-
-        if (RobotContainer.RC().driverControls.bind(Id.Driver, XboxButton.START).get()) {
-            System.out.println("** CLIMBER KILLED reason=driver-button");
-            doKill = true;
-        }
-
-        if (RobotContainer.RC().driverControls.bind(Id.Assistant, XboxButton.START).get()) {
-            System.out.println("** CLIMBER KILLED reason=assistant-button");
-            doKill = true;
-        }
-
-        var anglediff = filter.calculate(Math.abs(climber.getLeftRotation() - climber.getRightRotation()));
-        if (anglediff > ClimbSettings.KILL_COUNT) {
-            System.out.println("** CLIMBER KILLED reason=angle-diff anglediff=" + anglediff);
-            doKill = true;
-        }
-
-        if (doKill) {
-            climber.setRotSpeed(0);
-            climber.setExtSpeed(0);
-            return true;
-        }
-
-        return super.isFinished();
-    }
+}
 }

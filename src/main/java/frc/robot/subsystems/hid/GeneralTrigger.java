@@ -21,7 +21,6 @@ public class GeneralTrigger extends Button {
         this.trigger = trigger;
     }
 
-    @Override
     public boolean get() {
         return trigger.getAsBoolean();
     }

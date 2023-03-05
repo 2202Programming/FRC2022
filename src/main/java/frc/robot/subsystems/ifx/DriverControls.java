@@ -12,8 +12,6 @@ import java.util.HashMap;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.subsystems.hid.GeneralTrigger;
 import frc.robot.subsystems.hid.HID_Xbox_Subsystem;
 import frc.robot.subsystems.hid.JoystickTrigger;
@@ -22,6 +20,8 @@ import frc.robot.subsystems.hid.XboxAxis;
 import frc.robot.subsystems.hid.XboxButton;
 import frc.robot.subsystems.hid.XboxPOV;
 import frc.robot.subsystems.hid.SideboardController.SBButton;
+import frc.robot.subsystems.util.JoystickButton;
+import frc.robot.subsystems.util.POVButton;
 
 /**
  * 

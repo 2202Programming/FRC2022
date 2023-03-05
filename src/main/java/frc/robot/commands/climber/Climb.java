@@ -35,11 +35,7 @@ public class Climb extends SequentialCommandGroup {
 
     }
 
-
-
-
-    @Override
-    public boolean isFinished() {
+    public void isOver() {
         var doKill = false;
         // if(RobotContainer.RC().driverControls.bind(Id.SwitchBoard, SBButton.Sw11).get()) {
         //     System.out.println("** CLIMBER KILLED reason=sb-button");
@@ -65,9 +61,7 @@ public class Climb extends SequentialCommandGroup {
         if(doKill) {
             climber.setRotSpeed(0);
             climber.setExtSpeed(0);
-            return true;
+            this.cancel();
         }
-
-        return super.isFinished();
     }
 }

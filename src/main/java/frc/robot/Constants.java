@@ -8,6 +8,10 @@
 package frc.robot;
 
 import frc.robot.util.PIDFController;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.subsystems.shooter.FlyWheel.FlyWheelConfig;
@@ -58,6 +62,8 @@ public final class Constants {
   public static final double DT = 0.02; // 20ms framerate 50Hz
   public static final double Tperiod = 0.02; // framerate period 20ms, 50Hz
   public static final int NEO_COUNTS_PER_REVOLUTION = 42;
+
+  public final static String NT_NAME_POSITION = "Position";
 
   public static final class Autonomous {
 
@@ -250,6 +256,9 @@ public final class Constants {
     }
 
     public static final class DriveTrain {
+        // NTs
+        public static final String NT_NAME_DT = "DT"; // expose data under DriveTrain table
+
         // motor constraints
         public static final double motorMaxRPM = 5600;    // motor limit
 
@@ -369,4 +378,9 @@ public final class Constants {
 
     }
 
+    public static final class Sensors {
+      public enum EncoderID {
+        BackLeft, BackRight, FrontLeft, FrontRight
+      }
+    }
 }

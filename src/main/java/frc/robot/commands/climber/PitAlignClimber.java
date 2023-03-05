@@ -7,8 +7,8 @@ package frc.robot.commands.climber;
 import frc.robot.subsystems.hid.XboxPOV;
 import frc.robot.subsystems.hid.XboxButton;
 import frc.robot.subsystems.ifx.DriverControls;
+import frc.robot.subsystems.util.POVButton;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.subsystems.climber.Climber;
 
 public class PitAlignClimber extends CommandBase {

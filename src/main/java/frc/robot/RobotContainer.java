@@ -134,16 +134,16 @@ public class RobotContainer {
     setAssistantButtons();
      
       // Sideboard 
-      if (m_robotSpecs.getSubsystemConfig().HAS_CLIMBER) { driverControls.bind(Id.SwitchBoard, SBButton.Sw21).whileHeld(new 
+      if (m_robotSpecs.getSubsystemConfig().HAS_CLIMBER) { driverControls.bind(Id.SwitchBoard, SBButton.Sw21).whileTrue(new 
         // warning - PitAlign command use Driver's DPAD, RB and, LB. DPL-can we run this in TEST mode?
       PitAlignClimber(driverControls, Id.Driver, climber, 2.0, 5.0)); //[in/s] [deg/s]
-        driverControls.bind(Id.SwitchBoard, SBButton.Sw22).whenPressed(new MidClimb(climber));
-        driverControls.bind(Id.SwitchBoard, SBButton.Sw23).whenPressed(new TraverseClimb(climber));
-        driverControls.bind(Id.SwitchBoard, SBButton.Sw24).whileHeld(new SequentialCommandGroup(
+        driverControls.bind(Id.SwitchBoard, SBButton.Sw22).onTrue(new MidClimb(climber));
+        driverControls.bind(Id.SwitchBoard, SBButton.Sw23).onTrue(new TraverseClimb(climber));
+        driverControls.bind(Id.SwitchBoard, SBButton.Sw24).whileTrue(new SequentialCommandGroup(
           new MoveArmsTo(climber, "To Angle 0", (climber.getLeftExtInches() + climber.getRightExtInches())/2, 0, true, true),
           new MoveArmsTo(climber, "To zero", 0, 0, true, true)));
         //driverControls.bind(Id.SwitchBoard, SBButton.Sw25).whileHeld(new ClimberTestRotRate(climber, 20, -30, 65)); //use pit-zero to start
-        driverControls.bind(Id.SwitchBoard, SBButton.Sw25).whileHeld(
+        driverControls.bind(Id.SwitchBoard, SBButton.Sw25).whileTrue(
           new ClimberTestRotRate(climber, 40.0, -70.0, 30.0));
         
               //new ClimberTestVelocity(climber, 4, 0.0, 12)); //use pit-zero to start
@@ -165,8 +165,8 @@ public class RobotContainer {
   void setDriverButtons() {
     // B - Toggle drive mode
     if (m_robotSpecs.getSubsystemConfig().HAS_DRIVETRAIN && m_robotSpecs.getSubsystemConfig().IS_COMPETITION_BOT) {
-      driverControls.bind(Id.Driver, XboxButton.B).whenPressed(m_driveController::cycleDriveMode);
-      driverControls.bind(Id.Driver, XboxButton.Y).whenPressed(new InstantCommand(() -> { drivetrain.resetAnglePose(Rotation2d.fromDegrees(-180)); })); //-180 reset if intake faces drivers
+      driverControls.bind(Id.Driver, XboxButton.B).onTrue(new InstantCommand(() -> {m_driveController.cycleDriveMode();}));
+      driverControls.bind(Id.Driver, XboxButton.Y).onTrue(new InstantCommand(() -> { drivetrain.resetAnglePose(Rotation2d.fromDegrees(-180)); })); //-180 reset if intake faces drivers
       driverControls.bind(Id.Driver, XboxAxis.TRIGGER_LEFT).whenPressed(m_driveController::setRobotCentric);
       driverControls.bind(Id.Driver, XboxAxis.TRIGGER_LEFT).whenReleased(m_driveController::setFieldCentric);   
       driverControls.bind(Id.Driver, XboxAxis.TRIGGER_RIGHT).whenPressed(m_driveController::turnOnShootingMode);

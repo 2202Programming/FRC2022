@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.SwerveDrivetrain;
 
@@ -71,7 +72,7 @@ public class auto_pathPlanner_cmd extends CommandBase {
 
       PIDController xController = new PIDController(4.0, 0.0, 0.0);
       PIDController yController = new PIDController(4.0, 0.0, 0.0);
-      ProfiledPIDController thetaController = new ProfiledPIDController(4, 0, 0, new TrapezoidProfile.Constraints(3, 3));
+      PIDController thetaController = new PIDController(4, 0, 0);
       //Units are radians for thetaController; PPSwerveController is using radians internally.
       thetaController.enableContinuousInput(-Math.PI, Math.PI); //prevent piroutte paths over continuity
 
@@ -123,7 +124,7 @@ public class auto_pathPlanner_cmd extends CommandBase {
 
       PIDController xController = new PIDController(4.0, 0.0, 0.0);
       PIDController yController = new PIDController(4.0, 0.0, 0.0);
-      ProfiledPIDController thetaController = new ProfiledPIDController(4, 0, 0, new TrapezoidProfile.Constraints(3, 3));
+      PIDController thetaController = new PIDController(4, 0, 0);
       //Units are radians for thetaController; PPSwerveController is using radians internally.
       thetaController.enableContinuousInput(-Math.PI, Math.PI); //prevent piroutte paths over continuity
 
@@ -172,7 +173,7 @@ public class auto_pathPlanner_cmd extends CommandBase {
 
       PIDController xController = new PIDController(4.0, 0.0, 0.0);
       PIDController yController = new PIDController(4.0, 0.0, 0.0);
-      ProfiledPIDController thetaController = new ProfiledPIDController(4, 0, 0, new TrapezoidProfile.Constraints(3, 3));
+      PIDController thetaController = new PIDController(4, 0, 0);
       //Units are radians for thetaController; PPSwerveController is using radians internally.
       thetaController.enableContinuousInput(-Math.PI, Math.PI); //prevent piroutte paths over continuity
 
@@ -221,7 +222,7 @@ public class auto_pathPlanner_cmd extends CommandBase {
 
       PIDController xController = new PIDController(4.0, 0.0, 0.0);
       PIDController yController = new PIDController(4.0, 0.0, 0.0);
-      ProfiledPIDController thetaController = new ProfiledPIDController(4, 0, 0, new TrapezoidProfile.Constraints(3, 3));
+      PIDController thetaController = new PIDController(4, 0, 0);
       //Units are radians for thetaController; PPSwerveController is using radians internally.
       thetaController.enableContinuousInput(-Math.PI, Math.PI); //prevent piroutte paths over continuity
 

@@ -15,10 +15,10 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.Constants;
-import frc.robot.RobotContainer;
 import frc.robot.Constants.DriveTrain;
 import frc.robot.util.ModMath;
 import frc.robot.util.PIDFController;
+import frc.robot.util.RobotSpecs;
 
 public class SwerveModuleMK3 {
   public final String NT_Name = "DT"; // expose data under DriveTrain table
@@ -27,6 +27,8 @@ public class SwerveModuleMK3 {
   final int kSlot = 0;
 
   private int frameCounter = 0;
+
+  private final RobotSpecs robotSpecs;
 
   // Rev devices
   private final CANSparkMax driveMotor;
@@ -88,8 +90,9 @@ public class SwerveModuleMK3 {
    */
   public String myprefix;
 
-  public SwerveModuleMK3(CANSparkMax driveMtr, CANSparkMax angleMtr, double offsetDegrees, CANCoder absEnc,
+  public SwerveModuleMK3(RobotSpecs robotSpcs, CANSparkMax driveMtr, CANSparkMax angleMtr, double offsetDegrees, CANCoder absEnc,
       boolean invertAngleMtr, boolean invertAngleCmd, boolean invertDrive, String prefix) {
+    robotSpecs = robotSpcs;
     driveMotor = driveMtr;
     angleMotor = angleMtr;
     absEncoder = absEnc;
@@ -109,8 +112,8 @@ public class SwerveModuleMK3 {
     driveMotorPID = driveMotor.getPIDController();
     driveEncoder = driveMotor.getEncoder();
     // set driveEncoder to use units of the wheelDiameter, meters
-    driveEncoder.setPositionConversionFactor(Math.PI * RobotContainer.RC().m_robotSpecs.getChassisConfig().wheelDiameter / RobotContainer.RC().m_robotSpecs.getChassisConfig().kDriveGR); // mo-rot to wheel units
-    driveEncoder.setVelocityConversionFactor((Math.PI * RobotContainer.RC().m_robotSpecs.getChassisConfig().wheelDiameter / RobotContainer.RC().m_robotSpecs.getChassisConfig().kDriveGR) / 60.0); // mo-rpm wheel units 
+    driveEncoder.setPositionConversionFactor(Math.PI * robotSpecs.getChassisConfig().wheelDiameter / robotSpecs.getChassisConfig().kDriveGR); // mo-rot to wheel units
+    driveEncoder.setVelocityConversionFactor((Math.PI * robotSpecs.getChassisConfig().wheelDiameter / robotSpecs.getChassisConfig().kDriveGR) / 60.0); // mo-rpm wheel units 
     sleep(100);
     // Angle Motor config
     angleMotor.setInverted(invertAngleMtr);
@@ -119,8 +122,8 @@ public class SwerveModuleMK3 {
     angleEncoder = angleMotor.getEncoder();
 
     // set angle endcoder to return values in deg and deg/s
-    angleEncoder.setPositionConversionFactor(360.0 / RobotContainer.RC().m_robotSpecs.getChassisConfig().kSteeringGR); // mo-rotations to degrees
-    angleEncoder.setVelocityConversionFactor(360.0 / RobotContainer.RC().m_robotSpecs.getChassisConfig().kSteeringGR / 60.0); // rpm to deg/s
+    angleEncoder.setPositionConversionFactor(360.0 / robotSpecs.getChassisConfig().kSteeringGR); // mo-rotations to degrees
+    angleEncoder.setVelocityConversionFactor(360.0 / robotSpecs.getChassisConfig().kSteeringGR / 60.0); // rpm to deg/s
 
     // SparkMax PID values
     DriveTrain.anglePIDF.copyTo(angleMotorPID, kSlot); // position mode
@@ -243,28 +246,28 @@ public class SwerveModuleMK3 {
     boolean result = true;
 
     if (Math.abs(
-        driveEncoder.getPositionConversionFactor() - Math.PI * RobotContainer.RC().m_robotSpecs.getChassisConfig().wheelDiameter / RobotContainer.RC().m_robotSpecs.getChassisConfig().kDriveGR) > 0.1) {
+        driveEncoder.getPositionConversionFactor() - Math.PI * robotSpecs.getChassisConfig().wheelDiameter / robotSpecs.getChassisConfig().kDriveGR) > 0.1) {
       System.out.println("*** ERROR *** " + myprefix + " position conversion factor incorrect for drive");
-      System.out.println("Expected Position CF: " + Math.PI * RobotContainer.RC().m_robotSpecs.getChassisConfig().wheelDiameter / RobotContainer.RC().m_robotSpecs.getChassisConfig().kDriveGR);
+      System.out.println("Expected Position CF: " + Math.PI * robotSpecs.getChassisConfig().wheelDiameter / robotSpecs.getChassisConfig().kDriveGR);
       System.out.println("Returned Position CF: " + driveEncoder.getPositionConversionFactor());
       result = false;
     }
     if (Math.abs(driveEncoder.getVelocityConversionFactor()
-        - Math.PI * RobotContainer.RC().m_robotSpecs.getChassisConfig().wheelDiameter / RobotContainer.RC().m_robotSpecs.getChassisConfig().kDriveGR / 60.0) > 0.1) {
+        - Math.PI * robotSpecs.getChassisConfig().wheelDiameter / robotSpecs.getChassisConfig().kDriveGR / 60.0) > 0.1) {
       System.out.println("*** ERROR *** " + myprefix + " velocity conversion factor incorrect for drive");
-      System.out.println("Expected Vel CF: " + Math.PI * RobotContainer.RC().m_robotSpecs.getChassisConfig().wheelDiameter / RobotContainer.RC().m_robotSpecs.getChassisConfig().kDriveGR / 60.0);
+      System.out.println("Expected Vel CF: " + Math.PI * robotSpecs.getChassisConfig().wheelDiameter / robotSpecs.getChassisConfig().kDriveGR / 60.0);
       System.out.println("Returned Vel CF: " + driveEncoder.getVelocityConversionFactor());
       result = false;
     }
-    if (Math.abs(angleEncoder.getPositionConversionFactor() - (360.0 / RobotContainer.RC().m_robotSpecs.getChassisConfig().kSteeringGR)) > 0.1) {
+    if (Math.abs(angleEncoder.getPositionConversionFactor() - (360.0 / robotSpecs.getChassisConfig().kSteeringGR)) > 0.1) {
       System.out.println("*** ERROR *** " + myprefix + " position conversion factor incorrect for angle");
-      System.out.println("Expected Angle Pos CF: " + 360.0 / RobotContainer.RC().m_robotSpecs.getChassisConfig().kSteeringGR);
+      System.out.println("Expected Angle Pos CF: " + 360.0 / robotSpecs.getChassisConfig().kSteeringGR);
       System.out.println("Returned Angle Pos CF: " + angleEncoder.getPositionConversionFactor());
       result = false;
     }
-    if (Math.abs(angleEncoder.getVelocityConversionFactor() - (360.0 / RobotContainer.RC().m_robotSpecs.getChassisConfig().kSteeringGR / 60)) > 0.1) {
+    if (Math.abs(angleEncoder.getVelocityConversionFactor() - (360.0 / robotSpecs.getChassisConfig().kSteeringGR / 60)) > 0.1) {
       System.out.println("*** ERROR *** " + myprefix + " velocity conversion factor incorrect for angle");
-      System.out.println("Expected Angle Vel CF: " + (360.0 / RobotContainer.RC().m_robotSpecs.getChassisConfig().kSteeringGR / 60));
+      System.out.println("Expected Angle Vel CF: " + (360.0 / robotSpecs.getChassisConfig().kSteeringGR / 60));
       System.out.println("Returned Angle Vel CF: " + angleEncoder.getVelocityConversionFactor());
       result = false;
     }

@@ -22,8 +22,7 @@ public class JoystickTrigger extends Button {
         this.axisNumber = axisNumber;
         this.threshold = threshold;
     }
-
-    @Override
+    
     public boolean get() {
         return joystick.getRawAxis(axisNumber) > threshold;
     }
