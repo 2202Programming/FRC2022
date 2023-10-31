@@ -5,7 +5,6 @@
 package frc.robot.subsystems.climber;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.SparkMaxPIDController;
@@ -91,22 +90,7 @@ public class ArmRotation {
     }
 
     public void setEncoderPos(double pos) {
-        REVLibError err = encoder.setPosition(pos);
-        // double readval = encoder.getPosition();
-        // boolean done = false;
-        // while (!done)
-        //     {
-        //         readval = encoder.getPosition();
-        //         if (readval != pos) {
-        //             err = encoder.setPosition(pos);
-        //             periodic();
-        //             System.out.println("readval="+readval +"pos=" +pos);
-        //             System.out.println("err="+err.toString());
-        //         }
-        //         else { 
-        //             done = true;
-        //         }
-        //     }
+        encoder.setPosition(pos);
     }
 
     public void set(double degrees) {

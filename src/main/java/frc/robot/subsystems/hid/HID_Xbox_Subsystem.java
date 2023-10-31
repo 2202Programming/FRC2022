@@ -8,12 +8,9 @@
 package frc.robot.subsystems.hid;
 
 import edu.wpi.first.wpilibj.GenericHID;
-// import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.hid.SideboardController.SBButton;
 import frc.robot.subsystems.ifx.DriverControls;
-import frc.robot.subsystems.util.JoystickButton;
 import frc.robot.subsystems.util.MonitoredSubsystemBase;
 
 
@@ -59,7 +56,7 @@ public class HID_Xbox_Subsystem extends MonitoredSubsystemBase implements Driver
     }
     
     private boolean read() {
-      prev = button.get();
+      prev = button.getAsBoolean();
       return prev;
     }
 
@@ -323,6 +320,12 @@ public void turnOnRumble(Id id){
     case Assistant:
       assistant.setRumble(GenericHID.RumbleType.kLeftRumble, 1);
       assistant.setRumble(GenericHID.RumbleType.kRightRumble, 1);
+    case Phantom:
+      break;
+    case SwitchBoard:
+      break;
+    default:
+      break;
   }
 }
 
@@ -334,6 +337,12 @@ public void turnOffRumble(Id id){
     case Assistant:
       assistant.setRumble(GenericHID.RumbleType.kLeftRumble, 0);
       assistant.setRumble(GenericHID.RumbleType.kRightRumble, 0);
+    case Phantom:
+      break;
+    case SwitchBoard:
+      break;
+    default:
+      break;
   }
 }
 

@@ -1,12 +1,7 @@
 package frc.robot.commands.climber;
 
-import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.RobotContainer;
-import frc.robot.Constants.ClimbSettings;
 import frc.robot.subsystems.climber.Climber;
-import frc.robot.subsystems.hid.XboxButton;
-import frc.robot.subsystems.ifx.DriverControls.Id;
 
 //import static frc.robot.Constants.ClimbSettings;
 public class MidClimb extends SequentialCommandGroup {
@@ -20,8 +15,8 @@ public class MidClimb extends SequentialCommandGroup {
     public static final double travers_start_ext = 10;
     public static final double travers_start_rot = 15;
 
-    private Climber climber;
-    private LinearFilter filter;
+    //private Climber climber;
+    //private LinearFilter filter;
 
     /**
      * 
@@ -37,8 +32,8 @@ public class MidClimb extends SequentialCommandGroup {
                 new MoveArmsTo(climber, "pullupMid", pullupext, midreachrot, true, true).withTimeout(TO),
                 new MoveArmsTo(climber, "rotateCG1", pullupext, pulluprotForward, true, true).withTimeout(TO));
 
-        this.climber = climber;
+        //this.climber = climber;
 
-        filter = LinearFilter.movingAverage(3);
+        //filter = LinearFilter.movingAverage(3);
 }
 }

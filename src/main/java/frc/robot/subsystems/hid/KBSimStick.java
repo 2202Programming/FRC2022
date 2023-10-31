@@ -143,7 +143,7 @@ public class KBSimStick extends GenericHID {
 
   public void enableTriggerModeTrack() {
     new JoystickButton(this, Button.Mode.value)
-        .whenPressed(new TriggerModeTrackCmd(this));
+        .onTrue(new TriggerModeTrackCmd(this));
   }
 
   class TriggerModeTrackCmd extends InstantCommand {

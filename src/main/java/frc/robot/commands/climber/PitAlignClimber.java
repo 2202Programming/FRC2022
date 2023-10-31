@@ -5,9 +5,9 @@
 package frc.robot.commands.climber;
 
 import frc.robot.subsystems.hid.XboxPOV;
+import frc.robot.subsystems.hid.POVButton;
 import frc.robot.subsystems.hid.XboxButton;
 import frc.robot.subsystems.ifx.DriverControls;
-import frc.robot.subsystems.util.POVButton;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.climber.Climber;
 
@@ -51,22 +51,22 @@ public class PitAlignClimber extends CommandBase {
     double rot_lt = 0.0;
     double rot_rt = 0.0;
 
-    if (up.get()) {
-      v_lt = dc.bind(this.id, XboxButton.LB).get() ? extRate : 0.0;
-      v_rt = dc.bind(this.id, XboxButton.RB).get() ? extRate : 0.0;
+    if (up.getAsBoolean()) {
+      v_lt = dc.bind(this.id, XboxButton.LB).getAsBoolean() ? extRate : 0.0;
+      v_rt = dc.bind(this.id, XboxButton.RB).getAsBoolean() ? extRate : 0.0;
     }
-    if (down.get()) {
-      v_lt = dc.bind(this.id, XboxButton.LB).get() ? -extRate : 0.0;
-      v_rt = dc.bind(this.id, XboxButton.RB).get() ? -extRate : 0.0;
+    if (down.getAsBoolean()) {
+      v_lt = dc.bind(this.id, XboxButton.LB).getAsBoolean() ? -extRate : 0.0;
+      v_rt = dc.bind(this.id, XboxButton.RB).getAsBoolean() ? -extRate : 0.0;
     }
 
-    if (left.get()) {
-      rot_lt = dc.bind(this.id, XboxButton.LB).get() ? rotRate : 0.0;
-      rot_rt = dc.bind(this.id, XboxButton.RB).get() ? rotRate : 0.0;
+    if (left.getAsBoolean()) {
+      rot_lt = dc.bind(this.id, XboxButton.LB).getAsBoolean() ? rotRate : 0.0;
+      rot_rt = dc.bind(this.id, XboxButton.RB).getAsBoolean() ? rotRate : 0.0;
     }
-    if (right.get()) {
-      rot_lt = dc.bind(this.id, XboxButton.LB).get() ? -rotRate : 0.0;
-      rot_rt = dc.bind(this.id, XboxButton.RB).get() ? -rotRate : 0.0;
+    if (right.getAsBoolean()) {
+      rot_lt = dc.bind(this.id, XboxButton.LB).getAsBoolean() ? -rotRate : 0.0;
+      rot_rt = dc.bind(this.id, XboxButton.RB).getAsBoolean() ? -rotRate : 0.0;
     }
     climber.setExtSpeed(v_lt, v_rt);
     climber.setRotSpeed(rot_lt, rot_rt);

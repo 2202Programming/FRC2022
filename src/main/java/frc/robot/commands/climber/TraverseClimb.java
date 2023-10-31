@@ -4,16 +4,14 @@
 
 package frc.robot.commands.climber;
 
-import edu.wpi.first.math.filter.LinearFilter;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.RobotContainer;
-import frc.robot.Constants.ClimbSettings;
-import frc.robot.subsystems.climber.Climber;
-import frc.robot.subsystems.hid.XboxButton;
-import frc.robot.subsystems.ifx.DriverControls.Id;
-
 //import static frc.robot.commands.climber.MidClimb.travers_start_ext;
-import static frc.robot.commands.climber.MidClimb.*;
+import static frc.robot.commands.climber.MidClimb.partialpullupext;
+import static frc.robot.commands.climber.MidClimb.pullupext;
+import static frc.robot.commands.climber.MidClimb.pulluprotForward;
+import static frc.robot.commands.climber.MidClimb.travers_start_ext;
+
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.subsystems.climber.Climber;
 
 public class TraverseClimb extends SequentialCommandGroup {
 
@@ -21,9 +19,8 @@ public class TraverseClimb extends SequentialCommandGroup {
     // climbMid
     // stabilize etc.
 
-    private Climber climber;
-
-    private LinearFilter filter;
+    //private Climber climber;
+    //private LinearFilter filter;
 
     public TraverseClimb(Climber climber) {
         super();
@@ -49,8 +46,8 @@ public class TraverseClimb extends SequentialCommandGroup {
                 new MoveArmsTo(climber, "partial-pullup -18", partialpullupext, -22, true, true).withTimeout(TO),
                 new MoveArmsTo(climber, "pullupMid2", pullupext, -17, true, true).withTimeout(TO),
                 new MoveArmsTo(climber, "rotateCG1", pullupext, pulluprotForward, true, true).withTimeout(TO));
-        this.climber = climber;
-        filter = LinearFilter.movingAverage(3);
+        //this.climber = climber;
+        //filter = LinearFilter.movingAverage(3);
     }
 
 }

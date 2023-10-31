@@ -28,10 +28,10 @@ public class SetArmRotation extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if (controls.bind(Id.Driver, XboxButton.LB).get()){
+    if (controls.bind(Id.Driver, XboxButton.LB).getAsBoolean()){
       climber.getLeftArmRotation().setPercentOutput(percentOutput);
     }
-    if (controls.bind(Id.Driver, XboxButton.RB).get()){
+    if (controls.bind(Id.Driver, XboxButton.RB).getAsBoolean()){
       climber.getRightArmRotation().setPercentOutput(percentOutput);
     }
   }

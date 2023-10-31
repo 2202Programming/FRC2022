@@ -42,12 +42,12 @@ public class Climb extends SequentialCommandGroup {
         //     doKill = true;
         // }
 
-        if(RobotContainer.RC().driverControls.bind(Id.Driver, XboxButton.START).get()) {
+        if(RobotContainer.RC().driverControls.bind(Id.Driver, XboxButton.START).getAsBoolean()) {
             System.out.println("** CLIMBER KILLED reason=driver-button");
             doKill = true;
         }
 
-        if(RobotContainer.RC().driverControls.bind(Id.Assistant, XboxButton.START).get()) {
+        if(RobotContainer.RC().driverControls.bind(Id.Assistant, XboxButton.START).getAsBoolean()) {
             System.out.println("** CLIMBER KILLED reason=assistant-button");
             doKill = true;
         }

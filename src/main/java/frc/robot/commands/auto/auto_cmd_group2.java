@@ -6,15 +6,13 @@ package frc.robot.commands.auto;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.RobotContainer;
 import frc.robot.Constants.Shooter;
+import frc.robot.RobotContainer;
 import frc.robot.commands.IntakeCommand;
-import frc.robot.commands.MagazineController;
-import frc.robot.commands.MoveIntake;
 import frc.robot.commands.IntakeCommand.IntakeMode;
+import frc.robot.commands.MoveIntake;
 import frc.robot.commands.MoveIntake.DeployMode;
 import frc.robot.commands.Shoot.LimeLightAim;
 import frc.robot.commands.Shoot.VelShootGatedCommand;
@@ -39,7 +37,7 @@ public class auto_cmd_group2 extends SequentialCommandGroup {
 
 
     Command finalAuto;
-    Command feed = RobotContainer.RC().m_driveController.magazineController.getFeedCmd();
+    //Command feed = RobotContainer.RC().m_driveController.magazineController.getFeedCmd();
     
     if(m_controls.readSideboard(SBButton.Sw11)){
       finalAuto = auto_pathPlanner_cmd.PathFactory(1,1, "AutoPath1");
