@@ -174,8 +174,12 @@ public class RobotContainer {
       driverController.y().onTrue(new InstantCommand(() -> { drivetrain.resetAnglePose(Rotation2d.fromDegrees(-180)); })); //-180 reset if intake faces drivers
       driverController.leftTrigger().onTrue(new InstantCommand(() -> {m_driveController.setRobotCentric();}));
       driverController.leftTrigger().onFalse(new InstantCommand(() -> {m_driveController.setFieldCentric();}));   
-      driverController.rightTrigger().onTrue(new InstantCommand(() -> {m_driveController.turnOnShootingMode();}));
-      driverController.rightTrigger().onFalse(new InstantCommand(() -> {m_driveController.turnOffShootingMode();}));
+
+      //dpl testing hack shooter
+      driverController.rightTrigger().whileTrue(new VelShootGatedCommand(Shooter.shortVelocity,       mag_default_cmd));
+
+      //driverController.rightTrigger().onTrue(new InstantCommand(() -> {m_driveController.turnOnShootingMode();}));
+      //driverController.rightTrigger().onFalse(new InstantCommand(() -> {m_driveController.turnOffShootingMode();}));
     }
     if (m_robotSpecs.getSubsystemConfig().HAS_DRIVETRAIN && !m_robotSpecs.getSubsystemConfig().IS_COMPETITION_BOT) {
       driverControls.bind(Id.Driver, XboxButton.B).onTrue(new InstantCommand(() -> 
@@ -198,8 +202,10 @@ public class RobotContainer {
       driverController.x().onTrue(new InstantCommand(limelight::toggleLED));
 
     //temporary for navx/pigeon testing
-    driverControls.bind(Id.Driver, XboxPOV.POV_UP).onTrue(new InstantCommand(()->{ sensors.disableNavx(true); }));
-    driverControls.bind(Id.Driver, XboxPOV.POV_DOWN).onTrue(new InstantCommand(()->{ sensors.disableNavx(false); }));
+    // DPL - Binding pov broken for new lib model.  Mr.L wil fix.
+
+    //driverControls.bind(Id.Driver, XboxPOV.POV_UP).onTrue(new InstantCommand(()->{ sensors.disableNavx(true); }));
+    //driverControls.bind(Id.Driver, XboxPOV.POV_DOWN).onTrue(new InstantCommand(()->{ sensors.disableNavx(false); }));
 
   }
 
