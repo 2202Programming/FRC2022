@@ -316,7 +316,7 @@ public final class Constants {
       public static final double PCNominalRadius = 10 / 2.0 / 12.0; // feet - power cell
       public static final double PCEffectiveRadius = 8 / 2.0 / 12.0; // feet - compressed radius
       
-      public static final double shortVelocity = 40;
+      public static final double shortVelocity = 29;
       public static final double shortMediumVelocity = 44;
       public static final double mediumVelocity = 50;
       public static final double longVelocity = 60;

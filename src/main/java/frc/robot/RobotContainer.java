@@ -176,7 +176,7 @@ public class RobotContainer {
       driverController.leftTrigger().onFalse(new InstantCommand(() -> {m_driveController.setFieldCentric();}));   
 
       //dpl testing hack shooter
-      driverController.rightTrigger().whileTrue(new VelShootGatedCommand(Shooter.shortVelocity,       mag_default_cmd));
+      // driverController.rightTrigger().whileTrue(new VelShootGatedCommand(Shooter.shortVelocity,       mag_default_cmd));
 
       //driverController.rightTrigger().onTrue(new InstantCommand(() -> {m_driveController.turnOnShootingMode();}));
       //driverController.rightTrigger().onFalse(new InstantCommand(() -> {m_driveController.turnOffShootingMode();}));
@@ -240,8 +240,8 @@ public class RobotContainer {
       opController.x().whileTrue(mag_default_cmd.getFeedCmd());
       opController.y().whileTrue(mag_default_cmd.getEjectCmd());
 
-      opController.rightTrigger().whileTrue(new VelShootGatedCommand(Shooter.DefaultSettings,     mag_default_cmd));
-      opController.povLeft().whileTrue(new VelShootGatedCommand(Shooter.shortVelocity,       mag_default_cmd));
+      opController.rightTrigger().whileTrue(new VelShootGatedCommand(Shooter.shortVelocity,     mag_default_cmd));
+      // opController.povLeft().whileTrue(new VelShootGatedCommand(Shooter.shortVelocity,       mag_default_cmd));
       opController.povUp().whileTrue(new VelShootGatedCommand(Shooter.shortMediumVelocity, mag_default_cmd));
       opController.povDown().whileTrue(new VelShootGatedCommand(Shooter.mediumVelocity,      mag_default_cmd));
       opController.povRight().whileTrue(new VelShootGatedCommand(Shooter.longVelocity,        mag_default_cmd));
