@@ -364,7 +364,7 @@ public final class Constants {
 
       public static FlyWheelConfig lowerFWConfig = new FlyWheelConfig();
       static {
-        lowerFWConfig.maxOpenLoopRPM = 4000;
+        lowerFWConfig.maxOpenLoopRPM = 4000; 
         lowerFWConfig.gearRatio = 1.0;         // lower encoder:fw is 1:1
         lowerFWConfig.sensorPhase = false;
         lowerFWConfig.inverted = false; 
