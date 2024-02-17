@@ -14,7 +14,7 @@ import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.IntakeCommand.IntakeMode;
 import frc.robot.commands.MoveIntake;
 import frc.robot.commands.MoveIntake.DeployMode;
-import frc.robot.commands.Shoot.LimeLightAim;
+import frc.robot.commands.Shoot.LimelightAim;
 import frc.robot.commands.Shoot.VelShootGatedCommand;
 import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.subsystems.Magazine_Subsystem;
@@ -68,7 +68,7 @@ public class auto_cmd_terminal extends SequentialCommandGroup {
         new VelShootGatedCommand(new ShooterSettings(Shooter.autoVelocity-2, 0.0, 0, Shooter.DefaultRPMTolerance), 
             RobotContainer.RC().m_driveController.magazineController), //if SW16 is ON, shoot with fixed RPM and no aiming
         new SequentialCommandGroup( //if SW16 is OFF aim and shoot with LL picking RPMs
-            new LimeLightAim().withTimeout(2),
+            new LimelightAim().withTimeout(2),
             new VelShootGatedCommand(RobotContainer.RC().m_driveController.magazineController, null)
         ),
         () -> RobotContainer.RC().driverControls.readSideboard(SBButton.Sw16)
