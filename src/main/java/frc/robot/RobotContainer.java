@@ -21,7 +21,6 @@ import frc.robot.commands.MovePositioner;
 import frc.robot.commands.MovePositioner.PositionerMode;
 import frc.robot.commands.ResetPosition;
 import frc.robot.commands.Shoot.VelShootGatedCommand;
-import frc.robot.commands.auto.auto_cmd;
 import frc.robot.commands.climber.MidClimb;
 import frc.robot.commands.climber.MoveArmsTo;
 import frc.robot.commands.climber.PitAlignClimber;
@@ -249,7 +248,7 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return new auto_cmd();
+    return null;
   }
 
 }
