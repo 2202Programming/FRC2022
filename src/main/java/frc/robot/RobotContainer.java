@@ -22,21 +22,22 @@ import frc.robot.commands.MovePositioner.PositionerMode;
 import frc.robot.commands.ResetPosition;
 import frc.robot.commands.Shoot.VelShootGatedCommand;
 import frc.robot.commands.auto.auto_cmd;
-import frc.robot.commands.climber.MidClimb;
-import frc.robot.commands.climber.MoveArmsTo;
-import frc.robot.commands.climber.PitAlignClimber;
-import frc.robot.commands.climber.TraverseClimb;
+//ko, dpl, er, comment. Deleted Climber related stuffs from RC becuase we took the arm off.
+//import frc.robot.commands.climber.MidClimb;
+//import frc.robot.commands.climber.MoveArmsTo;
+//import frc.robot.commands.climber.PitAlignClimber;
+//import frc.robot.commands.climber.TraverseClimb;
 import frc.robot.commands.swerve.DriveControllerWithShooter;
 import frc.robot.commands.swerve.DriveControllerDrivetrain;
 import frc.robot.commands.swerve.LimelightDriveCmd;
-import frc.robot.commands.test.ClimberTestRotRate;
+//import frc.robot.commands.test.ClimberTestRotRate;
 import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.subsystems.Limelight_Subsystem;
 import frc.robot.subsystems.Magazine_Subsystem;
 import frc.robot.subsystems.Positioner_Subsystem;
 import frc.robot.subsystems.Sensors_Subsystem;
 import frc.robot.subsystems.SwerveDrivetrain;
-import frc.robot.subsystems.climber.Climber;
+//import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.hid.HID_Xbox_Subsystem;
 import frc.robot.subsystems.hid.SideboardController.SBButton;
 import frc.robot.subsystems.hid.XboxAxis;
@@ -66,7 +67,7 @@ public class RobotContainer {
   public Intake_Subsystem intake = null;
   public SwerveDrivetrain drivetrain = null;
   public Magazine_Subsystem magazine = null;
-  public Climber climber = null;
+//  public Climber climber = null;
   public Limelight_Subsystem limelight = null;
   public Positioner_Subsystem positioner = null;
 
@@ -107,8 +108,8 @@ public class RobotContainer {
       positioner = new Positioner_Subsystem();
     if (m_robotSpecs.getSubsystemConfig().HAS_INTAKE)
       intake = new Intake_Subsystem();
-    if (m_robotSpecs.getSubsystemConfig().HAS_CLIMBER)
-      climber = new Climber();
+//    if (m_robotSpecs.getSubsystemConfig().HAS_CLIMBER)
+//      climber = new Climber();
     if (m_robotSpecs.getSubsystemConfig().HAS_LIMELIGHT)
       limelight = new Limelight_Subsystem();
 
@@ -139,23 +140,23 @@ public class RobotContainer {
     setAssistantButtons();
      
       // Sideboard 
-      if (m_robotSpecs.getSubsystemConfig().HAS_CLIMBER) { driverControls.bind(Id.SwitchBoard, SBButton.Sw21).whileTrue(new 
-        // warning - PitAlign command use Driver's DPAD, RB and, LB. DPL-can we run this in TEST mode?
-      PitAlignClimber(driverControls, Id.Driver, climber, 2.0, 5.0)); //[in/s] [deg/s]
-        driverControls.bind(Id.SwitchBoard, SBButton.Sw22).onTrue(new MidClimb(climber));
-        driverControls.bind(Id.SwitchBoard, SBButton.Sw23).onTrue(new TraverseClimb(climber));
-        driverControls.bind(Id.SwitchBoard, SBButton.Sw24).whileTrue(new SequentialCommandGroup(
-          new MoveArmsTo(climber, "To Angle 0", (climber.getLeftExtInches() + climber.getRightExtInches())/2, 0, true, true),
-          new MoveArmsTo(climber, "To zero", 0, 0, true, true)));
-        //driverControls.bind(Id.SwitchBoard, SBButton.Sw25).whileHeld(new ClimberTestRotRate(climber, 20, -30, 65)); //use pit-zero to start
-        driverControls.bind(Id.SwitchBoard, SBButton.Sw25).whileTrue(
-          new ClimberTestRotRate(climber, 40.0, -70.0, 30.0));
-        
-              //new ClimberTestVelocity(climber, 4, 0.0, 12)); //use pit-zero to start
-              //new ClimberTestRotRate(climber, 15, -30, 60));
-              //new ClimberTestRotRatePercent(climber, 0.5, -20, 40));
-              //new ClimberTestRotOscillation(climber));
-    }
+//      if (m_robotSpecs.getSubsystemConfig().HAS_CLIMBER) { driverControls.bind(Id.SwitchBoard, SBButton.Sw21).whileTrue(new 
+//        // warning - PitAlign command use Driver's DPAD, RB and, LB. DPL-can we run this in TEST mode?
+//      PitAlignClimber(driverControls, Id.Driver, climber, 2.0, 5.0)); //[in/s] [deg/s]
+//        driverControls.bind(Id.SwitchBoard, SBButton.Sw22).onTrue(new MidClimb(climber));
+//        driverControls.bind(Id.SwitchBoard, SBButton.Sw23).onTrue(new TraverseClimb(climber));
+//        driverControls.bind(Id.SwitchBoard, SBButton.Sw24).whileTrue(new SequentialCommandGroup(
+//          new MoveArmsTo(climber, "To Angle 0", (climber.getLeftExtInches() + climber.getRightExtInches())/2, 0, true, true),
+//          new MoveArmsTo(climber, "To zero", 0, 0, true, true)));
+//        //driverControls.bind(Id.SwitchBoard, SBButton.Sw25).whileHeld(new ClimberTestRotRate(climber, 20, -30, 65)); //use pit-zero to start
+//        driverControls.bind(Id.SwitchBoard, SBButton.Sw25).whileTrue(
+//          new ClimberTestRotRate(climber, 40.0, -70.0, 30.0));
+//        
+//              //new ClimberTestVelocity(climber, 4, 0.0, 12)); //use pit-zero to start
+//              //new ClimberTestRotRate(climber, 15, -30, 60));
+//              //new ClimberTestRotRatePercent(climber, 0.5, -20, 40));
+//              //new ClimberTestRotOscillation(climber));
+//    }
   }
 
   /**
