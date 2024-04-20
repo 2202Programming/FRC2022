@@ -2,14 +2,12 @@ package frc.robot.commands.Shoot;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.Autonomous;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.IntakeCommand.IntakeMode;
 import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.subsystems.Magazine_Subsystem;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -60,7 +58,7 @@ public class RPMShootCommandTune extends CommandBase{
     final ShooterSettings defaultShooterSettings = new ShooterSettings(requestedVelocity, 0.0, USE_CURRENT_ANGLE, 0.20);
 
     private VelShootCommand currentShooterCommand;
-    private Pose2d centerField = Constants.Autonomous.hubPose;
+   // private Pose2d centerField = Constants.Autonomous.hubPose;
     private double distanceToTarget = 0;
     
     public RPMShootCommandTune(double requestedVelocity){

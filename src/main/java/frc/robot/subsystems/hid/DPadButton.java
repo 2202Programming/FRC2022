@@ -1,14 +1,15 @@
 package frc.robot.subsystems.hid;
 
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.button.Button;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-public class DPadButton extends Button {
+public class DPadButton extends Trigger {
 
     XboxController joystick;
     Direction direction;
 
     public DPadButton(XboxController joystick, Direction direction) {
+        super(() -> get(joystick, direction));
         this.joystick = joystick;
         this.direction = direction;
     }
@@ -23,9 +24,14 @@ public class DPadButton extends Button {
         }
     }
 
+    @Deprecated
     public boolean get() {
         int dPadValue = joystick.getPOV();
         return (dPadValue == direction.direction);
     }
 
+    public static boolean get(XboxController joystick, Direction direction) {
+        int dPadValue = joystick.getPOV();
+        return (dPadValue == direction.direction);
+    }
 }

@@ -44,9 +44,9 @@ public class Sensors_Subsystem extends SubsystemBase {
 
   private NetworkTable table;
   private NetworkTable positionTable;
-  private NetworkTableEntry nt_accelX;
-  private NetworkTableEntry nt_accelY;
-  private NetworkTableEntry nt_accelZ;
+  //private NetworkTableEntry nt_accelX;
+  //private NetworkTableEntry nt_accelY;
+  //private NetworkTableEntry nt_accelZ;
   private NetworkTableEntry nt_yaw_navx;
   private NetworkTableEntry nt_yaw_navx_dot;
   private NetworkTableEntry nt_yaw_blend;
@@ -125,7 +125,7 @@ public class Sensors_Subsystem extends SubsystemBase {
 
   double log_counter = 0;
   //set this to true to default to pigeon
-  private boolean navxManuallyDisabled = true;
+  //private boolean navxManuallyDisabled = true;
   public Pose2d autoStartPose;
   public Pose2d autoEndPose;
 
@@ -150,9 +150,9 @@ public class Sensors_Subsystem extends SubsystemBase {
     // setup network table
     table = NetworkTableInstance.getDefault().getTable("Sensors");
     positionTable = NetworkTableInstance.getDefault().getTable(NTStrings.NT_Name_Position);
-    nt_accelX = table.getEntry("x_dd");
-    nt_accelY = table.getEntry("y_dd");
-    nt_accelZ = table.getEntry("z_dd");
+    //nt_accelX = table.getEntry("x_dd");
+    //nt_accelY = table.getEntry("y_dd");
+    //nt_accelZ = table.getEntry("z_dd");
 
     nt_yaw_navx = table.getEntry("yaw_navx");
     nt_yaw_navx_dot = table.getEntry("yaw_navx_d");
@@ -279,9 +279,9 @@ public class Sensors_Subsystem extends SubsystemBase {
 
     log_counter++;
     if ((log_counter % mod)==0) {
-      // nt_accelX.setDouble(m_ahrs.getWorldLinearAccelX());
-      // nt_accelY.setDouble(m_ahrs.getWorldLinearAccelY());
-      // nt_accelZ.setDouble(m_ahrs.getWorldLinearAccelZ());
+      //nt_accelX.setDouble(m_ahrs.getWorldLinearAccelX());
+      //nt_accelY.setDouble(m_ahrs.getWorldLinearAccelY());
+      //nt_accelZ.setDouble(m_ahrs.getWorldLinearAccelZ());
 
       nt_yaw_navx.setDouble(m_yaw_navx);
       nt_yaw_navx_dot.setDouble(m_yaw_navx_d);
@@ -496,7 +496,7 @@ public class Sensors_Subsystem extends SubsystemBase {
 
   //if true, navx should not be used
   public void disableNavx(boolean disabled){
-    navxManuallyDisabled = disabled;
+    //navxManuallyDisabled = disabled;     
   }
 
   public void setAutoStartPose(Pose2d pose){

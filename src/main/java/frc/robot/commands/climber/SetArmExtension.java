@@ -34,10 +34,10 @@ public class SetArmExtension extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {  
-    if (controls.bind(Id.Driver, XboxButton.LB).get()){
+    if (controls.bind(Id.Driver, XboxButton.LB).getAsBoolean()){
       climber.getLeftArmExtension().setPercentOutput(percentOutput);
     }
-    if (controls.bind(Id.Driver, XboxButton.RB).get()){
+    if (controls.bind(Id.Driver, XboxButton.RB).getAsBoolean()){
       climber.getRightArmExtension().setPercentOutput(percentOutput);
     }
   }

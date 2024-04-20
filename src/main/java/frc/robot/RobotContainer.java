@@ -175,16 +175,26 @@ public class RobotContainer {
       driverController.y().onTrue(new InstantCommand(() -> { drivetrain.resetAnglePose(Rotation2d.fromDegrees(-180)); })); //-180 reset if intake faces drivers
       driverController.leftTrigger().onTrue(new InstantCommand(() -> {m_driveController.setRobotCentric();}));
       driverController.leftTrigger().onFalse(new InstantCommand(() -> {m_driveController.setFieldCentric();}));   
-      driverController.rightTrigger().onTrue(new InstantCommand(() -> {m_driveController.turnOnShootingMode();}));
-      driverController.rightTrigger().onFalse(new InstantCommand(() -> {m_driveController.turnOffShootingMode();}));
+
+      //dpl testing hack shooter
+      driverController.rightTrigger().whileTrue(new VelShootGatedCommand(Shooter.shortVelocity,       mag_default_cmd));
+
+      //driverController.rightTrigger().onTrue(new InstantCommand(() -> {m_driveController.turnOnShootingMode();}));
+      //driverController.rightTrigger().onFalse(new InstantCommand(() -> {m_driveController.turnOffShootingMode();}));
     }
     if (m_robotSpecs.getSubsystemConfig().HAS_DRIVETRAIN && !m_robotSpecs.getSubsystemConfig().IS_COMPETITION_BOT) {
-      driverControls.bind(Id.Driver, XboxButton.B).whenPressed(m_driveControllerDrivetrain::cycleDriveMode);
-      driverControls.bind(Id.Driver, XboxButton.Y).whenPressed(new InstantCommand(() -> { drivetrain.resetAnglePose(Rotation2d.fromDegrees(-180)); })); //-180 reset if intake faces drivers
-      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_LEFT).whenPressed(m_driveControllerDrivetrain::setRobotCentric);
-      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_LEFT).whenReleased(m_driveControllerDrivetrain::setFieldCentric);   
-      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_RIGHT).whenPressed(m_driveControllerDrivetrain::turnOnShootingMode);
-      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_RIGHT).whenReleased(m_driveControllerDrivetrain::turnOffShootingMode);
+      driverControls.bind(Id.Driver, XboxButton.B).onTrue(new InstantCommand(() -> 
+            { m_driveControllerDrivetrain.cycleDriveMode(); } ));
+      driverControls.bind(Id.Driver, XboxButton.Y).onTrue(new InstantCommand(() -> 
+            { drivetrain.resetAnglePose(Rotation2d.fromDegrees(-180)); })); //-180 reset if intake faces drivers
+      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_LEFT).onTrue(new InstantCommand(() -> 
+            {m_driveControllerDrivetrain.setRobotCentric();} ));
+      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_LEFT).onFalse(new InstantCommand(() -> 
+            {m_driveControllerDrivetrain.setFieldCentric();} ));   
+      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_RIGHT).onTrue(new InstantCommand(() -> 
+            {m_driveControllerDrivetrain.turnOnShootingMode();} ));
+      driverControls.bind(Id.Driver, XboxAxis.TRIGGER_RIGHT).onFalse(new InstantCommand(() -> 
+            {m_driveControllerDrivetrain.turnOffShootingMode();} ));
     }
 
 
@@ -193,8 +203,10 @@ public class RobotContainer {
       driverController.x().onTrue(new InstantCommand(limelight::toggleLED));
 
     //temporary for navx/pigeon testing
-    driverControls.bind(Id.Driver, XboxPOV.POV_UP).whenPressed(new InstantCommand(()->{ sensors.disableNavx(true); }));
-    driverControls.bind(Id.Driver, XboxPOV.POV_DOWN).whenPressed(new InstantCommand(()->{ sensors.disableNavx(false); }));
+    // DPL - Binding pov broken for new lib model.  Mr.L wil fix.
+
+    //driverControls.bind(Id.Driver, XboxPOV.POV_UP).onTrue(new InstantCommand(()->{ sensors.disableNavx(true); }));
+    //driverControls.bind(Id.Driver, XboxPOV.POV_DOWN).onTrue(new InstantCommand(()->{ sensors.disableNavx(false); }));
 
   }
 
@@ -210,7 +222,7 @@ public class RobotContainer {
     // A - spin intake while held (in reverse to expell the ball)
     // RT - spin shooter and index while held
     if (driverControls.isConnected(Id.SwitchBoard)) {
-      driverControls.bind(Id.SwitchBoard, SBButton.Sw13).whenActive(new ResetPosition(Autonomous.startPose3));
+      driverControls.bind(Id.SwitchBoard, SBButton.Sw13).onTrue(new ResetPosition(Autonomous.startPose3));
     }
     
     if (m_robotSpecs.getSubsystemConfig().HAS_INTAKE) {

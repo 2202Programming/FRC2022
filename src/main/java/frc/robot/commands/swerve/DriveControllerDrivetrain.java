@@ -8,8 +8,8 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.NTStrings;
@@ -52,6 +52,7 @@ public class DriveControllerDrivetrain extends CommandBase implements SolutionPr
   boolean currentlyShooting = false;
   boolean shootingRequested = false;
   boolean hasSolution = false;
+  double shoot_on_time = -1.0;    // added post season for Shooting without LL target
 
   NetworkTable table;
   NetworkTable shooterTable;
@@ -59,6 +60,7 @@ public class DriveControllerDrivetrain extends CommandBase implements SolutionPr
   NetworkTableEntry driveMode;
   public final String NT_Name = "DC"; 
   public final String NT_ShooterName = "Shooter"; 
+
   NetworkTableEntry nt_roll_factor;
   NetworkTableEntry nt_pitch_factor;
 
@@ -138,8 +140,11 @@ public class DriveControllerDrivetrain extends CommandBase implements SolutionPr
   @Override
   public boolean isOnTarget(){
     // free shoot mode - just return true 
+
+    // Post season - might just have one controller, and could be hub-centric without a LL target
+    // so check shootwithoutTarget() which just delays 250ms 
     if (currentDriveMode == DriveModes.hubCentric)
-      return m_hubCentricDrive.isReady();
+      return shootWithoutTarget(250.0) || m_hubCentricDrive.isReady();   //have target or waited 250 ms
     return true;   //all other modes driver is the targeting solution
   }
 
@@ -203,10 +208,15 @@ public class DriveControllerDrivetrain extends CommandBase implements SolutionPr
   public void turnOnShootingMode(){
     shootingRequested = true;
     limelight.enableLED();
+
+    // post season, we may not have LL but still want to shoot
+    shoot_on_time = RobotController.getFPGATime() / 1000.0;
+
   }
 
   public void turnOffShootingMode(){
     shootingRequested = false;
+    shoot_on_time = -1.0;
   }
 
   @Override
@@ -326,6 +336,15 @@ public class DriveControllerDrivetrain extends CommandBase implements SolutionPr
          tipRollPid.setD(requested_roll_D);
          System.out.println("****Tip Roll D adjusted to: " + tipRollPid.getD());
        }
+  }
+
+  // Waits delay mS for a shooting solution, or will return true after wait to
+  // just shoot...
+  public boolean shootWithoutTarget(double delay) {
+    double now = RobotController.getFPGATime() / 1000.0;
+    // added post season to shoot without LL solution
+    // waits delay amount then returns true 
+    return  (shoot_on_time > 0) && ((now - shoot_on_time) >= delay);
   }
 
 }
