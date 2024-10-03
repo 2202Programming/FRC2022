@@ -118,9 +118,10 @@ public class RobotContainer {
       magazine.setDefaultCommand(mag_default_cmd);
       // swd = new DriveCmd(drivetrain, driverControls);
       // swd = new LimelightDriveCmd(drivetrain, driverControls, limelight);
-      m_driveController = new DriveControllerWithShooter(mag_default_cmd);
+      //m_driveController = new DriveControllerWithShooter(mag_default_cmd);
+      m_driveControllerDrivetrain = new DriveControllerDrivetrain();
       // drivetrain.setDefaultCommand(m_driveController);
-      drivetrainCommand = m_driveController;
+      drivetrainCommand = m_driveControllerDrivetrain;
     }
 
     else if(!m_robotSpecs.getSubsystemConfig().IS_COMPETITION_BOT){ //set up driveController version for swervebot
