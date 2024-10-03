@@ -21,7 +21,6 @@ import frc.robot.commands.MovePositioner;
 import frc.robot.commands.MovePositioner.PositionerMode;
 import frc.robot.commands.ResetPosition;
 import frc.robot.commands.Shoot.VelShootGatedCommand;
-import frc.robot.commands.auto.auto_cmd;
 //ko, dpl, er, comment. Deleted Climber related stuffs from RC becuase we took the arm off.
 //import frc.robot.commands.climber.MidClimb;
 //import frc.robot.commands.climber.MoveArmsTo;
@@ -250,7 +249,7 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return new auto_cmd();
+    return null;
   }
 
 }
