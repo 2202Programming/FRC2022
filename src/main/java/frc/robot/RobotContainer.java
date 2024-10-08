@@ -206,12 +206,12 @@ public class RobotContainer {
       "X: Ejects Cargo\n"+
       "Y: Sets Position Pose & Rotates 180 degrees\n"+
       "Left Bumper: Unbound\n"+
-      "Right Bumper: Intake Sequence"+
+      "Right Bumper: Intake Sequence\n"+
       "Left Trigger: Temporarily sets driving mode to robot centric while button is pressed\n"+
-      "Right Trigger: Unbound"+
-      "D-Pad: Shoots slow to fast left to down in a clockwise direction"+
-      "Right Stick: moves the robot"+
-      "Left Stick: rotates the robot");
+      "Right Trigger: Unbound\n"+
+      "D-Pad: Shoots slow to fast left to down in a clockwise direction\n"+
+      "Right Stick: moves the robot\n"+
+      "Left Stick: rotates the robot\n");
   }
 
   /**
