@@ -93,7 +93,8 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
 
     //final Command ejectCmd;
     //final Command feedCmd;
-    final Command movePositionerHigh = new MovePositioner(PositionerMode.High);
+    //Not used as of 10/7/2024 we have removed the Positioner - BG
+    // final Command movePositionerHigh = new MovePositioner(PositionerMode.High);
 
     // Network reporting
     final String NT_Name = "/Magazine-Controller";

@@ -150,10 +150,12 @@ public final class Constants {
   // PWM assignments on the Rio
   public static final class PCM1 {
     // Double Solenoid
-    public static final int INTAKE_UP_SOLENOID_PCM = 2; // test value
-    public static final int INTAKE_DOWN_SOLENOID_PCM = 3; // test value
-    public static final int POSITIONER_UP_SOLENOID_PCM = 0; // test value
-    public static final int POSITIONER_DOWN_SOLENOID_PCM = 1; // test value
+    public static final int INTAKE_UP_SOLENOID_PCM = 0; // test value //previous value: 2
+    public static final int INTAKE_DOWN_SOLENOID_PCM = 1; // test value //previous value: 3
+    //not on the robot anymore 10/7/24 -BG
+    //solenoid is on the robot, but channels changed as they were repurposed for the intake
+    public static final int POSITIONER_UP_SOLENOID_PCM = 2; // test value // previous value: 0
+    public static final int POSITIONER_DOWN_SOLENOID_PCM = 3; // test value //previous value: 1
   }
 
   // if we use a second PCM

@@ -17,17 +17,15 @@ import frc.robot.commands.IntakeCommand.IntakeMode;
 import frc.robot.commands.MagazineGatedCommand;
 import frc.robot.commands.MoveIntake;
 import frc.robot.commands.MoveIntake.DeployMode;
-import frc.robot.commands.MovePositioner;
-import frc.robot.commands.MovePositioner.PositionerMode;
 import frc.robot.commands.ResetPosition;
 import frc.robot.commands.Shoot.VelShootGatedCommand;
+import frc.robot.commands.swerve.DriveControllerDrivetrain;
 //ko, dpl, er, comment. Deleted Climber related stuffs from RC becuase we took the arm off.
 //import frc.robot.commands.climber.MidClimb;
 //import frc.robot.commands.climber.MoveArmsTo;
 //import frc.robot.commands.climber.PitAlignClimber;
 //import frc.robot.commands.climber.TraverseClimb;
 import frc.robot.commands.swerve.DriveControllerWithShooter;
-import frc.robot.commands.swerve.DriveControllerDrivetrain;
 import frc.robot.commands.swerve.LimelightDriveCmd;
 //import frc.robot.commands.test.ClimberTestRotRate;
 import frc.robot.subsystems.Intake_Subsystem;
@@ -41,7 +39,6 @@ import frc.robot.subsystems.hid.HID_Xbox_Subsystem;
 import frc.robot.subsystems.hid.SideboardController.SBButton;
 import frc.robot.subsystems.hid.XboxAxis;
 import frc.robot.subsystems.hid.XboxButton;
-import frc.robot.subsystems.hid.XboxPOV;
 import frc.robot.subsystems.ifx.DriverControls.Id;
 import frc.robot.subsystems.shooter.Shooter_Subsystem;
 import frc.robot.util.RobotSpecs;
@@ -135,9 +132,11 @@ public class RobotContainer {
     // //setup the dashboard programatically, creates any choosers, screens
     // dashboard = new Dashboard(this);
 
-    setDriverButtons();
+    // Commented out to use simplified postseason bindings. 10/7/24 -BG
+    //setDriverButtons();
+    //setAssistantButtons();
 
-    setAssistantButtons();
+    setOffseasonButtons();
      
       // Sideboard 
 //      if (m_robotSpecs.getSubsystemConfig().HAS_CLIMBER) { driverControls.bind(Id.SwitchBoard, SBButton.Sw21).whileTrue(new 
@@ -159,6 +158,62 @@ public class RobotContainer {
 //    }
   }
 
+  void setOffseasonButtons() {
+
+    // === DRIVING PARTS === //
+
+    // Cycles Drive Mode
+    driverController.b().onTrue(new InstantCommand(() -> {m_driveController.cycleDriveMode();}));
+
+    // Resets angle while driving
+    driverController.y().onTrue(new InstantCommand(() -> { drivetrain.resetAnglePose(Rotation2d.fromDegrees(-180)); })); //-180 reset if intake faces drivers
+
+    // Allows for short-term robot-centric driving; resets on release
+    driverController.leftTrigger().onTrue(new InstantCommand(() -> {m_driveController.setRobotCentric();}));
+    driverController.leftTrigger().onFalse(new InstantCommand(() -> {m_driveController.setFieldCentric();})); 
+
+    // === MOVING PARTS === //
+      
+      // These 2 sequential commands deploy and intake while the button is pressed and bring the intake back up on release
+      driverController.rightBumper().whileTrue(
+        new SequentialCommandGroup(
+          new IntakeCommand((() -> 0.6), () -> 0.5, IntakeMode.InstantLoad),
+          new MoveIntake(DeployMode.Deploy)
+      ));
+
+      driverController.rightBumper().onFalse(
+        new SequentialCommandGroup(
+          new IntakeCommand((() -> 0.0), () -> 0.0, IntakeMode.Stop),
+          new MoveIntake(DeployMode.Retract)
+      ));
+
+      // ejects all cargo while pressed
+      driverController.x().whileTrue(mag_default_cmd.getEjectCmd());
+
+      // shoot commands
+      // SHORT -------------------------- LONG //
+      // LEFT ----- UP ----- RIGHT ----- DOWN //
+      driverController.povLeft().whileTrue(new VelShootGatedCommand(Shooter.shortVelocity,        mag_default_cmd));
+      driverController.povUp().whileTrue(new VelShootGatedCommand(Shooter.shortMediumVelocity,    mag_default_cmd));
+      driverController.povRight().whileTrue(new VelShootGatedCommand(Shooter.mediumVelocity,      mag_default_cmd));
+      driverController.povDown().whileTrue(new VelShootGatedCommand(Shooter.longVelocity,         mag_default_cmd));
+
+      System.out.println(""+
+      "USING OFFSEASON BINDINGS; OPERATOR CONTROLLER NOT NEEDED\n\n"+
+      "BINDINGS:\n"+
+      "A: Unbound\n"+
+      "B: Cycle Drive Mode\n"+
+      "X: Ejects Cargo\n"+
+      "Y: Sets Position Pose & Rotates 180 degrees\n"+
+      "Left Bumper: Unbound\n"+
+      "Right Bumper: Intake Sequence"+
+      "Left Trigger: Temporarily sets driving mode to robot centric while button is pressed\n"+
+      "Right Trigger: Unbound"+
+      "D-Pad: Shoots slow to fast left to down in a clockwise direction"+
+      "Right Stick: moves the robot"+
+      "Left Stick: rotates the robot");
+  }
+
   /**
    * Driver xbox controller button bindings
    * <ul>
@@ -175,9 +230,6 @@ public class RobotContainer {
       driverController.y().onTrue(new InstantCommand(() -> { drivetrain.resetAnglePose(Rotation2d.fromDegrees(-180)); })); //-180 reset if intake faces drivers
       driverController.leftTrigger().onTrue(new InstantCommand(() -> {m_driveController.setRobotCentric();}));
       driverController.leftTrigger().onFalse(new InstantCommand(() -> {m_driveController.setFieldCentric();}));   
-
-      //dpl testing hack shooter
-      driverController.rightTrigger().whileTrue(new VelShootGatedCommand(Shooter.shortVelocity,       mag_default_cmd));
 
       //driverController.rightTrigger().onTrue(new InstantCommand(() -> {m_driveController.turnOnShootingMode();}));
       //driverController.rightTrigger().onFalse(new InstantCommand(() -> {m_driveController.turnOffShootingMode();}));
@@ -227,6 +279,19 @@ public class RobotContainer {
     
     if (m_robotSpecs.getSubsystemConfig().HAS_INTAKE) {
       opController.leftBumper().onTrue(new MoveIntake(DeployMode.Toggle));
+      
+      opController.rightBumper().whileTrue(
+        new SequentialCommandGroup(
+          new IntakeCommand((() -> 0.6), () -> 0.5, IntakeMode.InstantLoad),
+          new MoveIntake(DeployMode.Deploy)
+      ));
+
+      opController.rightBumper().onFalse(
+        new SequentialCommandGroup(
+          new IntakeCommand((() -> 0.0), () -> 0.0, IntakeMode.Stop),
+          new MoveIntake(DeployMode.Retract)
+      ));
+
       //driverControls.bind(Id.Assistant, XboxButton.LB).onTrue(new MoveIntake(DeployMode.Toggle));
       //vertical intake controls - manual control of intake and side rollers,not the magazine
       opController.a().whileTrue(new IntakeCommand((() -> 0.6), () -> 0.5, IntakeMode.LoadCargo));
@@ -235,7 +300,8 @@ public class RobotContainer {
 
     if (m_robotSpecs.getSubsystemConfig().HAS_MAGAZINE && m_robotSpecs.getSubsystemConfig().HAS_SHOOTER) {
       // Positioner binds :)
-      opController.rightBumper().onTrue(new MovePositioner(PositionerMode.Toggle));
+      //not on robot as of 10/7/24 -BG
+      //opController.rightBumper().onTrue(new MovePositioner(PositionerMode.Toggle));
 
       // Magazine Commands with intake sides, and intake roller
       opController.x().whileTrue(mag_default_cmd.getFeedCmd());
