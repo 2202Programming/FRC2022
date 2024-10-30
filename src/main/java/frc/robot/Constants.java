@@ -343,7 +343,7 @@ public final class Constants {
 
 
       // constraints
-      public static final double kMaxFPS = 80;      //max FPS
+      public static final double kMaxFPS = 80; //max FPS
       public static final double maxLongRage = 8; //maximum range in long distance shooting mode
       public static final double minLongRange = 1.8; //minimum range in long distance shooting mode
       public static final double maxShortRange = 2; //maximum range in short distance shooting mode
